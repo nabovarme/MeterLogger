@@ -74,7 +74,7 @@ HttpdBuiltInUrl builtInUrls[]={
 
 
 //Main routine. Initialize stdout, the I/O and the webserver and we're done.
-void user_init(void) {
+void httpd_user_init(void) {
 	stdoutInit();
 	ioInit();
 	httpdInit(builtInUrls, 80);

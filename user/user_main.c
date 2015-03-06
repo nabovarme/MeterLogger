@@ -37,6 +37,7 @@
 #include "gpio.h"
 #include "user_interface.h"
 #include "mem.h"
+#include "httpd_user_init.h"
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
@@ -52,6 +53,7 @@ ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
+	httpd_user_init();
 	if(status == STATION_GOT_IP){
 		MQTT_Connect(&mqttClient);
 	} else {
