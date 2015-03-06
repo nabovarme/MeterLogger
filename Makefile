@@ -209,6 +209,12 @@ htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
 	$(ESPTOOL) -p $(ESPPORT) write_flash 0x12000 webpages.espfs
 
+flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) 0x12000 webpages.espfs
+
+flashblank:
+	$(ESPTOOL) -p $(ESPPORT) write_flash firmware/blank512k.bin
+	
 test: flash
 	screen $(ESPPORT) 115200
 
