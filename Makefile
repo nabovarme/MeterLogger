@@ -199,6 +199,16 @@ firmware:
 flash: $(FW_FILE_1)  $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
+webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
+	cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
+
+mkespfsimage/mkespfsimage: mkespfsimage/
+	make -C mkespfsimage
+
+htmlflash: webpages.espfs
+	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
+	$(ESPTOOL) -p $(ESPPORT) write_flash 0x12000 webpages.espfs
+
 test: flash
 	screen $(ESPPORT) 115200
 
