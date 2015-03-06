@@ -42,14 +42,15 @@
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 
-uint16 counter = 0;
+//uint16 counter = 0;
 ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 	char buff[128];
 	int l;
-	l = os_sprintf(buff, "%d", counter);
-	counter++;
+	//l = os_sprintf(buff, "%d", counter);
+	l = os_sprintf(buff, "free heap size: %lu", system_get_free_heap_size());
+	//counter++;
 
-	MQTT_Publish(&mqttClient, "/sample/foo", buff, l, 0, 0);
+	MQTT_Publish(&mqttClient, "/sample/heap", buff, l, 0, 0);
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
