@@ -227,6 +227,6 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -f $(FW_FILE_1)
 	$(Q) rm -f $(FW_FILE_2)
-	$(Q) rm -rf $(FW_BASE)
+#	$(Q) rm -rf $(FW_BASE)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
