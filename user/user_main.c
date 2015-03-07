@@ -54,6 +54,7 @@ ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
+	ntp_get_time();
 	httpd_user_init();
 	if(status == STATION_GOT_IP){
 		MQTT_Connect(&mqttClient);
