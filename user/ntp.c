@@ -5,11 +5,8 @@
 #include "espconn.h"
 #include "debug.h"
 #include "time.h"
-
-void ntp_send_request();
-
-#define NTP_PACKET_SIZE 48 // NTP time stamp is in the first 48 bytes of the message
-#define NTP_OFFSET   2208988800UL
+#include "unix_time.h"
+#include "ntp.h"
 
 uint8 ntp_server[4] = {193, 200, 91, 90};	// dk.pool.ntp.org
 uint8 packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
@@ -27,7 +24,6 @@ unsigned long ntp_get_time()
   ntp_send_request();
 }
 
-void ntp_udpclient_recv(void *arg, char *pdata, unsigned short len);
 void ICACHE_FLASH_ATTR
 ntp_udpclient_sent_cb(void *arg)
 {
@@ -43,12 +39,13 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len)
   struct tm *dt;
   char timestr[11];
   // this is NTP time (seconds since Jan 1 1900):
-  unsigned long timestamp = pdata[40] << 24 | pdata[41] << 16 |
-    pdata[42] << 8 | pdata[43];
+  uint64 timestamp = pdata[40] << 24 | pdata[41] << 16 |
+    pdata[42] << 8 | pdata[43];				// BUG? is ntp 32 or 64 bit?
   timestamp =  timestamp - NTP_OFFSET;
-  dt = localtime((time_t *) &timestamp);
-  os_sprintf(timestr, "%d:%d:%d\n\r", dt->tm_hour, dt->tm_min, dt->tm_sec);
-  INFO(timestr);
+  set_unix_time(timestamp);
+//  dt = localtime((time_t *) &timestamp);
+//  os_sprintf(timestr, "%d:%d:%d\n\r", dt->tm_hour, dt->tm_min, dt->tm_sec);
+//  INFO(timestr);
   //OLED_Print(4, 2, timestr, 1);
 }
 

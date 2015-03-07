@@ -38,6 +38,7 @@
 #include "user_interface.h"
 #include "mem.h"
 #include "httpd_user_init.h"
+#include "unix_time.h"
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
@@ -46,17 +47,20 @@ uint16 counter = 0;
 ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 	char buff[128];
 	int l;
-	l = os_sprintf(buff, "%d", counter);
 	l = os_sprintf(buff, "#%u free heap size: %lu", counter, system_get_free_heap_size());
 	counter++;
 
 	MQTT_Publish(&mqttClient, "/sample/heap", buff, l, 0, 0);
+
+	l = os_sprintf(buff, "%lu", (uint32)(get_unix_time()));		// TODO before 2038 ,-)
+	MQTT_Publish(&mqttClient, "/sample/unixtime", buff, l, 0, 0);	
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
-	ntp_get_time();
-	httpd_user_init();
-	if(status == STATION_GOT_IP){
+//	ntp_get_time();
+	httpd_user_init();	//state 1 = config mode
+	init_unix_time();   // state 2 = get ntp mode ( wait forever)
+	if(status == STATION_GOT_IP){ 
 		MQTT_Connect(&mqttClient);
 	} else {
 		MQTT_Disconnect(&mqttClient);
