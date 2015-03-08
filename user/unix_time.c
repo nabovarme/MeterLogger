@@ -10,8 +10,8 @@
 #include "c_types.h"
 #include "unix_time.h"
 
-uint64 unix_time = 0;
-uint64 system_time = 0;
+uint64 unix_time_us = 0;
+uint64 system_time_us = 0;
 bool unix_time_mutex = false;
 
 //uint64 
@@ -23,8 +23,7 @@ ICACHE_FLASH_ATTR void overflow_timerfunc(void *arg) {
 		// do nothing
 	}
 	unix_time_mutex = true;			// set mutex
-	//INFO("inside mutex, system_time: %lld\n\r");
-	system_time += 4295;
+	system_time_us += 0x100000000;
 	unix_time_mutex = false;		// free mutex
 }
 
@@ -46,17 +45,17 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 }
 
 ICACHE_FLASH_ATTR uint64 get_unix_time(void) {
-	uint64 current_unix_time;
+	uint64 current_unix_time_us;
 
 	while (unix_time_mutex) {
 		// do nothing
 	}
 	
 	unix_time_mutex = true;			// set mutex
-	current_unix_time = unix_time + system_time + (system_get_time() / 1000000);
+	current_unix_time_us = unix_time_us + system_time_us + system_get_time();
 	unix_time_mutex = false;		// free mutex
 
-	return current_unix_time;
+	return current_unix_time_us / 1000000;
 }
 
 ICACHE_FLASH_ATTR void set_unix_time(uint64 current_unix_time) {
@@ -65,8 +64,8 @@ ICACHE_FLASH_ATTR void set_unix_time(uint64 current_unix_time) {
 	}
 
 	unix_time_mutex = true;			// set mutex
-	unix_time = current_unix_time;
-	system_time = system_get_time() / 1000000; //64bit danger
+	unix_time_us = current_unix_time * 1000000;
+	system_time_us = system_get_time();
 	unix_time_mutex = false;		// free mutex
 	
 }
