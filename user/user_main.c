@@ -70,19 +70,19 @@ ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 	
 	// publish flow temperature
 	topic_l = os_sprintf(topic, "/sample/%lu/flow_temperature", current_unix_time);
-	random_value = rand() % 100 + 0;
+	random_value = rand() % 20 + 70;
 	message_l = os_sprintf(message, "%lu", random_value);
 	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
 	// publish return flow temperature
 	topic_l = os_sprintf(topic, "/sample/%lu/return_flow_temperature", current_unix_time);
-	random_value = rand() % 100 + 0;
+	random_value = rand() % 30 + 40;
 	message_l = os_sprintf(message, "%lu", random_value);
 	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
 	// publish temperature difference
 	topic_l = os_sprintf(topic, "/sample/%lu/temperature_difference", current_unix_time);
-	random_value = rand() % 100 + 0;
+	random_value = rand() % 10 + 20;
 	message_l = os_sprintf(message, "%lu", random_value);
 	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
