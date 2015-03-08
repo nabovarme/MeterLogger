@@ -45,16 +45,76 @@ static volatile os_timer_t sample_timer;
 
 uint16 counter = 0;
 ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
-	char buff[128];
-	int l;
-	l = os_sprintf(buff, "#%u free heap size: %lu", counter, system_get_free_heap_size());
+	uint64 current_unix_time;
+	char message[128];
+	int message_l;
+	char topic[128];
+	int topic_l;
+	uint32 random_value;								// DEBUG: for meter test data generation
+		
+	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+	
+	// publish counter
+	topic_l = os_sprintf(topic, "/sample/%lu/counter", current_unix_time);
+	message_l = os_sprintf(message, "%lu", counter);
 	counter++;
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
-	MQTT_Publish(&mqttClient, "/sample/heap", buff, l, 0, 0);
+	// publish heap size
+	topic_l = os_sprintf(topic, "/sample/%lu/heap", current_unix_time);
+	message_l = os_sprintf(message, "%lu", system_get_free_heap_size());
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
-	l = os_sprintf(buff, "%lu", (uint32)(get_unix_time()));		// TODO before 2038 ,-)
-	INFO("unix_time: %s\n\r", buff);
-	MQTT_Publish(&mqttClient, "/sample/unixtime", buff, l, 0, 0);	
+
+	// heating meter specific
+	
+	// publish flow temperature
+	topic_l = os_sprintf(topic, "/sample/%lu/flow_temperature", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish return flow temperature
+	topic_l = os_sprintf(topic, "/sample/%lu/return_flow_temperature", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish temperature difference
+	topic_l = os_sprintf(topic, "/sample/%lu/temperature_difference", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish flow
+	topic_l = os_sprintf(topic, "/sample/%lu/flow", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish current power
+	topic_l = os_sprintf(topic, "/sample/%lu/current_power", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish hours
+	topic_l = os_sprintf(topic, "/sample/%lu/hours", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish volume
+	topic_l = os_sprintf(topic, "/sample/%lu/volume", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+
+	// publish power
+	topic_l = os_sprintf(topic, "/sample/%lu/power", current_unix_time);
+	random_value = rand() % 100 + 0;
+	message_l = os_sprintf(message, "%lu", random_value);
+	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -74,7 +134,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
     // start sample timer
     os_timer_disarm(&sample_timer);
     os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timerfunc, NULL);
-    os_timer_arm(&sample_timer, 1000, 1);
+    os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {

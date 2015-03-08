@@ -41,7 +41,7 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
     os_timer_arm(&overflow_timer, 1000, 1);		// every second
 
 	// start ntp update timer
-	ntp_update_interval = (3600 + rand() % 3600) * 1000;	// every hour + random time < one hour
+	ntp_update_interval = ((rand() % 3600) + 3600) * 1000;	// every hour + random time < one hour
     os_timer_disarm(&ntp_update_timer);
     os_timer_setfn(&ntp_update_timer, (os_timer_func_t *)ntp_update_timerfunc, NULL);
     os_timer_arm(&ntp_update_timer, ntp_update_interval, 1);
@@ -61,6 +61,7 @@ ICACHE_FLASH_ATTR uint64 get_unix_time(void) {
 	return current_unix_time;
 }
 
+// callback for ntp to set unix_time
 ICACHE_FLASH_ATTR void set_unix_time(uint64 current_unix_time) {
 	//uint64 last_system_time_delta;
 	while (unix_time_mutex) {
