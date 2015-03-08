@@ -122,7 +122,7 @@ sub mqtt_handler {
 					dsname		=> "temp_diff",
 					name		=> 'temp_diff',
 					type		=> 'line',
-					color		=> 'cc3399',
+					color		=> 'd7c8dd',
 					thickness	=> 1.5,
 					cfunc		=> 'MAX',
 					legend		=> 'Temp. diff.'
@@ -174,7 +174,7 @@ sub mqtt_handler {
 					dsname		=> "temp_diff",
 					name		=> 'temp_diff',
 					type		=> 'line',
-					color		=> 'cc3399',
+					color		=> 'd7c8dd',
 					thickness	=> 1.5,
 					cfunc		=> 'MAX',
 					legend		=> 'Temp. diff.'
@@ -226,7 +226,7 @@ sub mqtt_handler {
 					dsname		=> "temp_diff",
 					name		=> 'temp_diff',
 					type		=> 'line',
-					color		=> 'cc3399',
+					color		=> 'd7c8dd',
 					thickness	=> 1.5,
 					cfunc		=> 'MAX',
 					legend		=> 'Temp. diff.'
@@ -278,7 +278,7 @@ sub mqtt_handler {
 					dsname		=> "temp_diff",
 					name		=> 'temp_diff',
 					type		=> 'line',
-					color		=> 'cc3399',
+					color		=> 'd7c8dd',
 					thickness	=> 1.5,
 					cfunc		=> 'MAX',
 					legend		=> 'Temp. diff.'
@@ -330,7 +330,7 @@ sub mqtt_handler {
 					dsname		=> "temp_diff",
 					name		=> 'temp_diff',
 					type		=> 'line',
-					color		=> 'cc3399',
+					color		=> 'd7c8dd',
 					thickness	=> 1.5,
 					cfunc		=> 'MAX',
 					legend		=> 'Temp. diff.'
