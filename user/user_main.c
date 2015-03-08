@@ -131,7 +131,8 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Connected\r\n");
 
-    // start sample timer
+	// sample once and start sample timer
+	sample_timerfunc(NULL);
     os_timer_disarm(&sample_timer);
     os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timerfunc, NULL);
     os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
