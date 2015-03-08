@@ -53,11 +53,11 @@ ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 	MQTT_Publish(&mqttClient, "/sample/heap", buff, l, 0, 0);
 
 	l = os_sprintf(buff, "%lu", (uint32)(get_unix_time()));		// TODO before 2038 ,-)
+	INFO("unix_time: %s\n\r", buff);
 	MQTT_Publish(&mqttClient, "/sample/unixtime", buff, l, 0, 0);	
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
-//	ntp_get_time();
 	httpd_user_init();	//state 1 = config mode
 	init_unix_time();   // state 2 = get ntp mode ( wait forever)
 	if(status == STATION_GOT_IP){ 
@@ -70,24 +70,10 @@ ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Connected\r\n");
-	MQTT_Subscribe(client, "/mqtt/topic/0", 0);
-	MQTT_Subscribe(client, "/mqtt/topic/1", 1);
-	MQTT_Subscribe(client, "/mqtt/topic/2", 2);
 
-	MQTT_Publish(client, "/mqtt/topic/0", "hello0", 6, 0, 0);
-	MQTT_Publish(client, "/mqtt/topic/1", "hello1", 6, 1, 0);
-	MQTT_Publish(client, "/mqtt/topic/2", "hello2", 6, 2, 0);
-
-    //Disarm timer
+    // start sample timer
     os_timer_disarm(&sample_timer);
-
-    //Setup timer
     os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timerfunc, NULL);
-
-    //Arm the timer
-    //&sample_timer is the pointer
-    //1000 is the fire time in ms
-    //0 for once and 1 for repeating
     os_timer_arm(&sample_timer, 1000, 1);
 }
 
@@ -114,38 +100,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	dataBuf[data_len] = 0;
 
 	INFO("Receive topic: %s, data: %s \r\n", topicBuf, dataBuf);
-
-	/*
-	uint32 rtc_time = 0, rtc_reg_val = 0, stime = 0, rtc_time2 = 0, stime2 = 0;
-
-	os_printf("clk cal : %d \n\r", system_rtc_clock_cali_proc()>>12);
-	rtc_time = system_get_rtc_time();
-	stime = system_get_time();
-	os_printf("rtc time : %d \n\r", rtc_time);
-	os_printf("system time : %d \n\r", stime);
-	if (system_rtc_mem_read(0, &rtc_reg_val, 4) ) {
-		os_printf("rtc mem val : 0x%08x\n\r",rtc_reg_val);
-	} 
-	else {
-		os_printf("rtc mem val error\n\r");
-	}
-	rtc_reg_val++;
-	os_printf("rtc mem val write\n\r");
-	system_rtc_mem_write(0, &rtc_reg_val, 4);
-	if (system_rtc_mem_read(0, &rtc_reg_val, 4) ) {
-		os_printf("rtc mem val : 0x%08x\n\r", rtc_reg_val);
-	}
-	else {
-		os_printf("rtc mem val error\n\r");
-	}
-	rtc_time2 = system_get_rtc_time();
-	stime2 = system_get_time();
-	os_printf("rtc time : %d \n\r", rtc_time2);
-	os_printf("system time : %d \n\r", stime2);
-	os_printf("delta time rtc: %d \n\r", rtc_time2-rtc_time);
-	os_printf("delta system time rtc: %d \n\r", stime2-stime);
-	os_printf("clk cal : %d \n\r",system_rtc_clock_cali_proc()>>12);
-	*/
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
@@ -163,7 +117,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
 	//MQTT_InitClient(&mqttClient, "client_id", "user", "pass", 120, 1);
 
-	MQTT_InitLWT(&mqttClient, "/lwt", "offline", 0, 0);
+	MQTT_InitLWT(&mqttClient, "/sample", "offline", 0, 0);
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
 	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
