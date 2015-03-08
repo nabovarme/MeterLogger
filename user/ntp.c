@@ -39,9 +39,10 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len)
   struct tm *dt;
   char timestr[11];
   // this is NTP time (seconds since Jan 1 1900):
-  uint64 timestamp = pdata[40] << 24 | pdata[41] << 16 |
+  uint32 timestamp = pdata[40] << 24 | pdata[41] << 16 |
     pdata[42] << 8 | pdata[43];				// BUG? is ntp 32 or 64 bit?
   timestamp =  timestamp - NTP_OFFSET;
+  //INFO("timestamp: %lu\n\r", timestamp);
   set_unix_time(timestamp);
 //  dt = localtime((time_t *) &timestamp);
 //  os_sprintf(timestr, "%d:%d:%d\n\r", dt->tm_hour, dt->tm_min, dt->tm_sec);

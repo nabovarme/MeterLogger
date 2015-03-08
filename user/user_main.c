@@ -115,6 +115,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 	INFO("Receive topic: %s, data: %s \r\n", topicBuf, dataBuf);
 
+	/*
 	uint32 rtc_time = 0, rtc_reg_val = 0, stime = 0, rtc_time2 = 0, stime2 = 0;
 
 	os_printf("clk cal : %d \n\r", system_rtc_clock_cali_proc()>>12);
@@ -144,6 +145,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_printf("delta time rtc: %d \n\r", rtc_time2-rtc_time);
 	os_printf("delta system time rtc: %d \n\r", stime2-stime);
 	os_printf("clk cal : %d \n\r",system_rtc_clock_cali_proc()>>12);
+	*/
 	
 	os_free(topicBuf);
 	os_free(dataBuf);

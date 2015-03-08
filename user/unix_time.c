@@ -52,7 +52,8 @@ ICACHE_FLASH_ATTR uint64 get_unix_time(void) {
 	}
 	
 	unix_time_mutex = true;			// set mutex
-	current_unix_time_us = unix_time_us + system_time_us + system_get_time();
+	INFO("unix_time_us: %llu system_time_us: %llu system_get_time(): %lu\n\r", unix_time_us, system_time_us, system_get_time());
+	current_unix_time_us = unix_time_us - system_time_us + system_get_time();
 	unix_time_mutex = false;		// free mutex
 
 	return current_unix_time_us / 1000000;
@@ -64,8 +65,11 @@ ICACHE_FLASH_ATTR void set_unix_time(uint64 current_unix_time) {
 	}
 
 	unix_time_mutex = true;			// set mutex
+	INFO("current_unix_time: %llu\n\r", current_unix_time);
 	unix_time_us = current_unix_time * 1000000;
+	INFO("unix_time_us: %llu\n\r", unix_time_us);
 	system_time_us = system_get_time();
+	INFO("system_time_us: %lu\n\r", system_time_us);
 	unix_time_mutex = false;		// free mutex
 	
 }
