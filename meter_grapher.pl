@@ -15,7 +15,7 @@ use constant MONTH_IMG => 'month.png';
 use constant YEAR_IMG => 'year.png';
 
 my $unix_time;
-my $mqtt = Net::MQTT::Simple->new(q[10.0.1.3]);
+my $mqtt = Net::MQTT::Simple->new(q[loppen.christiania.org]);
 my $mqtt_data = undef;
 my $mqtt_count = 0;
 
@@ -71,7 +71,7 @@ sub mqtt_handler {
 	
 	if ($mqtt_count == 3) {
 		print Dumper($mqtt_data);
-		if ($rrd->last < $unix_time + 5) {
+		if (($rrd->last < $unix_time + 5) && ($unix_time < time() + 300)) {
 			# update rrd
 			$rrd->update(
 				time => $unix_time, 
