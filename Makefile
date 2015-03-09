@@ -213,7 +213,7 @@ flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 	$(ESPTOOL) -p $(ESPPORT) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) 0x12000 webpages.espfs
 
 flashblank:
-	$(ESPTOOL) -p $(ESPPORT) write_flash firmware/blank512k.bin
+	$(ESPTOOL) -p $(ESPPORT) write_flash 0x0 firmware/blank512k.bin
 	
 test: flash
 	screen $(ESPPORT) 115200
