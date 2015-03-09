@@ -38,7 +38,10 @@
 #include "user_interface.h"
 #include "mem.h"
 #include "httpd_user_init.h"
+#include "user_config.h"
 #include "unix_time.h"
+
+//#define CONFIG_MODE
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
@@ -167,9 +170,50 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
+	uint8_t mode;
+    struct softap_config ap_conf;
+	uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
+	
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000000);
 
+#ifdef CONFIG_MODE
+	// make sure the device is in AP and STA combined mode
+	mode = wifi_get_opmode();
+	if (mode != STATIONAP_MODE) {
+		wifi_set_opmode(STATIONAP_MODE);
+		os_delay_us(10000);
+		//system_restart();
+	}
+	/*
+	// setup the soft AP
+	os_bzero(&ap_conf, sizeof(struct softap_config));
+	wifi_softap_get_config(&ap_conf);
+	wifi_get_macaddr(SOFTAP_IF, macaddr);
+	os_strncpy(ap_conf.ssid, AP_SSID, sizeof(ap_conf.ssid));
+	ap_conf.ssid_len = strlen(AP_SSID);
+	os_strncpy(ap_conf.password, AP_PASSWORD, sizeof(ap_conf.password));
+	//os_snprintf(&ap_conf.password[strlen(AP_PASSWORD)], sizeof(ap_conf.password) - strlen(AP_PASSWORD), "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
+	os_sprintf(ap_conf.password[strlen(AP_PASSWORD)], "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
+	ap_conf.authmode = AUTH_WPA_PSK;
+	ap_conf.channel = 6;
+	ETS_UART_INTR_DISABLE(); 
+	wifi_softap_set_config(&ap_conf);
+	ETS_UART_INTR_ENABLE();
+	
+
+	mode = wifi_get_opmode();
+	if (mode != STATIONAP_MODE) {
+		wifi_set_opmode(STATIONAP_MODE);
+		os_delay_us(10000);
+		system_restart();
+	}
+	
+	wifi_station_connect();
+	
+	os_delay_us(30000000);
+	*/
+#else
 	CFG_Load();
 
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
@@ -185,6 +229,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
 	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
-
+#endif
 	INFO("\r\nSystem started ...\r\n");
 }
