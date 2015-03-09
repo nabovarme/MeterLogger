@@ -71,7 +71,7 @@ sub mqtt_handler {
 	
 	if ($mqtt_count == 3) {
 		warn Dumper($mqtt_data);
-		warn "unix_time: $unix_time last rrd unix time: ". $rrd->last . "\n";
+		warn "unix_time: $unix_time last rrd unix time: ". $rrd->last . " diff: " . ($unix_time - ($rrd->last)) . "\n";
 		if (($rrd->last < $unix_time + 5) && ($unix_time < time() + 3600)) {
 			# update rrd
 			$rrd->update(
