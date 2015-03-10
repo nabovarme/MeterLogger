@@ -61,6 +61,8 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	INFO("\r\nAP mode\r\n");
 	wifi_set_opmode(STATIONAP_MODE);
 	os_delay_us(10000);
+
+	httpd_user_init();	//state 1 = config mode
 	/*
 	// setup the soft AP
 	os_bzero(&ap_conf, sizeof(struct softap_config));
@@ -186,8 +188,8 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
-//	init_unix_time();   // state 2 = get ntp mode ( wait forever)
 	if(status == STATION_GOT_IP){ 
+		init_unix_time();   // state 2 = get ntp mode ( wait forever)
 		MQTT_Connect(&mqttClient);
 	} else {
 		MQTT_Disconnect(&mqttClient);
@@ -241,10 +243,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
 	system_os_post(user_procTaskPrio, 0, 0 );
 	
-	// DEBUG: this should be called when network is up
-	httpd_user_init();	//state 1 = config mode
-	init_unix_time();   // state 2 = get ntp mode ( wait forever)
-
 	// wait for 30 seconds and go to station mode
     os_timer_disarm(&sample_mode_timer);
     os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
