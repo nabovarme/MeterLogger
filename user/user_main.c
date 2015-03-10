@@ -40,14 +40,78 @@
 #include "httpd_user_init.h"
 #include "user_config.h"
 #include "unix_time.h"
+#include "user_main.h"
 
-//#define CONFIG_MODE
+#define user_procTaskPrio			0
+#define user_proc_task_queue_len	1
+
+os_event_t user_proc_task_queue[user_proc_task_queue_len];
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
+static volatile os_timer_t sample_mode_timer;
 
 uint16 counter = 0;
-ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
+
+ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
+    //struct softap_config ap_conf;
+	//uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
+	
+	// make sure the device is in AP and STA combined mode
+	INFO("\r\nAP mode\r\n");
+	wifi_set_opmode(STATIONAP_MODE);
+	os_delay_us(10000);
+	/*
+	// setup the soft AP
+	os_bzero(&ap_conf, sizeof(struct softap_config));
+	wifi_softap_get_config(&ap_conf);
+	wifi_get_macaddr(SOFTAP_IF, macaddr);
+	os_strncpy(ap_conf.ssid, AP_SSID, sizeof(ap_conf.ssid));
+	ap_conf.ssid_len = strlen(AP_SSID);
+	os_strncpy(ap_conf.password, AP_PASSWORD, sizeof(ap_conf.password));
+	//os_snprintf(&ap_conf.password[strlen(AP_PASSWORD)], sizeof(ap_conf.password) - strlen(AP_PASSWORD), "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
+	os_sprintf(ap_conf.password[strlen(AP_PASSWORD)], "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
+	ap_conf.authmode = AUTH_WPA_PSK;
+	ap_conf.channel = 6;
+	ETS_UART_INTR_DISABLE(); 
+	wifi_softap_set_config(&ap_conf);
+	ETS_UART_INTR_ENABLE();
+	
+
+	mode = wifi_get_opmode();
+	if (mode != STATIONAP_MODE) {
+		wifi_set_opmode(STATIONAP_MODE);
+		os_delay_us(10000);
+		system_restart();
+	}
+	
+	wifi_station_connect();
+	
+	os_delay_us(30000000);
+	*/
+	
+	//system_os_post(user_procTaskPrio, 0, 0 );
+}
+
+ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
+	CFG_Load();
+
+	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
+	//MQTT_InitConnection(&mqttClient, "192.168.11.122", 1880, 0);
+
+	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
+	//MQTT_InitClient(&mqttClient, "client_id", "user", "pass", 120, 1);
+
+	MQTT_InitLWT(&mqttClient, "/sample", "offline", 0, 0);
+	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
+	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
+	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
+	MQTT_OnData(&mqttClient, mqttDataCb);
+
+	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
+}
+
+ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	uint64 current_unix_time;
 	char message[128];
 	int message_l;
@@ -121,8 +185,8 @@ ICACHE_FLASH_ATTR void sample_timerfunc(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
-	httpd_user_init();	//state 1 = config mode
-	init_unix_time();   // state 2 = get ntp mode ( wait forever)
+//	httpd_user_init();	//state 1 = config mode
+//	init_unix_time();   // state 2 = get ntp mode ( wait forever)
 	if(status == STATION_GOT_IP){ 
 		MQTT_Connect(&mqttClient);
 	} else {
@@ -135,9 +199,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	INFO("MQTT: Connected\r\n");
 
 	// sample once and start sample timer
-	sample_timerfunc(NULL);
+	sample_timer_func(NULL);
     os_timer_disarm(&sample_timer);
-    os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timerfunc, NULL);
+    os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timer_func, NULL);
     os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
 }
 
@@ -170,65 +234,21 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
-	uint8_t mode;
-    struct softap_config ap_conf;
-	uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
-	
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000000);
-
-#ifdef CONFIG_MODE
-	// make sure the device is in AP and STA combined mode
-	mode = wifi_get_opmode();
-	if (mode != STATIONAP_MODE) {
-		wifi_set_opmode(STATIONAP_MODE);
-		os_delay_us(10000);
-		//system_restart();
-	}
-	/*
-	// setup the soft AP
-	os_bzero(&ap_conf, sizeof(struct softap_config));
-	wifi_softap_get_config(&ap_conf);
-	wifi_get_macaddr(SOFTAP_IF, macaddr);
-	os_strncpy(ap_conf.ssid, AP_SSID, sizeof(ap_conf.ssid));
-	ap_conf.ssid_len = strlen(AP_SSID);
-	os_strncpy(ap_conf.password, AP_PASSWORD, sizeof(ap_conf.password));
-	//os_snprintf(&ap_conf.password[strlen(AP_PASSWORD)], sizeof(ap_conf.password) - strlen(AP_PASSWORD), "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
-	os_sprintf(ap_conf.password[strlen(AP_PASSWORD)], "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
-	ap_conf.authmode = AUTH_WPA_PSK;
-	ap_conf.channel = 6;
-	ETS_UART_INTR_DISABLE(); 
-	wifi_softap_set_config(&ap_conf);
-	ETS_UART_INTR_ENABLE();
 	
-
-	mode = wifi_get_opmode();
-	if (mode != STATIONAP_MODE) {
-		wifi_set_opmode(STATIONAP_MODE);
-		os_delay_us(10000);
-		system_restart();
-	}
+	// boot in ap mode
+	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
+	system_os_post(user_procTaskPrio, 0, 0 );
 	
-	wifi_station_connect();
+	// DEBUG: this should be called when network is up
+	httpd_user_init();	//state 1 = config mode
+	init_unix_time();   // state 2 = get ntp mode ( wait forever)
+
+	// wait for 30 seconds and go to station mode
+    os_timer_disarm(&sample_mode_timer);
+    os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
+    os_timer_arm(&sample_mode_timer, 30000, 0);
 	
-	os_delay_us(30000000);
-	*/
-#else
-	CFG_Load();
-
-	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
-	//MQTT_InitConnection(&mqttClient, "192.168.11.122", 1880, 0);
-
-	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
-	//MQTT_InitClient(&mqttClient, "client_id", "user", "pass", 120, 1);
-
-	MQTT_InitLWT(&mqttClient, "/sample", "offline", 0, 0);
-	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
-	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
-	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
-	MQTT_OnData(&mqttClient, mqttDataCb);
-
-	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
-#endif
 	INFO("\r\nSystem started ...\r\n");
 }
