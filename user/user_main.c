@@ -54,11 +54,22 @@ static volatile os_timer_t sample_mode_timer;
 uint16 counter = 0;
 
 ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
-    //struct softap_config ap_conf;
-	//uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
+    struct softap_config ap_conf;
+	uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
 	
 	// make sure the device is in AP and STA combined mode
 	INFO("\r\nAP mode\r\n");
+	
+	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
+	os_sprintf(ap_conf.ssid, "CTRL_%02x%02x%02x%02x%02x%02x", MAC2STR(macaddr));
+	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
+	os_sprintf(ap_conf.password, "%02x%02x%02x%02x%02x%02x", MAC2STR(macaddr));
+	ap_conf.authmode = AUTH_WPA_PSK;
+	ap_conf.channel = 7;
+	ap_conf.max_connection = 255; // 1?
+	ap_conf.ssid_hidden = 0;
+
+	wifi_softap_set_config(&ap_conf);
 	wifi_set_opmode(STATIONAP_MODE);
 	os_delay_us(10000);
 
@@ -80,19 +91,8 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	ETS_UART_INTR_ENABLE();
 	
 
-	mode = wifi_get_opmode();
-	if (mode != STATIONAP_MODE) {
-		wifi_set_opmode(STATIONAP_MODE);
-		os_delay_us(10000);
-		system_restart();
-	}
-	
 	wifi_station_connect();
-	
-	os_delay_us(30000000);
 	*/
-	
-	//system_os_post(user_procTaskPrio, 0, 0 );
 }
 
 ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
