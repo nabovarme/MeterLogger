@@ -65,7 +65,7 @@ else
 # We are under other system, may be Linux. Assume using gcc.
 	# Can we use -fdata-sections?
 	ESPPORT ?= /dev/ttyUSB0
-	SDK_BASE	?= /home/stoffer/esp8266/esp-open-sdk/esp_iot_sdk_v0.9.5
+	SDK_BASE	?= $(HOME)/esp8266/esp-open-sdk/esp_iot_sdk_v0.9.5
 
 	CCFLAGS += -Os -ffunction-sections -fno-jump-tables
 	AR = xtensa-lx106-elf-ar
@@ -98,7 +98,7 @@ endif
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt user modules
-EXTRA_INCDIR    = . include $(SDK_BASE)/../include /home/stoffer/esp8266/esp-open-sdk/sdk/include lib/heatshrink
+EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl
