@@ -63,7 +63,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	os_sprintf(ap_conf.ssid, "CTRL_%02x%02x%02x%02x%02x%02x", MAC2STR(macaddr));
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
-	os_sprintf(ap_conf.password, "%02x%02x%02x%02x%02x%02x", MAC2STR(macaddr));
+	os_sprintf(ap_conf.password, "aabbccddeeffgg");
 	ap_conf.authmode = AUTH_WPA_PSK;
 	ap_conf.channel = 7;
 	ap_conf.max_connection = 255; // 1?
@@ -246,7 +246,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// wait for 30 seconds and go to station mode
     os_timer_disarm(&sample_mode_timer);
     os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
-    os_timer_arm(&sample_mode_timer, 30000, 0);
+    os_timer_arm(&sample_mode_timer, 60000, 0);
 	
 	INFO("\r\nSystem started ...\r\n");
 }
