@@ -1,8 +1,10 @@
 <html>
 <head><title>Esp8266 web server</title>
 <link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="refresh" content="0" /wifi/wifi.tpl>
 </head>
 <body>
+<!--
 <div id="main">
 <h1>It Works</h1>
 <p>
@@ -15,4 +17,5 @@ been loaded <b>%counter%</b> times.
 </ul>
 </p>
 </div>
+-->
 </body></html>
