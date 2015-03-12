@@ -20,6 +20,7 @@ Cgi/template routines for the /wifi url.
 #include "cgi.h"
 #include "io.h"
 #include "espmissingincludes.h"
+#include "config.h"
 
 //Enable this to disallow any changes in AP settings
 //#define DEMO_MODE
@@ -190,8 +191,9 @@ int ICACHE_FLASH_ATTR cgiWiFiConnect(HttpdConnData *connData) {
 	httpdFindArg(connData->postBuff, "essid", essid, sizeof(essid));
 	httpdFindArg(connData->postBuff, "passwd", passwd, sizeof(passwd));
 
-	os_strncpy((char*)stconf.ssid, essid, 32);
-	os_strncpy((char*)stconf.password, passwd, 64);
+	os_strncpy((char*)sysCfg.sta_ssid, essid, 32);
+	os_strncpy((char*)sysCfg.sta_pwd, passwd, 64);
+
 	os_printf("Try to connect to AP %s pw %s\n", essid, passwd);
 
 	//Schedule disconnect/connect
@@ -203,6 +205,8 @@ int ICACHE_FLASH_ATTR cgiWiFiConnect(HttpdConnData *connData) {
 #else
 	os_timer_arm(&reassTimer, 1000, 0);
 	httpdRedirect(connData, "connecting.html");
+	CFG_Save();
+	
 #endif
 	return HTTPD_CGI_DONE;
 }

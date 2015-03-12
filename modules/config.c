@@ -45,6 +45,7 @@ SAVE_FLAG saveFlag;
 void ICACHE_FLASH_ATTR
 CFG_Save()
 {
+	 //os_printf("CFG_Save() essid: %s pw: %s\n", sysCfg.sta_ssid, sysCfg.sta_pwd);
 	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 
@@ -72,6 +73,16 @@ CFG_Load()
 {
 
 	INFO("\r\nload ...\r\n");
+	/*
+	char essid[128];
+	char passwd[128];
+	os_memset(essid, 0x00, sizeof essid);
+	os_memset(passwd, 0x00, sizeof passwd);
+	os_strncpy(essid, (char*)sysCfg.sta_ssid, 32);
+	os_strncpy(passwd, (char*)sysCfg.sta_pwd, 64);
+	os_printf("CFG_Load() essid: %s pw: %s\n", essid, passwd);
+	*/
+	
 	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
@@ -97,7 +108,7 @@ CFG_Load()
 		os_sprintf(sysCfg.mqtt_user, "%s", MQTT_USER);
 		os_sprintf(sysCfg.mqtt_pass, "%s", MQTT_PASS);
 
-		sysCfg.security = DEFAULT_SECURITY;	/* default non ssl */
+		sysCfg.security = DEFAULT_SECURITY;	//default non ssl
 
 		sysCfg.mqtt_keepalive = MQTT_KEEPALIVE;
 

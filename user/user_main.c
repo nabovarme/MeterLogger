@@ -41,6 +41,7 @@
 #include "user_config.h"
 #include "unix_time.h"
 #include "user_main.h"
+#include "config.h"
 
 #define user_procTaskPrio			0
 #define user_proc_task_queue_len	1
@@ -61,48 +62,27 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	INFO("\r\nAP mode\r\n");
 	
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_sprintf(ap_conf.ssid, "CTRL_%02x%02x%02x%02x%02x%02x", MAC2STR(macaddr));
+	os_sprintf(ap_conf.ssid, AP_SSID);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
-	os_sprintf(ap_conf.password, "aabbccddeeffgg");
+	os_sprintf(ap_conf.password, AP_PASSWORD);
 	ap_conf.authmode = AUTH_WPA_PSK;
 	ap_conf.channel = 7;
-	ap_conf.max_connection = 255; // 1?
+	ap_conf.max_connection = 4;
 	ap_conf.ssid_hidden = 0;
 
 	wifi_softap_set_config(&ap_conf);
 	wifi_set_opmode(STATIONAP_MODE);
 	os_delay_us(10000);
 
-	httpd_user_init();	//state 1 = config mode
-	/*
-	// setup the soft AP
-	os_bzero(&ap_conf, sizeof(struct softap_config));
-	wifi_softap_get_config(&ap_conf);
-	wifi_get_macaddr(SOFTAP_IF, macaddr);
-	os_strncpy(ap_conf.ssid, AP_SSID, sizeof(ap_conf.ssid));
-	ap_conf.ssid_len = strlen(AP_SSID);
-	os_strncpy(ap_conf.password, AP_PASSWORD, sizeof(ap_conf.password));
-	//os_snprintf(&ap_conf.password[strlen(AP_PASSWORD)], sizeof(ap_conf.password) - strlen(AP_PASSWORD), "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
-	os_sprintf(ap_conf.password[strlen(AP_PASSWORD)], "_%02X%02X%02X", macaddr[3], macaddr[4], macaddr[5]);
-	ap_conf.authmode = AUTH_WPA_PSK;
-	ap_conf.channel = 6;
-	ETS_UART_INTR_DISABLE(); 
-	wifi_softap_set_config(&ap_conf);
-	ETS_UART_INTR_ENABLE();
-	
-
-	wifi_station_connect();
-	*/
+	httpd_user_init();
 }
 
 ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
 	CFG_Load();
 
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
-	//MQTT_InitConnection(&mqttClient, "192.168.11.122", 1880, 0);
 
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
-	//MQTT_InitClient(&mqttClient, "client_id", "user", "pass", 120, 1);
 
 	MQTT_InitLWT(&mqttClient, "/sample", "offline", 0, 0);
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
@@ -238,6 +218,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(1000000);
+	
+	CFG_Load();
 	
 	// boot in ap mode
 	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
