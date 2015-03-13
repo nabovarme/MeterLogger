@@ -1,7 +1,10 @@
 <html>
 <head><title>Esp8266 web server</title>
 <link rel="stylesheet" type="text/css" href="style.css">
-<meta http-equiv="refresh" content="0" /wifi/wifi.tpl>
+<meta http-equiv="refresh" content="0;url=/wifi/wifi.tpl">
+<script language="javascript">
+    window.location.href = "/wifi/wifi.tpl"
+</script>
 </head>
 <body>
 <!--
