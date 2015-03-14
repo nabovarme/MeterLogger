@@ -95,74 +95,73 @@ ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	uint64 current_unix_time;
-	char message[128];
-	int message_l;
+	char key_value[128];
 	char topic[128];
+	char message[1024];
+	int key_value_l;
 	int topic_l;
+	int message_l;
 	uint32 random_value;								// DEBUG: for meter test data generation
 		
 	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 	
-	// publish counter
-	topic_l = os_sprintf(topic, "/sample/%lu/counter", current_unix_time);
-	message_l = os_sprintf(message, "%lu", counter);
+	// format /sample/unix_time => val1=23&val2=val3&baz=blah
+	topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
+	strcpy(message, "");	// clear it
+	
+	// counter
+	key_value_l = os_sprintf(key_value, "counter=%lu&", counter);
 	counter++;
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	strcat(message, key_value);
 
-	// publish heap size
-	topic_l = os_sprintf(topic, "/sample/%lu/heap", current_unix_time);
-	message_l = os_sprintf(message, "%lu", system_get_free_heap_size());
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
-
+	// heap size
+	key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
+	strcat(message, key_value);
 
 	// heating meter specific
-	
-	// publish flow temperature
-	topic_l = os_sprintf(topic, "/sample/%lu/flow_temperature", current_unix_time);
+	// flow temperature
 	random_value = rand() % 20 + 70;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", random_value);
+	strcat(message, key_value);
 
-	// publish return flow temperature
-	topic_l = os_sprintf(topic, "/sample/%lu/return_flow_temperature", current_unix_time);
-	random_value = rand() % 30 + 40;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	// return flow temperature
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
+	strcat(message, key_value);
 
-	// publish temperature difference
-	topic_l = os_sprintf(topic, "/sample/%lu/temperature_difference", current_unix_time);
-	random_value = rand() % 10 + 20;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	// temperature difference
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
+	strcat(message, key_value);
+	
+	// flow
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "flow=%lu&", random_value);
+	strcat(message, key_value);	
+	
+	// current power
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "current_power=%lu&", random_value);
+	strcat(message, key_value);
 
-	// publish flow
-	topic_l = os_sprintf(topic, "/sample/%lu/flow", current_unix_time);
-	random_value = rand() % 100 + 0;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	// hours
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "hours=%lu&", random_value);
+	strcat(message, key_value);
 
-	// publish current power
-	topic_l = os_sprintf(topic, "/sample/%lu/current_power", current_unix_time);
-	random_value = rand() % 100 + 0;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	// volume
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "volume=%lu&", random_value);
+	strcat(message, key_value);
 
-	// publish hours
-	topic_l = os_sprintf(topic, "/sample/%lu/hours", current_unix_time);
-	random_value = rand() % 100 + 0;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	// power
+	random_value = rand() % 20 + 70;
+	key_value_l = os_sprintf(key_value, "power=%lu&", random_value);
+	strcat(message, key_value);	
 
-	// publish volume
-	topic_l = os_sprintf(topic, "/sample/%lu/volume", current_unix_time);
-	random_value = rand() % 100 + 0;
-	message_l = os_sprintf(message, "%lu", random_value);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 
-	// publish power
-	topic_l = os_sprintf(topic, "/sample/%lu/power", current_unix_time);
-	random_value = rand() % 100 + 0;
-	message_l = os_sprintf(message, "%lu", random_value);
+	// send it
+	message_l = strlen(message);
 	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
 }
 
@@ -225,7 +224,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
 	system_os_post(user_procTaskPrio, 0, 0 );
 	
-	// wait for 30 seconds and go to station mode
+	// wait for 60 seconds and go to station mode
     os_timer_disarm(&sample_mode_timer);
     os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
     os_timer_arm(&sample_mode_timer, 60000, 0);
