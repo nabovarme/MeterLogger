@@ -125,12 +125,12 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	strcat(message, key_value);
 
 	// return flow temperature
-	random_value = rand() % 20 + 70;
+	random_value = rand() % 20 + 50;
 	key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
 	strcat(message, key_value);
 
 	// temperature difference
-	random_value = rand() % 20 + 70;
+	random_value = rand() % 20 + 30;
 	key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
 	strcat(message, key_value);
 	
