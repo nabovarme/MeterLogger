@@ -8,12 +8,12 @@
 #include "unix_time.h"
 #include "ntp.h"
 
-uint8 ntp_server[4] = {193, 200, 91, 90};	// dk.pool.ntp.org
+uint8 ntp_server[4];
 uint8 packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 struct espconn *pCon;
 
 
-unsigned long ntp_get_time()
+unsigned long ICACHE_FLASH_ATTR ntp_get_time()
 {
   pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
   pCon->type = ESPCONN_UDP;
@@ -49,27 +49,43 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len)
 //  INFO(timestr);
 }
 
-void ntp_send_request()
-{
-  // set all bytes in the buffer to 0
-  os_memcpy(pCon->proto.udp->remote_ip, ntp_server, 4);
-  memset(packetBuffer, 0, NTP_PACKET_SIZE);
-  // Initialize values needed to form NTP request
-  // (see URL above for details on the packets)
-  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-  packetBuffer[1] = 0;     // Stratum, or type of clock
-  packetBuffer[2] = 6;     // Polling Interval
-  packetBuffer[3] = 0xEC;  // Peer Clock Precision
-  // 8 bytes of zero for Root Delay & Root Dispersion
-  packetBuffer[12]  = 49;
-  packetBuffer[13]  = 0x4E;
-  packetBuffer[14]  = 49;
-  packetBuffer[15]  = 52;
+void ICACHE_FLASH_ATTR ntp_send_request() {
+	ip_addr_t ip;	// not used, callback are handling ip
+	espconn_gethostbyname(pCon, "dk.pool.ntp.org", &ip, ntp_dns_found);
+}
 
-  // all NTP fields have been given values, now
-  // you can send a packet requesting a timestamp:
-  espconn_create(pCon);
-  espconn_regist_recvcb(pCon, ntp_udpclient_recv);
-  espconn_regist_sentcb(pCon, ntp_udpclient_sent_cb);
-  espconn_sent(pCon, packetBuffer, NTP_PACKET_SIZE);
+void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *arg) {
+	if (ipaddr == NULL) {
+		INFO("DNS: Found, but got no ip, try to reconnect\r\n");
+		return;
+	}
+
+	INFO("DNS: found ip %d.%d.%d.%d\n",
+			*((uint8 *) &ipaddr->addr),
+			*((uint8 *) &ipaddr->addr + 1),
+			*((uint8 *) &ipaddr->addr + 2),
+			*((uint8 *) &ipaddr->addr + 3));
+	
+	// send ntp request
+    // set all bytes in the buffer to 0
+    os_memcpy(pCon->proto.udp->remote_ip, &ipaddr->addr, 4);
+    memset(packetBuffer, 0, NTP_PACKET_SIZE);
+    // Initialize values needed to form NTP request
+    // (see URL above for details on the packets)
+    packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+    packetBuffer[1] = 0;     // Stratum, or type of clock
+    packetBuffer[2] = 6;     // Polling Interval
+    packetBuffer[3] = 0xEC;  // Peer Clock Precision
+    // 8 bytes of zero for Root Delay & Root Dispersion
+    packetBuffer[12]  = 49;
+    packetBuffer[13]  = 0x4E;
+    packetBuffer[14]  = 49;
+    packetBuffer[15]  = 52;
+
+    // all NTP fields have been given values, now
+    // you can send a packet requesting a timestamp:
+    espconn_create(pCon);
+    espconn_regist_recvcb(pCon, ntp_udpclient_recv);
+    espconn_regist_sentcb(pCon, ntp_udpclient_sent_cb);
+    espconn_sent(pCon, packetBuffer, NTP_PACKET_SIZE);
 }
