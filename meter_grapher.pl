@@ -52,10 +52,15 @@ if (! -e RRD_FILE) {
 sub mqtt_handler {
 	my ($topic, $message) = @_;
 
+	unless ($topic =~ m!/sample/(\d+)!) {
+		return;
+	}
+	$unix_time = $1;
+	
 	# parse message
 	$message =~ s/&$//;
-
-        my ($key, $value);
+	
+	my ($key, $value);
 	my @key_value_list = split(/&/, $message);
 	my $key_value;
 	foreach $key_value (@key_value_list) {
