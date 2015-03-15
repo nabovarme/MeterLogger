@@ -20,6 +20,7 @@
 #include "cgiwifi.h"
 #include "stdout.h"
 #include "auth.h"
+#include "debug.h"
 
 //Function that tells the authentication system what users/passwords live on the system.
 //This is disabled in the default build; if you want to try it, enable the authBasic line in
@@ -78,5 +79,5 @@ void httpd_user_init(void) {
 	stdoutInit();
 	ioInit();
 	httpdInit(builtInUrls, 80);
-	os_printf("\nReady\n");
+	INFO("\nReady\n");
 }

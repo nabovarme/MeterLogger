@@ -22,6 +22,7 @@ flash as a binary. Also handles the hit counter on the main page.
 #include "io.h"
 #include <ip_addr.h>
 #include "espmissingincludes.h"
+#include "debug.h"
 
 
 //cause I can't be bothered to write an ioGetLed()
@@ -89,7 +90,7 @@ int ICACHE_FLASH_ATTR cgiReadFlash(HttpdConnData *connData) {
 	}
 
 	if (*pos==0) {
-		os_printf("Start flash download.\n");
+		INFO("Start flash download.\n");
 		httpdStartResponse(connData, 200);
 		httpdHeader(connData, "Content-Type", "application/bin");
 		httpdEndHeaders(connData);
