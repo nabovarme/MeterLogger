@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="mm" style="lines" multiple="1" display="no" altdistance="0.025" altunitdist="inch" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -38,7 +38,7 @@
 <layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
@@ -110,12 +110,14 @@
 <wire x1="36" y1="0" x2="36" y2="42.5" width="0" layer="20"/>
 <wire x1="36" y1="42.5" x2="0" y2="42.5" width="0" layer="20"/>
 <wire x1="0" y1="42.5" x2="0" y2="0" width="0" layer="20"/>
-<text x="5.08" y="24.13" size="1.778" layer="1" rot="R90" align="center-right">GND</text>
-<text x="7.62" y="24.13" size="1.778" layer="1" rot="R90" align="center-right">A</text>
-<text x="10.16" y="24.13" size="1.778" layer="1" rot="R90" align="center-right">B</text>
-<text x="5.08" y="31.75" size="1.778" layer="1" rot="R90" align="center-left">VCC</text>
-<text x="7.62" y="31.75" size="1.778" layer="1" rot="R90" align="center-left">TxD</text>
-<text x="10.16" y="31.75" size="1.778" layer="1" rot="R90" align="center-left">RxD</text>
+<text x="1.46" y="32.75" size="0.8128" layer="1" rot="R90" align="center-right">GND</text>
+<text x="4" y="32.75" size="0.8128" layer="1" rot="R90" align="center-right">A</text>
+<text x="6.54" y="32.75" size="0.8128" layer="1" rot="R90" align="center-right">B</text>
+<text x="1.46" y="39.37" size="0.8128" layer="1" rot="R90" align="center-left">VCC</text>
+<text x="4" y="39.37" size="0.8128" layer="1" rot="R90" align="center-left">TxD</text>
+<text x="6.54" y="39.37" size="0.8128" layer="1" rot="R90" align="center-left">RxD</text>
+<hole x="1.5" y="14" drill="2"/>
+<hole x="17.78" y="39.37" drill="2"/>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">
@@ -374,29 +376,29 @@ design rules under a new name.</description>
 </pass>
 </autorouter>
 <elements>
-<element name="JP1" library="SparkFun-Connectors" package="2X03" value="" x="7.62" y="27.94"/>
-<element name="U$1" library="ESP8266" package="ESP-01" value="ESP8266-01" x="6.35" y="15.24" rot="R270"/>
+<element name="JP1" library="SparkFun-Connectors" package="2X03" value="" x="4" y="36.27"/>
+<element name="U$1" library="ESP8266" package="ESP-01" value="ESP8266-01" x="5.08" y="13.97" rot="R270"/>
 </elements>
 <signals>
 <signal name="GND">
 <contactref element="JP1" pad="1"/>
 <contactref element="U$1" pad="P$8"/>
-<wire x1="8.89" y1="15.24" x2="5.08" y2="26.67" width="0" layer="19" extent="1-1"/>
+<wire x1="7.62" y1="13.97" x2="1.46" y2="35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="3.3V">
 <contactref element="JP1" pad="2"/>
 <contactref element="U$1" pad="P$4"/>
-<wire x1="6.35" y1="7.62" x2="5.08" y2="29.21" width="0" layer="19" extent="1-1"/>
+<wire x1="5.08" y1="6.35" x2="1.46" y2="37.54" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="U$1" pad="P$1"/>
 <contactref element="JP1" pad="6"/>
-<wire x1="6.35" y1="15.24" x2="10.16" y2="29.21" width="0" layer="19" extent="1-1"/>
+<wire x1="5.08" y1="13.97" x2="6.54" y2="37.54" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$2">
 <contactref element="JP1" pad="4"/>
 <contactref element="U$1" pad="P$5"/>
-<wire x1="8.89" y1="7.62" x2="7.62" y2="29.21" width="0" layer="19" extent="1-1"/>
+<wire x1="7.62" y1="6.35" x2="4" y2="37.54" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
