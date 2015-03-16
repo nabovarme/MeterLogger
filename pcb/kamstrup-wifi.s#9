@@ -1166,6 +1166,8 @@ We've spent an enormous amount of time creating and checking these footprints an
 <part name="GND3" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="JP3" library="SparkFun-Connectors" deviceset="M05" device="PTH"/>
+<part name="GND4" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="SUPPLY4" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -1179,9 +1181,11 @@ We've spent an enormous amount of time creating and checking these footprints an
 <instance part="SUPPLY1" gate="G$1" x="12.7" y="76.2"/>
 <instance part="SUPPLY2" gate="G$1" x="53.34" y="78.74"/>
 <instance part="JP2" gate="G$1" x="60.96" y="25.4" rot="R180"/>
-<instance part="GND3" gate="1" x="50.8" y="12.7"/>
-<instance part="SUPPLY3" gate="G$1" x="50.8" y="33.02"/>
-<instance part="JP3" gate="G$1" x="60.96" y="-2.54" rot="R180"/>
+<instance part="GND3" gate="1" x="50.8" y="15.24"/>
+<instance part="SUPPLY3" gate="G$1" x="50.8" y="30.48"/>
+<instance part="JP3" gate="G$1" x="63.5" y="-15.24" rot="R180"/>
+<instance part="GND4" gate="1" x="50.8" y="-25.4"/>
+<instance part="SUPPLY4" gate="G$1" x="50.8" y="-7.62"/>
 </instances>
 <busses>
 </busses>
@@ -1200,9 +1204,15 @@ We've spent an enormous amount of time creating and checking these footprints an
 </segment>
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="50.8" y1="15.24" x2="50.8" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="17.78" x2="50.8" y2="20.32" width="0.1524" layer="91"/>
 <pinref part="JP2" gate="G$1" pin="4"/>
 <wire x1="50.8" y1="20.32" x2="55.88" y2="20.32" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND4" gate="1" pin="GND"/>
+<wire x1="50.8" y1="-22.86" x2="50.8" y2="-20.32" width="0.1524" layer="91"/>
+<pinref part="JP3" gate="G$1" pin="5"/>
+<wire x1="50.8" y1="-20.32" x2="55.88" y2="-20.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -1221,7 +1231,13 @@ We've spent an enormous amount of time creating and checking these footprints an
 <pinref part="JP2" gate="G$1" pin="1"/>
 <pinref part="SUPPLY3" gate="G$1" pin="3.3V"/>
 <wire x1="55.88" y1="27.94" x2="50.8" y2="27.94" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="27.94" x2="50.8" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="27.94" x2="50.8" y2="30.48" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SUPPLY4" gate="G$1" pin="3.3V"/>
+<wire x1="50.8" y1="-7.62" x2="50.8" y2="-15.24" width="0.1524" layer="91"/>
+<pinref part="JP3" gate="G$1" pin="3"/>
+<wire x1="50.8" y1="-15.24" x2="55.88" y2="-15.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">

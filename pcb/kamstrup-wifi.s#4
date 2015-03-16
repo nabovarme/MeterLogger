@@ -1771,6 +1771,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <part name="GND4" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY4" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="PRG" library="SparkFun-Connectors" deviceset="M02" device="PTH"/>
+<part name="GND5" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -1792,10 +1793,11 @@ We've spent an enormous amount of time creating and checking these footprints an
 <instance part="JP3" gate="G$1" x="63.5" y="-15.24" rot="R180"/>
 <instance part="GND4" gate="1" x="50.8" y="-25.4"/>
 <instance part="SUPPLY4" gate="G$1" x="50.8" y="-7.62"/>
-<instance part="PRG" gate="G$1" x="63.5" y="66.04" smashed="yes">
-<attribute name="VALUE" x="60.96" y="60.96" size="1.778" layer="96"/>
-<attribute name="NAME" x="60.96" y="71.882" size="1.778" layer="95"/>
+<instance part="PRG" gate="G$1" x="63.5" y="53.34" smashed="yes">
+<attribute name="VALUE" x="60.96" y="48.26" size="1.778" layer="96"/>
+<attribute name="NAME" x="60.96" y="59.182" size="1.778" layer="95"/>
 </instance>
+<instance part="GND5" gate="1" x="73.66" y="48.26"/>
 </instances>
 <busses>
 </busses>
@@ -1824,6 +1826,12 @@ We've spent an enormous amount of time creating and checking these footprints an
 <pinref part="JP3" gate="G$1" pin="5"/>
 <wire x1="50.8" y1="-20.32" x2="55.88" y2="-20.32" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="PRG" gate="G$1" pin="1"/>
+<pinref part="GND5" gate="1" pin="GND"/>
+<wire x1="71.12" y1="53.34" x2="73.66" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="53.34" x2="73.66" y2="50.8" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="3.3V" class="0">
 <segment>
@@ -1836,10 +1844,6 @@ We've spent an enormous amount of time creating and checking these footprints an
 <wire x1="78.74" y1="78.74" x2="78.74" y2="71.12" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="VCC"/>
 <wire x1="78.74" y1="71.12" x2="81.28" y2="71.12" width="0.1524" layer="91"/>
-<pinref part="PRG" gate="G$1" pin="2"/>
-<wire x1="71.12" y1="68.58" x2="78.74" y2="68.58" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="68.58" x2="78.74" y2="71.12" width="0.1524" layer="91"/>
-<junction x="78.74" y="71.12"/>
 </segment>
 <segment>
 <pinref part="JP2" gate="G$1" pin="1"/>
@@ -1894,9 +1898,9 @@ We've spent an enormous amount of time creating and checking these footprints an
 </net>
 <net name="N$3" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="CH_PD"/>
-<pinref part="PRG" gate="G$1" pin="1"/>
-<wire x1="81.28" y1="66.04" x2="71.12" y2="66.04" width="0.1524" layer="91"/>
+<pinref part="PRG" gate="G$1" pin="2"/>
+<pinref part="U$1" gate="G$1" pin="GPIO0"/>
+<wire x1="71.12" y1="55.88" x2="81.28" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

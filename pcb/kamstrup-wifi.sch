@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.005" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
@@ -1776,6 +1776,12 @@ We've spent an enormous amount of time creating and checking these footprints an
 <sheets>
 <sheet>
 <plain>
+<text x="17.145" y="73.025" size="1.27" layer="95" rot="R90">RxD</text>
+<text x="14.605" y="73.025" size="1.27" layer="95" rot="R90">TxD</text>
+<text x="67.31" y="24.765" size="1.27" layer="95" rot="R180" align="top-right">TxD</text>
+<text x="67.31" y="22.225" size="1.27" layer="95" rot="R180" align="top-right">RxD</text>
+<text x="67.31" y="-10.795" size="1.27" layer="95" rot="R180" align="top-right">RxD</text>
+<text x="67.31" y="-13.335" size="1.27" layer="95" rot="R180" align="top-right">TxD</text>
 </plain>
 <instances>
 <instance part="KAM" gate="A" x="15.24" y="63.5" rot="R90"/>
