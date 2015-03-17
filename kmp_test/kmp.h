@@ -12,4 +12,3 @@ void kmp_get_serial_no();
 
 void kmp_byte_stuff();
 void kmp_byte_unstuff();
-void kmp_get_serialized_frame(unsigned char *frame);

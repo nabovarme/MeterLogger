@@ -7,6 +7,6 @@ int main() {
 
     kmp_init();
 	kmp_get_serial_no();
-    kmp_get_serialized_frame(frame);
+   // kmp_get_serialized_frame(frame);
     printf("%s", frame);
 }

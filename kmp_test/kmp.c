@@ -109,11 +109,23 @@
 #include <string.h>
 #include "kmp.h"
 
+#define KMP_START_BYTE_IDX  0
+#define KMP_DST_IDX         1
+#define KMP_CID_IDX         2
+#define KMP_DATA_IDX        3
+//#define KMP_CRC16_HIGH_IDX  -2
+//#define KMP_CRC16_LOW_IDX   -1
+//#define KMP_STOP_BYTE_IDX   0
+
 #define KMP_CRC16_TABLE_L	256
 
 bool kmp_frame_received;
 bool kmp_error_receiving;
 
+unsigned char kmp_frame[KMP_FRAME_L];
+unsigned int kmp_frame_length;
+
+/*
 typedef struct kmp_frame_t {
     uint8_t start_byte;
     uint8_t dst;
@@ -123,8 +135,9 @@ typedef struct kmp_frame_t {
     uint16_t crc16;
     uint8_t stop_byte;
 } kmp_frame_t;
-
-kmp_frame_t kmp_frame;
+*/
+ 
+//kmp_frame_t kmp_frame;
 
 
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
@@ -163,20 +176,20 @@ uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 };
 
 void kmp_init() {
-	memset(kmp_frame.data, 0x00, KMP_DATA_L);
-	kmp_frame.data_length = 0;
+	memset(kmp_frame, 0x00, KMP_FRAME_L);
+	kmp_frame_length = 0;
 	kmp_frame_received = false;
 	kmp_error_receiving = false;
 }
 
 void kmp_get_type() {
     // start byte
-    kmp_frame.start_byte = 0x80;
+    kmp_frame[KMP_START_BYTE_IDX] = 0x80;
     
     // data
-    kmp_frame.dst = 0x3f;
-    kmp_frame.cid = 0x01;
-    kmp_frame.data_length = 0;
+    kmp_frame[KMP_DST_IDX] = 0x3f;
+    kmp_frame[KMP_CID_IDX] = 0x01;
+    kmp_frame_length = 3;
     
     // put crc 16 in frame
     kmp_crc16();
@@ -185,32 +198,26 @@ void kmp_get_type() {
     kmp_byte_stuff();
     
     // stop byte
-    kmp_frame.stop_byte = 0x0d;
-    
-    // serialize it
-    // TO-DO
+    kmp_frame[kmp_frame_length] = 0x0d;
 }
 
 void kmp_get_serial_no() {
-	// start byte
-	kmp_frame.start_byte = 0x80;
-	
-	// data
-    kmp_frame.dst = 0x3f;
-    kmp_frame.cid = 0x02;
-    kmp_frame.data_length = 0;
-	
-	// put crc 16 in frame
-	kmp_crc16();
-	
-	// stuff data
-    kmp_byte_stuff();
-	
-	// stop byte
-	kmp_frame.stop_byte = 0x0d;
+    // start byte
+    kmp_frame[KMP_START_BYTE_IDX] = 0x80;
     
-    // serialize it
-    // TO-DO
+    // data
+    kmp_frame[KMP_DST_IDX] = 0x3f;
+    kmp_frame[KMP_CID_IDX] = 0x02;
+    kmp_frame_length = 3;
+    
+    // put crc 16 in frame
+    kmp_crc16();
+    
+    // stuff data
+    kmp_byte_stuff();
+    
+    // stop byte
+    kmp_frame[kmp_frame_length] = 0x0d;
 }
 
 /*
@@ -413,15 +420,16 @@ void setClock:(NSDate *)theDate {
 #pragma mark - Helper methods
 */
 void kmp_crc16() {
-	int counter;
-	unsigned char *buf;
-	
-	buf = kmp_frame.data;
-	
-	kmp_frame.crc16 = 0;
-	for (counter = 0; counter < kmp_frame.data_length; counter++) {
-		kmp_frame.crc16 = (kmp_frame.crc16 << 8) ^ kmp_crc16_table[((kmp_frame.crc16 >> 8) ^ *(unsigned char *)buf++) & 0x00FF];
+    uint16_t crc16;
+	int i;
+		
+	crc16 = 0;
+	for (i = KMP_DST_IDX; i < (kmp_frame_length); i++) {
+		crc16 = (crc16 << 8) ^ kmp_crc16_table[((crc16 >> 8) ^ kmp_frame[i]) & 0x00FF];
 	}
+    kmp_frame[kmp_frame_length] = crc16 >> 8;       // high bits of crc16
+    kmp_frame[kmp_frame_length + 1] = crc16 & 0xff; // low bits
+    kmp_frame_length += 2;
 }
 /*
 -(NSNumber *)numberForKmpNumber:(NSNumber *)theNumber andSiEx:(NSNumber *)theSiEx {
@@ -500,58 +508,42 @@ void kmp_crc16() {
 }
 
 */
+
 void kmp_byte_stuff() {
-    unsigned char stuffed_data[KMP_DATA_L];
+    unsigned char stuffed_data[KMP_FRAME_L];
     unsigned int i;
     unsigned int j = 0;
 
-    memset(stuffed_data, 0x00, KMP_DATA_L);
+    memset(stuffed_data, 0x00, KMP_FRAME_L);
 
-    for (i = 0; i < kmp_frame.data_length; i++) {
-		if ((kmp_frame.data[i] == 0x80) || (kmp_frame.data[i] == 0x40) || (kmp_frame.data[i] == 0x0d) || (kmp_frame.data[i] == 0x06) || (kmp_frame.data[i] == 0x1b)) {
+    for (i = KMP_DST_IDX; i < (kmp_frame_length); i++) {
+		if ((kmp_frame[i] == 0x80) || (kmp_frame[i] == 0x40) || (kmp_frame[i] == 0x0d) || (kmp_frame[i] == 0x06) || (kmp_frame[i] == 0x1b)) {
             stuffed_data[j++] = 0x1b;
-            stuffed_data[j++] = kmp_frame.data[i] ^ 0xff;
+            stuffed_data[j++] = kmp_frame[i] ^ 0xff;
 		}
 		else {
-            stuffed_data[j++] = kmp_frame.data[i];
+            stuffed_data[j++] = kmp_frame[i];
 		}
 	}
-    memset(kmp_frame.data, 0x00, KMP_DATA_L);
-    memcpy(kmp_frame.data, stuffed_data, j);
-    kmp_frame.data_length = j;
+    memcpy(kmp_frame + KMP_DST_IDX, stuffed_data, j);
+    kmp_frame_length = j + KMP_DST_IDX;
 }
 
 void kmp_byte_unstuff() {
-    unsigned char unstuffed_data[KMP_DATA_L];
+    unsigned char unstuffed_data[KMP_FRAME_L];
     unsigned int i;
     unsigned int j = 0;
     
-    for (i = 0; i < kmp_frame.data_length; i++) {
-        if (kmp_frame.data[i] == 0x1b) {		  // byte unstuffing special char
-            unstuffed_data[j++] = kmp_frame.data[i + 1] ^ 0xff;
+    for (i = KMP_DST_IDX; i < kmp_frame_length; i++) {
+        if (kmp_frame[i] == 0x1b) {		  // byte unstuffing special char
+            unstuffed_data[j++] = kmp_frame[i + 1] ^ 0xff;
             i++;
          }
         else {
-            unstuffed_data[j++] = kmp_frame.data[i];
+            unstuffed_data[j++] = kmp_frame[i];
         }
     }
-    memset(kmp_frame.data, 0x00, KMP_DATA_L);
-    memcpy(kmp_frame.data, unstuffed_data, j);
-    kmp_frame.data_length = j;
+    memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
+    kmp_frame_length = j + KMP_DST_IDX;
 }
-
-void kmp_get_serialized_frame(unsigned char *frame) {
-    unsigned int i;
-
-    frame[0] = kmp_frame.start_byte;
-    frame[1] = kmp_frame.dst;
-    frame[2] = kmp_frame.cid;
-    for (i = 0; i < kmp_frame.data_length; i++) {
-        frame[3 + i] = kmp_frame.data[i];
-    }
-    frame[3 + i] = (unsigned char)(kmp_frame.crc16 >> 8);
-    frame[4 + i] = (unsigned char)(kmp_frame.crc16 & 0xff);
-    frame[5 + i] = kmp_frame.stop_byte;
-}
-
 
