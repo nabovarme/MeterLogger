@@ -28,8 +28,8 @@
 		D625AD1F1AB88D87002DF65F /* kmp_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = kmp_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		D625AD291AB88E56002DF65F /* kmp_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kmp_test.c; sourceTree = SOURCE_ROOT; };
 		D625AD2A1AB88E56002DF65F /* kmp_test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kmp_test.h; sourceTree = SOURCE_ROOT; };
-		D625AD2B1AB88E56002DF65F /* kmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kmp.c; sourceTree = "<group>"; };
-		D625AD2C1AB88E56002DF65F /* kmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kmp.h; sourceTree = "<group>"; };
+		D625AD2B1AB88E56002DF65F /* kmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kmp.c; path = ../kmp.c; sourceTree = "<group>"; };
+		D625AD2C1AB88E56002DF65F /* kmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kmp.h; path = ../kmp.h; sourceTree = "<group>"; };
 		D625AD2D1AB88E56002DF65F /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Makefile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,22 +63,13 @@
 		D625AD211AB88D87002DF65F /* kmp_test */ = {
 			isa = PBXGroup;
 			children = (
-				D625AD311AB88EBA002DF65F /* kmp */,
+				D625AD2B1AB88E56002DF65F /* kmp.c */,
+				D625AD2C1AB88E56002DF65F /* kmp.h */,
 				D625AD291AB88E56002DF65F /* kmp_test.c */,
 				D625AD2A1AB88E56002DF65F /* kmp_test.h */,
 				D625AD2D1AB88E56002DF65F /* Makefile */,
 			);
 			path = kmp_test;
-			sourceTree = "<group>";
-		};
-		D625AD311AB88EBA002DF65F /* kmp */ = {
-			isa = PBXGroup;
-			children = (
-				D625AD2B1AB88E56002DF65F /* kmp.c */,
-				D625AD2C1AB88E56002DF65F /* kmp.h */,
-			);
-			name = kmp;
-			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
