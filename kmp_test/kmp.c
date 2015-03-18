@@ -128,16 +128,6 @@ unsigned int kmp_response_serial;
 unsigned int kmp_response_meter_type;
 unsigned int kmp_response_sw_revision;
 
-struct kmd_response_register_t {
-    int16_t rid;
-    unsigned int unit;
-    unsigned int length;
-    unsigned int siEx;
-    int32_t value;
-};
-
-struct kmd_response_register_t kmd_response_register_list[8];   // max 8 registers per request
-
 // crc table
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
@@ -314,7 +304,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 
 #pragma mark - KMP Decoder
 
-bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
+bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmd_response_register_list_t response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
@@ -375,19 +365,19 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
                     kmp_register_idx = 9 * i + KMP_DATA_IDX;
                     
                     // rid
-                    kmd_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
+                    response[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
                     
                     // unit
-                    kmd_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
+                    response[i].unit = kmp_frame[kmp_register_idx + 2];
                     
                     // length
-                    kmd_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
+                    response[i].length = kmp_frame[kmp_register_idx + 3];
                     
                     // siEx
-                    kmd_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
+                    response[i].siEx = kmp_frame[kmp_register_idx + 4];
                     
                     // value
-                    kmd_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
+                    response[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
                 }
 
             }

@@ -9,6 +9,9 @@ int main() {
     
     unsigned char received_frame[32];
     
+    kmd_response_register_list_t response;
+    
+
     unsigned int i;
     
     kmp_init(frame);
@@ -43,7 +46,7 @@ int main() {
     received_frame[7] = 0xFE;
     received_frame[8] = 0x58;
     received_frame[9] = 0x0D;
-    kmp_decode_frame(received_frame, 10);
+    kmp_decode_frame(received_frame, 10, response);
    
     received_frame[0] = 0x40;
     received_frame[1] = 0x3F;
@@ -55,7 +58,7 @@ int main() {
     received_frame[7] = 0xCD;
     received_frame[8] = 0x5D;
     received_frame[9] = 0x0D;
-    kmp_decode_frame(received_frame, 10);
+    kmp_decode_frame(received_frame, 10, response);
 
     received_frame[0] = 0x40;
     received_frame[1] = 0x3F;
@@ -72,6 +75,6 @@ int main() {
     received_frame[12] = 0xDF;
     received_frame[13] = 0x1C;
     received_frame[14] = 0x0D;
-    kmp_decode_frame(received_frame, 15);
+    kmp_decode_frame(received_frame, 15, response);
 
 }
