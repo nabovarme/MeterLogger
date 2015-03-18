@@ -7,7 +7,7 @@ void kmp_init(unsigned char *frame);
 uint16_t kmp_crc16();
 
 unsigned int kmp_get_type(unsigned char *frame);
-unsigned int kmp_get_serial_no(unsigned char *frame);
+unsigned int kmp_get_serial(unsigned char *frame);
 unsigned int kmp_set_clock(unsigned char *frame, uint64_t unix_time);
 unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length);
 

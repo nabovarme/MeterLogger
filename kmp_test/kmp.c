@@ -123,6 +123,10 @@ unsigned char *kmp_frame;
 unsigned int kmp_frame_length;
 unsigned int kmp_data_length;
 
+unsigned int kmp_response_serial;
+unsigned int kmp_response_meter_type;
+unsigned int kmp_response_sw_revision;
+
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -200,7 +204,7 @@ unsigned int kmp_get_type(unsigned char *frame) {
     return kmp_frame_length;
 }
 
-unsigned int kmp_get_serial_no(unsigned char *frame) {
+unsigned int kmp_get_serial(unsigned char *frame) {
     uint16_t crc16;
     
     // clear frame
@@ -295,9 +299,12 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
     return kmp_frame_length;
 }
 
+#pragma mark - KMP Decoder
+
 bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
+    unsigned int i;
 
     kmp_frame = frame;
     kmp_frame_length = frame_length;
@@ -338,9 +345,69 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
         }
 
         // decode application layer
+        if (kmp_frame[KMP_CID_IDX] == 0x01) {
+            // kmp_get_type
+            kmp_response_meter_type = (kmp_frame[KMP_DATA_IDX + 0] << 8) + kmp_frame[KMP_DATA_IDX + 1];
+            kmp_response_sw_revision = (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+        }
+        else if (kmp_frame[KMP_CID_IDX] == 0x02) {
+            // kmp_get_serial
+            kmp_response_serial = (kmp_frame[KMP_DATA_IDX + 0] << 24) + (kmp_frame[KMP_DATA_IDX + 1] << 16) + (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+        }
+        else if (kmp_frame[KMP_CID_IDX] == 0x10) {
+            // kmp_get_register
+            if (kmp_data_length > 2) {
+                for (i = 0; i < ((kmp_data_length - 2) / 9); i++) {	 // 9 bytes per register
+                    /*
+                    
+                    range = NSMakeRange(9 * i + 2, 2);
+                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
+                    int16_t rid = (bytes[0] << 8) + bytes[1];
+                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:rid] forKey:@"rid"];
+                    
+                    [self.responseData setObject:[[NSMutableDictionary alloc] init] forKey:[NSNumber numberWithUnsignedInt:rid]];
+                    
+                    
+                    range = NSMakeRange(9 * i + 4, 1);
+                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
+                    unsigned int unit = bytes[0];
+                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
+                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
+                    
+                    range = NSMakeRange(9 * i + 5, 1);
+                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
+                    unsigned int length = bytes[0];
+                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
+                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
+                    
+                    range = NSMakeRange(9 * i + 6, 1);
+                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
+                    unsigned int siEx = bytes[0];
+                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
+                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
+                    
+                    range = NSMakeRange(9 * i + 7, 4);
+                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
+                    int32_t value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
+                    //[self.responseData setObject:[NSNumber numberWithInt:value] forKey:@"value"];
+                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:value] forKey:@"value"];
+                     */
+                }
+
+            }
+            else {
+                // No registers in reply
+            }
+        }
+        else if (kmp_frame[KMP_CID_IDX] == 0x11) {
+            // kmp_put_register
+            //range = NSMakeRange(2, data.length - 2);
+            //NSLog(@"%@", [data subdataWithRange:range]);
+        }
+//
     }
     else if (kmp_frame[kmp_frame_length - 1] == 0x06) {
-        // SetClock no CRC
+        // kmp_set_clock no CRC
         kmp_frame_received = true;
 
     }
@@ -349,7 +416,6 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
 }
 
 /*
-#pragma mark - KMP Decoder
 
 -(void)decodeFrame:(NSData *)theFrame {
 	self.frameReceived = NO;
