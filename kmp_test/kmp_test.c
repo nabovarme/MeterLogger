@@ -93,7 +93,7 @@ int main() {
 //  int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
     int fd = open (portname, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
     if (fd < 0) {
-        sprintf("error %d opening %s: %s", errno, portname, strerror(errno));
+        printf("error %d opening %s: %s", errno, portname, strerror(errno));
         return 0;
     }
     
@@ -117,7 +117,7 @@ int set_interface_attribs (int fd, int speed, int parity) {
     struct termios tty;
     memset (&tty, 0, sizeof tty);
     if (tcgetattr (fd, &tty) != 0) {
-        sprintf("error %d from tcgetattr", errno);
+        printf("error %d from tcgetattr", errno);
         return -1;
     }
     
@@ -145,7 +145,7 @@ int set_interface_attribs (int fd, int speed, int parity) {
     tty.c_cflag &= ~CRTSCTS;
     
     if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-        sprintf("error %d from tcsetattr", errno);
+        printf("error %d from tcsetattr", errno);
         return -1;
     }
     return 0;
@@ -156,7 +156,7 @@ void set_blocking (int fd, int should_block) {
     memset (&tty, 0, sizeof tty);
     if (tcgetattr (fd, &tty) != 0)
     {
-        sprintf("error %d from tggetattr", errno);
+        printf("error %d from tggetattr", errno);
         return;
     }
     
@@ -164,7 +164,7 @@ void set_blocking (int fd, int should_block) {
     tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
     
     if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-        sprintf("error %d setting term attributes", errno);
+        printf("error %d setting term attributes", errno);
     }
 }
 
