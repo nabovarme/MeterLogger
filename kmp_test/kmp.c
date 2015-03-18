@@ -123,10 +123,22 @@ unsigned char *kmp_frame;
 unsigned int kmp_frame_length;
 unsigned int kmp_data_length;
 
+// kmp response struct
 unsigned int kmp_response_serial;
 unsigned int kmp_response_meter_type;
 unsigned int kmp_response_sw_revision;
 
+struct kmd_response_register_t {
+    int16_t rid;
+    unsigned int unit;
+    unsigned int length;
+    unsigned int siEx;
+    int32_t value;
+};
+
+struct kmd_response_register_t kmd_response_register_list[8];   // max 8 registers per request
+
+// crc table
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -161,6 +173,7 @@ uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 
 	0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
+
 
 void kmp_init(unsigned char *frame) {
 	kmp_frame_received = false;
@@ -305,6 +318,7 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
+    unsigned int kmp_register_idx;
 
     kmp_frame = frame;
     kmp_frame_length = frame_length;
@@ -357,41 +371,23 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
         else if (kmp_frame[KMP_CID_IDX] == 0x10) {
             // kmp_get_register
             if (kmp_data_length > 2) {
-                for (i = 0; i < ((kmp_data_length - 2) / 9); i++) {	 // 9 bytes per register
-                    /*
+                for (i = 0; i < ((kmp_data_length - 2) / 9); i++) {	 // 9 bytes per register. BUG here if length != 4?
+                    kmp_register_idx = 9 * i + KMP_DATA_IDX;
                     
-                    range = NSMakeRange(9 * i + 2, 2);
-                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-                    int16_t rid = (bytes[0] << 8) + bytes[1];
-                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:rid] forKey:@"rid"];
+                    // rid
+                    kmd_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
                     
-                    [self.responseData setObject:[[NSMutableDictionary alloc] init] forKey:[NSNumber numberWithUnsignedInt:rid]];
+                    // unit
+                    kmd_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
                     
+                    // length
+                    kmd_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
                     
-                    range = NSMakeRange(9 * i + 4, 1);
-                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-                    unsigned int unit = bytes[0];
-                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
-                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
+                    // siEx
+                    kmd_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
                     
-                    range = NSMakeRange(9 * i + 5, 1);
-                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-                    unsigned int length = bytes[0];
-                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
-                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
-                    
-                    range = NSMakeRange(9 * i + 6, 1);
-                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-                    unsigned int siEx = bytes[0];
-                    //[self.responseData setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
-                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
-                    
-                    range = NSMakeRange(9 * i + 7, 4);
-                    bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-                    int32_t value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-                    //[self.responseData setObject:[NSNumber numberWithInt:value] forKey:@"value"];
-                    [self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:value] forKey:@"value"];
-                     */
+                    // value
+                    kmd_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
                 }
 
             }
@@ -415,140 +411,6 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length) {
     return false;
 }
 
-/*
-
--(void)decodeFrame:(NSData *)theFrame {
-	self.frameReceived = NO;
-	self.errorReceiving = NO;
-	[self.frame appendData:theFrame];
-	const unsigned char *bytes = theFrame.bytes;
-
-	if (1 == theFrame.length) {
-		// no data returned from Kamstrup meter
-		if  (bytes[theFrame.length - 1] == 0x06) {
-			self.frameReceived = YES;
-			NSLog(@"hjfgj");
-		}
-		else {
-			NSLog(@"Kamstrup: device said: no valid reply from kamstrup meter");
-			self.errorReceiving = YES;
-		}
-		return;
-	}
-
-	if (bytes[theFrame.length - 1] == 0x0d) {
-		// end of data - get params from frame
-		bytes = self.frame.bytes;
-		
-		[self.responseData setObject:[NSData dataWithBytes:bytes length:1] forKey:@"starByte"];
-		[self.responseData setObject:[NSData dataWithBytes:(bytes + self.frame.length - 1) length:1] forKey:@"stopByte"];
-
-		// unstuff data
-		NSRange range = NSMakeRange(1, self.frame.length - 2);
-		NSData *unstuffedFrame = [self kmpByteUnstuff:[self.frame subdataWithRange:range]];
-		bytes = unstuffedFrame.bytes;
-
-		if (unstuffedFrame.length >= 4) {
-			[self.responseData setObject:[NSData dataWithBytes:bytes length:1] forKey:@"dst"];
-			[self.responseData setObject:[NSData dataWithBytes:(bytes + 1) length:1] forKey:@"cid"];
-			range = NSMakeRange(unstuffedFrame.length - 2, 2);
-			[self.responseData setObject:[unstuffedFrame subdataWithRange:range] forKey:@"crc"];
-		}
-
-		// calculate crc
-		range = NSMakeRange(0, unstuffedFrame.length - 2);
-		NSData *data = [unstuffedFrame subdataWithRange:range];
-
-		if ([[self crc16ForData:data] isEqualToData:responseData[@"crc"]]) {
-			NSLog(@"crc ok");
-		}
-		else {
-			NSLog(@"crc error");
-			self.errorReceiving = YES;
-			return;
-		}
-
-		// decode application layer
-		unsigned char *cid_ptr = (unsigned char *)[self.responseData[@"cid"] bytes];
-		unsigned char cid = cid_ptr[0];
-		if (cid == 0x01) {		 // GetType
-			NSLog(@"GetType");
-			
-			range = NSMakeRange(2, 2);
-			[self.responseData setObject:[data subdataWithRange:range] forKey:@"meterType"];
-			
-			range = NSMakeRange(4, 2);
-			[self.responseData setObject:[data subdataWithRange:range] forKey:@"swRevision"];
-		}
-		else if (cid == 0x02) {
-			NSLog(@"GetSerialNo"); // GetSerialNo
-			range = NSMakeRange(2, data.length - 2);
-			bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-			unsigned int serialNo = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-			[self.responseData setObject:[NSNumber numberWithUnsignedInt:serialNo] forKey:@"serialNo"] ;
-			NSLog(@"%d", serialNo);
-		}
-		else if (cid == 0x10) {	// GetRegister
-			NSLog(@"GetRegister");
-			if (data.length > 2) {
-				for (uint8_t i = 0; i < ((data.length - 2) / 9); i++) {	 // 9 bytes per register
-					
-					range = NSMakeRange(9 * i + 2, 2);
-					bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-					int16_t rid = (bytes[0] << 8) + bytes[1];
-					//[self.responseData setObject:[NSNumber numberWithUnsignedInt:rid] forKey:@"rid"];
-
-					[self.responseData setObject:[[NSMutableDictionary alloc] init] forKey:[NSNumber numberWithUnsignedInt:rid]];
-
-					
-					range = NSMakeRange(9 * i + 4, 1);
-					bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-					unsigned int unit = bytes[0];
-					//[self.responseData setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
-					[self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:unit] forKey:@"unit"];
-
-					range = NSMakeRange(9 * i + 5, 1);
-					bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-					unsigned int length = bytes[0];
-					//[self.responseData setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
-					[self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:length] forKey:@"length"];
-			
-					range = NSMakeRange(9 * i + 6, 1);
-					bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-					unsigned int siEx = bytes[0];
-					//[self.responseData setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
-					[self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:siEx] forKey:@"siEx"];
-			
-					range = NSMakeRange(9 * i + 7, 4);
-					bytes = (unsigned char *)[[data subdataWithRange:range] bytes];
-					int32_t value = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-					//[self.responseData setObject:[NSNumber numberWithInt:value] forKey:@"value"];
-					[self.responseData[([NSNumber numberWithUnsignedInt:rid])] setObject:[NSNumber numberWithUnsignedInt:value] forKey:@"value"];
-				}
-
-			}
-			else {
-				NSLog(@"No registers in reply");
-			}
-		}
-		else if (cid == 0x11) {	// PutRegister
-			NSLog(@"PutRegister");
-			range = NSMakeRange(2, data.length - 2);
-			NSLog(@"%@", [data subdataWithRange:range]);
-		}
-		self.frameReceived = YES;
-		//CFShow((__bridge CFTypeRef)(self.responseData));
-
-	}
-	else if (bytes[theFrame.length - 1] == 0x06) {
-		NSLog(@"SetClock no CRC");	  // SetClock
-		self.frameReceived = YES;
-		//CFShow((__bridge CFTypeRef)(self.responseData));
-	}
-}
-
-
- */
 #pragma mark - Helper methods
 
 uint16_t kmp_crc16() {
@@ -561,6 +423,7 @@ uint16_t kmp_crc16() {
     }
     return crc16;
 }
+
 /*
 -(NSNumber *)numberForKmpNumber:(NSNumber *)theNumber andSiEx:(NSNumber *)theSiEx {
 	int32_t number = theNumber.intValue;
