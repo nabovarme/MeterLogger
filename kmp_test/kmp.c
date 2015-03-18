@@ -113,32 +113,14 @@
 #define KMP_DST_IDX         1
 #define KMP_CID_IDX         2
 #define KMP_DATA_IDX        3
-//#define KMP_CRC16_HIGH_IDX  -2
-//#define KMP_CRC16_LOW_IDX   -1
-//#define KMP_STOP_BYTE_IDX   0
 
 #define KMP_CRC16_TABLE_L	256
 
 bool kmp_frame_received;
 bool kmp_error_receiving;
 
-unsigned char kmp_frame[KMP_FRAME_L];
+unsigned char *kmp_frame;
 unsigned int kmp_frame_length;
-
-/*
-typedef struct kmp_frame_t {
-    uint8_t start_byte;
-    uint8_t dst;
-    uint8_t cid;
-    unsigned char data[KMP_DATA_L];
-    uint16_t data_length;
-    uint16_t crc16;
-    uint8_t stop_byte;
-} kmp_frame_t;
-*/
- 
-//kmp_frame_t kmp_frame;
-
 
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
@@ -175,14 +157,18 @@ uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 	0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-void kmp_init() {
-	memset(kmp_frame, 0x00, KMP_FRAME_L);
-	kmp_frame_length = 0;
+void kmp_init(unsigned char *frame) {
 	kmp_frame_received = false;
 	kmp_error_receiving = false;
+    
+    kmp_frame = frame;
 }
 
-void kmp_get_type() {
+unsigned int kmp_get_type(unsigned char *frame) {
+    // clear frame
+    memset(kmp_frame, 0x00, KMP_FRAME_L);
+    kmp_frame_length = 0;
+
     // start byte
     kmp_frame[KMP_START_BYTE_IDX] = 0x80;
     
@@ -199,9 +185,17 @@ void kmp_get_type() {
     
     // stop byte
     kmp_frame[kmp_frame_length] = 0x0d;
+    kmp_frame_length++;
+   
+    frame = kmp_frame;
+    return kmp_frame_length;
 }
 
-void kmp_get_serial_no() {
+unsigned int kmp_get_serial_no(unsigned char *frame) {
+    // clear frame
+    memset(kmp_frame, 0x00, KMP_FRAME_L);
+    kmp_frame_length = 0;
+    
     // start byte
     kmp_frame[KMP_START_BYTE_IDX] = 0x80;
     
@@ -218,72 +212,66 @@ void kmp_get_serial_no() {
     
     // stop byte
     kmp_frame[kmp_frame_length] = 0x0d;
+    kmp_frame_length++;
+    
+    frame = kmp_frame;
+    return kmp_frame_length;
+}
+
+unsigned int kmp_set_clock(unsigned char *frame, uint64_t unix_time) {
+    // DEBUG: not implemented
+    return 0;
+}
+
+unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length) {
+    unsigned int i;
+    uint8_t register_high;
+    uint8_t register_low;
+
+    if (register_list_length > 8) {
+        // maximal number of 8 registers can be read with one request, last ones ommitted
+        register_list_length = 8;
+    }
+
+    // clear frame
+    memset(kmp_frame, 0x00, KMP_FRAME_L);
+    kmp_frame_length = 0;
+    
+    // start byte
+    kmp_frame[KMP_START_BYTE_IDX] = 0x80;
+
+    // data
+    kmp_frame[KMP_DST_IDX] = 0x3f;
+    kmp_frame[KMP_CID_IDX] = 0x10;
+
+    // number of registers
+    kmp_frame[KMP_DATA_IDX] = register_list_length;
+    kmp_frame_length = 4;
+    
+    // registers
+    for (i = 0; i < register_list_length; i++) {
+        register_high = (uint8_t)(register_list[i] >> 8);
+        register_low = (uint8_t)(register_list[i] & 0xff);
+        kmp_frame[KMP_DATA_IDX + 2 * i + 1] = register_high;
+        kmp_frame[KMP_DATA_IDX + 2 * i + 2] = register_low;
+    }
+    kmp_frame_length += 2 * i;
+
+    // put crc 16 in frame
+    kmp_crc16();
+
+    // stuff data
+    kmp_byte_stuff();
+
+    // stop byte
+    kmp_frame[kmp_frame_length] = 0x0d;
+    kmp_frame_length++;
+
+    frame = kmp_frame;
+    return kmp_frame_length;
 }
 
 /*
-
-void setClock:(NSDate *)theDate {
-	// start byte
-	self.frame = [[NSMutableData alloc] initWithBytes:(unsigned char[]){0x80} length:1];
-	
-	// data
-	NSMutableData *data = [[NSMutableData alloc] initWithBytes:(unsigned char[]){0x3f, 0x09} length:2];
-	
-	NSMutableData *kmpDateTime = [[NSMutableData alloc] init];
-	[kmpDateTime appendData:[self kmpDateWithDate:theDate]];
-	[kmpDateTime appendData:[self kmpTimeWithDate:theDate]];
-	[data appendData:kmpDateTime];
-	NSLog(@"%@", data);
-	
-	// append crc 16 to data
-	[data appendData:[self crc16ForData:data]];
-	
-	// stuff data
-	data = [[self kmpByteStuff:data] mutableCopy];
-	
-	// create frame
-	[self.frame appendData:data];
-	[self.frame appendData:[[NSMutableData alloc] initWithBytes:(unsigned char[]){0x0d} length:1]];
-	NSLog(@"%@", self.frame);
-}
-
--(void)prepareFrameWithRegistersFromArray:(NSArray *)theRegisterArray {
-	if (theRegisterArray.count > 8) {
-		// maximal number of 8 registers can be read with one request
-		NSRange range = NSMakeRange(0, 7);
-		theRegisterArray = [[theRegisterArray subarrayWithRange:range] mutableCopy];
-		NSLog(@"prepareFrameWithRegisters: number of registers was > 8, last ones ommitted");
-	}
-	
-	// start byte
-	self.frame = [[NSMutableData alloc] initWithBytes:(unsigned char[]){0x80} length:1];
-	
-	// data
-	NSMutableData *data = [[NSMutableData alloc] initWithBytes:(unsigned char[]){0x3f, 0x10} length:2];
-	[data appendBytes:(unsigned char[]){theRegisterArray.count} length:1];  // number of registers
-	
-	unsigned char registerHigh;
-	unsigned char registerLow;
-	for (NSNumber *reg in theRegisterArray) {
-		registerHigh = (unsigned char)(reg.intValue >> 8);
-		registerLow = (unsigned char)(reg.intValue & 0xff);
-		[data appendData:[NSData dataWithBytes:(unsigned char[]){registerHigh, registerLow} length:2]];
-	}
-	// append crc 16 to data
-	[data appendData:[self crc16ForData:data]];
-	
-	// stuff data
-	data = [[self kmpByteStuff:data] mutableCopy];
-	
-	// create frame
-	[self.frame appendData:data];
-	[self.frame appendData:[[NSMutableData alloc] initWithBytes:(unsigned char[]){0x0d} length:1]];
-	NSLog(@"frame: %@", self.frame);
-
-}
-
-
-
 #pragma mark - KMP Decoder
 
 -(void)decodeFrame:(NSData *)theFrame {
@@ -417,8 +405,9 @@ void setClock:(NSDate *)theDate {
 }
 
 
+ */
 #pragma mark - Helper methods
-*/
+
 void kmp_crc16() {
     uint16_t crc16;
 	int i;
