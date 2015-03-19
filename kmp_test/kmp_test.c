@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 #ifdef __APPLE__
     int fd = open (serial_port_dev, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
 #else
-    int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+    int fd = open (serial_port_dev, O_RDWR | O_NOCTTY | O_SYNC);
 #endif
     if (fd < 0) {
         printf("error %d opening %s: %s", errno, serial_port_dev, strerror(errno));
