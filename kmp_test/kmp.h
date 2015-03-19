@@ -20,7 +20,6 @@ typedef struct {
     kmp_response_register_list_t kmp_response_register_list;
 } kmp_response_t;
 
-void kmp_init(unsigned char *frame);
 uint16_t kmp_crc16();
 
 unsigned int kmp_get_type(unsigned char *frame);
@@ -28,7 +27,7 @@ unsigned int kmp_get_serial(unsigned char *frame);
 unsigned int kmp_set_clock(unsigned char *frame, uint64_t unix_time);
 unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length);
 
-bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
+int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
 
 double kmp_value_to_double(int32_t value, uint8_t si_ex);
 void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string);

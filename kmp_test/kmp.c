@@ -93,9 +93,6 @@
 
 #define KMP_CRC16_TABLE_L	256
 
-bool kmp_frame_received;
-bool kmp_error_receiving;
-
 unsigned char *kmp_frame;
 unsigned int kmp_frame_length;
 unsigned int kmp_data_length;
@@ -141,17 +138,11 @@ uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 };
 
 
-void kmp_init(unsigned char *frame) {
-	kmp_frame_received = false;
-	kmp_error_receiving = false;
-    
-    kmp_frame = frame;
-}
-
 unsigned int kmp_get_type(unsigned char *frame) {
     uint16_t crc16;
     
     // clear frame
+    kmp_frame = frame;
     memset(kmp_frame, 0x00, KMP_FRAME_L);
     kmp_frame_length = 0;
     kmp_data_length = 0;
@@ -179,7 +170,6 @@ unsigned int kmp_get_type(unsigned char *frame) {
     kmp_frame[kmp_frame_length] = 0x0d;
     kmp_frame_length++;
    
-    frame = kmp_frame;
     return kmp_frame_length;
 }
 
@@ -187,6 +177,7 @@ unsigned int kmp_get_serial(unsigned char *frame) {
     uint16_t crc16;
     
     // clear frame
+    kmp_frame = frame;
     memset(kmp_frame, 0x00, KMP_FRAME_L);
     kmp_frame_length = 0;
     kmp_data_length = 0;
@@ -214,7 +205,6 @@ unsigned int kmp_get_serial(unsigned char *frame) {
     kmp_frame[kmp_frame_length] = 0x0d;
     kmp_frame_length++;
     
-    frame = kmp_frame;
     return kmp_frame_length;
 }
 
@@ -235,6 +225,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
     }
 
     // clear frame
+    kmp_frame = frame;
     memset(kmp_frame, 0x00, KMP_FRAME_L);
     kmp_frame_length = 0;
     kmp_data_length = 0;
@@ -274,13 +265,12 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
     kmp_frame[kmp_frame_length] = 0x0d;
     kmp_frame_length++;
 
-    frame = kmp_frame;
     return kmp_frame_length;
 }
 
 #pragma mark - KMP Decoder
 
-bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
+int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
@@ -290,22 +280,20 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
     kmp_frame_length = frame_length;
     
     kmp_response = response;
+    memset(kmp_response, 0x00, sizeof(kmp_response_t));
     
     if (kmp_frame_length == 0) {
-        kmp_error_receiving = true;
-        return false;
+        return 0;
     }
     
     if (kmp_frame_length == 1) {
         // no data returned from Kamstrup meter
         if (kmp_frame[kmp_frame_length - 1] == 0x06) {
-            kmp_frame_received = true;
-            return true;
+            return 1;
         }
         else {
             // Kamstrup: device said: no valid reply from kamstrup meter
-            kmp_error_receiving = true;
-            return false;
+            return 0;
         }
     }
     
@@ -327,8 +315,7 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
         }
         else {
             //crc error
-            kmp_error_receiving = true;
-            return false;
+            return -1;
         }
 
         // decode application layer
@@ -362,7 +349,7 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
                     // value
                     kmp_response->kmp_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
                 }
-
+                return 1;
             }
             else {
                 // No registers in reply
@@ -377,11 +364,10 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
     }
     else if (kmp_frame[kmp_frame_length - 1] == 0x06) {
         // kmp_set_clock no CRC
-        kmp_frame_received = true;
-
+        return 1;
     }
     
-    return false;
+    return 0;
 }
 
 #pragma mark - Helper methods
