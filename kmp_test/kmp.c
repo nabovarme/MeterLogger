@@ -124,9 +124,8 @@ unsigned int kmp_frame_length;
 unsigned int kmp_data_length;
 
 // kmp response struct
-unsigned int kmp_response_serial;
-unsigned int kmp_response_meter_type;
-unsigned int kmp_response_sw_revision;
+kmp_response_t *kmp_response;
+
 
 // crc table
 uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
@@ -304,7 +303,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 
 #pragma mark - KMP Decoder
 
-bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmd_response_register_list_t response) {
+bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
@@ -312,6 +311,8 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmd_resp
 
     kmp_frame = frame;
     kmp_frame_length = frame_length;
+    
+    kmp_response = response;
     
     if (kmp_frame_length == 1) {
         // no data returned from Kamstrup meter
@@ -351,12 +352,12 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmd_resp
         // decode application layer
         if (kmp_frame[KMP_CID_IDX] == 0x01) {
             // kmp_get_type
-            kmp_response_meter_type = (kmp_frame[KMP_DATA_IDX + 0] << 8) + kmp_frame[KMP_DATA_IDX + 1];
-            kmp_response_sw_revision = (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+            kmp_response->kmp_response_meter_type = (kmp_frame[KMP_DATA_IDX + 0] << 8) + kmp_frame[KMP_DATA_IDX + 1];
+            kmp_response->kmp_response_sw_revision = (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
         }
         else if (kmp_frame[KMP_CID_IDX] == 0x02) {
             // kmp_get_serial
-            kmp_response_serial = (kmp_frame[KMP_DATA_IDX + 0] << 24) + (kmp_frame[KMP_DATA_IDX + 1] << 16) + (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+            kmp_response->kmp_response_serial = (kmp_frame[KMP_DATA_IDX + 0] << 24) + (kmp_frame[KMP_DATA_IDX + 1] << 16) + (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
         }
         else if (kmp_frame[KMP_CID_IDX] == 0x10) {
             // kmp_get_register
@@ -365,19 +366,19 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmd_resp
                     kmp_register_idx = 9 * i + KMP_DATA_IDX;
                     
                     // rid
-                    response[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
+                    kmp_response->kmd_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
                     
                     // unit
-                    response[i].unit = kmp_frame[kmp_register_idx + 2];
+                    kmp_response->kmd_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
                     
                     // length
-                    response[i].length = kmp_frame[kmp_register_idx + 3];
+                    kmp_response->kmd_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
                     
                     // siEx
-                    response[i].siEx = kmp_frame[kmp_register_idx + 4];
+                    kmp_response->kmd_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
                     
                     // value
-                    response[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
+                    kmp_response->kmd_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
                 }
 
             }

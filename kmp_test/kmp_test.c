@@ -12,105 +12,69 @@
 #include "kmp.h"
 
 int main() {
+    unsigned int i, j;
+    unsigned char c;
+    ssize_t n;
+    
+    // allocate frame to send
     unsigned char frame[KMP_FRAME_L];
     unsigned int frame_length;
-//    uint16_t register_list[1];
     
-//    unsigned char received_frame[32];
+    // allocate struct for response
+    kmp_response_t response;
     
-//    kmd_response_register_list_t response;
-    
-
-    unsigned int i;
-    
-    kmp_init(frame);
-    
-    /*
-    frame_length = kmp_get_type(frame);
-    for (i = 0; i < frame_length; i++) {
-        printf("0x%.2X ", frame[i]);
-    }
-    printf("\n");
-    
-    */
-    frame_length = kmp_get_serial(frame);
-    for (i = 0; i < frame_length; i++) {
-        printf("0x%.2X ", frame[i]);
-    }
-    printf("\n");
-    /*
-    
-    register_list[0] = 0x98;
-    frame_length = kmp_get_register(frame, register_list, 1);
-    for (i = 0; i < frame_length; i++) {
-        printf("0x%.2X ", frame[i]);
-    }
-    printf("\n");
-    
-    received_frame[0] = 0x40;
-    received_frame[1] = 0x3F;
-    received_frame[2] = 0x01;
-    received_frame[3] = 0x00;
-    received_frame[4] = 0x01;
-    received_frame[5] = 0x07;
-    received_frame[6] = 0x01;
-    received_frame[7] = 0xFE;
-    received_frame[8] = 0x58;
-    received_frame[9] = 0x0D;
-    kmp_decode_frame(received_frame, 10, response);
-   
-    received_frame[0] = 0x40;
-    received_frame[1] = 0x3F;
-    received_frame[2] = 0x02;
-    received_frame[3] = 0x00;
-    received_frame[4] = 0x69;
-    received_frame[5] = 0x2D;
-    received_frame[6] = 0x32;
-    received_frame[7] = 0xCD;
-    received_frame[8] = 0x5D;
-    received_frame[9] = 0x0D;
-    kmp_decode_frame(received_frame, 10, response);
-
-    received_frame[0] = 0x40;
-    received_frame[1] = 0x3F;
-    received_frame[2] = 0x10;
-    received_frame[3] = 0x00;
-    received_frame[4] = 0x98;
-    received_frame[5] = 0x33;
-    received_frame[6] = 0x04;
-    received_frame[7] = 0x00;
-    received_frame[8] = 0x02;
-    received_frame[9] = 0xA5;
-    received_frame[10] = 0xBD;
-    received_frame[11] = 0xA0;
-    received_frame[12] = 0xDF;
-    received_frame[13] = 0x1C;
-    received_frame[14] = 0x0D;
-    kmp_decode_frame(received_frame, 15, response);
-    */
-    
+    // open serial port
     char *portname = "/dev/tty.usbserial-A6YNEE07";
-//  int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+    //  int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
     int fd = open (portname, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
     if (fd < 0) {
         printf("error %d opening %s: %s", errno, portname, strerror(errno));
         return 0;
     }
-    
     set_interface_attribs (fd, B1200, 0);  // set speed to 1200 bps, 8n2 (no parity)
     set_blocking (fd, 0);                // set no blocking
     
-    write (fd, frame, frame_length);           // send 7 character greeting
+
+    // initialize kmp
+    kmp_init(frame);
+
+    // get serial
+    // prepare frame
+    frame_length = kmp_get_serial(frame);
     
-    //usleep ((7 + 25) * 100);             // sleep enough to transmit the 7 plus
-    // receive 25:  approx 100 uS per char transmit
-    char buf [100];
-    while (1) {
-        ssize_t n = read(fd, buf, sizeof buf);  // read up to 100 characters if ready to read
-        if (n) {
-            printf("%zx", n);
-        }
+    // print frame
+    for (i = 0; i < frame_length; i++) {
+        printf("0x%.2X ", frame[i]);
     }
+    printf("\n");
+    
+    // send frame
+    write(fd, frame, frame_length);     // send kmp request
+    
+    usleep (1000000);             // sleep 1 seconds
+
+    // read data
+    memset(frame, 0x00, sizeof(frame));    // clear frame
+    i = 0;
+    n = 0;
+    
+    do {
+        n = read(fd, &c, 1);
+        if (n) {
+            frame[i++] = c;
+        }
+    } while (n);
+    
+    // print received frame
+    for (j = 0; j <= i - 1; j++) {
+        printf("0x%.2X ", frame[j]);
+    }
+    printf("\n");
+
+    // decode frame
+    kmp_decode_frame(frame, i, &response);
+    
+    printf("serial number is: %u\n", response.kmp_response_serial);
 }
 
 int set_interface_attribs (int fd, int speed, int parity) {
