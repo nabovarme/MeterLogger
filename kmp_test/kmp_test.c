@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     // get registers
     // prepare frame
     register_list[0] = 0x3c;    // heat energy (E1)
-    register_list[1] = 0x48;    // mass register (M1)
+    register_list[1] = 0x44;    // volume register (V1)
     register_list[2] = 0x3EC;   // operational hour counter (HR)
     register_list[3] = 0x56;    // current flow temperature (T1)
     register_list[4] = 0x57;    // current return flow temperature (T2)
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     printf("heat energy (E1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex), unit_string);
 
     kmp_unit_to_string(response.kmp_response_register_list[1].unit, unit_string);
-    printf("mass register (M1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex), unit_string);
+    printf("volume register (V1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex), unit_string);
     
     kmp_unit_to_string(response.kmp_response_register_list[2].unit, unit_string);
     printf("operational hour counter (HR): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex), unit_string);

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		D625AD2E1AB88E56002DF65F /* kmp_test.c in Sources */ = {isa = PBXBuildFile; fileRef = D625AD291AB88E56002DF65F /* kmp_test.c */; };
 		D625AD2F1AB88E56002DF65F /* kmp.c in Sources */ = {isa = PBXBuildFile; fileRef = D625AD2B1AB88E56002DF65F /* kmp.c */; };
-		D625AD301AB88E56002DF65F /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = D625AD2D1AB88E56002DF65F /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -128,7 +127,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D625AD301AB88E56002DF65F /* Makefile in Sources */,
 				D625AD2F1AB88E56002DF65F /* kmp.c in Sources */,
 				D625AD2E1AB88E56002DF65F /* kmp_test.c in Sources */,
 			);

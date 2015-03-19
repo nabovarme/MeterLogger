@@ -291,6 +291,11 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
     
     kmp_response = response;
     
+    if (kmp_frame_length == 0) {
+        kmp_error_receiving = true;
+        return false;
+    }
+    
     if (kmp_frame_length == 1) {
         // no data returned from Kamstrup meter
         if (kmp_frame[kmp_frame_length - 1] == 0x06) {
