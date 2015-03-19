@@ -5,9 +5,9 @@
 
 typedef struct {
     int16_t rid;
-    unsigned int unit;
-    unsigned int length;
-    unsigned int siEx;
+    uint8_t unit;
+    uint8_t length;
+    uint8_t si_ex;
     int32_t value;
 } kmp_response_register_t;
 
@@ -30,5 +30,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 
 bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
 
+double kmp_value_to_double(int32_t value, uint8_t si_ex);
+void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string);
 void kmp_byte_stuff();
 void kmp_byte_unstuff();

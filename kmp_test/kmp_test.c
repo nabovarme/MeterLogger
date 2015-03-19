@@ -11,6 +11,8 @@
 #include "kmp_test.h"
 #include "kmp.h"
 
+//#define DEBUG_FRAME
+
 int main(int argc, char *argv[]) {
     unsigned int i;
     unsigned char c;
@@ -25,6 +27,7 @@ int main(int argc, char *argv[]) {
 
     // allocate struct for response
     kmp_response_t response;
+    unsigned char unit_string[8];
     
     // open serial port
     if (argc > 1) {
@@ -53,12 +56,14 @@ int main(int argc, char *argv[]) {
     // get serial
     // prepare frame
     frame_length = kmp_get_serial(frame);
-    
+
+#ifdef DEBUG_FRAME
     // print frame
     for (i = 0; i < frame_length; i++) {
         printf("0x%.2X ", frame[i]);
     }
     printf("\n");
+#endif
     
     // send frame
     write(fd, frame, frame_length);     // send kmp request
@@ -77,11 +82,13 @@ int main(int argc, char *argv[]) {
         }
     } while (c_length);
     
+#ifdef DEBUG_FRAME
     // print received frame
     for (i = 0; i < frame_length; i++) {
         printf("0x%.2X ", frame[i]);
     }
     printf("\n");
+#endif
 
     // decode frame
     kmp_decode_frame(frame, frame_length, &response);
@@ -89,11 +96,11 @@ int main(int argc, char *argv[]) {
     printf("serial number is: %u\n", response.kmp_response_serial);
 
 
-#pragma mark - get current power
-    // get current power
+#pragma mark - get registers
+    // get registers
     // prepare frame
     register_list[0] = 0x3c;    // heat energy (E1)
-    register_list[1] = 0x48;    // heat energy (M1)
+    register_list[1] = 0x48;    // mass register (M1)
     register_list[2] = 0x3EC;   // operational hour counter (HR)
     register_list[3] = 0x56;    // current flow temperature (T1)
     register_list[4] = 0x57;    // current return flow temperature (T2)
@@ -103,11 +110,13 @@ int main(int argc, char *argv[]) {
     frame_length = kmp_get_register(frame, register_list, 8);
 
     
+#ifdef DEBUG_FRAME
     // print frame
     for (i = 0; i < frame_length; i++) {
         printf("0x%.2X ", frame[i]);
     }
     printf("\n");
+#endif
     
     // send frame
     write(fd, frame, frame_length);     // send kmp request
@@ -127,17 +136,40 @@ int main(int argc, char *argv[]) {
         }
     } while (c_length);
     
+#ifdef DEBUG_FRAME
     // print received frame
     for (i = 0; i < frame_length; i++) {
         printf("0x%.2X ", frame[i]);
     }
     printf("\n");
+#endif
     
     // decode frame
     kmp_decode_frame(frame, frame_length, &response);
     
-    //printf("serial number is: %u\n", response.kmp_response_register_list[0]);
+    kmp_unit_to_string(response.kmp_response_register_list[0].unit, unit_string);
+    printf("heat energy (E1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex), unit_string);
+
+    kmp_unit_to_string(response.kmp_response_register_list[1].unit, unit_string);
+    printf("mass register (M1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex), unit_string);
     
+    kmp_unit_to_string(response.kmp_response_register_list[2].unit, unit_string);
+    printf("operational hour counter (HR): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex), unit_string);
+    
+    kmp_unit_to_string(response.kmp_response_register_list[3].unit, unit_string);
+    printf("current flow temperature (T1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex), unit_string);
+    
+    kmp_unit_to_string(response.kmp_response_register_list[4].unit, unit_string);
+    printf("current return flow temperature (T2): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex), unit_string);
+    
+    kmp_unit_to_string(response.kmp_response_register_list[5].unit, unit_string);
+    printf("current temperature difference (T1-T2): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex), unit_string);
+    
+    kmp_unit_to_string(response.kmp_response_register_list[6].unit, unit_string);
+    printf("current flow in flow (FLOW1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex), unit_string);
+    
+    kmp_unit_to_string(response.kmp_response_register_list[7].unit, unit_string);
+    printf("current power calculated on the basis of V1-T1-T2 (EFFEKT1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex), unit_string);
     
 }
 

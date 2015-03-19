@@ -78,35 +78,12 @@
  @175:	@"Error hour counter",
  @234:  @"Liter/imp value for input A",
  @235:	@"Liter/imp value for input B"};
-	
-	self.registerUnitsTable = @{@0x01: @"Wh",
- @0x02: @"kWh",
- @0x03: @"MWh",
- @0x08: @"Gj",
- @0x0c: @"Gcal",
- @0x16: @"kW",
- @0x17: @"MW",
- @0x25: @"C",
- @0x26: @"K",
- @0x27: @"l",
- @0x28: @"m3",
- @0x29: @"l/h",
- @0x2a: @"m3/h",
- @0x2b: @"m3xC",
- @0x2c: @"ton",
- @0x2d: @"ton/h",
- @0x2e: @"h",
- @0x2f: @"clock",
- @0x30: @"date1",
- @0x32: @"date3",
- @0x33: @"number",
- @0x34: @"bar"};
-
  */
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include "kmp.h"
 
 #define KMP_START_BYTE_IDX  0
@@ -374,8 +351,8 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
                     // length
                     kmp_response->kmp_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
                     
-                    // siEx
-                    kmp_response->kmp_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
+                    // si_ex
+                    kmp_response->kmp_response_register_list[i].si_ex = kmp_frame[kmp_register_idx + 4];
                     
                     // value
                     kmp_response->kmp_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
@@ -415,22 +392,89 @@ uint16_t kmp_crc16() {
     return crc16;
 }
 
-/*
--(NSNumber *)numberForKmpNumber:(NSNumber *)theNumber andSiEx:(NSNumber *)theSiEx {
-	int32_t number = theNumber.intValue;
-	int8_t siEx = theSiEx.intValue & 0xff;
-	int8_t signI = (siEx & 0x80) >> 7;
-	int8_t signE = (siEx & 0x40) >> 6;
-	int8_t exponent = (siEx & 0x3f);
-	float res = powf(-1, (float)signI) * number * powf(10, (powf(-1, (float)signE) * exponent));
-	if ((res - (int)res) == 0.0) {
-		return [NSNumber numberWithInt:(int32_t)res];
-	}
-	else {
-		return [NSNumber numberWithFloat:res];
-	}
+double kmp_value_to_double(int32_t value, uint8_t si_ex) {
+    int8_t sign_i = (si_ex & 0x80) >> 7;
+    int8_t sign_e = (si_ex & 0x40) >> 6;
+    int8_t exponent = (si_ex & 0x3f);
+    
+    return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
 }
 
+void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
+    switch (unit) {
+        case 0x01:
+            strcpy(unit_string, "Wh");
+            break;
+        case 0x02:
+            strcpy(unit_string, "kWh");
+            break;
+        case 0x03:
+            strcpy(unit_string, "MWh");
+            break;
+        case 0x08:
+            strcpy(unit_string, "Gj");
+            break;
+        case 0x0c:
+            strcpy(unit_string, "Gcal");
+            break;
+        case 0x16:
+            strcpy(unit_string, "kW");
+            break;
+        case 0x17:
+            strcpy(unit_string, "MW");
+            break;
+        case 0x25:
+            strcpy(unit_string, "C");
+            break;
+        case 0x26:
+            strcpy(unit_string, "K");
+            break;
+        case 0x27:
+            strcpy(unit_string, "l");
+            break;
+        case 0x28:
+            strcpy(unit_string, "m3");
+            break;
+        case 0x29:
+            strcpy(unit_string, "l/h");
+            break;
+        case 0x2a:
+            strcpy(unit_string, "m3/h");
+            break;
+        case 0x2b:
+            strcpy(unit_string, "m3xC");
+            break;
+        case 0x2c:
+            strcpy(unit_string, "ton");
+            break;
+        case 0x2d:
+            strcpy(unit_string, "ton/h");
+            break;
+        case 0x2e:
+            strcpy(unit_string, "h");
+            break;
+        case 0x2f:
+            strcpy(unit_string, "clock");
+            break;
+        case 0x30:
+            strcpy(unit_string, "date1");
+            break;
+        case 0x32:
+            strcpy(unit_string, "date3");
+            break;
+        case 0x33:
+            strcpy(unit_string, "number");
+            break;
+        case 0x34:
+            strcpy(unit_string, "bar");
+            break;
+            
+        default:
+            break;
+    }
+}
+
+/*
 -(NSData *)kmpDateWithDate:(NSDate *)theDate {
 	NSCalendar* calendar = [NSCalendar currentCalendar];
 	NSDateComponents* components = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:theDate];
