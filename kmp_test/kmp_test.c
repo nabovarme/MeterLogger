@@ -11,10 +11,19 @@
 #include "kmp_test.h"
 #include "kmp.h"
 
-int main() {
-    unsigned int i, j;
+int main(int argc, char *argv[]) {
+    unsigned int i;
     unsigned char c;
-    ssize_t n;
+    ssize_t c_length;
+    
+    unsigned char serial_port_dev[1024];
+    
+    if (argc > 1) {
+        strcpy(serial_port_dev, argv[1]);
+    }
+    else {
+        strcpy(serial_port_dev, "/dev/tty.usbserial-A6YNEE07");
+    }
     
     // allocate frame to send
     unsigned char frame[KMP_FRAME_L];
@@ -24,11 +33,10 @@ int main() {
     kmp_response_t response;
     
     // open serial port
-    char *portname = "/dev/tty.usbserial-A6YNEE07";
     //  int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
-    int fd = open (portname, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
+    int fd = open (serial_port_dev, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
     if (fd < 0) {
-        printf("error %d opening %s: %s", errno, portname, strerror(errno));
+        printf("error %d opening %s: %s", errno, serial_port_dev, strerror(errno));
         return 0;
     }
     set_interface_attribs (fd, B1200, 0);  // set speed to 1200 bps, 8n2 (no parity)
@@ -55,24 +63,24 @@ int main() {
 
     // read data
     memset(frame, 0x00, sizeof(frame));    // clear frame
-    i = 0;
-    n = 0;
+    frame_length = 0;
+    c_length = 0;
     
     do {
-        n = read(fd, &c, 1);
-        if (n) {
-            frame[i++] = c;
+        c_length = read(fd, &c, 1);
+        if (c_length) {
+            frame[frame_length++] = c;
         }
-    } while (n);
+    } while (c_length);
     
     // print received frame
-    for (j = 0; j <= i - 1; j++) {
-        printf("0x%.2X ", frame[j]);
+    for (i = 0; i < frame_length; i++) {
+        printf("0x%.2X ", frame[i]);
     }
     printf("\n");
 
     // decode frame
-    kmp_decode_frame(frame, i, &response);
+    kmp_decode_frame(frame, frame_length, &response);
     
     printf("serial number is: %u\n", response.kmp_response_serial);
 }
