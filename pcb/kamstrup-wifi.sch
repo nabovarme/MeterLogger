@@ -4929,7 +4929,7 @@ type RDH, grid 15 mm</description>
 <part name="SUPPLY4" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="PRG" library="SparkFun-Connectors" deviceset="M02" device="PTH"/>
 <part name="GND5" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
-<part name="R1" library="resistor" deviceset="R-EU_" device="M0805"/>
+<part name="R1" library="resistor" deviceset="R-EU_" device="M0805" value="10k"/>
 </parts>
 <sheets>
 <sheet>

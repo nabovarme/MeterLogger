@@ -4961,8 +4961,8 @@ type RDH, grid 15 mm</description>
 <attribute name="VALUE" x="60.96" y="48.26" size="1.778" layer="96"/>
 <attribute name="NAME" x="60.96" y="59.182" size="1.778" layer="95"/>
 </instance>
-<instance part="GND5" gate="1" x="73.66" y="35.56"/>
-<instance part="R1" gate="G$1" x="73.66" y="45.72" rot="R90"/>
+<instance part="GND5" gate="1" x="73.66" y="33.02"/>
+<instance part="R1" gate="G$1" x="73.66" y="44.45" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -4990,6 +4990,11 @@ type RDH, grid 15 mm</description>
 <wire x1="50.8" y1="-22.86" x2="50.8" y2="-20.32" width="0.1524" layer="91"/>
 <pinref part="FOCA" gate="G$1" pin="5"/>
 <wire x1="50.8" y1="-20.32" x2="55.88" y2="-20.32" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND5" gate="1" pin="GND"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="73.66" y1="35.56" x2="73.66" y2="39.37" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -5070,6 +5075,8 @@ type RDH, grid 15 mm</description>
 <segment>
 <pinref part="PRG" gate="G$1" pin="1"/>
 <wire x1="71.12" y1="53.34" x2="73.66" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="73.66" y1="53.34" x2="73.66" y2="49.53" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

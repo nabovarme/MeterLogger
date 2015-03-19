@@ -128,6 +128,7 @@
 <text x="12.7" y="33.02" size="1.016" layer="25" align="center-right">RxD</text>
 <text x="21.59" y="10.16" size="1.016" layer="25" align="center-right">ESP8266
 ESP-01</text>
+<text x="1.27" y="1.27" size="1.016" layer="25" rot="R180" align="center-right">Kamstrup-WiFi v.1.0</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors">

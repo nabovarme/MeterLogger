@@ -14,11 +14,11 @@
 int main() {
     unsigned char frame[KMP_FRAME_L];
     unsigned int frame_length;
-    uint16_t register_list[1];
+//    uint16_t register_list[1];
     
-    unsigned char received_frame[32];
+//    unsigned char received_frame[32];
     
-    kmd_response_register_list_t response;
+//    kmd_response_register_list_t response;
     
 
     unsigned int i;
@@ -106,9 +106,9 @@ int main() {
     // receive 25:  approx 100 uS per char transmit
     char buf [100];
     while (1) {
-        int n = read(fd, buf, sizeof buf);  // read up to 100 characters if ready to read
+        ssize_t n = read(fd, buf, sizeof buf);  // read up to 100 characters if ready to read
         if (n) {
-            printf("%x", n);
+            printf("%zx", n);
         }
     }
 }
