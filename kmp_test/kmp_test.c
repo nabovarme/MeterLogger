@@ -18,21 +18,21 @@ int main(int argc, char *argv[]) {
     
     unsigned char serial_port_dev[1024];
     
+    // allocate frame to send
+    unsigned char frame[KMP_FRAME_L];
+    unsigned int frame_length;
+    uint16_t register_list[8];
+
+    // allocate struct for response
+    kmp_response_t response;
+    
+    // open serial port
     if (argc > 1) {
         strcpy(serial_port_dev, argv[1]);
     }
     else {
         strcpy(serial_port_dev, "/dev/tty.usbserial-A6YNEE07");
     }
-    
-    // allocate frame to send
-    unsigned char frame[KMP_FRAME_L];
-    unsigned int frame_length;
-    
-    // allocate struct for response
-    kmp_response_t response;
-    
-    // open serial port
 #ifdef __APPLE__
     int fd = open (serial_port_dev, O_RDWR | O_NOCTTY | O_NONBLOCK);   // mac os x
 #else
@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
     // initialize kmp
     kmp_init(frame);
 
+#pragma mark - get serial
     // get serial
     // prepare frame
     frame_length = kmp_get_serial(frame);
@@ -86,8 +87,61 @@ int main(int argc, char *argv[]) {
     kmp_decode_frame(frame, frame_length, &response);
     
     printf("serial number is: %u\n", response.kmp_response_serial);
+
+
+#pragma mark - get current power
+    // get current power
+    // prepare frame
+    register_list[0] = 0x3c;    // heat energy (E1)
+    register_list[1] = 0x48;    // heat energy (M1)
+    register_list[2] = 0x3EC;   // operational hour counter (HR)
+    register_list[3] = 0x56;    // current flow temperature (T1)
+    register_list[4] = 0x57;    // current return flow temperature (T2)
+    register_list[5] = 0x59;    // current temperature difference (T1-T2)
+    register_list[6] = 0x4A;    // current flow in flow (FLOW1)
+    register_list[7] = 0x50;    // current power calculated on the basis of V1-T1-T2 (EFFEKT1)
+    frame_length = kmp_get_register(frame, register_list, 8);
+
+    
+    // print frame
+    for (i = 0; i < frame_length; i++) {
+        printf("0x%.2X ", frame[i]);
+    }
+    printf("\n");
+    
+    // send frame
+    write(fd, frame, frame_length);     // send kmp request
+    
+    usleep (2000000);             // sleep 2 seconds
+    
+    // read data
+    memset(frame, 0x00, sizeof(frame));    // clear frame
+    memset(&response, 0x00, sizeof(kmp_response_t));    // clear response struct
+    frame_length = 0;
+    c_length = 0;
+    
+    do {
+        c_length = read(fd, &c, 1);
+        if (c_length) {
+            frame[frame_length++] = c;
+        }
+    } while (c_length);
+    
+    // print received frame
+    for (i = 0; i < frame_length; i++) {
+        printf("0x%.2X ", frame[i]);
+    }
+    printf("\n");
+    
+    // decode frame
+    kmp_decode_frame(frame, frame_length, &response);
+    
+    //printf("serial number is: %u\n", response.kmp_response_register_list[0]);
+    
+    
 }
 
+#pragma mark -
 int set_interface_attribs (int fd, int speed, int parity) {
     struct termios tty;
     memset (&tty, 0, sizeof tty);

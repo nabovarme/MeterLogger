@@ -9,15 +9,15 @@ typedef struct {
     unsigned int length;
     unsigned int siEx;
     int32_t value;
-} kmd_response_register_t;
+} kmp_response_register_t;
 
-typedef kmd_response_register_t kmd_response_register_list_t[8];   // max 8 registers per request
+typedef kmp_response_register_t kmp_response_register_list_t[8];   // max 8 registers per request
 
 typedef struct {
     unsigned int kmp_response_serial;
     unsigned int kmp_response_meter_type;
     unsigned int kmp_response_sw_revision;
-    kmd_response_register_list_t kmd_response_register_list;
+    kmp_response_register_list_t kmp_response_register_list;
 } kmp_response_t;
 
 void kmp_init(unsigned char *frame);

@@ -366,19 +366,19 @@ bool kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_resp
                     kmp_register_idx = 9 * i + KMP_DATA_IDX;
                     
                     // rid
-                    kmp_response->kmd_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
+                    kmp_response->kmp_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
                     
                     // unit
-                    kmp_response->kmd_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
+                    kmp_response->kmp_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
                     
                     // length
-                    kmp_response->kmd_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
+                    kmp_response->kmp_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
                     
                     // siEx
-                    kmp_response->kmd_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
+                    kmp_response->kmp_response_register_list[i].siEx = kmp_frame[kmp_register_idx + 4];
                     
                     // value
-                    kmp_response->kmd_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
+                    kmp_response->kmp_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
                 }
 
             }
