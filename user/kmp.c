@@ -84,6 +84,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+
+#include "ets_sys.h"
+#include "osapi.h"
+#include "user_interface.h"
+
 #include "kmp.h"
 
 #define KMP_START_BYTE_IDX  0
@@ -138,6 +143,7 @@ uint16_t kmp_crc16_table[KMP_CRC16_TABLE_L] = {
 };
 
 
+ICACHE_FLASH_ATTR
 unsigned int kmp_get_type(unsigned char *frame) {
     uint16_t crc16;
     
@@ -173,6 +179,7 @@ unsigned int kmp_get_type(unsigned char *frame) {
     return kmp_frame_length;
 }
 
+ICACHE_FLASH_ATTR
 unsigned int kmp_get_serial(unsigned char *frame) {
     uint16_t crc16;
     
@@ -208,11 +215,13 @@ unsigned int kmp_get_serial(unsigned char *frame) {
     return kmp_frame_length;
 }
 
+ICACHE_FLASH_ATTR
 unsigned int kmp_set_clock(unsigned char *frame, uint64_t unix_time) {
     // DEBUG: not implemented
     return 0;
 }
 
+ICACHE_FLASH_ATTR
 unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length) {
     unsigned int i;
     uint8_t register_high;
@@ -270,6 +279,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 
 #pragma mark - KMP Decoder
 
+ICACHE_FLASH_ATTR
 int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
@@ -372,6 +382,7 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
 
 #pragma mark - Helper methods
 
+ICACHE_FLASH_ATTR
 uint16_t kmp_crc16() {
     uint16_t crc16;
 	int i;
@@ -383,6 +394,7 @@ uint16_t kmp_crc16() {
     return crc16;
 }
 
+ICACHE_FLASH_ATTR
 double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     int8_t sign_i = (si_ex & 0x80) >> 7;
     int8_t sign_e = (si_ex & 0x40) >> 6;
@@ -391,6 +403,7 @@ double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
 }
 
+ICACHE_FLASH_ATTR
 void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
     switch (unit) {
         case 0x01:
@@ -528,6 +541,7 @@ void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
 
 */
 
+ICACHE_FLASH_ATTR
 void kmp_byte_stuff() {
     unsigned char stuffed_data[KMP_FRAME_L];
     unsigned int i;
@@ -549,6 +563,7 @@ void kmp_byte_stuff() {
     kmp_data_length = j;
 }
 
+ICACHE_FLASH_ATTR
 void kmp_byte_unstuff() {
     unsigned char unstuffed_data[KMP_FRAME_L];
     unsigned int i;

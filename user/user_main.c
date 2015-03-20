@@ -41,6 +41,7 @@
 #include "user_config.h"
 #include "unix_time.h"
 #include "user_main.h"
+#include "kmp_request.h"
 #include "config.h"
 
 #define user_procTaskPrio			0
@@ -79,7 +80,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 
 ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
 	CFG_Load();
-
+	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
@@ -219,6 +220,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_delay_us(1000000);
 	
 	CFG_Load();
+	
+	kmp_request_init();
 	
 	// boot in ap mode
 	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
