@@ -400,7 +400,8 @@ double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     int8_t sign_e = (si_ex & 0x40) >> 6;
     int8_t exponent = (si_ex & 0x3f);
     
-    return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
+//    return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
+	return 0;
 }
 
 ICACHE_FLASH_ATTR

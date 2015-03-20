@@ -103,7 +103,9 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	int topic_l;
 	int message_l;
 	uint32 random_value;								// DEBUG: for meter test data generation
-		
+
+	kmp_request_send();
+
 	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 	
 	// format /sample/unix_time => val1=23&val2=val3&baz=blah

@@ -201,6 +201,26 @@ ICACHE_FLASH_ATTR
 void kmp_request_send() {
 	// get serial
 	// prepare frame
-//	frame_length = kmp_get_serial(frame);
-//	uart0_tx_buffer(frame, frame_length);     // send kmp request
+	frame_length = kmp_get_serial(frame);
+	uart0_tx_buffer(frame, frame_length);     // send kmp request
+	
+	
+    os_delay_us(20000);             // sleep 2 seconds
+
+    // get registers
+    // prepare frame
+    register_list[0] = 0x3c;    // heat energy (E1)
+    register_list[1] = 0x44;    // volume register (V1)
+    register_list[2] = 0x3EC;   // operational hour counter (HR)
+    register_list[3] = 0x56;    // current flow temperature (T1)
+    register_list[4] = 0x57;    // current return flow temperature (T2)
+    register_list[5] = 0x59;    // current temperature difference (T1-T2)
+    register_list[6] = 0x4A;    // current flow in flow (FLOW1)
+    register_list[7] = 0x50;    // current power calculated on the basis of V1-T1-T2 (EFFEKT1)
+    frame_length = kmp_get_register(frame, register_list, 8);
+	
+    // send frame
+    uart0_tx_buffer(frame, frame_length);     // send kmp request
+    
+    os_delay_us(20000);             // sleep 2 seconds
 }
