@@ -401,18 +401,18 @@ double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     // powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
     if (sign_i) {
         if (sign_e) {
-            res = -1 * value / power(10, exponent);
+            res = -1 * value / kmp_pow(10, exponent);
         }
         else {
-            res = -1 * value * power(10, exponent);
+            res = -1 * value * kmp_pow(10, exponent);
         }
     }
     else {
         if (sign_e) {
-            res = value / (double)power(10, exponent);
+            res = value / (double)kmp_pow(10, exponent);
         }
         else {
-            res = value * (double)power(10, exponent);
+            res = value * (double)kmp_pow(10, exponent);
         }
     }
     
