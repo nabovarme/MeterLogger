@@ -21,6 +21,7 @@ typedef struct {
 } kmp_response_t;
 
 uint16_t kmp_crc16();
+int kmp_pow(int a, int b);
 
 unsigned int kmp_get_type(unsigned char *frame);
 unsigned int kmp_get_serial(unsigned char *frame);

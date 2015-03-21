@@ -383,12 +383,40 @@ uint16_t kmp_crc16() {
     return crc16;
 }
 
+int kmp_pow(int a, int b) {
+    int i;
+    int result = a;
+    for (i = 1; i < b; i++) {
+        result *= a;
+    }
+    return result;
+}
+
 double kmp_value_to_double(int32_t value, uint8_t si_ex) {
+    double res;
     int8_t sign_i = (si_ex & 0x80) >> 7;
     int8_t sign_e = (si_ex & 0x40) >> 6;
     int8_t exponent = (si_ex & 0x3f);
     
-    return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
+    // powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
+    if (sign_i) {
+        if (sign_e) {
+            res = -1 * value / power(10, exponent);
+        }
+        else {
+            res = -1 * value * power(10, exponent);
+        }
+    }
+    else {
+        if (sign_e) {
+            res = value / (double)power(10, exponent);
+        }
+        else {
+            res = value * (double)power(10, exponent);
+        }
+    }
+    
+    return res;
 }
 
 void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
