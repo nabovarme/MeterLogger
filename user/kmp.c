@@ -83,7 +83,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <math.h>
 
 #include "ets_sys.h"
 #include "osapi.h"
