@@ -199,82 +199,44 @@ uart0_rx_intr_handler(void *para)
     * uart1 and uart0 respectively
     */
 //  RcvMsgBuff *pRxBuff = (RcvMsgBuff *)para;
-  uint8 RcvChar;
-  uint8 uart_no = UART0;//UartDev.buff_uart_no;
 
-//  if (UART_RXFIFO_FULL_INT_ST != (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST))
-//  {
-//    return;
-//  }
-//  if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST))
-//  {
-////    at_recvTask();
-//    RcvChar = READ_PERI_REG(UART_FIFO(uart_no)) & 0xFF;
-//    system_os_post(at_recvTaskPrio, NULL, RcvChar);
-//    WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_FULL_INT_CLR);
-//  }
-  if(UART_FRM_ERR_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_FRM_ERR_INT_ST))
-  {
-    os_printf("FRM_ERR\r\n");
-    WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_FRM_ERR_INT_CLR);
-  }
+	uint8 RcvChar;
+	uint8 uart_no = UART0;//UartDev.buff_uart_no;
 
-  if(UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST))
-  {
-//    os_printf("fifo full\r\n");
-    ETS_UART_INTR_DISABLE();/////////
 
-    //system_os_post(at_recvTaskPrio, 0, 0);
+	if (UART_FRM_ERR_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_FRM_ERR_INT_ST)) {
+		//os_printf("FRM_ERR\r\n");
+		WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_FRM_ERR_INT_CLR);
+	}
 
-//    WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_FULL_INT_CLR);
-//    while (READ_PERI_REG(UART_STATUS(uart_no)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
-//    {
-////      at_recvTask();
-//      RcvChar = READ_PERI_REG(UART_FIFO(uart_no)) & 0xFF;
-//      system_os_post(at_recvTaskPrio, NULL, RcvChar);
-//    }
-  }
-  else if(UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST))
-  {
-    ETS_UART_INTR_DISABLE();/////////
+	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST)) {
+		ETS_UART_INTR_DISABLE();/////////
 
-    //system_os_post(at_recvTaskPrio, 0, 0);
+		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
+			WRITE_PERI_REG(0X60000914, 0x73); //WTD
+			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+			//CMD_Input(RcvChar);
+		}
 
-//    WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_TOUT_INT_CLR);
-////    os_printf("rx time over\r\n");
-//    while (READ_PERI_REG(UART_STATUS(uart_no)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
-//    {
-////      os_printf("process recv\r\n");
-////      at_recvTask();
-//      RcvChar = READ_PERI_REG(UART_FIFO(uart_no)) & 0xFF;
-//      system_os_post(at_recvTaskPrio, NULL, RcvChar);
-//    }
-  }
+	}
+	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST)) {
+		ETS_UART_INTR_DISABLE();/////////
+		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
+			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
+			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+			os_printf("%c", RcvChar);
+			//CMD_Input(RcvChar);
+		}
 
-//  WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_FULL_INT_CLR);
+	}
 
-//  if (READ_PERI_REG(UART_STATUS(uart_no)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
-//  {
-//    RcvChar = READ_PERI_REG(UART_FIFO(uart_no)) & 0xFF;
-//    at_recvTask();
-//    *(pRxBuff->pWritePos) = RcvChar;
-
-//    system_os_post(at_recvTaskPrio, NULL, RcvChar);
-
-//    //insert here for get one command line from uart
-//    if (RcvChar == '\r')
-//    {
-//      pRxBuff->BuffState = WRITE_OVER;
-//    }
-//
-//    pRxBuff->pWritePos++;
-//
-//    if (pRxBuff->pWritePos == (pRxBuff->pRcvMsgBuff + RX_BUFF_SIZE))
-//    {
-//      // overflow ...we may need more error handle here.
-//      pRxBuff->pWritePos = pRxBuff->pRcvMsgBuff ;
-//    }
-//  }
+	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
+		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
+	}
+	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_TOUT_INT_ST)) {
+		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
+	}
+	ETS_UART_INTR_ENABLE();
 }
 
 /******************************************************************************
