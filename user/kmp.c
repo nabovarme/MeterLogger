@@ -395,13 +395,41 @@ uint16_t kmp_crc16() {
 }
 
 ICACHE_FLASH_ATTR
+int kmp_pow(int a, int b) {
+    int i;
+    int result = a;
+    for (i = 1; i < b; i++) {
+        result *= a;
+    }
+    return result;
+}
+
+ICACHE_FLASH_ATTR
 double kmp_value_to_double(int32_t value, uint8_t si_ex) {
+    double res;
     int8_t sign_i = (si_ex & 0x80) >> 7;
     int8_t sign_e = (si_ex & 0x40) >> 6;
     int8_t exponent = (si_ex & 0x3f);
     
-//    return powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
-	return 0;
+    // powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
+    if (sign_i) {
+        if (sign_e) {
+            res = -1 * value / kmp_pow(10, exponent);
+        }
+        else {
+            res = -1 * value * kmp_pow(10, exponent);
+        }
+    }
+    else {
+        if (sign_e) {
+            res = value / (double)kmp_pow(10, exponent);
+        }
+        else {
+            res = value * (double)kmp_pow(10, exponent);
+        }
+    }
+    
+    return res;
 }
 
 ICACHE_FLASH_ATTR

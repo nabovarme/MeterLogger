@@ -20,7 +20,11 @@ typedef struct {
     kmp_response_register_list_t kmp_response_register_list;
 } kmp_response_t;
 
+ICACHE_FLASH_ATTR
 uint16_t kmp_crc16();
+
+ICACHE_FLASH_ATTR
+int kmp_pow(int a, int b);
 
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_type(unsigned char *frame);
