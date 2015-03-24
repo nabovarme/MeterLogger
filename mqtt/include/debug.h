@@ -5,13 +5,13 @@
  *      Author: Minh
  */
 
-//#define DEBUG
+//#define PRINTF_DEBUG
 
 #ifndef USER_DEBUG_H_
 #define USER_DEBUG_H_
 
 #ifndef INFO
-#ifdef DEBUG
+#ifdef PRINTF_DEBUG
 #define INFO os_printf
 #else
 #define INFO(...) /**/

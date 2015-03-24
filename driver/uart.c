@@ -141,9 +141,6 @@ uart0_write_char(char c)
     uart_tx_one_char(UART0, '\r');
     uart_tx_one_char(UART0, '\n');
   }
-  else if (c == '\r')
-  {
-  }
   else
   {
     uart_tx_one_char(UART0, c);

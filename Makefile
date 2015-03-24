@@ -214,7 +214,10 @@ flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 
 flashblank:
 	$(ESPTOOL) -p $(ESPPORT) write_flash 0x0 firmware/blank512k.bin
-	
+
+screen:
+	screen /dev/ttyUSB0 1200,cstopb
+
 test: flash
 	screen $(ESPPORT) 115200
 

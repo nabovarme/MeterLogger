@@ -18,7 +18,6 @@
 #include "httpdespfs.h"
 #include "cgi.h"
 #include "cgiwifi.h"
-#include "stdout.h"
 #include "auth.h"
 #include "debug.h"
 
@@ -76,7 +75,6 @@ HttpdBuiltInUrl builtInUrls[]={
 
 //Main routine. Initialize stdout, the I/O and the webserver and we're done.
 void httpd_user_init(void) {
-	stdoutInit();
 	ioInit();
 	httpdInit(builtInUrls, 80);
 	INFO("\nReady\n");
