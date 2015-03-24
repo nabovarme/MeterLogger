@@ -48,11 +48,11 @@ uart_config(uint8 uart_no)
   }
 
   uart_div_modify(uart_no, UART_CLK_FREQ / (UartDev.baut_rate));
-
+  
   WRITE_PERI_REG(UART_CONF0(uart_no), UartDev.exist_parity
                  | UartDev.parity
-                 | (UartDev.stop_bits << UART_STOP_BIT_NUM_S)
-                 | (UartDev.data_bits << UART_BIT_NUM_S));
+                 | (TWO_STOP_BIT << UART_STOP_BIT_NUM_S)
+                 | (EIGHT_BITS << UART_BIT_NUM_S));
 
   //clear rx and tx fifo,not ready
   SET_PERI_REG_MASK(UART_CONF0(uart_no), UART_RXFIFO_RST | UART_TXFIFO_RST);

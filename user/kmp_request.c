@@ -5,6 +5,12 @@
 #include "kmp.h"
 #include "kmp_request.h"
 
+#define QUEUE_SIZE 256
+
+// fifo
+volatile unsigned int fifo_head, fifo_tail;
+volatile unsigned char fifo_buffer[QUEUE_SIZE];
+
 // allocate frame to send
 unsigned char frame[KMP_FRAME_L];
 unsigned int frame_length;
@@ -223,4 +229,51 @@ void kmp_request_send() {
     uart0_tx_buffer(frame, frame_length);     // send kmp request
     
     os_delay_us(20000);             // sleep 2 seconds
+}
+
+// fifo
+ICACHE_FLASH_ATTR
+unsigned int kmp_fifo_in_use() {
+	return fifo_head - fifo_tail;
+}
+
+ICACHE_FLASH_ATTR
+unsigned char fifo_put(unsigned char c) {
+	if (kmp_fifo_in_use() != QUEUE_SIZE) {
+		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
+		// wrap
+		if (fifo_head == QUEUE_SIZE) {
+			fifo_head = 0;
+		}
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+ICACHE_FLASH_ATTR
+unsigned char kmp_fifo_get(unsigned char *c) {
+	if (kmp_fifo_in_use() != 0) {
+		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
+		// wrap
+		if (fifo_tail == QUEUE_SIZE) {
+			fifo_tail = 0;
+		}
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+ICACHE_FLASH_ATTR
+unsigned char kmp_fifo_snoop(unsigned char *c, unsigned int pos) {
+	if (kmp_fifo_in_use() > (pos)) {
+        *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }

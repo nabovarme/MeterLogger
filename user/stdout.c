@@ -34,9 +34,9 @@ void stdoutInit() {
 	PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
 	
-	//Set baud rate and other serial parameters to 115200,n,8,1
-	uart_div_modify(0, UART_CLK_FREQ/BIT_RATE_115200);
-	WRITE_PERI_REG(UART_CONF0(0), (STICK_PARITY_DIS)|(ONE_STOP_BIT << UART_STOP_BIT_NUM_S)| \
+	//Set baud rate and other serial parameters to 1200,n,8,2
+	uart_div_modify(0, UART_CLK_FREQ/BIT_RATE_1200);
+	WRITE_PERI_REG(UART_CONF0(0), (STICK_PARITY_DIS)|(TWO_STOP_BIT << UART_STOP_BIT_NUM_S)| \
 				(EIGHT_BITS << UART_BIT_NUM_S));
 
 	//Reset tx & rx fifo

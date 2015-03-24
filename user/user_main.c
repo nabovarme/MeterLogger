@@ -218,7 +218,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
-	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_delay_us(1000000);
 	
 	CFG_Load();
