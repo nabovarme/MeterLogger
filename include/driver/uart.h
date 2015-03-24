@@ -18,9 +18,9 @@ typedef enum {
 } UartBitsNum4Char;
 
 typedef enum {
-    ONE_STOP_BIT             = 0,
-    ONE_HALF_STOP_BIT        = BIT2,
-    TWO_STOP_BIT             = BIT2
+	ONE_STOP_BIT =		0x1,
+	ONE_HALF_STOP_BIT =	0x2,
+	TWO_STOP_BIT =		0x3
 } UartStopBitsNum;
 
 typedef enum {
