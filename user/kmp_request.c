@@ -21,12 +21,16 @@ uint16_t register_list[8];
 kmp_response_t response;
 unsigned char unit_string[8];
 
-MQTT_Client *mqtt_client;
+MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
 ICACHE_FLASH_ATTR
-void kmp_request_init(MQTT_Client* client) {
-	mqtt_client = client;
+void kmp_request_init() {
 	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
+}
+
+ICACHE_FLASH_ATTR
+void kmp_set_mqtt_client(MQTT_Client* client) {
+	mqtt_client = client;
 }
 
 ICACHE_FLASH_ATTR
@@ -83,7 +87,12 @@ static void kmp_received_task(os_event_t *events) {
 		}
 		// send it
 		message_l = strlen(message);
-		MQTT_Publish(mqtt_client, "/console", message, message_l, 0, 0);
+		if (mqtt_client) {
+			MQTT_Publish(mqtt_client, "/console", message, message_l, 0, 0);
+		}
+		else {
+			os_printf("xxx %s\n\r", message);
+		}
 	}
   
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {

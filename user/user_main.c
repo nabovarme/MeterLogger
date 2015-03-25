@@ -182,8 +182,8 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Connected\r\n");
 
-	// start kmp parser
-	kmp_request_init(client);
+	// set mqtt_client kmp_request should use to return data
+	kmp_set_mqtt_client(client);
 	
 	// sample once and start sample timer
 	sample_timer_func(NULL);
@@ -221,9 +221,14 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
+	os_delay_us(10000000);		// wait 10 seconds before starting wifi and let the meter boot
+
+	// start kmp_request
+	kmp_request_init();
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-	os_delay_us(1000000);
-	
+	// get meter serial number
+	kmp_request_send();
+		
 	CFG_Load();
 	
 	// boot in ap mode

@@ -6,7 +6,10 @@
 os_event_t    kmp_received_task_queue[kmp_received_task_queue_length];
 
 ICACHE_FLASH_ATTR
-void kmp_request_init(MQTT_Client* client);
+void kmp_request_init();
+
+ICACHE_FLASH_ATTR
+void kmp_set_mqtt_client(MQTT_Client* client);
 
 ICACHE_FLASH_ATTR
 void kmp_request_send();
