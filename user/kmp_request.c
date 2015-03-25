@@ -64,22 +64,22 @@ void kmp_request_send() {
   */
 ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
-	uint8_t c;
-	unsigned int i;
+	unsigned char c;
 	//unsigned char topic[128];
-	unsigned char message[1024];
+	unsigned char message[KMP_FRAME_L];
 	//int topic_l;
 	int message_l;
 	unsigned char hex_char[3];
 
-	c = events->par;
-	i = 0;
-	if ((c == '\r') || (c == '\n')) {
-		memset(message, 0x00, 1024);			// clear it
-		while (kmp_fifo_get(&c)) {				// DEBUG: possible BUFFER OVERFLOW here
-			os_sprintf(hex_char, "%02x", c);
-			strcat(message, hex_char);
-			i++;
+	c = events->par;								// get last received char
+	if ((c == '\r') || (c == '\n')) {				// if end of kmp frame received
+		memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
+		message_l = 0;
+		while (kmp_fifo_get(&c)) {
+			message_l += os_sprintf(hex_char, "%02x", c);
+			if (message_l < KMP_FRAME_L) {			// no buffer overflow
+				strcat(message, hex_char);
+			}
 		}
 		// send it
 		message_l = strlen(message);
