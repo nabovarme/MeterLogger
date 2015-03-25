@@ -26,7 +26,7 @@ unsigned char unit_string[8];
   * @retval None
   */
 ICACHE_FLASH_ATTR
-static void at_recvTask(os_event_t *events)
+static void kmp_received_task(os_event_t *events)
 {
 	
 //  static uint8_t atHead[2];
@@ -200,7 +200,7 @@ static void at_recvTask(os_event_t *events)
 
 ICACHE_FLASH_ATTR
 void kmp_request_init() {
-	//system_os_task(at_recvTask, at_recvTaskPrio, at_recvTaskQueue, at_recvTaskQueueLen);
+	//system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
 }
 
 ICACHE_FLASH_ATTR

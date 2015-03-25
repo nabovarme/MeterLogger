@@ -1,11 +1,11 @@
 
-#define at_recvTaskPrio        0
-#define at_recvTaskQueueLen    64
+#define kmp_received_task_prio			0
+#define kmp_received_task_queue_length	64
 
-os_event_t    at_recvTaskQueue[at_recvTaskQueueLen];
+os_event_t    kmp_received_task_queue[kmp_received_task_queue_length];
 
 ICACHE_FLASH_ATTR
-static void at_recvTask(os_event_t *events);
+static void kmp_received_task(os_event_t *events);
 
 
 ICACHE_FLASH_ATTR

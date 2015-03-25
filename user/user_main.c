@@ -44,7 +44,7 @@
 #include "kmp_request.h"
 #include "config.h"
 
-#define user_procTaskPrio			0
+#define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
 
 os_event_t user_proc_task_queue[user_proc_task_queue_len];
@@ -226,8 +226,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	kmp_request_init();
 	
 	// boot in ap mode
-	system_os_task(config_mode_func, user_procTaskPrio, user_proc_task_queue, user_proc_task_queue_len);
-	system_os_post(user_procTaskPrio, 0, 0 );
+	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
+	system_os_post(user_proc_task_prio, 0, 0 );
 	
 	// wait for 60 seconds and go to station mode
     os_timer_disarm(&sample_mode_timer);
