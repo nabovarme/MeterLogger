@@ -182,6 +182,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Connected\r\n");
 
+	// start kmp parser
+	kmp_request_init(client);
+	
 	// sample once and start sample timer
 	sample_timer_func(NULL);
     os_timer_disarm(&sample_timer);
@@ -222,8 +225,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_delay_us(1000000);
 	
 	CFG_Load();
-	
-	kmp_request_init();
 	
 	// boot in ap mode
 	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);

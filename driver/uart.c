@@ -14,6 +14,8 @@
 #include "driver/uart.h"
 #include "osapi.h"
 #include "driver/uart_register.h"
+#include "user_interface.h"
+#include "kmp_request.h"
 //#include "ssc.h"
 
 
@@ -221,10 +223,9 @@ uart0_rx_intr_handler(void *para)
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-			os_printf("%c", RcvChar);
-			//CMD_Input(RcvChar);
+			kmp_fifo_put(RcvChar);
+			system_os_post(kmp_received_task_prio, 0, RcvChar);
 		}
-
 	}
 
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
