@@ -305,6 +305,11 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
             return 0;
         }
     }
+	
+	if (kmp_frame_length < 6) {
+		// valid packets are at least 1) start byte, 2) dst, 3) cid, 4) crc high, 5) crc low and 6) stop byte
+		return 0;
+	}
     
     if (kmp_frame[kmp_frame_length - 1] == 0x0d) {
         // end of data - get params from frame
@@ -312,7 +317,7 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
         
         // unstuff data
         kmp_byte_unstuff();
-        
+		
         // calculate crc
         kmp_data_length = kmp_frame_length - 4; // not included 1) start_byte, 2) crc high, 3) crc low and 4) stop byte
         crc16 = kmp_crc16();

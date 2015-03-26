@@ -2,6 +2,7 @@
 #include "osapi.h"
 #include "driver/uart.h"
 
+#include "unix_time.h"
 #include "mqtt.h"
 #include "kmp.h"
 #include "kmp_request.h"
@@ -69,29 +70,101 @@ void kmp_request_send() {
 ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
 	unsigned char c;
-	//unsigned char topic[128];
+	unsigned int i;
+	uint64 current_unix_time;
+	char key_value[128];
+	unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
-	//int topic_l;
+	int key_value_l;
+	int topic_l;
 	int message_l;
+	
+	uint32 random_value;								// DEBUG: for meter test data generation
 	unsigned char hex_char[3];
+	
+    // allocate struct for response
+    kmp_response_t response;
+    unsigned char unit_string[8];
 
 	c = events->par;								// get last received char
 	if ((c == '\r') || (c == '\n')) {				// if end of kmp frame received
 		memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
-		message_l = 0;
-		while (kmp_fifo_get(&c)) {
-			message_l += os_sprintf(hex_char, "%02x", c);
-			if (message_l < KMP_FRAME_L) {			// no buffer overflow
-				strcat(message, hex_char);
-			}
+		i = 0;
+		while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
+			message[i++] = c;
 		}
-		// send it
-		message_l = strlen(message);
+		message_l = i;
+
+		// decode kmp frame
+		kmp_decode_frame(message, message_l, &response);
+		
 		if (mqtt_client) {
-			MQTT_Publish(mqtt_client, "/console", message, message_l, 0, 0);
+			// if mqtt_client is initialized
+			
+			// and prepare for mqtt transmission
+			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+	
+			// format /sample/unix_time => val1=23&val2=val3&baz=blah
+			topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
+			strcpy(message, "");	// clear it
+	
+			// serial
+			key_value_l = os_sprintf(key_value, "serial=%lu&", response.kmp_response_serial);
+			strcat(message, key_value);
+
+			// heap size
+			key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
+			strcat(message, key_value);
+
+			// heating meter specific
+			// flow temperature
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", random_value);
+			strcat(message, key_value);
+
+			// return flow temperature
+			random_value = rand() % 20 + 50;
+			key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
+			strcat(message, key_value);
+
+			// temperature difference
+			random_value = rand() % 20 + 30;
+			key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
+			strcat(message, key_value);
+	
+			// flow
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "flow=%lu&", random_value);
+			strcat(message, key_value);	
+	
+			// current power
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "current_power=%lu&", random_value);
+			strcat(message, key_value);
+
+			// hours
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "hours=%lu&", random_value);
+			strcat(message, key_value);
+
+			// volume
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "volume=%lu&", random_value);
+			strcat(message, key_value);
+
+			// power
+			random_value = rand() % 20 + 70;
+			key_value_l = os_sprintf(key_value, "power=%lu&", random_value);
+			strcat(message, key_value);	
+
+
+			// send it
+			message_l = strlen(message);
+			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 		}
 		else {
-			os_printf("xxx %s\n\r", message);
+			// we are starting up, no mqtt
+			os_printf("serial number is: %u\n", response.kmp_response_serial);
 		}
 	}
   

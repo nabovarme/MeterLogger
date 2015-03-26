@@ -106,6 +106,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 
 	kmp_request_send();
 
+	/*
 	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 	
 	// format /sample/unix_time => val1=23&val2=val3&baz=blah
@@ -166,6 +167,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	// send it
 	message_l = strlen(message);
 	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
+	*/
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
