@@ -42,7 +42,7 @@ void kmp_request_send() {
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
 	
 	
-    os_delay_us(20000);             // sleep 2 seconds
+    os_delay_us(2000000);             // sleep 2 seconds
 
     // get registers
     // prepare frame
@@ -59,7 +59,6 @@ void kmp_request_send() {
     // send frame
     uart0_tx_buffer(frame, frame_length);     // send kmp request
     
-    os_delay_us(20000);             // sleep 2 seconds
 }
 
 /**
@@ -97,6 +96,8 @@ static void kmp_received_task(os_event_t *events) {
 
 		// decode kmp frame
 		kmp_decode_frame(message, message_l, &response);
+		//kmp_unit_to_string(response.kmp_response_register_list[0].unit, unit_string);
+		//printf("heat energy (E1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex), unit_string);
 		
 		if (mqtt_client) {
 			// if mqtt_client is initialized
@@ -143,9 +144,8 @@ static void kmp_received_task(os_event_t *events) {
 			strcat(message, key_value);
 
 			// hours
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "hours=%lu&", random_value);
-			strcat(message, key_value);
+			key_value_l = os_sprintf(key_value, "hours=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
+			strcat(message, key_value);	
 
 			// volume
 			random_value = rand() % 20 + 70;
@@ -153,8 +153,7 @@ static void kmp_received_task(os_event_t *events) {
 			strcat(message, key_value);
 
 			// power
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "power=%lu&", random_value);
+			key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
 			strcat(message, key_value);	
 
 

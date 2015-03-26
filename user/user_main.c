@@ -105,69 +105,6 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	uint32 random_value;								// DEBUG: for meter test data generation
 
 	kmp_request_send();
-
-	/*
-	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-	
-	// format /sample/unix_time => val1=23&val2=val3&baz=blah
-	topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
-	strcpy(message, "");	// clear it
-	
-	// counter
-	key_value_l = os_sprintf(key_value, "counter=%lu&", counter);
-	counter++;
-	strcat(message, key_value);
-
-	// heap size
-	key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
-	strcat(message, key_value);
-
-	// heating meter specific
-	// flow temperature
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", random_value);
-	strcat(message, key_value);
-
-	// return flow temperature
-	random_value = rand() % 20 + 50;
-	key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
-	strcat(message, key_value);
-
-	// temperature difference
-	random_value = rand() % 20 + 30;
-	key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
-	strcat(message, key_value);
-	
-	// flow
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "flow=%lu&", random_value);
-	strcat(message, key_value);	
-	
-	// current power
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "current_power=%lu&", random_value);
-	strcat(message, key_value);
-
-	// hours
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "hours=%lu&", random_value);
-	strcat(message, key_value);
-
-	// volume
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "volume=%lu&", random_value);
-	strcat(message, key_value);
-
-	// power
-	random_value = rand() % 20 + 70;
-	key_value_l = os_sprintf(key_value, "power=%lu&", random_value);
-	strcat(message, key_value);	
-
-
-	// send it
-	message_l = strlen(message);
-	MQTT_Publish(&mqttClient, topic, message, message_l, 0, 0);
-	*/
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
