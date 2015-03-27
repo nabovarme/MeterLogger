@@ -209,22 +209,25 @@ uart0_rx_intr_handler(void *para)
 	}
 
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST)) {
-		ETS_UART_INTR_DISABLE();/////////
-
-		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
-			WRITE_PERI_REG(0X60000914, 0x73); //WTD
-			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-			//CMD_Input(RcvChar);
-		}
-
-	}
-	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST)) {
-		ETS_UART_INTR_DISABLE();/////////
+		//ETS_UART_INTR_DISABLE();/////////
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
 			kmp_fifo_put(RcvChar);
-			system_os_post(kmp_received_task_prio, 0, RcvChar);
+			if ((RcvChar == '\r') || (RcvChar == '\n')) {				// if end of kmp frame received
+				system_os_post(kmp_received_task_prio, 0, 0);
+			}
+		}
+	}
+	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST)) {
+		//ETS_UART_INTR_DISABLE();/////////
+		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
+			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
+			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+			kmp_fifo_put(RcvChar);
+			if ((RcvChar == '\r') || (RcvChar == '\n')) {				// if end of kmp frame received
+				system_os_post(kmp_received_task_prio, 0, 0);
+			}
 		}
 	}
 
@@ -234,7 +237,7 @@ uart0_rx_intr_handler(void *para)
 	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_TOUT_INT_ST)) {
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
 	}
-	ETS_UART_INTR_ENABLE();
+	//ETS_UART_INTR_ENABLE();
 }
 
 /******************************************************************************

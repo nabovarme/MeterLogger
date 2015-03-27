@@ -26,6 +26,9 @@ MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
 ICACHE_FLASH_ATTR
 void kmp_request_init() {
+	fifo_head = 0;
+	fifo_tail = 0;
+
 	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
 }
 
@@ -85,86 +88,83 @@ static void kmp_received_task(os_event_t *events) {
     kmp_response_t response;
     unsigned char unit_string[8];
 
-	c = events->par;								// get last received char
-	if ((c == '\r') || (c == '\n')) {				// if end of kmp frame received
-		memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
-		i = 0;
-		while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
-			message[i++] = c;
-		}
-		message_l = i;
+	//ETS_UART_INTR_DISABLE();
 
-		// decode kmp frame
-		kmp_decode_frame(message, message_l, &response);
-		//kmp_unit_to_string(response.kmp_response_register_list[0].unit, unit_string);
-		//printf("heat energy (E1): %f %s\n", kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex), unit_string);
+	memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
+	i = 0;
+	while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
+		message[i++] = c;
+	}
+	message_l = i;
+
+	// decode kmp frame
+	kmp_decode_frame(message, message_l, &response);
+	
+	if (mqtt_client) {
+		// if mqtt_client is initialized
 		
-		if (mqtt_client) {
-			// if mqtt_client is initialized
-			
-			// and prepare for mqtt transmission
-			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-	
-			// format /sample/unix_time => val1=23&val2=val3&baz=blah
-			topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
-			strcpy(message, "");	// clear it
-	
-			// serial
-			key_value_l = os_sprintf(key_value, "serial=%lu&", response.kmp_response_serial);
-			strcat(message, key_value);
+		// and prepare for mqtt transmission
+		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 
-			// heap size
-			key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
-			strcat(message, key_value);
+		// format /sample/unix_time => val1=23&val2=val3&baz=blah
+		topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
+		strcpy(message, "");	// clear it
 
-			// heating meter specific
-			// flow temperature
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", random_value);
-			strcat(message, key_value);
+		// serial
+		key_value_l = os_sprintf(key_value, "serial=%lu&", response.kmp_response_serial);
+		strcat(message, key_value);
 
-			// return flow temperature
-			random_value = rand() % 20 + 50;
-			key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
-			strcat(message, key_value);
+		// heap size
+		key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
+		strcat(message, key_value);
 
-			// temperature difference
-			random_value = rand() % 20 + 30;
-			key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
-			strcat(message, key_value);
-	
-			// flow
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "flow=%lu&", random_value);
-			strcat(message, key_value);	
-	
-			// current power
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "current_power=%lu&", random_value);
-			strcat(message, key_value);
+		// heating meter specific
+		// flow temperature
+		random_value = rand() % 20 + 70;
+		key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", random_value);
+		strcat(message, key_value);
 
-			// hours
-			key_value_l = os_sprintf(key_value, "hours=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
-			strcat(message, key_value);	
+		// return flow temperature
+		random_value = rand() % 20 + 50;
+		key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", random_value);
+		strcat(message, key_value);
 
-			// volume
-			random_value = rand() % 20 + 70;
-			key_value_l = os_sprintf(key_value, "volume=%lu&", random_value);
-			strcat(message, key_value);
+		// temperature difference
+		random_value = rand() % 20 + 30;
+		key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", random_value);
+		strcat(message, key_value);
 
-			// power
-			key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
-			strcat(message, key_value);	
+		// flow
+		random_value = rand() % 20 + 70;
+		key_value_l = os_sprintf(key_value, "flow=%lu&", random_value);
+		strcat(message, key_value);	
+
+		// current power
+		random_value = rand() % 20 + 70;
+		key_value_l = os_sprintf(key_value, "current_power=%lu&", random_value);
+		strcat(message, key_value);
+
+		// hours
+		key_value_l = os_sprintf(key_value, "hours=%lu&", response.kmp_response_register_list[2].value);
+		strcat(message, key_value);	
+
+		// volume
+		random_value = rand() % 20 + 70;
+		key_value_l = os_sprintf(key_value, "volume=%lu&", random_value);
+		strcat(message, key_value);
+
+		// power
+		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
+		strcat(message, key_value);	
 
 
-			// send it
-			message_l = strlen(message);
-			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
-		}
-		else {
-			// we are starting up, no mqtt
-			os_printf("serial number is: %u\n", response.kmp_response_serial);
-		}
+		// send it
+		message_l = strlen(message);
+		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+	}
+	else {
+		// we are starting up, no mqtt
+		os_printf("serial number is: %u\n", response.kmp_response_serial);
 	}
   
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
@@ -173,7 +173,6 @@ static void kmp_received_task(os_event_t *events) {
 	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_TOUT_INT_ST)) {
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
 	}
-	ETS_UART_INTR_ENABLE();
 }
 
 

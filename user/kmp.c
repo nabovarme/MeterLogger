@@ -333,6 +333,7 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
         }
 
         // decode application layer
+		
         if (kmp_frame[KMP_CID_IDX] == 0x01) {
             // kmp_get_type
             kmp_response->kmp_response_meter_type = (kmp_frame[KMP_DATA_IDX + 0] << 8) + kmp_frame[KMP_DATA_IDX + 1];
