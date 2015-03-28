@@ -155,11 +155,11 @@ static void kmp_received_task(os_event_t *events) {
 		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
 		strcat(message, key_value);
 	}
-	message_l = strlen(message > 1);
+	message_l = strlen(message);
 	
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-		if (kmp_serial && message_l) {
+		if (kmp_serial && (message_l > 1)) {
 			// if we received both serial and registers send it
 			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 		}
