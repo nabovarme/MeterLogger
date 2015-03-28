@@ -155,7 +155,7 @@ static void kmp_received_task(os_event_t *events) {
 		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
 		strcat(message, key_value);
 	}
-	message_l = strlen(message);
+	message_l = strlen(message > 1);
 	
 	if (mqtt_client) {
 		// if mqtt_client is initialized
