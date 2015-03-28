@@ -154,26 +154,17 @@ static void kmp_received_task(os_event_t *events) {
 		// power
 		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
 		strcat(message, key_value);
-	}
-	message_l = strlen(message);
+
+		message_l = strlen(message);
 	
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		if (kmp_serial && (message_l > 1)) {
-			// if we received both serial and registers send it
-			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		if (mqtt_client) {
+			// if mqtt_client is initialized
+			if (kmp_serial && (message_l > 1)) {
+				// if we received both serial and registers send it
+				MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+			}
 		}
 	}
-	/*
-	else {
-		// we are starting up, no mqtt
-		os_printf("received serial number is: %u\n", response.kmp_response_serial);
-		os_printf("saved serial number is: %u\n", kmp_serial);
-		if (kmp_serial && message_l) {
-			os_printf("mqtt message prepared: %s\n\r", message);
-		}
-	}
-	*/
   
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
