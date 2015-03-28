@@ -161,7 +161,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 ICACHE_FLASH_ATTR void user_init(void) {
 	os_delay_us(10000000);		// wait 10 seconds before starting wifi and let the meter boot
-
+	
 	// start kmp_request
 	kmp_request_init();
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
@@ -175,9 +175,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_os_post(user_proc_task_prio, 0, 0 );
 	
 	// wait for 60 seconds and go to station mode
-    os_timer_disarm(&sample_mode_timer);
-    os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
-    os_timer_arm(&sample_mode_timer, 60000, 0);
+	os_timer_disarm(&sample_mode_timer);
+	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
+	os_timer_arm(&sample_mode_timer, 60000, 0);
 	
 	INFO("\r\nSystem started ...\r\n");
 }

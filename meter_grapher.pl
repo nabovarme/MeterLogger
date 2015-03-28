@@ -62,13 +62,14 @@ sub mqtt_handler {
 	# parse message
 	$message =~ s/&$//;
 	
-	my ($key, $value);
+	my ($key, $value, $unit);
 	my @key_value_list = split(/&/, $message);
-	my $key_value;
+	my $key_value; 
 	foreach $key_value (@key_value_list) {
-	        ($key, $value) = split(/=/, $key_value);
-	        $mqtt_data->{$key} = $value;
-        }
+		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)\s+(.*)/) {
+			$mqtt_data->{$key} = $value;
+		}
+	}
 	
 	# handle mqtt
 	
