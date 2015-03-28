@@ -402,7 +402,13 @@ uint16_t kmp_crc16() {
 ICACHE_FLASH_ATTR
 int kmp_pow(int x, int y) {
     int i;
-    int result = x;
+    int result;
+    
+    if (y == 0) {
+        return 1;
+    }
+    
+    result = x;
     for (i = 1; i < y; i++) {
         result *= x;
     }
