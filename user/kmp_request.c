@@ -100,76 +100,80 @@ static void kmp_received_task(os_event_t *events) {
 	message_l = i;
 
 	// decode kmp frame
-	kmp_decode_frame(message, message_l, &response);
+	kmp_decode_frame(message, message_l, &response);	// DEBUG: we should check for return code (what about no reply from kmp?)
+	message_l = 0;		// zero it so we can reuse it for mqtt string
+	
+	if (response.kmp_response_serial) {
+		kmp_serial = response.kmp_response_serial;	// save it for later use
+	}
+	else {
+		// prepare for mqtt transmission if we got serial number from meter
+		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+
+		// format /sample/unix_time => val1=23&val2=val3&baz=blah
+		topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
+		strcpy(message, "");	// clear it
+
+		// serial
+		key_value_l = os_sprintf(key_value, "serial=%lu&", kmp_serial);
+		strcat(message, key_value);
+
+		// heap size
+		key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
+		strcat(message, key_value);
+
+		// heating meter specific
+		// flow temperature
+		key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex));
+		strcat(message, key_value);
+
+		// return flow temperature
+		key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex));
+		strcat(message, key_value);
+
+		// temperature difference
+		key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex));
+		strcat(message, key_value);
+
+		// flow
+		key_value_l = os_sprintf(key_value, "flow=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex));
+		strcat(message, key_value);
+
+		// current power
+		key_value_l = os_sprintf(key_value, "current_power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex)));
+		strcat(message, key_value);
+
+		// hours
+		key_value_l = os_sprintf(key_value, "hours=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
+		strcat(message, key_value);
+
+		// volume
+		key_value_l = os_sprintf(key_value, "volume=%lu&", (uint32_t)((double)1000 * kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex)));
+		strcat(message, key_value);
+
+		// power
+		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
+		strcat(message, key_value);
+	}
+	message_l = strlen(message);
 	
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-		
-		if (kmp_serial) {
-			// prepare for mqtt transmission if we got serial number from meter
-			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-	
-			// format /sample/unix_time => val1=23&val2=val3&baz=blah
-			topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
-			strcpy(message, "");	// clear it
-	
-			// serial
-			key_value_l = os_sprintf(key_value, "serial=%lu&", kmp_serial);
-			strcat(message, key_value);
-	
-			// heap size
-			key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
-			strcat(message, key_value);
-	
-			// heating meter specific
-			// flow temperature
-			key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex));
-			strcat(message, key_value);
-
-			// return flow temperature
-			key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex));
-			strcat(message, key_value);
-	
-			// temperature difference
-			key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex));
-			strcat(message, key_value);
-	
-			// flow
-			key_value_l = os_sprintf(key_value, "flow=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex));
-			strcat(message, key_value);
-	
-			// current power
-			key_value_l = os_sprintf(key_value, "current_power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex)));
-			strcat(message, key_value);
-	
-			// hours
-			key_value_l = os_sprintf(key_value, "hours=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
-			strcat(message, key_value);
-	
-			// volume
-			key_value_l = os_sprintf(key_value, "volume=%lu&", (uint32_t)((double)1000 * kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex)));
-			strcat(message, key_value);
-	
-			// power
-			key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
-			strcat(message, key_value);
-			
-			os_printf("%s\n\r", message);
-	
-	
-			// send it
-			message_l = strlen(message);
+		if (kmp_serial && message_l) {
+			// if we received both serial and registers send it
 			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 		}
 	}
+	/*
 	else {
 		// we are starting up, no mqtt
-		if (response.kmp_response_serial) {
-			kmp_serial = response.kmp_response_serial;	// save it for later use
-		}
 		os_printf("received serial number is: %u\n", response.kmp_response_serial);
 		os_printf("saved serial number is: %u\n", kmp_serial);
+		if (kmp_serial && message_l) {
+			os_printf("mqtt message prepared: %s\n\r", message);
+		}
 	}
+	*/
   
 	if (UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(UART0)) & UART_RXFIFO_FULL_INT_ST)) {
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
