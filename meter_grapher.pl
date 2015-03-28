@@ -1,13 +1,15 @@
-#!/opt/local/bin/perl -w
+#!/usr/bin/perl -w
 
 use strict;
 use Data::Dumper;
 use Net::MQTT::Simple;
 use RRDTool::OO;
 
-use constant RRD_FILE => "/tmp/esp.rrd";
+#use constant RRD_FILE => "/home/stoffer/nabovarme/nabovarme.rrd";
+use constant RRD_FILE => "/tmp/nabovarme.rrd";
 
-use constant IMG_ROOT => '/tmp';
+#use constant IMG_ROOT => '/var/www/isp.skulp.net/nabovarme';
+use constant IMG_ROOT => '/tmp/';
 use constant HOUR_IMG => 'hour.png';
 use constant DAY_IMG => 'day.png';
 use constant WEEK_IMG => 'week.png';
@@ -77,9 +79,9 @@ sub mqtt_handler {
 		$rrd->update(
 			time => $unix_time, 
 			values => {
-				flow_temp			=>  $mqtt_data->{flow_temperature},
-				return_flow_temp	=>  $mqtt_data->{return_flow_temperature},
-				temp_diff			=>  $mqtt_data->{temperature_difference}
+				flow_temp			=>  $mqtt_data->{t1},
+				return_flow_temp	=>  $mqtt_data->{t2},
+				temp_diff			=>  $mqtt_data->{tdif}
 			}
 		);
 		$rrd->graph(

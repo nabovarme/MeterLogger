@@ -124,35 +124,35 @@ static void kmp_received_task(os_event_t *events) {
 
 		// heating meter specific
 		// flow temperature
-		key_value_l = os_sprintf(key_value, "flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex));
+		key_value_l = os_sprintf(key_value, "t1=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex));
 		strcat(message, key_value);
 
 		// return flow temperature
-		key_value_l = os_sprintf(key_value, "return_flow_temperature=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex));
+		key_value_l = os_sprintf(key_value, "t2=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex));
 		strcat(message, key_value);
 
 		// temperature difference
-		key_value_l = os_sprintf(key_value, "temperature_difference=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex));
+		key_value_l = os_sprintf(key_value, "tdif=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex));
 		strcat(message, key_value);
 
 		// flow
-		key_value_l = os_sprintf(key_value, "flow=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex));
+		key_value_l = os_sprintf(key_value, "flow1=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex));
 		strcat(message, key_value);
 
 		// current power
-		key_value_l = os_sprintf(key_value, "current_power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex)));
+		key_value_l = os_sprintf(key_value, "effect1=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex)));
 		strcat(message, key_value);
 
 		// hours
-		key_value_l = os_sprintf(key_value, "hours=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
+		key_value_l = os_sprintf(key_value, "hr=%lu&", (uint32_t)kmp_value_to_double(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex));
 		strcat(message, key_value);
 
 		// volume
-		key_value_l = os_sprintf(key_value, "volume=%lu&", (uint32_t)((double)1000 * kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex)));
+		key_value_l = os_sprintf(key_value, "v1=%lu&", (uint32_t)((double)1000 * kmp_value_to_double(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex)));
 		strcat(message, key_value);
 
 		// power
-		key_value_l = os_sprintf(key_value, "power=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
+		key_value_l = os_sprintf(key_value, "e1=%lu&", (uint32_t)((double)1000000 * kmp_value_to_double(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex)));
 		strcat(message, key_value);
 
 		message_l = strlen(message);
