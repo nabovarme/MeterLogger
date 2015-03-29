@@ -298,7 +298,7 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
     if (kmp_frame_length == 1) {
         // no data returned from Kamstrup meter
         if (kmp_frame[kmp_frame_length - 1] == 0x06) {
-            return 1;
+            return 0;
         }
         else {
             // Kamstrup: device said: no valid reply from kamstrup meter
@@ -338,10 +338,12 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
             // kmp_get_type
             kmp_response->kmp_response_meter_type = (kmp_frame[KMP_DATA_IDX + 0] << 8) + kmp_frame[KMP_DATA_IDX + 1];
             kmp_response->kmp_response_sw_revision = (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+			return 1;
         }
         else if (kmp_frame[KMP_CID_IDX] == 0x02) {
             // kmp_get_serial
             kmp_response->kmp_response_serial = (kmp_frame[KMP_DATA_IDX + 0] << 24) + (kmp_frame[KMP_DATA_IDX + 1] << 16) + (kmp_frame[KMP_DATA_IDX + 2] << 8) + kmp_frame[KMP_DATA_IDX + 3];
+			return 1;
         }
         else if (kmp_frame[KMP_CID_IDX] == 0x10) {
             // kmp_get_register
@@ -368,18 +370,20 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
             }
             else {
                 // No registers in reply
+				return 0;
             }
         }
         else if (kmp_frame[KMP_CID_IDX] == 0x11) {
             // kmp_put_register
             //range = NSMakeRange(2, data.length - 2);
             //NSLog(@"%@", [data subdataWithRange:range]);
+			return 1;
         }
 //
     }
     else if (kmp_frame[kmp_frame_length - 1] == 0x06) {
         // kmp_set_clock no CRC
-        return 1;
+        return 0;
     }
     
     return 0;
