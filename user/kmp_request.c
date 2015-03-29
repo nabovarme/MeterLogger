@@ -115,7 +115,7 @@ static void kmp_received_task(os_event_t *events) {
 	message_l = i;
 
 	// decode kmp frame
-	if (kmp_decode_frame(message, message_l, &response)) {
+	if (kmp_decode_frame(message, message_l, &response) > 0) {
 		message_l = 0;		// zero it so we can reuse it for mqtt string
 	
 		if (response.kmp_response_serial) {
