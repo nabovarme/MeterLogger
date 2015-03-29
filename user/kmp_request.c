@@ -8,6 +8,7 @@
 #include "kmp_request.h"
 
 #define QUEUE_SIZE 256
+#define KMP_REQUEST_RETRIES 3
 
 unsigned int kmp_serial = 0;
 
@@ -28,11 +29,15 @@ MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 static volatile os_timer_t kmp_get_serial_timer;
 static volatile os_timer_t kmp_get_register_timer;
 
+unsigned int kmp_request_retries;
+
 ICACHE_FLASH_ATTR
 void kmp_request_init() {
 	fifo_head = 0;
 	fifo_tail = 0;
 
+	kmp_request_retries = 0;
+	
 	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
 }
 
@@ -190,11 +195,14 @@ static void kmp_received_task(os_event_t *events) {
 					MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 				}
 			}
+			kmp_request_retries = 0;	// reset retry counter
 		}
 	}
 	else {
-		// error decoding frame - retransmitting request
-		kmp_request_send();
+		// error decoding frame - retransmitting request KMP_REQUEST_RETRIES times
+		if (kmp_request_retries++ < KMP_REQUEST_RETRIES) {
+			kmp_request_send();
+		}
 	}
 }
 
