@@ -75,7 +75,7 @@ void kmp_request_send() {
 	
     os_timer_disarm(&kmp_get_register_timer);
     os_timer_setfn(&kmp_get_register_timer, (os_timer_func_t *)kmp_get_register_timer_func, NULL);
-    os_timer_arm(&kmp_get_register_timer, 200, 0);		// after 0.2 seconds
+    os_timer_arm(&kmp_get_register_timer, 400, 0);		// after 0.4 seconds
 }
 
 /**

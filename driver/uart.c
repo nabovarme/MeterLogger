@@ -216,7 +216,6 @@ uart0_rx_intr_handler(void *para)
 			kmp_fifo_put(RcvChar);
 			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
 				system_os_post(kmp_received_task_prio, 0, 0);
-				os_printf("overflow");
 			}
 		}
 	}
