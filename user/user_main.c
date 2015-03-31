@@ -98,15 +98,6 @@ ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
-	uint64 current_unix_time;
-	char key_value[128];
-	char topic[128];
-	char message[1024];
-	int key_value_l;
-	int topic_l;
-	int message_l;
-	uint32 random_value;								// DEBUG: for meter test data generation
-
 	kmp_request_send();
 }
 
