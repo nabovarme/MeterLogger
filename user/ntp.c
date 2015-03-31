@@ -51,7 +51,7 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len)
 
 void ICACHE_FLASH_ATTR ntp_send_request() {
 	ip_addr_t ip;	// not used, callback are handling ip
-	espconn_gethostbyname(pCon, "dk.pool.ntp.org", &ip, ntp_dns_found);
+	espconn_gethostbyname(pCon, NTP_SERVER, &ip, ntp_dns_found);
 }
 
 void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *arg) {
