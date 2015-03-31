@@ -53,6 +53,7 @@ os_event_t user_proc_task_queue[user_proc_task_queue_len];
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
+static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
 
 uint16 counter = 0;
@@ -81,7 +82,13 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	httpd_user_init();
 }
 
-ICACHE_FLASH_ATTR void sample_mode_func(void *arg) {
+ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
+	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
+	system_os_post(user_proc_task_prio, 0, 0 );
+}
+
+ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
+	os_printf("serial: %07u\n\r", kmp_serial);
 	CFG_Load();
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
@@ -161,15 +168,16 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	// get meter serial number
 	kmp_request_send();
-	os_delay_us(1000000);		// wait for serial number
 		
-	// boot in ap mode
-	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
-	system_os_post(user_proc_task_prio, 0, 0 );
-	
+	// wait for serial number
+	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
+	os_timer_disarm(&config_mode_timer);
+	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+	os_timer_arm(&config_mode_timer, 2000, 0);
+		
 	// wait for 60 seconds and go to station mode
 	os_timer_disarm(&sample_mode_timer);
-	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_func, NULL);
+	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 	os_timer_arm(&sample_mode_timer, 60000, 0);
 	
 	INFO("\r\nSystem started ...\r\n");
