@@ -55,6 +55,7 @@ MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
+static volatile os_timer_t kmp_request_send_timer;
 
 uint16 counter = 0;
 
@@ -107,6 +108,10 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	kmp_request_send();
 }
 
+ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
+	kmp_request_send();
+}
+	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
 	if(status == STATION_GOT_IP){ 
@@ -160,15 +165,20 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
-	os_delay_us(10000000);		// wait 10 seconds before starting wifi and let the meter boot
+	// wait 10 seconds before starting wifi and let the meter boot
+	os_delay_us(10000000);
 	
 	// start kmp_request
 	kmp_request_init();
+
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("Version: %s\n\r", VERSION);
 	
-	// get meter serial number
-	kmp_request_send();
+	// wait 0.2 seconds
+	// and send serial number request
+	os_timer_disarm(&kmp_request_send_timer);
+	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
+	os_timer_arm(&kmp_request_send_timer, 200, 0);
 		
 	// wait for serial number
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
@@ -176,7 +186,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 2000, 0);
 		
-	// wait for 60 seconds and go to station mode
+	// wait for 60 seconds
+	// and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 	os_timer_arm(&sample_mode_timer, 60000, 0);
