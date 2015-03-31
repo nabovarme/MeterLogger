@@ -485,7 +485,7 @@ MQTT_Task(os_event_t *e)
 /**
   * @brief  MQTT initialization connection function
   * @param  client: 	MQTT_Client reference
-  * @param  host: 	Domain or IP string
+  * @param  host: 	Host name or IP string
   * @param  port: 	Port to connect
   * @param  security:		1 for ssl, 0 for none
   * @retval None
@@ -609,7 +609,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		}
 	}
 	else {
-		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
+		INFO("TCP: Connect to hostname %s:%d\r\n", mqttClient->host, mqttClient->port);
 		espconn_gethostbyname(mqttClient->pCon, mqttClient->host, &mqttClient->ip, mqtt_dns_found);
 	}
 	mqttClient->connState = TCP_CONNECTING;
