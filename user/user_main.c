@@ -88,7 +88,6 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
-	os_printf("serial: %07u\n\r", kmp_serial);
 	CFG_Load();
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
