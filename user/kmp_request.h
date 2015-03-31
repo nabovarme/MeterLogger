@@ -18,6 +18,9 @@ ICACHE_FLASH_ATTR
 void kmp_get_register_timer_func();
 
 ICACHE_FLASH_ATTR
+void kmp_receive_timeout_timer_func();
+
+ICACHE_FLASH_ATTR
 void kmp_request_send();
 
 ICACHE_FLASH_ATTR
