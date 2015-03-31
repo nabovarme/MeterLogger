@@ -165,6 +165,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// start kmp_request
 	kmp_request_init();
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
+	os_printf("Version: %s\n\r", VERSION);
+	
 	// get meter serial number
 	kmp_request_send();
 		
