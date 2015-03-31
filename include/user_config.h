@@ -24,7 +24,7 @@
 //#define STA_PASS ""
 #define STA_TYPE AUTH_WPA2_PSK
 
-#define AP_SSID	"ESP_AP"
+#define AP_SSID	"KAM_%07u"
 #define AP_PASSWORD	"aabbccddeeff"
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/

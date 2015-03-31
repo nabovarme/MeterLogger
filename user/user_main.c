@@ -47,6 +47,8 @@
 #define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
 
+extern unsigned int kmp_serial;
+
 os_event_t user_proc_task_queue[user_proc_task_queue_len];
 
 MQTT_Client mqttClient;
@@ -62,8 +64,9 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	// make sure the device is in AP and STA combined mode
 	INFO("\r\nAP mode\r\n");
 	
+	CFG_Load();
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_sprintf(ap_conf.ssid, AP_SSID);
+	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
 	os_sprintf(ap_conf.password, AP_PASSWORD);
 	ap_conf.authmode = AUTH_WPA_PSK;
@@ -167,9 +170,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	// get meter serial number
 	kmp_request_send();
+	os_delay_us(1000000);		// wait for serial number
 		
-	CFG_Load();
-	
 	// boot in ap mode
 	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
 	system_os_post(user_proc_task_prio, 0, 0 );

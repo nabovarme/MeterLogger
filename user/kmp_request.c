@@ -8,7 +8,7 @@
 #include "kmp_request.h"
 
 #define QUEUE_SIZE 256
-#define KMP_REQUEST_RETRIES 3
+#define KMP_REQUEST_RETRIES 10
 
 unsigned int kmp_serial = 0;
 
