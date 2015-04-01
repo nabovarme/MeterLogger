@@ -108,7 +108,8 @@ ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
 	unsigned char c;
 	unsigned int i;
-	uint64 current_unix_time;
+	uint64_t current_unix_time;
+	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
 	unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
@@ -142,7 +143,12 @@ static void kmp_received_task(os_event_t *events) {
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
         	
 			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
-			topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
+			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
+			// BUG here.                        returns 0 -^
+			// this is a fix
+			os_sprintf(current_unix_time_string, "%lu", current_unix_time);
+			topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", kmp_serial, current_unix_time_string);
+
 			strcpy(message, "");	// clear it
         	
 			// heap size

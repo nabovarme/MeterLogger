@@ -26,7 +26,7 @@ ICACHE_FLASH_ATTR void overflow_timerfunc(void *arg) {
 	unix_time_mutex = false;		// free mutex
 }
 
-ICACHE_FLASH_ATTR void ntp_update_timerfunc(void *arg) {
+ICACHE_FLASH_ATTR void ntp_update_timer_func(void *arg) {
 	INFO("ntp_update_timer\n\r");
 	ntp_get_time();
 }
@@ -43,7 +43,7 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 	// start ntp update timer
 	ntp_update_interval = ((rand() % 3600) + 3600) * 1000;	// every hour + random time < one hour
     os_timer_disarm(&ntp_update_timer);
-    os_timer_setfn(&ntp_update_timer, (os_timer_func_t *)ntp_update_timerfunc, NULL);
+    os_timer_setfn(&ntp_update_timer, (os_timer_func_t *)ntp_update_timer_func, NULL);
     os_timer_arm(&ntp_update_timer, ntp_update_interval, 1);
 }
 

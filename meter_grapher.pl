@@ -127,7 +127,6 @@ sub mqtt_handler {
 			$mqtt_data->{$key} = $value;
 		}
 	}
-	warn Dumper($mqtt_data);
 	
 	# save to db
 	if ($unix_time < time() + 7200) {
