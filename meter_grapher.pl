@@ -31,6 +31,7 @@ openlog($0, "ndelay,pid", "local0");
 syslog('info', "starting...");
 
 my $unix_time;
+my $meter_serial;
 my $mqtt = Net::MQTT::Simple->new(q[loppen.christiania.org]);
 my $mqtt_data = undef;
 #my $mqtt_count = 0;
@@ -108,10 +109,11 @@ $mqtt->run(q[/sample/#] => \&mqtt_handler);
 sub mqtt_handler {
 	my ($topic, $message) = @_;
 
-	unless ($topic =~ m!/sample/(\d+)!) {
+	unless ($topic =~ m!/sample/v1/(\d+)/(\d+)!) {
 		return;
 	}
-	$unix_time = $1;
+	$meter_serial = $1;
+	$unix_time = $2;
 	
 	# parse message
 	$message =~ s/&$//;
@@ -140,7 +142,7 @@ sub mqtt_handler {
 			`volume`,
 			`energy`
 			) VALUES (] . 
-			$dbh->quote($mqtt_data->{serial}) . ',' . 
+			$dbh->quote($meter_serial) . ',' . 
 			$dbh->quote($mqtt_data->{t1}) . ',' . 
 			$dbh->quote($mqtt_data->{t2}) . ',' . 
 			$dbh->quote($mqtt_data->{tdif}) . ',' . 
