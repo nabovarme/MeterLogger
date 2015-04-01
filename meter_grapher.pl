@@ -2,8 +2,13 @@
 
 use strict;
 use Data::Dumper;
+use Sys::Syslog;
 use Net::MQTT::Simple;
 use RRDTool::OO;
+use DBI;
+
+use lib qw( /opt/local/apache2/perl/ );
+use Nabovarme::Db;
 
 #use constant RRD_FILE => "/home/stoffer/nabovarme/nabovarme.rrd";
 use constant RRD_FILE => "/tmp/nabovarme.rrd";
@@ -16,7 +21,17 @@ use constant WEEK_IMG => 'week.png';
 use constant MONTH_IMG => 'month.png';
 use constant YEAR_IMG => 'year.png';
 
+use constant HOUR_ENERGY_IMG => 'hour_energy.png';
+use constant DAY_ENERGY_IMG => 'day_energy.png';
+use constant WEEK_ENERGY_IMG => 'week_energy.png';
+use constant MONTH_ENERGY_IMG => 'month_energy.png';
+use constant YEAR_ENERGY_IMG => 'year_energy.png';
+
+openlog($0, "ndelay,pid", "local0");
+syslog('info', "starting...");
+
 my $unix_time;
+my $meter_serial;
 my $mqtt = Net::MQTT::Simple->new(q[loppen.christiania.org]);
 my $mqtt_data = undef;
 #my $mqtt_count = 0;
@@ -75,32 +90,74 @@ if (! -e RRD_FILE) {
 		}
 	);
 }
- 
+
+# connect to db
+my $dbh;
+if($dbh = Nabovarme::Db->my_connect) {
+	$dbh->{'mysql_auto_reconnect'} = 1;
+	syslog('info', "connected to db");
+}
+else {
+	syslog('info', "cant't connect to db $!");
+	die $!;
+}
+
+# start mqtt run loop
+$mqtt->run(q[/sample/#] => \&mqtt_handler);
+
+# end of main
 sub mqtt_handler {
 	my ($topic, $message) = @_;
 
-	unless ($topic =~ m!/sample/(\d+)!) {
+	unless ($topic =~ m!/sample/v1/(\d+)/(\d+)!) {
 		return;
 	}
-	$unix_time = $1;
+	$meter_serial = $1;
+	$unix_time = $2;
 	
 	# parse message
 	$message =~ s/&$//;
 	
 	my ($key, $value, $unit);
 	my @key_value_list = split(/&/, $message);
+	warn Dumper @key_value_list;
 	my $key_value; 
 	foreach $key_value (@key_value_list) {
-		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)\s+(.*)/) {
+		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)(\s+(.*))?/) {
 			$mqtt_data->{$key} = $value;
 		}
 	}
+	warn Dumper($mqtt_data);
+	
+	# save to db
+	if ($unix_time < time() + 7200) {
+		my $sth = $dbh->prepare(qq[INSERT INTO `samples` (
+			`serial`,
+			`flow_temp`,
+			`return_flow_temp`,
+			`temp_diff`,
+			`flow`,
+			`effect`,
+			`hours`,
+			`volume`,
+			`energy`
+			) VALUES (] . 
+			$dbh->quote($meter_serial) . ',' . 
+			$dbh->quote($mqtt_data->{t1}) . ',' . 
+			$dbh->quote($mqtt_data->{t2}) . ',' . 
+			$dbh->quote($mqtt_data->{tdif}) . ',' . 
+			$dbh->quote($mqtt_data->{flow1}) . ',' . 
+			$dbh->quote($mqtt_data->{effect1}) . ',' . 
+			$dbh->quote($mqtt_data->{hr}) . ',' . 
+			$dbh->quote($mqtt_data->{v1}) . ',' . 
+			$dbh->quote($mqtt_data->{e1}) . qq[)]);
+		$sth->execute || syslog('info', "can't log to db");
+		$sth->finish;
+	}
 	
 	# handle mqtt
-	
-	warn Dumper($mqtt_data);
-	warn "unix_time: $unix_time last rrd unix time: ". $rrd->last . " diff: " . ($unix_time - ($rrd->last)) . "\n";
-	if (($rrd->last < $unix_time + 5) && ($unix_time < time() + 3600)) {
+	warn "unix_time: $unix_time last rrd unix time: ". $rrd->last . " diff: " . ($unix_time - ($rrd->last)) . " \n \n";
+	if (($rrd->last < $unix_time + 5) && ($unix_time < time() + 7200)) {
 		# update rrd
 		$rrd->update(
 			time => $unix_time, 
@@ -115,6 +172,7 @@ sub mqtt_handler {
 				energy				=>  $mqtt_data->{e1}
 			}
 		);
+		# graphs for all data
 		$rrd->graph(
 			title => 'Meter graph hourly',
 			image => IMG_ROOT . '/' . HOUR_IMG,
@@ -134,7 +192,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow_temp',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 			
 			draw => {
@@ -149,7 +207,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'return_flow_temp',
 			        cfunc     => 'LAST',
-					format    => '%.0lf°C %s',
+					format    => '%.2lf°C',
 				},
 
 			draw => {
@@ -164,7 +222,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 
 			draw => {
@@ -179,7 +237,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow',
 		        cfunc     => 'LAST',
-				format    => '%.0lf l/h %s',
+				format    => '%.0lf l/h',
 			},
 
 			draw => {
@@ -189,12 +247,50 @@ sub mqtt_handler {
 				color		=> '00982f',
 				thickness	=> 1.5,
 				cfunc		=> 'MAX',
-				legend		=> 'Effect'
+				legend		=> 'Effekt'
 			},
 			gprint         => {
 				draw      => 'effect',
 		        cfunc     => 'LAST',
-				format    => '%.0lf kW %s',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
 			}
 		);
 		$rrd->graph(
@@ -216,7 +312,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow_temp',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 			
 			draw => {
@@ -230,10 +326,10 @@ sub mqtt_handler {
 			},
 			gprint         => {
 				draw      => 'return_flow_temp',
-		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
-			},
-			
+			        cfunc     => 'LAST',
+					format    => '%.2lf°C',
+				},
+
 			draw => {
 				dsname		=> "temp_diff",
 				name		=> 'temp_diff',
@@ -246,7 +342,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 
 			draw => {
@@ -261,7 +357,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow',
 		        cfunc     => 'LAST',
-				format    => '%.0lf l/h %s',
+				format    => '%.0lf l/h',
 			},
 
 			draw => {
@@ -271,12 +367,50 @@ sub mqtt_handler {
 				color		=> '00982f',
 				thickness	=> 1.5,
 				cfunc		=> 'MAX',
-				legend		=> 'Effect'
+				legend		=> 'Effekt'
 			},
 			gprint         => {
 				draw      => 'effect',
 		        cfunc     => 'LAST',
-				format    => '%.0lf kW %s',
+				format    => "%.2lf kW",
+			},
+
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
 			}
 		);
 		$rrd->graph(
@@ -298,7 +432,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow_temp',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 			
 			draw => {
@@ -312,10 +446,10 @@ sub mqtt_handler {
 			},
 			gprint         => {
 				draw      => 'return_flow_temp',
-		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
-			},
-			
+			        cfunc     => 'LAST',
+					format    => '%.2lf°C',
+				},
+
 			draw => {
 				dsname		=> "temp_diff",
 				name		=> 'temp_diff',
@@ -328,7 +462,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 
 			draw => {
@@ -343,7 +477,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow',
 		        cfunc     => 'LAST',
-				format    => '%.0lf l/h %s',
+				format    => '%.0lf l/h',
 			},
 
 			draw => {
@@ -353,12 +487,50 @@ sub mqtt_handler {
 				color		=> '00982f',
 				thickness	=> 1.5,
 				cfunc		=> 'MAX',
-				legend		=> 'Effect'
+				legend		=> 'Effekt'
 			},
 			gprint         => {
 				draw      => 'effect',
 		        cfunc     => 'LAST',
-				format    => '%.0lf kW %s',
+				format    => "%.2lf kW",
+			},
+
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
 			}
 		);
 		$rrd->graph(
@@ -380,7 +552,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow_temp',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 			
 			draw => {
@@ -394,10 +566,10 @@ sub mqtt_handler {
 			},
 			gprint         => {
 				draw      => 'return_flow_temp',
-		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
-			},
-			
+			        cfunc     => 'LAST',
+					format    => '%.2lf°C',
+				},
+
 			draw => {
 				dsname		=> "temp_diff",
 				name		=> 'temp_diff',
@@ -410,7 +582,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 
 			draw => {
@@ -425,7 +597,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow',
 		        cfunc     => 'LAST',
-				format    => '%.0lf l/h %s',
+				format    => '%.0lf l/h',
 			},
 
 			draw => {
@@ -435,12 +607,50 @@ sub mqtt_handler {
 				color		=> '00982f',
 				thickness	=> 1.5,
 				cfunc		=> 'MAX',
-				legend		=> 'Effect'
+				legend		=> 'Effekt'
 			},
 			gprint         => {
 				draw      => 'effect',
 		        cfunc     => 'LAST',
-				format    => '%.0lf kW %s',
+				format    => "%.2lf kW",
+			},
+
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
 			}
 		);
 		$rrd->graph(
@@ -462,7 +672,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow_temp',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 			
 			draw => {
@@ -476,10 +686,10 @@ sub mqtt_handler {
 			},
 			gprint         => {
 				draw      => 'return_flow_temp',
-		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
-			},
-			
+			        cfunc     => 'LAST',
+					format    => '%.2lf°C',
+				},
+
 			draw => {
 				dsname		=> "temp_diff",
 				name		=> 'temp_diff',
@@ -492,7 +702,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
-				format    => '%.0lf°C %s',
+				format    => '%.2lf°C',
 			},
 
 			draw => {
@@ -507,7 +717,7 @@ sub mqtt_handler {
 			gprint         => {
 				draw      => 'flow',
 		        cfunc     => 'LAST',
-				format    => '%.0lf l/h %s',
+				format    => '%.0lf l/h',
 			},
 
 			draw => {
@@ -517,12 +727,352 @@ sub mqtt_handler {
 				color		=> '00982f',
 				thickness	=> 1.5,
 				cfunc		=> 'MAX',
-				legend		=> 'Effect'
+				legend		=> 'Effekt'
 			},
 			gprint         => {
 				draw      => 'effect',
 		        cfunc     => 'LAST',
-				format    => '%.0lf kW %s',
+				format    => "%.2lf kW",
+			},
+
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
+			}
+		);
+
+		# graphs for energy
+		$rrd->graph(
+			title => 'Meter energy graph hourly',
+			image => IMG_ROOT . '/' . HOUR_ENERGY_IMG,
+			vertical_label => '',
+			width => 650,
+			height => 200,
+			start => time() - 3600,
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effekt'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
+			}
+		);
+		$rrd->graph(
+			title => 'Meter energy graph daily',
+			image => IMG_ROOT . '/' . DAY_ENERGY_IMG,
+			vertical_label => '',
+			width => 650,
+			height => 200,
+			start => time() - 3600 * 24,
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effekt'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
+			}
+		);
+		$rrd->graph(
+			title => 'Meter energy graph weekly',
+			image => IMG_ROOT . '/' . WEEK_ENERGY_IMG,
+			vertical_label => '',
+			width => 650,
+			height => 200,
+			start => time() - 3600 * 24 * 7,
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effekt'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
+			}
+		);
+		$rrd->graph(
+			title => 'Meter energy graph monthly',
+			image => IMG_ROOT . '/' . MONTH_ENERGY_IMG,
+			vertical_label => '',
+			width => 650,
+			height => 200,
+			start => time() - 3600 * 24 * 31,
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effekt'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
+			}
+		);
+		$rrd->graph(
+			title => 'Meter energy graph yearly',
+			image => IMG_ROOT . '/' . YEAR_ENERGY_IMG,
+			vertical_label => '',
+			width => 650,
+			height => 200,
+			start => time() - 3600 * 24 * 365,
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effekt'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => "%.2lf kW",
+			},
+			
+			comment        => " \n \n",
+
+			draw => {
+				dsname		=> "hours",
+				name		=> 'hours',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'hours',
+		        cfunc     => 'LAST',
+				format    => "Hours %.0lf h",
+			},
+
+			draw => {
+				dsname		=> "volume",
+				name		=> 'volume',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'volume',
+		        cfunc     => 'LAST',
+				format    => 'Volume %.0lf m3',
+			},
+
+			draw => {
+				dsname		=> "energy",
+				name		=> 'energy',
+				type		=> 'hidden',
+				cfunc		=> 'MAX',
+			},
+			gprint         => {
+				draw      => 'energy',
+		        cfunc     => 'LAST',
+				format    => 'Energy %.0lf kWh',
 			}
 		);
 	}
@@ -534,5 +1084,3 @@ sub mqtt_handler {
 	$mqtt_data = undef;
 }
 
-
-$mqtt->run(q[/sample/#] => \&mqtt_handler);
