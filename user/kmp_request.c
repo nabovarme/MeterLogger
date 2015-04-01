@@ -141,13 +141,9 @@ static void kmp_received_task(os_event_t *events) {
 			// prepare for mqtt transmission if we got serial number from meter
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
         	
-			// format /sample/unix_time => val1=23&val2=val3&baz=blah
-			topic_l = os_sprintf(topic, "/sample/%lu", current_unix_time);
+			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
+			topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
 			strcpy(message, "");	// clear it
-        	
-			// serial
-			key_value_l = os_sprintf(key_value, "serial=%lu&", kmp_serial);
-			strcat(message, key_value);
         	
 			// heap size
 			key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
