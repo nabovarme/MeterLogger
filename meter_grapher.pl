@@ -45,6 +45,31 @@ if (! -e RRD_FILE) {
 			min => 0,
 			max => 150
 		},
+		data_source => {
+			name => 'flow',
+			type => 'GAUGE',
+			min => 0,
+		},
+		data_source => {
+			name => 'effect',
+			type => 'GAUGE',
+			min => 0,
+		},
+		data_source => {
+			name => 'hours',
+			type => 'GAUGE',
+			min => 0
+		},
+		data_source => {
+			name => 'volume',
+			type => 'GAUGE',
+			min => 0
+		},
+		data_source => {
+			name => 'energy',
+			type => 'GAUGE',
+			min => 0
+		},
 		archive => {
 			rows => 1440
 		}
@@ -82,7 +107,12 @@ sub mqtt_handler {
 			values => {
 				flow_temp			=>  $mqtt_data->{t1},
 				return_flow_temp	=>  $mqtt_data->{t2},
-				temp_diff			=>  $mqtt_data->{tdif}
+				temp_diff			=>  $mqtt_data->{tdif},
+				flow				=>  $mqtt_data->{flow1},
+				effect				=>  $mqtt_data->{effect1},
+				hours				=>  $mqtt_data->{hr},
+				volume				=>  $mqtt_data->{v1},
+				energy				=>  $mqtt_data->{e1}
 			}
 		);
 		$rrd->graph(
@@ -135,6 +165,36 @@ sub mqtt_handler {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
 				format    => '%.0lf°C %s',
+			},
+
+			draw => {
+				dsname		=> "flow",
+				name		=> 'flow',
+				type		=> 'line',
+				color		=> 'ad6933',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Flow'
+			},
+			gprint         => {
+				draw      => 'flow',
+		        cfunc     => 'LAST',
+				format    => '%.0lf l/h %s',
+			},
+
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effect'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => '%.0lf kW %s',
 			}
 		);
 		$rrd->graph(
@@ -187,6 +247,36 @@ sub mqtt_handler {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
 				format    => '%.0lf°C %s',
+			},
+
+			draw => {
+				dsname		=> "flow",
+				name		=> 'flow',
+				type		=> 'line',
+				color		=> 'ad6933',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Flow'
+			},
+			gprint         => {
+				draw      => 'flow',
+		        cfunc     => 'LAST',
+				format    => '%.0lf l/h %s',
+			},
+
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effect'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => '%.0lf kW %s',
 			}
 		);
 		$rrd->graph(
@@ -239,6 +329,36 @@ sub mqtt_handler {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
 				format    => '%.0lf°C %s',
+			},
+
+			draw => {
+				dsname		=> "flow",
+				name		=> 'flow',
+				type		=> 'line',
+				color		=> 'ad6933',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Flow'
+			},
+			gprint         => {
+				draw      => 'flow',
+		        cfunc     => 'LAST',
+				format    => '%.0lf l/h %s',
+			},
+
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effect'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => '%.0lf kW %s',
 			}
 		);
 		$rrd->graph(
@@ -291,6 +411,36 @@ sub mqtt_handler {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
 				format    => '%.0lf°C %s',
+			},
+
+			draw => {
+				dsname		=> "flow",
+				name		=> 'flow',
+				type		=> 'line',
+				color		=> 'ad6933',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Flow'
+			},
+			gprint         => {
+				draw      => 'flow',
+		        cfunc     => 'LAST',
+				format    => '%.0lf l/h %s',
+			},
+
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effect'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => '%.0lf kW %s',
 			}
 		);
 		$rrd->graph(
@@ -343,6 +493,36 @@ sub mqtt_handler {
 				draw      => 'temp_diff',
 		        cfunc     => 'LAST',
 				format    => '%.0lf°C %s',
+			},
+
+			draw => {
+				dsname		=> "flow",
+				name		=> 'flow',
+				type		=> 'line',
+				color		=> 'ad6933',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Flow'
+			},
+			gprint         => {
+				draw      => 'flow',
+		        cfunc     => 'LAST',
+				format    => '%.0lf l/h %s',
+			},
+
+			draw => {
+				dsname		=> "effect",
+				name		=> 'effect',
+				type		=> 'line',
+				color		=> '00982f',
+				thickness	=> 1.5,
+				cfunc		=> 'MAX',
+				legend		=> 'Effect'
+			},
+			gprint         => {
+				draw      => 'effect',
+		        cfunc     => 'LAST',
+				format    => '%.0lf kW %s',
 			}
 		);
 	}
