@@ -93,7 +93,7 @@ if (! -e RRD_FILE) {
 
 # connect to db
 my $dbh;
-if($dbh = Nabovarme::Db->my_connect) {
+if ($dbh = Nabovarme::Db->my_connect) {
 	$dbh->{'mysql_auto_reconnect'} = 1;
 	syslog('info', "connected to db");
 }
@@ -120,13 +120,13 @@ sub mqtt_handler {
 	
 	my ($key, $value, $unit);
 	my @key_value_list = split(/&/, $message);
-	warn Dumper @key_value_list;
 	my $key_value; 
 	foreach $key_value (@key_value_list) {
 		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)(\s+(.*))?/) {
 			$mqtt_data->{$key} = $value;
 		}
 	}
+	warn Dumper($mqtt_data);
 	
 	# save to db
 	if ($unix_time < time() + 7200) {
@@ -139,7 +139,8 @@ sub mqtt_handler {
 			`effect`,
 			`hours`,
 			`volume`,
-			`energy`
+			`energy`,
+			`time_stamp`
 			) VALUES (] . 
 			$dbh->quote($meter_serial) . ',' . 
 			$dbh->quote($mqtt_data->{t1}) . ',' . 
@@ -149,7 +150,8 @@ sub mqtt_handler {
 			$dbh->quote($mqtt_data->{effect1}) . ',' . 
 			$dbh->quote($mqtt_data->{hr}) . ',' . 
 			$dbh->quote($mqtt_data->{v1}) . ',' . 
-			$dbh->quote($mqtt_data->{e1}) . qq[)]);
+			$dbh->quote($mqtt_data->{e1}) . ',' .
+			'FROM_UNIXTIME(' . $dbh->quote($unix_time) . ')' . qq[)]);
 		$sth->execute || syslog('info', "can't log to db");
 		$sth->finish;
 	}
