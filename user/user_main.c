@@ -182,12 +182,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 		
 	// wait for serial number
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
-	while (kmp_serial == 0) {
-		// wait
-	}
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-	os_timer_arm(&config_mode_timer, 200, 0);
+	os_timer_arm(&config_mode_timer, 4000, 0);
 		
 	// wait for 60 seconds
 	// and go to station mode
