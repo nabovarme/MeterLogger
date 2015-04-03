@@ -7,6 +7,7 @@ use Net::MQTT::Simple;
 use RRDTool::OO;
 use DBI;
 
+#use lib qw( /var/www/perl/lib/ );
 use lib qw( /opt/local/apache2/perl/ );
 use Nabovarme::Db;
 
@@ -122,7 +123,14 @@ sub mqtt_handler {
 	my @key_value_list = split(/&/, $message);
 	my $key_value; 
 	foreach $key_value (@key_value_list) {
-		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)(\s+(.*))?/) {
+		if (($key, $value, $unit) = $key_value =~ /([^=]*)=(\S+)(?:\s+(.*))?/) {
+			# check energy register unit
+			if ($key =~ /^e1$/i) {
+				if ($unit =~ /^MWh$/i) {
+					$value *= 1000;
+					$unit = 'kWh';
+				}
+			}
 			$mqtt_data->{$key} = $value;
 		}
 	}
