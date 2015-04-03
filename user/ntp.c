@@ -13,40 +13,31 @@ uint8 packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing pack
 struct espconn *pCon;
 
 
-unsigned long ICACHE_FLASH_ATTR ntp_get_time()
-{
-  pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
-  pCon->type = ESPCONN_UDP;
-  pCon->state = ESPCONN_NONE;
-  pCon->proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
-  pCon->proto.udp->local_port = espconn_port();
-  pCon->proto.udp->remote_port = 123;
-  ntp_send_request();
+unsigned long ICACHE_FLASH_ATTR ntp_get_time() {
+	pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
+	pCon->type = ESPCONN_UDP;
+	pCon->state = ESPCONN_NONE;
+	pCon->proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
+	pCon->proto.udp->local_port = espconn_port();
+	pCon->proto.udp->remote_port = 123;
+	ntp_send_request();
 }
 
 void ICACHE_FLASH_ATTR
-ntp_udpclient_sent_cb(void *arg)
-{
-  //Causing Crash. To be fixed
-  //espconn_delete(pCon);
-  //os_free(pCon->proto.udp);
-  //os_free(pCon);
-}
-
-void ICACHE_FLASH_ATTR
-ntp_udpclient_recv(void *arg, char *pdata, unsigned short len)
-{
-  struct tm *dt;
-  char timestr[11];
-  // this is NTP time (seconds since Jan 1 1900):
-  uint32 timestamp = pdata[40] << 24 | pdata[41] << 16 |
-    pdata[42] << 8 | pdata[43];				// BUG? is ntp 32 or 64 bit?
-  timestamp =  timestamp - NTP_OFFSET;
-  //INFO("timestamp: %lu\n\r", timestamp);
-  set_unix_time(timestamp);
-//  dt = localtime((time_t *) &timestamp);
-//  os_sprintf(timestr, "%d:%d:%d\n\r", dt->tm_hour, dt->tm_min, dt->tm_sec);
-//  INFO(timestr);
+ntp_udpclient_recv(void *arg, char *pdata, unsigned short len) {
+	struct tm *dt;
+	char timestr[11];
+	// this is NTP time (seconds since Jan 1 1900):
+	uint32 timestamp = pdata[40] << 24 | pdata[41] << 16 |
+		pdata[42] << 8 | pdata[43];				// BUG? is ntp 32 or 64 bit?
+	timestamp =  timestamp - NTP_OFFSET;
+	set_unix_time(timestamp);
+  
+	// close connection and free pCon
+	espconn_disconnect(pCon);
+	espconn_delete(pCon);
+	os_free(pCon->proto.udp);
+	os_free(pCon);
 }
 
 void ICACHE_FLASH_ATTR ntp_send_request() {
@@ -86,6 +77,5 @@ void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *
     // you can send a packet requesting a timestamp:
     espconn_create(pCon);
     espconn_regist_recvcb(pCon, ntp_udpclient_recv);
-    espconn_regist_sentcb(pCon, ntp_udpclient_sent_cb);
     espconn_sent(pCon, packetBuffer, NTP_PACKET_SIZE);
 }
