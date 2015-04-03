@@ -13,7 +13,20 @@ uint8 packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing pack
 struct espconn *pCon;
 
 
-unsigned long ICACHE_FLASH_ATTR ntp_get_time() {
+unsigned long ICACHE_FLASH_ATTR ntp_get_time() { 
+	// close old connection and free pCon
+	if (pCon){
+		INFO("Free memory\r\n");
+		espconn_disconnect(pCon);
+		espconn_delete(pCon);
+		if(pCon->proto.udp) {
+			os_free(pCon->proto.udp);
+		}
+		os_free(pCon);
+		pCon = NULL;
+	}
+
+	// create new connection
 	pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
 	pCon->type = ESPCONN_UDP;
 	pCon->state = ESPCONN_NONE;
@@ -32,12 +45,6 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len) {
 		pdata[42] << 8 | pdata[43];				// BUG? is ntp 32 or 64 bit?
 	timestamp =  timestamp - NTP_OFFSET;
 	set_unix_time(timestamp);
-  
-	// close connection and free pCon
-	espconn_disconnect(pCon);
-	espconn_delete(pCon);
-	os_free(pCon->proto.udp);
-	os_free(pCon);
 }
 
 void ICACHE_FLASH_ATTR ntp_send_request() {
