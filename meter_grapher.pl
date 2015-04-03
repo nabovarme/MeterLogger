@@ -13,7 +13,7 @@ use Nabovarme::Db;
 #use constant RRD_FILE => "/home/stoffer/nabovarme/nabovarme.rrd";
 use constant RRD_FILE => "/tmp/nabovarme.rrd";
 
-#use constant IMG_ROOT => '/var/www/isp.skulp.net/nabovarme';
+#use constant IMG_ROOT => '/var/www/isp.skulp.net/nabovarme/old';
 use constant IMG_ROOT => '/tmp/';
 use constant HOUR_IMG => 'hour.png';
 use constant DAY_IMG => 'day.png';
@@ -140,7 +140,7 @@ sub mqtt_handler {
 			`hours`,
 			`volume`,
 			`energy`,
-			`time_stamp`
+			`unix_time`
 			) VALUES (] . 
 			$dbh->quote($meter_serial) . ',' . 
 			$dbh->quote($mqtt_data->{t1}) . ',' . 
@@ -151,7 +151,7 @@ sub mqtt_handler {
 			$dbh->quote($mqtt_data->{hr}) . ',' . 
 			$dbh->quote($mqtt_data->{v1}) . ',' . 
 			$dbh->quote($mqtt_data->{e1}) . ',' .
-			'FROM_UNIXTIME(' . $dbh->quote($unix_time) . ')' . qq[)]);
+			$dbh->quote($unix_time) . qq[)]);
 		$sth->execute || syslog('info', "can't log to db");
 		$sth->finish;
 	}
