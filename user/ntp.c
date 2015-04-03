@@ -10,29 +10,19 @@
 
 uint8 ntp_server[4];
 uint8 packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-struct espconn *pCon;
+struct espconn conn;
+esp_udp udp_proto;
 
 
-unsigned long ICACHE_FLASH_ATTR ntp_get_time() { 
-	// close old connection and free pCon
-	if (pCon){
-		INFO("Free memory\r\n");
-		espconn_disconnect(pCon);
-		espconn_delete(pCon);
-		if(pCon->proto.udp) {
-			os_free(pCon->proto.udp);
-		}
-		os_free(pCon);
-		pCon = NULL;
-	}
-
+unsigned long ICACHE_FLASH_ATTR ntp_get_time() {
 	// create new connection
-	pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
-	pCon->type = ESPCONN_UDP;
-	pCon->state = ESPCONN_NONE;
-	pCon->proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
-	pCon->proto.udp->local_port = espconn_port();
-	pCon->proto.udp->remote_port = 123;
+	memset(&conn, 0x00, sizeof(struct espconn));
+	conn.type = ESPCONN_UDP;
+	conn.state = ESPCONN_NONE;
+	memset(&udp_proto, 0x00, sizeof(esp_udp));
+	conn.proto.udp = &udp_proto;
+	conn.proto.udp->local_port = espconn_port();
+	conn.proto.udp->remote_port = 123;
 	ntp_send_request();
 }
 
@@ -49,7 +39,7 @@ ntp_udpclient_recv(void *arg, char *pdata, unsigned short len) {
 
 void ICACHE_FLASH_ATTR ntp_send_request() {
 	ip_addr_t ip;	// not used, callback are handling ip
-	espconn_gethostbyname(pCon, NTP_SERVER, &ip, ntp_dns_found);
+	espconn_gethostbyname(&conn, NTP_SERVER, &ip, ntp_dns_found);
 }
 
 void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *arg) {
@@ -66,7 +56,7 @@ void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *
 	
 	// send ntp request
     // set all bytes in the buffer to 0
-    os_memcpy(pCon->proto.udp->remote_ip, &ipaddr->addr, 4);
+    os_memcpy(conn.proto.udp->remote_ip, &ipaddr->addr, 4);
     memset(packetBuffer, 0, NTP_PACKET_SIZE);
     // Initialize values needed to form NTP request
     // (see URL above for details on the packets)
@@ -82,7 +72,7 @@ void ICACHE_FLASH_ATTR ntp_dns_found(const char *name, ip_addr_t *ipaddr, void *
 
     // all NTP fields have been given values, now
     // you can send a packet requesting a timestamp:
-    espconn_create(pCon);
-    espconn_regist_recvcb(pCon, ntp_udpclient_recv);
-    espconn_sent(pCon, packetBuffer, NTP_PACKET_SIZE);
+    espconn_create(&conn);
+    espconn_regist_recvcb(&conn, ntp_udpclient_recv);
+    espconn_sent(&conn, packetBuffer, NTP_PACKET_SIZE);
 }
