@@ -61,7 +61,6 @@ uint16 counter = 0;
 
 ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
     struct softap_config ap_conf;
-	uint8_t macaddr[6] = { 0, 0, 0, 0, 0, 0 };
 	
 	// make sure the device is in AP and STA combined mode
 	INFO("\r\nAP mode\r\n");
@@ -76,8 +75,8 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	ap_conf.max_connection = 4;
 	ap_conf.ssid_hidden = 0;
 
-	wifi_softap_set_config(&ap_conf);
 	wifi_set_opmode(STATIONAP_MODE);
+	wifi_softap_set_config(&ap_conf);
 	os_delay_us(10000);
 
 	httpd_user_init();
