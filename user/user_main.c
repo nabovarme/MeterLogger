@@ -171,7 +171,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	kmp_request_init();
 
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-	os_printf("Version: %s\n\r", VERSION);
+	os_printf("SDK version:%s\n\r", system_get_sdk_version());
+	os_printf("Software version: %s\n\r", VERSION);
 	
 	// wait 0.2 seconds
 	// and send serial number request
