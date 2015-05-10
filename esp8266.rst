@@ -1,0 +1,14 @@
+ESP8266
+.......
+
+
+The ESP8266 is a new microcontroller with onboard wifi and 512 kb spi flash.
+It was introduced to the global market by Espressif in 2014 and has since gained a large following in
+hacker and maker circles around the world.
+
+Espressif has released an sdk for the ESP8266 and have kept updating the sdk for the bimonthly.
+The sdk has some binary blobs but a project called Esp-open-sdk tries to replace these with open source alternatives.
+The binary blobs make it a little dificult to develop software for the esp since you cant research the inner workings of specific core api calls.
+
+The sdk is based on freertos and give you a task handler asn other abstract os features.
+Most of its core api calls are callback based which means you have to think asynchronously when developing.
