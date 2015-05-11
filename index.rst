@@ -3,10 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to susie report's documentation!
+Nabovarme
 ========================================
-
-Contents:
 
 .. toctree::
    :maxdepth: 4
@@ -17,11 +15,4 @@ Contents:
    analysis
    conclusion
    appendices
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
