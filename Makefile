@@ -193,10 +193,11 @@ pseudoxml:
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
 
-live:
-	sphinx-autobuild -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+live: html
+	open "http://127.0.0.1:9999"
+	sphinx-autobuild -p 9999 -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 
-pdf:
+pdf: html
 	@echo "makin pdf especially for you!"
 	$(SPHINXBUILD) -bpdf $(ALLSPHINXOPTS) $(BUILDDIR)/pdf
 	open $(BUILDDIR)/pdf/SusieReport.pdf
