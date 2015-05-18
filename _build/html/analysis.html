@@ -110,6 +110,7 @@ The esp8266 only uses about 10mA when in deep sleep and the rtc continues to hol
 </div>
 <p>The diagram shows how the buffering together with deep sleep creates the foundation for infrequent bursts of transmission when the conenction is established again later.
 The size of the buffer, and thereby connected spi flash, describes the max size of the buffer queue and thereby how many sleep cycles you can go through before loosing data.</p>
+<p>This of course can&#8217;t happen without the existance of a DRAM flash added to the pcb for data persistence during deep sleep.</p>
 <p class="rubric">Footnotes</p>
 <table class="docutils footnote" frame="void" id="nurdspace-esp8266" rules="none">
 <colgroup><col class="label" /><col /></colgroup>

@@ -80,6 +80,8 @@ MQTT together with sleep will create a unique low power scenario where we can do
 The diagram shows how the buffering together with deep sleep creates the foundation for infrequent bursts of transmission when the conenction is established again later.
 The size of the buffer, and thereby connected spi flash, describes the max size of the buffer queue and thereby how many sleep cycles you can go through before loosing data.
 
+This of course can't happen without the existance of a DRAM flash added to the pcb for data persistence during deep sleep.
+
 .. rubric:: Footnotes
 
 .. [#nurdspace_esp8266] https://nurdspace.nl/ESP8266#Power

@@ -86,9 +86,11 @@ This means that the RTC can only hold about 1 hour and eleven minutes which affe
 </div>
 <div class="section" id="sample-mode">
 <h2>Sample mode<a class="headerlink" href="#sample-mode" title="Permalink to this headline">¶</a></h2>
-<div class="figure" style="width: 80%">
+<blockquote>
+<div><div class="figure" style="width: 80%">
 <a class="reference internal image-reference" href="_images/sample_mode.png"><img alt="_images/sample_mode.png" src="_images/sample_mode.png" style="width: 1280.0px; height: 1216.0px;" /></a>
 </div>
+</div></blockquote>
 <p>Sample mode is about sampling from the kamstrup meter and reporting the samples using MQTT.
 A timer runs every minute and sends a kmp request to the kamstrup meter. This breaks the idea of a request-response protocol
 but we have not experienced any kamstrup meters sending the same sample twice, so the idea of a malformed response is experienced, therefore it was chosen to

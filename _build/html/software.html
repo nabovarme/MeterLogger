@@ -160,9 +160,11 @@ This means that the RTC can only hold about 1 hour and eleven minutes which affe
 </div>
 <div class="section" id="sample-mode">
 <h3>Sample mode<a class="headerlink" href="#sample-mode" title="Permalink to this headline">¶</a></h3>
-<div class="figure" style="width: 80%">
-<a class="reference internal image-reference" href="_images/sample_mode.png"><img alt="_images/sample_mode.png" src="_images/sample_mode.png" style="width: 1280.0px; height: 1216.0px;" /></a>
+<blockquote>
+<div><div class="figure" style="width: 80%">
+<a class="reference internal image-reference" href="_images/sample_mode.png"><img alt="_images/sample_mode.png" src="_images/sample_mode.png" style="width: 1664.0px; height: 2976.0px;" /></a>
 </div>
+</div></blockquote>
 <p>Sample mode is about sampling from the kamstrup meter and reporting the samples using MQTT.
 A timer runs every minute and sends a kmp request to the kamstrup meter. This breaks the idea of a request-response protocol
 but we have not experienced any kamstrup meters sending the same sample twice, so the idea of a malformed response is experienced, therefore it was chosen to
@@ -179,6 +181,22 @@ This memory can be used to store a timestamp. If you know beforehand how long yo
 The esp rtc overflows at 32 bit microseconds which means that you can max sleep ca. 71.58 seconds before having to wake again.
 If you want to sleep longer you would have to wake up append sleep period to stored timestamp and then sleep again.
 The esp has the ability to define which mode to wake up in so you actually tell it to wake up without wifi which makes power usage even lower with extended sleep.</p>
+</div>
+</div>
+<div class="section" id="vizualisation">
+<h2>Vizualisation<a class="headerlink" href="#vizualisation" title="Permalink to this headline">¶</a></h2>
+<p>A prototype was created for visualizing the data created by the meter unit.</p>
+<p>The visualization is provided by the same server running the MQTT broker and sql database.</p>
+<p>A Perl script serves a html site where a javascript generated graph is populated with latest entries from the sql database.</p>
+<p>The graph is zoomable in both x and y and a screenshot is shown below:</p>
+<div class="figure" id="id6">
+<img alt="_images/graph1.png" src="_images/graph1.png" />
+<p class="caption"><span class="caption-text">When you hold the mouse above a point in the graph you can observe the different data fields.</span></p>
+</div>
+<p>Here is a zoomed in version</p>
+<div class="figure" id="id7">
+<img alt="_images/graph2.png" src="_images/graph2.png" />
+<p class="caption"><span class="caption-text">As you can see the sample resolution is 1 minute intervals. And the flow is has a climax around 22:00 in the evening.</span></p>
 </div>
 </div>
 </div>
@@ -203,6 +221,7 @@ The esp has the ability to define which mode to wake up in so you actually tell 
 <li><a class="reference internal" href="#sample-mode">Sample mode</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#vizualisation">Vizualisation</a></li>
 </ul>
 </li>
 </ul>

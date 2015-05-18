@@ -81,21 +81,32 @@ This means that the RTC can only hold about 1 hour and eleven minutes which affe
 Sample mode
 ,,,,,,,,,,,
 
-.. figure::
-   diagrams/sample_mode.png
-   :figwidth: 80%
-   :scale: 200%
-   
+	.. figure::
+	   diagrams/sample_mode.png
+	   :figwidth: 80%
+	   :scale: 200%
+	   
 .. comment
 	.. seqdiag::
 	   
 	   seqdiag{
-	   esp8266 -> esp8266 [label = "sample timer\ninterupt"];
-	   esp8266 -> "kamstrup multical" [label = "sample this"];
-	   esp8266 <- "kamstrup multical" [label = "here is sample"];
-	   esp8266 -> esp8266 [label = "timestamp sample and\ntore in buffer"];
-	   esp8266 -> "mqtt broker" [label = "here is samples"];
-	   esp8266 <- "mqtt broker" [label = "tcp ack"];
+	   esp8266; "kamstrup multical"; "mqtt broker";"mqtt subscriber";
+	   esp8266 -> esp8266 [label = "create timer for\nsampling with 1\nminute intervals"];
+	   esp8266 -> esp8266 [label = "initialize uart\nreceiving callback"];
+	   === after 1 minute ===
+	   esp8266 -> esp8266 [label = "craft uart frame"];
+	   esp8266 -> esp8266 [label = "stop sampling timer"];
+	   "mqtt subscriber" -> "mqtt broker" [label = "subscribe"];
+	   esp8266 -> "kamstrup multical" [label = "send frame", failed];
+	   esp8266 -> "kamstrup multical" [label = "send frame"];
+	   esp8266 <- "kamstrup multical" [label = "kmp response"];
+	   esp8266 -> esp8266 [label = "CRC check failed"];
+	   esp8266 -> "kamstrup multical" [label = "send frame"];
+	   esp8266 <- "kamstrup multical" [label = "kmp response"];
+	   esp8266 -> esp8266 [label = "CRC check passed"];
+	   esp8266 -> esp8266 [label = "encode response\ninto mqtt message\ninclude timestamp\n\nadd message to\nbuffer"];
+	   esp8266 -> "mqtt broker" [label = "transmit buffer"];
+	   "mqtt broker" -> "mqtt subscriber" [label = "send all new messages"];
 	   }
 
 
