@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>&lt;no title&gt; &mdash; susie report 1 documentation</title>
+    <title>Kamstrup-Wifi documentation &mdash; susie report 1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="susie report 1 documentation" href="#" />
-    <link rel="next" title="Introduction" href="introduction.html" />
+    <link rel="next" title="Design" href="design.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -38,7 +38,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="introduction.html" title="Introduction"
+          <a href="design.html" title="Design"
              accesskey="N">next</a> |</li>
         <li class="nav-item nav-item-0"><a href="#">susie report 1 documentation</a> &raquo;</li> 
       </ul>
@@ -49,14 +49,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="toctree-wrapper compound">
+  <div class="section" id="kamstrup-wifi-documentation">
+<h1>Kamstrup-Wifi documentation<a class="headerlink" href="#kamstrup-wifi-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This page documents our succesfull try at implementing wifi logging for the kamstrup multical heating meters.
+We have successfully reverse engineered the kamstrup protocol and offer here a look into our process.</p>
+<p>This project serves as the foundation for Christiania Nabovarme heating infrastructure.
+Its a collective heating infrastructure with a basis on a handfull of wooden pellet stoves like this:</p>
+<div class="figure">
+<img alt="_images/stove.gif" src="_images/stove.gif" />
+</div>
+<div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#collaboration">Collaboration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#problem-formulation">Problem formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="introduction.html#requirements">Requirements</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="design.html">Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="implementation.html">Implementation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="implementation.html#hardware">Hardware</a><ul>
@@ -84,20 +87,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#power-considerations">Power considerations</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Conclusion</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="conclusion.html#susie-course">SUSIE course</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="appendices.html">Appendices</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appendices.html#deep-sleep">Deep sleep</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appendices.html#footnotes">Footnotes</a></li>
-</ul>
-</li>
-</ul>
+</div>
 </div>
 
 
@@ -107,8 +98,8 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Next topic</h4>
-  <p class="topless"><a href="introduction.html"
-                        title="next chapter">Introduction</a></p>
+  <p class="topless"><a href="design.html"
+                        title="next chapter">Design</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">

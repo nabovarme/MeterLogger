@@ -49,11 +49,18 @@ help:
 	@echo "  coverage   to run coverage check of the documentation (if enabled)"
 	@echo " rst2pdf"
 
+clean_html:
+	rm ../*.html
+	rm -rf ../_static/
+	rm -rf ../_images/
+	rm -rf ../objects.inv
+	rm -rf ../searchindex.js
+	rm -rf ../_sources
 
 clean:
 	rm -rf $(BUILDDIR)/*
 
-html:
+html: 
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ../
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
