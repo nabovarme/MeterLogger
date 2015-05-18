@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Software &mdash; susie report 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="susie report 1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">susie report 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="software">
+<h1>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h1>
+<p>Software had to be developed to extract the samples
+from the Kamstrup meter and send them to a central server
+In order to do this a few core protocols must be known.</p>
+<div class="section" id="protocols">
+<h2>Protocols<a class="headerlink" href="#protocols" title="Permalink to this headline">¶</a></h2>
+<p>I have chosen to document the kamstrup multical 601 protocol since its not available in the public domain and protected
+by an NDA so i regard the work done on freeing the protocol as a public service. The MQTT protocol is also
+documented more loosely since its freely available.
+DNS and ntp are not documented since they not represent major parts of the system and are documented many places.</p>
+<div class="section" id="kamstrup-multical-601">
+<h3>Kamstrup multical 601<a class="headerlink" href="#kamstrup-multical-601" title="Permalink to this headline">¶</a></h3>
+<p>The kamstrup multical 601 protocol is a serial protocol with 1200 bits per second.
+The protocol is a request-response protocol where the data is encoded in many frames
+where each is 8 bits.</p>
+<p>The data frame is based on the OSI model. In this protocol, only three layers of the OSI model are used. These are
+the physical layer, data link and the application layer. The figure below show how each of the layers (shown as shaded)
+is related to the data frame.</p>
+<img alt="_images/kamstrup_frame.png" src="_images/kamstrup_frame.png" />
+<p><strong>Physical layer</strong></p>
+<p>Data is transmitted byte wise in a binary data format. 8 data bit represent one byte of data.
+The physical layer uses ’Byte stuffing’ to compensate for byte values reserved as start, stop and acknowledge.
+The method is to substitute the reserved bytes values with a pair of byte values.</p>
+<p><strong>Data link layer</strong></p>
+<p>The destination address is included in order to prepare a future enhanced version of the protocol.
+For heat meters the destination address is 3Fh. The logger top module use 7Fh and the logger base module use BFh.
+Included in the data link layer is a CRC with reference to the CCITT-standard using the polynomial 1021h. Only deviation from the standard is the initial value, which is 0000h instead of FFFFh.
+The CRC result is calculated for destination address, CID and data. CRC is transmitted with MSByte first and LSByte last.</p>
+<p>I decided to include a table of all possible crc checksums for the given length in my code so i did not have
+to compute it on each frame.
+In the <a href="#id1"><span class="problematic" id="id2">*</span></a>user/kmp.c file you can see the checksum table.</p>
+<p><strong>Application layer</strong></p>
+<p>Most data in the application layer is handled in a KMP register format.
+You use command id&#8217;s (CID&#8217;s) to tell the kamstrup which registers you are interested in.</p>
+<p>The kamstrup specifies a variable lenght register format.
+This format includes three bytes show below:</p>
+<img alt="_images/register_format.png" src="_images/register_format.png" />
+<ul class="simple">
+<li>The first byte defines which unit the value is in</li>
+<li>the second byte defines the byte length of the value</li>
+<li>the third byte tells about the sign and exponent of the value.</li>
+</ul>
+<p>Kamstrup implements floating numbers by the use of the following equation:</p>
+<img alt="_images/floating_point.png" src="_images/floating_point.png" />
+<p>SI tells if the value is negative, if SI is 1 then the value is negative.
+The SE tells if the value is a decimal fraction, if SE is 1 then the value is less than zero.
+The integer represents the value before translated into the floating point value.</p>
+<p>Because the Kamstrup protocol only uses base 10 floating points, later computations are easily done
+by modifying the point index by dividing with 10.</p>
+<p>In order to compute power of values i needed a power function. This exist in libmath. But i didnt want to link
+all libmath into this project just to gain a power function, and when i did it also gave compile errors for lack of flash.
+So i wrote my own power function, this can be seen in <em>user/kmp.c - kmp_pow</em>.</p>
+<p>Libc printf does not have its own string formatter for floating point numbers. So a function had to be written in order
+to translate the received numbers into strings ready for transmission.</p>
+</div>
+<div class="section" id="mqtt">
+<h3>MQTT<a class="headerlink" href="#mqtt" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>MQTT is a Client Server publish/subscribe messaging transport protocol. It is light weight, open, simple, and designed so as to be easy to implement. These characteristics make it ideal for use in many situations, including constrained environments such as for communication in Machine to Machine (M2M) and Internet of Things (IoT) contexts where a small code footprint is required and/or network bandwidth is at a premium. <a class="footnote-reference" href="#mqtt-spec" id="id3">[1]</a></div></blockquote>
+<p><strong>MQTT vs HTTP</strong></p>
+<p>Why bother with MQTT when you have HTTP? The answer is compression and asynchronous messaging.
+HTTP v 1.1 is synchronous which means it works in a request-response model. You can ask a question and wait for the answer. An added inconvenience is that only the client is able to ask questions.</p>
+<p>The MQTT protocol implements a channel based mssaging platform where you publish and subscribe to channels and best of all you can implement certain degrees of quality control where you retransmit or buffer messages until they are delivered to clients that have been offline.</p>
+<p>MQTT is also binary vs HTTPS heavy aschii headers. This is really good since we want as compressed a packet as possible in order to minimize power usage.</p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="mqtt-spec" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td><a class="reference external" href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html">http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="esp8266-firmware">
+<h2>Esp8266 firmware<a class="headerlink" href="#esp8266-firmware" title="Permalink to this headline">¶</a></h2>
+<p>The firmware has the following main objectives:</p>
+<ul class="simple">
+<li>When booted it should enter a grace period and let the user config which access point to join</li>
+<li>After a grace period it should lookup the current time from an ntp server and save it to its rtc and then enter sample mode</li>
+<li>Everything in the firmware is timer based.</li>
+</ul>
+<div class="section" id="config-mode">
+<h3>Config mode<a class="headerlink" href="#config-mode" title="Permalink to this headline">¶</a></h3>
+<div class="figure" id="id4" style="width: 80%">
+<a class="reference internal image-reference" href="_images/config_mode.png"><img alt="_images/config_mode.png" src="_images/config_mode.png" style="width: 1280.0px; height: 1666.0px;" /></a>
+<p class="caption"><span class="caption-text">Diagram shows the successfull configuration of an esp8266 using a smartphone within the graceperiod</span></p>
+</div>
+<p>This mode features a grace period where the esp will act as an access point
+and serve a html site where the user can edit which access point the esp will join later on.
+The config mode access point is protected by wpa encryption and credentials are generated
+when flashing a new esp.</p>
+<p>If the user changes the prefered access point of the esp it will be saved using sdk functions for saving and loading configs.
+These api calls go to the binary blobs and are not documented further.
+The configs are permanently saved.</p>
+<p>After the graceperiod ends the esp will set its wifi mode to station and try to connect to saved ssid with saved credentials.</p>
+</div>
+<div class="section" id="ntp-transition">
+<h3>Ntp transition<a class="headerlink" href="#ntp-transition" title="Permalink to this headline">¶</a></h3>
+<div class="figure" id="id5" style="width: 80%">
+<a class="reference internal image-reference" href="_images/ntp_transition.png"><img alt="_images/ntp_transition.png" src="_images/ntp_transition.png" style="width: 1664.0px; height: 1450.0px;" /></a>
+<p class="caption"><span class="caption-text">Diagram shows how we use the builtin dns to lookup ntp servers, request a timestamp and store it</span></p>
+</div>
+<p>When grace period ends, the esp will transition into sample mode.
+This transition features a continous try at getting a timestamp from a predefined ntp server.
+The esp will stay in this transition until it successfully receives the timestamp which it then will save in ram.</p>
+<p>The timestamp is saved in a resolution of seconds and a timer based on the rtc increments the stored timestamp every second.
+In this way we have a guaranteed unix timestamp that holds its time down to the rated precision of the RTC.</p>
+<p>Of course we never reach the precision threshold where seconds are dropped since we update the stored
+timestamp on a frequency of an hour plus random minutes between 0 and 60. The random minutes guarantee that all meters not ask for NTP time at the same time.</p>
+<p>Both the RTC and the integer we store the unix timestamp in are 32 bit.
+This means that the RTC can only hold about 1 hour and eleven minutes which affects max sleep time. And the timestamp we increment every second will overflow in 2038, this is not a problem since something better propably has replaced the system by then.</p>
+</div>
+<div class="section" id="sample-mode">
+<h3>Sample mode<a class="headerlink" href="#sample-mode" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="figure" style="width: 80%">
+<a class="reference internal image-reference" href="_images/sample_mode.png"><img alt="_images/sample_mode.png" src="_images/sample_mode.png" style="width: 1664.0px; height: 2976.0px;" /></a>
+</div>
+</div></blockquote>
+<p>Sample mode is about sampling from the kamstrup meter and reporting the samples using MQTT.
+A timer runs every minute and sends a kmp request to the kamstrup meter. This breaks the idea of a request-response protocol
+but we have not experienced any kamstrup meters sending the same sample twice, so the idea of a malformed response is experienced, therefore it was chosen to
+sample at a fixed frequency and asynchronously listen for the responses.</p>
+<p>When ever a response is received, it is formatted into a string for transmission by MQTT.
+It is then stored in the MQTT queue (circular buffer) and MQTT will try tro transmit the sample until it either is successfully tansmitted or is pushed out the queue
+by new samples filling the queue.
+It could be temptating to store the raw samples in the queue and decode them when transmitting because they allready are compressed but
+we need to compute crc on them, and maybe retransmit kmp request, before storing them in the queue.</p>
+<p>It is a part of the plan to downscale the sample frequency and introduce a deep sleep break between samples.
+This deep sleep period would heavily reduce the power usage of the esp.
+The esp sdk comes with a standard way of doing this that implies the use of free user memory in the rtc.
+This memory can be used to store a timestamp. If you know beforehand how long you sleep then when you wake you can just append that to the stored timestamp and you have the current time again without ntp.
+The esp rtc overflows at 32 bit microseconds which means that you can max sleep ca. 71.58 seconds before having to wake again.
+If you want to sleep longer you would have to wake up append sleep period to stored timestamp and then sleep again.
+The esp has the ability to define which mode to wake up in so you actually tell it to wake up without wifi which makes power usage even lower with extended sleep.</p>
+</div>
+</div>
+<div class="section" id="vizualisation">
+<h2>Vizualisation<a class="headerlink" href="#vizualisation" title="Permalink to this headline">¶</a></h2>
+<p>A prototype was created for visualizing the data created by the meter unit.</p>
+<p>The visualization is provided by the same server running the MQTT broker and sql database.</p>
+<p>A Perl script serves a html site where a javascript generated graph is populated with latest entries from the sql database.</p>
+<p>The graph is zoomable in both x and y and a screenshot is shown below:</p>
+<div class="figure" id="id6">
+<img alt="_images/graph1.png" src="_images/graph1.png" />
+<p class="caption"><span class="caption-text">When you hold the mouse above a point in the graph you can observe the different data fields.</span></p>
+</div>
+<p>Here is a zoomed in version</p>
+<div class="figure" id="id7">
+<img alt="_images/graph2.png" src="_images/graph2.png" />
+<p class="caption"><span class="caption-text">As you can see the sample resolution is 1 minute intervals. And the flow is has a climax around 22:00 in the evening.</span></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Software</a><ul>
+<li><a class="reference internal" href="#protocols">Protocols</a><ul>
+<li><a class="reference internal" href="#kamstrup-multical-601">Kamstrup multical 601</a></li>
+<li><a class="reference internal" href="#mqtt">MQTT</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#esp8266-firmware">Esp8266 firmware</a><ul>
+<li><a class="reference internal" href="#config-mode">Config mode</a></li>
+<li><a class="reference internal" href="#ntp-transition">Ntp transition</a></li>
+<li><a class="reference internal" href="#sample-mode">Sample mode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vizualisation">Vizualisation</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/software.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, johannes jørgensen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.4</a>
+      
+      |
+      <a href="_sources/software.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>
