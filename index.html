@@ -51,12 +51,19 @@
             
   <div class="section" id="kamstrup-wifi-documentation">
 <h1>Kamstrup-Wifi documentation<a class="headerlink" href="#kamstrup-wifi-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<img alt="_images/kamstrup_wifi.png" src="_images/kamstrup_wifi.png" />
+</div>
 <p>This page documents our succesfull try at implementing wifi logging for the kamstrup multical heating meters.
 We have successfully reverse engineered the kamstrup protocol and offer here a look into our process.</p>
 <p>This project serves as the foundation for Christiania Nabovarme heating infrastructure.
-Its a collective heating infrastructure with a basis on a handfull of wooden pellet stoves like this:</p>
-<div class="figure">
+Its a collective heating infrastructure with a basis on a handfull of wooden pellet stoves that function like this:</p>
+<div class="figure" style="width: 40%">
 <img alt="_images/stove.gif" src="_images/stove.gif" />
+</div>
+<p>The project is based around a kamstrup meter and an <strong>esp8266</strong> with custom firmware for wifi transmission over mqtt to a central server. the central server serves a website with graphs on the data collected looking like:</p>
+<div class="figure">
+<img alt="_images/graph2.png" src="_images/graph2.png" />
 </div>
 <div class="toctree-wrapper compound">
 <ul>
