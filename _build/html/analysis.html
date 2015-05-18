@@ -58,7 +58,35 @@
 <p>The objective of this project is not to create a power efficient meter logger but to reduce overall heating usage for ca 1000 people.
 So to talk about power usage in this project can not be isolated from the greater scale of the Nabovarme project.</p>
 <p>The ESP8266&#8217;s power usage statistics can be seen in the table below:</p>
-<p>table from nurd space</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="69%" />
+<col width="18%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Mode</th>
+<th class="head">Typical</th>
+<th class="head">Units</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>802.11b, CCK 1Mbps, POUT=+19.5dBm</td>
+<td>215</td>
+<td>mA</td>
+</tr>
+<tr class="row-odd"><td>Deep sleep</td>
+<td>10</td>
+<td>mA</td>
+</tr>
+<tr class="row-even"><td>Standby</td>
+<td>0.9</td>
+<td>uA</td>
+</tr>
+</tbody>
+</table>
+<p><em>source:</em>
+<a class="footnote-reference" href="#nurdspace-esp8266" id="id1">[1]</a></p>
 <p>In this table a few sample situations and their current drain can be seen.</p>
 <p>The implications of meter logger on the Nabovarme project can be:</p>
 <p>If the ESP8266 knows the temperature the water in each household then we dont have to produce and distribute
@@ -68,6 +96,28 @@ a certain threshold. This will have a major influence when for example at night 
 <p>Another dimension is to give people a live view of their usage.
 We imagine that if a user can see and follow a live correlation between heating usage and money spent they will react by changing their behaviour.
 The reasons can be economically but also ecologically since we can also corellate usage with ressource usage and notify people on how many trees are flowing through their radiators.</p>
+<div class="section" id="power-considerations">
+<h2>Power considerations<a class="headerlink" href="#power-considerations" title="Permalink to this headline">¶</a></h2>
+<p>The esp8266 firmware is designed with minimum power consumption in mind and the ambition is to implement the following power usage decreasing messures:</p>
+<p><strong>deep sleep</strong></p>
+<p>Implement deep sleep and reduce sample frequency to once an hour.
+The esp8266 only uses about 10mA when in deep sleep and the rtc continues to hold precision.</p>
+<p><strong>MQTT</strong></p>
+<p>When using MQTT we are using a very compressed binary payload with minimal protocol header. This mean a very power efficient frame.</p>
+<p>MQTT together with sleep will create a unique low power scenario where we can do the following:</p>
+<div class="figure" style="width: 80%">
+<a class="reference internal image-reference" href="_images/deepsleep_mqtt.png"><img alt="_images/deepsleep_mqtt.png" src="_images/deepsleep_mqtt.png" style="width: 896.0px; height: 2284.0px;" /></a>
+</div>
+<p>The diagram shows how the buffering together with deep sleep creates the foundation for infrequent bursts of transmission when the conenction is established again later.
+The size of the buffer, and thereby connected spi flash, describes the max size of the buffer queue and thereby how many sleep cycles you can go through before loosing data.</p>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="nurdspace-esp8266" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://nurdspace.nl/ESP8266#Power">https://nurdspace.nl/ESP8266#Power</a></td></tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -76,6 +126,14 @@ The reasons can be economically but also ecologically since we can also corellat
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Analysis</a><ul>
+<li><a class="reference internal" href="#power-considerations">Power considerations</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="implementation.html"
                         title="previous chapter">Implementation</a></p>

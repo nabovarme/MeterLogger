@@ -28,6 +28,7 @@ The esp-01 however is the most sparsely broken out module of the family. The esp
 This however is enough to implement my prototype.
 
 **Esp8266-07**
+
 This module will propably be the one that the next prototype will use. Reasons are:
 
 * Faraday cage

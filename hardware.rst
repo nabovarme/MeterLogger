@@ -34,15 +34,25 @@ Based on the research i created the following table:
 |Esp8266          |2,5 $    |Yes          |215mA                      |512kb          |80Mhz       |C sdk, moderate |
 +-----------------+---------+-------------+---------------------------+---------------+------------+----------------+
 
-sources:
-http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove
-avr atmega 328 datasheet
-cc3000 datasheet
-https://nurdspace.nl/ESP8266
-http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage
-https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG
+*sources*
+
+
+[#nurdspace]_
+[#raspi_tv]_
+[#esp_wiki]_
+[#arduino]_
 
 I concluded from the data above that the ESP8266 with a price of 2.5$, onboard flash and 80 mhz clock speed was ideal
 as a platform for the project.
 
 .. include:: esp8266.rst
+
+.. rubric:: Footnotes
+
+.. [#nurdspace] https://nurdspace.nl/ESP8266
+
+.. [#raspi_tv] http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage
+
+.. [#esp_wiki] https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG
+
+.. [#arduino] http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove

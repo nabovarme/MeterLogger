@@ -122,18 +122,16 @@ edimax usb wifi</td>
 </tr>
 </tbody>
 </table>
-<p>sources:
-<a class="reference external" href="http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove">http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove</a>
-avr atmega 328 datasheet
-cc3000 datasheet
-<a class="reference external" href="https://nurdspace.nl/ESP8266">https://nurdspace.nl/ESP8266</a>
-<a class="reference external" href="http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage">http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage</a>
-<a class="reference external" href="https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG">https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG</a></p>
+<p><em>sources</em></p>
+<p><a class="footnote-reference" href="#nurdspace" id="id1">[1]</a>
+<a class="footnote-reference" href="#raspi-tv" id="id2">[2]</a>
+<a class="footnote-reference" href="#esp-wiki" id="id3">[3]</a>
+<a class="footnote-reference" href="#arduino" id="id4">[4]</a></p>
 <p>I concluded from the data above that the ESP8266 with a price of 2.5$, onboard flash and 80 mhz clock speed was ideal
 as a platform for the project.</p>
 <div class="section" id="esp8266">
 <h2>ESP8266<a class="headerlink" href="#esp8266" title="Permalink to this headline">¶</a></h2>
-<div class="figure" id="id1" style="width: 70%">
+<div class="figure" id="id5" style="width: 70%">
 <img alt="_images/esp_family.png" src="_images/esp_family.png" />
 <p class="caption"><span class="caption-text">The esp8266 module family and the esp8266-01 i am using in this project.
 Note also the esp8266-07 with fcc stamps.</span></p>
@@ -152,8 +150,8 @@ Most of its core api calls are callback based which means you have to think asyn
 header pins for easy prototyping.
 The esp-01 however is the most sparsely broken out module of the family. The esp8266 chip itself features a lengthy list of gpios including uarts, i2c, spi etc. While all these features exist aboard the esp-01 only a few a broken out, namlely two gpio&#8217;s and a single uart.
 This however is enough to implement my prototype.</p>
-<p><strong>Esp8266-07</strong>
-This module will propably be the one that the next prototype will use. Reasons are:</p>
+<p><strong>Esp8266-07</strong></p>
+<p>This module will propably be the one that the next prototype will use. Reasons are:</p>
 <ul class="simple">
 <li>Faraday cage</li>
 <li>cheramic antenna</li>
@@ -168,10 +166,35 @@ This module will propably be the one that the next prototype will use. Reasons a
 A pcb layout was created in order to host the ESP8266-01 and facilitate uart connectivity with the kamstrup bus as well as providing power from the builtin psu.</p>
 <p>The pcb was uploaded to the pcb manufacturer <em>&#8220;oshpark.com&#8221;</em> where it is released as open hardware. Oshpark creates cheap pcb&#8217;s with their purple signature tint.
 Eagle cad free edition was used for the pcb layout and the design files are in the github repository.</p>
-<div class="figure" id="id2" style="width: 80%">
+<div class="figure" id="id6" style="width: 80%">
 <img alt="_images/esp8266_pcb.png" src="_images/esp8266_pcb.png" />
 <p class="caption"><span class="caption-text">The pcb kayout for the esp8266-01 as hosted on oshpark</span></p>
 </div>
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="nurdspace" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://nurdspace.nl/ESP8266">https://nurdspace.nl/ESP8266</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="raspi-tv" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td><a class="reference external" href="http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage">http://raspi.tv/2014/pihut-wifi-dongle-vs-edimax-power-usage</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="esp-wiki" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG">https://github.com/esp8266/esp8266-wiki/wiki/W25Q40BVNIG</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="arduino" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td><a class="reference external" href="http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove">http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove</a></td></tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

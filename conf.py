@@ -29,7 +29,8 @@ import shlex
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['rst2pdf.pdfbuilder']
+extensions = ['rst2pdf.pdfbuilder','sphinxcontrib.seqdiag']
+seqdiag_fontpath = "/opt/X11/share/fonts/TTF/Vera.ttf"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
