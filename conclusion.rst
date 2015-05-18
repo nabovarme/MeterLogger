@@ -17,7 +17,7 @@ and have failed the R7 because the chosen esp8266 did not break out the needed p
 to tell it to deep sleep. A solution to this can be seen in the *appendice/deep sleep*.
 
 SUSIE course
-------------
+............
 
 The susie course has been exiting to follow since i was able to take my project into a real world perspective.
 I think sometimes it was hard to reflect on the course because it included very diverse aspects such as LCA, zigbee etc versus the project i worked on. However my impression was that we were given very few restrictions in order to find and accomplish a solution to a problem. 
