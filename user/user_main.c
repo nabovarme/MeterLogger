@@ -115,15 +115,22 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void test_timer_func(void *arg)
 {
     //Do blinky stuff
-    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14)
-    {
+    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
         //Set GPIO2 to LOW
         gpio_output_set(0, BIT14, BIT14, 0);
     }
-    else
-    {
+    else {
         //Set GPIO2 to HIGH
         gpio_output_set(BIT14, 0, BIT14, 0);
+    }
+
+    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
+        //Set GPIO2 to LOW
+        gpio_output_set(0, BIT15, BIT15, 0);
+    }
+    else {
+        //Set GPIO2 to HIGH
+        gpio_output_set(BIT15, 0, BIT15, 0);
     }
 }
 	
@@ -197,11 +204,13 @@ ICACHE_FLASH_ATTR void user_init(void) {
     // Initialize the GPIO subsystem.
     gpio_init();
 
-    //Set GPIO2 to output mode
+    //Set GPIO14 and GPIO15 to output mode
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
 
-    //Set GPIO2 low
+    //Set GPIO14 low and GPIO15 high
     gpio_output_set(0, BIT14, BIT14, 0);
+    gpio_output_set(BIT15, 0, BIT15, 0);
 
     //Disarm timer
     os_timer_disarm(&test_timer);
@@ -213,7 +222,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
     //&some_timer is the pointer
     //1000 is the fire time in ms
     //0 for once and 1 for repeating
-    os_timer_arm(&test_timer, 1000, 1);
+    os_timer_arm(&test_timer, 5000, 1);
 
 
 
