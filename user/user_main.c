@@ -172,6 +172,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	//uart_div_modify(0, UART_CLK_FREQ / 1200);
+	os_printf("\n\r");
 	os_printf("SDK version:%s\n\r", system_get_sdk_version());
 	os_printf("Software version: %s\n\r", VERSION);
 	
