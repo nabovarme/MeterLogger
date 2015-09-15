@@ -21,7 +21,7 @@ flash as a binary. Also handles the hit counter on the main page.
 #include "cgi.h"
 #include "io.h"
 #include <ip_addr.h>
-//#include "espmissingincludes.h"
+#include "espmissingincludes.h"
 #include "debug.h"
 
 

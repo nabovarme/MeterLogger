@@ -19,7 +19,7 @@ Cgi/template routines for the /wifi url.
 #include "httpd.h"
 #include "cgi.h"
 #include "io.h"
-//#include "espmissingincludes.h"
+#include "espmissingincludes.h"
 #include "config.h"
 #include "debug.h"
 

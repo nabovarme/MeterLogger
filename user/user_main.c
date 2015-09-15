@@ -79,7 +79,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	wifi_softap_set_config(&ap_conf);
 	os_delay_us(10000);
 
-	//httpd_user_init();
+	httpd_user_init();
 }
 
 ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
@@ -165,13 +165,15 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 ICACHE_FLASH_ATTR void user_init(void) {
 	// wait 10 seconds before starting wifi and let the meter boot
-	os_delay_us(10000000);
+	//os_delay_us(10000000);
 	
 	// start kmp_request
 	kmp_request_init();
 
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-	os_printf("Version: %s\n\r", VERSION);
+	//uart_div_modify(0, UART_CLK_FREQ / 1200);
+	os_printf("SDK version:%s\n\r", system_get_sdk_version());
+	os_printf("Software version: %s\n\r", VERSION);
 	
 	// wait 0.2 seconds
 	// and send serial number request

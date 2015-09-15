@@ -25,7 +25,7 @@ It's written for use with httpd, but doesn't need to be used as such.
 #include "espconn.h"
 #include "mem.h"
 #include "osapi.h"
-//#include "espmissingincludes.h"
+#include "espmissingincludes.h"
 #include "debug.h"
 #else
 //Test build

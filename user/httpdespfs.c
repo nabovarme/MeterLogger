@@ -11,7 +11,7 @@ Connector to let httpd use the espfs filesystem to serve the files in it.
  * ----------------------------------------------------------------------------
  */
 
-//#include "espmissingincludes.h"
+#include "espmissingincludes.h"
 #include <string.h>
 #include <osapi.h>
 #include "c_types.h"
