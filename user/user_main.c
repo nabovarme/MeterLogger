@@ -56,6 +56,7 @@ static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
 static volatile os_timer_t kmp_request_send_timer;
+static volatile os_timer_t test_timer;
 
 uint16 counter = 0;
 
@@ -109,6 +110,21 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
+}
+
+ICACHE_FLASH_ATTR void test_timer_func(void *arg)
+{
+    //Do blinky stuff
+    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14)
+    {
+        //Set GPIO2 to LOW
+        gpio_output_set(0, BIT14, BIT14, 0);
+    }
+    else
+    {
+        //Set GPIO2 to HIGH
+        gpio_output_set(BIT14, 0, BIT14, 0);
+    }
 }
 	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -175,6 +191,32 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("\n\r");
 	os_printf("SDK version:%s\n\r", system_get_sdk_version());
 	os_printf("Software version: %s\n\r", VERSION);
+
+
+	
+    // Initialize the GPIO subsystem.
+    gpio_init();
+
+    //Set GPIO2 to output mode
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
+
+    //Set GPIO2 low
+    gpio_output_set(0, BIT14, BIT14, 0);
+
+    //Disarm timer
+    os_timer_disarm(&test_timer);
+
+    //Setup timer
+    os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
+
+    //Arm the timer
+    //&some_timer is the pointer
+    //1000 is the fire time in ms
+    //0 for once and 1 for repeating
+    os_timer_arm(&test_timer, 1000, 1);
+
+
+
 	
 	// wait 0.2 seconds
 	// and send serial number request
