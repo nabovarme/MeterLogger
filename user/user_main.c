@@ -79,7 +79,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	wifi_softap_set_config(&ap_conf);
 	os_delay_us(10000);
 
-	httpd_user_init();
+	//httpd_user_init();
 }
 
 ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
