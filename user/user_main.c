@@ -201,6 +201,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	// start kmp_request
 	kmp_request_init();
+	
+	system_set_os_print(0);
 
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	//uart_div_modify(0, UART_CLK_FREQ / 1200);
@@ -231,23 +233,23 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_timer_arm(&test_timer, 120000, 1);
 	
 
-	// wait 0.2 seconds
+	// wait 10 seconds
 	// and send serial number request
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
-	os_timer_arm(&kmp_request_send_timer, 200, 0);
+	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 		
 	// wait for serial number
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-	os_timer_arm(&config_mode_timer, 6000, 0);
+	os_timer_arm(&config_mode_timer, 16000, 0);
 		
 	// wait for 60 seconds
 	// and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
-	os_timer_arm(&sample_mode_timer, 60000, 0);
+	os_timer_arm(&sample_mode_timer, 70000, 0);
 	
 	INFO("\r\nSystem started ...\r\n");
 }
