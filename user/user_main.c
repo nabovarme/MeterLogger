@@ -196,20 +196,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
-	// wait 10 seconds before starting wifi and let the meter boot
-	//os_delay_us(10000000);
-	
-	// start kmp_request
-	kmp_request_init();
-	
-	system_set_os_print(0);
-
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-	//uart_div_modify(0, UART_CLK_FREQ / 1200);
 	os_printf("\n\r");
 	os_printf("SDK version:%s\n\r", system_get_sdk_version());
 	os_printf("Software version: %s\n\r", VERSION);
 
+	// disable serial debug
+	system_set_os_print(0);
+
+	// start kmp_request
+	kmp_request_init();
 	
 	// initialize the GPIO subsystem
 	gpio_init();
@@ -233,20 +229,19 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_timer_arm(&test_timer, 120000, 1);
 	
 
-	// wait 10 seconds
+	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 		
-	// wait for serial number
+	// start waiting for serial number after 16 seconds
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 16000, 0);
 		
-	// wait for 60 seconds
-	// and go to station mode
+	// wait for 70 seconds from boot and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 	os_timer_arm(&sample_mode_timer, 70000, 0);
