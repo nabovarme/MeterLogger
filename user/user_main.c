@@ -146,7 +146,7 @@ ICACHE_FLASH_ATTR void test_timer_func(void *arg)
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
 	if(status == STATION_GOT_IP){ 
-		init_unix_time();   // state 2 = get ntp mode ( wait forever)
+		init_unix_time();
 		MQTT_Connect(&mqttClient);
 	} else {
 		MQTT_Disconnect(&mqttClient);
@@ -228,7 +228,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	os_timer_disarm(&test_timer);
 	os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
-	os_timer_arm(&test_timer, 5000, 1);
+	os_timer_arm(&test_timer, 60000, 1);
 	
 
 	// wait 0.2 seconds
