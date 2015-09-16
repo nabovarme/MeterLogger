@@ -228,7 +228,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	os_timer_disarm(&test_timer);
 	os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
-	os_timer_arm(&test_timer, 60000, 1);
+	os_timer_arm(&test_timer, 120000, 1);
 	
 
 	// wait 0.2 seconds
