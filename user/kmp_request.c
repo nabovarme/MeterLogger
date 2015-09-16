@@ -99,11 +99,6 @@ void kmp_request_send() {
 	kmp_requests_sent++;
 }
 
-/**
-  * @brief  Uart receive task.
-  * @param  events: contain the uart receive data
-  * @retval None
-  */
 ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
 	unsigned char c;

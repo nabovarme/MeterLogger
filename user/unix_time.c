@@ -28,6 +28,9 @@ ICACHE_FLASH_ATTR uint32 get_unix_time(void) {
 	uint32 current_unix_time;
 
 	current_unix_time = sntp_get_current_timestamp();
+	if (current_unix_time > 0) {			// if initialized
+		current_unix_time -= (8 * 60 * 60);	// bug in sdk - no correction for time zone
+	}
 
 	return current_unix_time;
 }
