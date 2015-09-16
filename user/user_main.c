@@ -114,24 +114,33 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void test_timer_func(void *arg)
 {
-    //Do blinky stuff
-    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
-        //Set GPIO2 to LOW
-        gpio_output_set(0, BIT14, BIT14, 0);
-    }
-    else {
-        //Set GPIO2 to HIGH
-        gpio_output_set(BIT14, 0, BIT14, 0);
-    }
-
-    if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
-        //Set GPIO2 to LOW
-        gpio_output_set(0, BIT15, BIT15, 0);
-    }
-    else {
-        //Set GPIO2 to HIGH
-        gpio_output_set(BIT15, 0, BIT15, 0);
-    }
+	// do blinky stuff
+	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
+		//Set GPIO2 to LOW
+		gpio_output_set(0, BIT14, BIT14, 0);
+	}
+	else {
+		//Set GPIO2 to HIGH
+		gpio_output_set(BIT14, 0, BIT14, 0);
+	}
+	
+	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
+		//Set GPIO2 to LOW
+		gpio_output_set(0, BIT15, BIT15, 0);
+	}
+	else {
+		//Set GPIO2 to HIGH
+		gpio_output_set(BIT15, 0, BIT15, 0);
+	}
+	
+	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
+		//Set GPIO2 to LOW
+		gpio_output_set(0, BIT2, BIT2, 0);
+	}
+	else {
+		//Set GPIO2 to HIGH
+		gpio_output_set(BIT2, 0, BIT2, 0);
+	}
 }
 	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -199,34 +208,29 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("SDK version:%s\n\r", system_get_sdk_version());
 	os_printf("Software version: %s\n\r", VERSION);
 
-
 	
-    // Initialize the GPIO subsystem.
-    gpio_init();
-
-    //Set GPIO14 and GPIO15 to output mode
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
-
-    //Set GPIO14 low and GPIO15 high
-    gpio_output_set(0, BIT14, BIT14, 0);
-    gpio_output_set(BIT15, 0, BIT15, 0);
-
-    //Disarm timer
-    os_timer_disarm(&test_timer);
-
-    //Setup timer
-    os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
-
-    //Arm the timer
-    //&some_timer is the pointer
-    //1000 is the fire time in ms
-    //0 for once and 1 for repeating
-    os_timer_arm(&test_timer, 5000, 1);
-
-
-
+	// initialize the GPIO subsystem
+	gpio_init();
 	
+	//Set GPIO14 and GPIO15 to output mode
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+
+	//Set GPIO2 to output mode
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);	
+	
+	// set GPIO14 low and GPIO15 high
+	gpio_output_set(0, BIT14, BIT14, 0);
+	gpio_output_set(BIT15, 0, BIT15, 0);
+	
+	// set GPIO2 low (turn blue led off)
+	gpio_output_set(0, BIT2, BIT2, 0);
+	
+	os_timer_disarm(&test_timer);
+	os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
+	os_timer_arm(&test_timer, 5000, 1);
+	
+
 	// wait 0.2 seconds
 	// and send serial number request
 	os_timer_disarm(&kmp_request_send_timer);
