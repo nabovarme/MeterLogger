@@ -129,13 +129,13 @@ static void kmp_received_task(os_event_t *events) {
 	// decode kmp frame
 	if (kmp_decode_frame(message, message_l, &response) > 0) {
 		message_l = 0;		// zero it so we can reuse it for mqtt string
+		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 	
 		if (response.kmp_response_serial) {
 			kmp_serial = response.kmp_response_serial;	// save it for later use
 		}
-		else {
+		else if (current_unix_time) {	// only send mqtt if we got current time via ntp
 			// prepare for mqtt transmission if we got serial number from meter
-			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
         	
 			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
