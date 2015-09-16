@@ -198,11 +198,17 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("\n\r");
-	os_printf("SDK version:%s\n\r", system_get_sdk_version());
+	os_printf("SDK version: %s\n\r", system_get_sdk_version());
+#ifndef DEBUG_NO_METER
 	os_printf("Software version: %s\n\r", VERSION);
+#else
+	os_printf("Software version: %s (DEBUG_NO_METER)\n\r", VERSION);
+#endif
 
+#ifndef DEBUG_NO_METER
 	// disable serial debug
 	system_set_os_print(0);
+#endif
 
 	// start kmp_request
 	kmp_request_init();

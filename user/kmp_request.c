@@ -97,6 +97,21 @@ void kmp_request_send() {
     os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
 	
 	kmp_requests_sent++;
+#ifdef DEBUG_NO_METER
+	unsigned char topic[128];
+	unsigned char message[KMP_FRAME_L];
+	int topic_l;
+	int message_l;
+
+	topic_l = os_sprintf(topic, "/sample/v1/0000000/1442444444");
+	message_l = os_sprintf(message, "foo");
+
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+	}
+	kmp_requests_sent = 0;	// reset retry counter
+#endif
 }
 
 ICACHE_FLASH_ATTR

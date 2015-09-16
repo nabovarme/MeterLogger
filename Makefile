@@ -120,7 +120,10 @@ ifeq ($(FLAVOR),release)
     LDFLAGS += -g -O2
 endif
 
-
+#DEBUG_NO_METER ?= 1
+ifeq ($(DEBUG_NO_METER), 1)
+    CFLAGS += -DDEBUG_NO_METER
+endif
 
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
@@ -232,5 +235,8 @@ clean:
 	$(Q) rm -f $(FW_FILE_1)
 	$(Q) rm -f $(FW_FILE_2)
 #	$(Q) rm -rf $(FW_BASE)
+
+foo:
+	echo $(CFLAGS)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
