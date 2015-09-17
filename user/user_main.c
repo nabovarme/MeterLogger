@@ -56,7 +56,9 @@ static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
 static volatile os_timer_t kmp_request_send_timer;
-static volatile os_timer_t test_timer;
+
+static volatile os_timer_t ac_test_timer;
+static volatile os_timer_t ac_out_off_timer;
 
 uint16 counter = 0;
 
@@ -118,24 +120,23 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
 }
 
-ICACHE_FLASH_ATTR void test_timer_func(void *arg)
-{
+ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
 	// do blinky stuff
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
-		//Set GPIO2 to LOW
+		//Set GPI14 to LOW
 		gpio_output_set(0, BIT14, BIT14, 0);
 	}
 	else {
-		//Set GPIO2 to HIGH
+		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
 	}
 	
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
-		//Set GPIO2 to LOW
+		//Set GPI15 to LOW
 		gpio_output_set(0, BIT15, BIT15, 0);
 	}
 	else {
-		//Set GPIO2 to HIGH
+		//Set GPI15 to HIGH
 		gpio_output_set(BIT15, 0, BIT15, 0);
 	}
 	
@@ -147,6 +148,21 @@ ICACHE_FLASH_ATTR void test_timer_func(void *arg)
 		//Set GPIO2 to HIGH
 		gpio_output_set(BIT2, 0, BIT2, 0);
 	}
+}
+	
+ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
+	//Set GPIO2 to HIGH
+	gpio_output_set(BIT2, 0, BIT2, 0);
+	
+	//Set GPI14 to LOW
+	gpio_output_set(0, BIT14, BIT14, 0);
+	
+	//Set GPI15 to LOW
+	gpio_output_set(0, BIT15, BIT15, 0);
+
+#ifdef DEBUG
+	os_printf("\n\rac 1 and 2 off\n\r");
+#endif
 }
 	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -204,6 +220,53 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
 
+	// mqtt rpc dispatcher goes here	
+	if (strncmp(dataBuf, "0", 1) == 0) {
+#ifdef DEBUG
+		os_printf("\n\rac test on\n\r");
+#endif
+		// set GPIO14 low and GPIO15 high
+		gpio_output_set(0, BIT14, BIT14, 0);
+		gpio_output_set(BIT15, 0, BIT15, 0);
+	
+		// set GPIO2 low (turn blue led off)
+		gpio_output_set(0, BIT2, BIT2, 0);
+	
+		os_timer_disarm(&ac_test_timer);
+		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
+		os_timer_arm(&ac_test_timer, 120000, 1);
+	}
+	else if (strncmp(dataBuf, "1", 1) == 0) {
+#ifdef DEBUG
+		os_printf("\n\rac 1 on\n\r");
+#endif
+		//Set GPI14 to HIGH
+		gpio_output_set(BIT14, 0, BIT14, 0);
+		
+		//Set GPIO2 to LOW
+		gpio_output_set(0, BIT2, BIT2, 0);
+		
+		// wait 10 seconds and turn ac output off
+		os_timer_disarm(&ac_out_off_timer);
+		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+		os_timer_arm(&ac_out_off_timer, 10000, 0);
+	}
+	else if (strncmp(dataBuf, "2", 1) == 0) {
+#ifdef DEBUG
+		os_printf("\n\rac 2 on\n\r");
+#endif
+		//Set GPI15 to HIGH
+		gpio_output_set(BIT15, 0, BIT15, 0);
+		
+		//Set GPIO2 to HIGH
+		gpio_output_set(BIT2, 0, BIT2, 0);
+		
+		// wait 10 seconds and turn ac output off
+		os_timer_disarm(&ac_out_off_timer);
+		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+		os_timer_arm(&ac_out_off_timer, 10000, 0);
+	}
+
 #ifdef DEBUG
 	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
 #endif
@@ -222,6 +285,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 #ifdef DEBUG_NO_METER
 	os_printf("\t(DEBUG_NO_METER)\n\r");
+#endif
+#ifdef DEBUG_SHORT_WEB_CONFIG_TIME
+	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 
 #ifndef DEBUG_NO_METER
@@ -242,17 +308,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	//Set GPIO2 to output mode
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);	
 	
-	// set GPIO14 low and GPIO15 high
-	gpio_output_set(0, BIT14, BIT14, 0);
-	gpio_output_set(BIT15, 0, BIT15, 0);
-	
-	// set GPIO2 low (turn blue led off)
-	gpio_output_set(0, BIT2, BIT2, 0);
-	
-	os_timer_disarm(&test_timer);
-	os_timer_setfn(&test_timer, (os_timer_func_t *)test_timer_func, NULL);
-	os_timer_arm(&test_timer, 120000, 1);
-	
 
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
@@ -269,7 +324,11 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// wait for 70 seconds from boot and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
+#ifndef DEBUG_SHORT_WEB_CONFIG_TIME
 	os_timer_arm(&sample_mode_timer, 70000, 0);
+#else
+	os_timer_arm(&sample_mode_timer, 18000, 0);
+#endif
 	
 	INFO("\r\nSystem started ...\r\n");
 }

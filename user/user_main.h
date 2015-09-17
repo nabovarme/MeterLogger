@@ -3,6 +3,8 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg);
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg);
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg);
 ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg);
+ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg);
+ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg);
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status);
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args);

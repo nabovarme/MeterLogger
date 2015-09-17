@@ -128,6 +128,11 @@ ifeq ($(DEBUG_NO_METER), 1)
     CFLAGS += -DDEBUG_NO_METER
 endif
 
+ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
+    CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
+endif
+
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
