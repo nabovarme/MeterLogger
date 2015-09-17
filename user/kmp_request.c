@@ -103,7 +103,7 @@ void kmp_request_send() {
 	int topic_l;
 	int message_l;
 
-	topic_l = os_sprintf(topic, "/sample/v1/0000000/1442444444");
+	topic_l = os_sprintf(topic, "/sample/v1/0000000/%u", get_unix_time());
 	message_l = os_sprintf(message, "foo");
 
 	if (mqtt_client) {
