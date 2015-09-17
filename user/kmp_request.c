@@ -10,6 +10,7 @@
 #define QUEUE_SIZE 256
 
 unsigned int kmp_serial = 0;
+//unsigned int mqtt_lwt_flag = 0;
 
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
@@ -45,6 +46,11 @@ void kmp_request_init() {
 ICACHE_FLASH_ATTR
 void kmp_set_mqtt_client(MQTT_Client* client) {
 	mqtt_client = client;
+}
+
+ICACHE_FLASH_ATTR
+unsigned int kmp_get_received_serial() {
+	return kmp_serial;
 }
 
 ICACHE_FLASH_ATTR
@@ -102,8 +108,11 @@ void kmp_request_send() {
 	unsigned char message[KMP_FRAME_L];
 	int topic_l;
 	int message_l;
+	
+	// fake serial for testing without meter
+	kmp_serial = 9999999;
 
-	topic_l = os_sprintf(topic, "/sample/v1/9999999/%u", get_unix_time());
+	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
 	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
 
 	if (mqtt_client) {

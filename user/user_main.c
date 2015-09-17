@@ -89,13 +89,19 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
+	unsigned char topic[128];
+	int topic_l;
+
 	CFG_Load();
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
 
-	MQTT_InitLWT(&mqttClient, "/sample", "offline", 0, 0);
+	// set MQTT LWP topic
+	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial);
+	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
+	
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
 	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);

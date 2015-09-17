@@ -12,6 +12,9 @@ ICACHE_FLASH_ATTR
 void kmp_set_mqtt_client(MQTT_Client* client);
 
 ICACHE_FLASH_ATTR
+unsigned int kmp_get_received_serial();
+
+ICACHE_FLASH_ATTR
 void kmp_get_serial_timer_func();
 
 ICACHE_FLASH_ATTR
