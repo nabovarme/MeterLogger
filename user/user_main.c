@@ -99,7 +99,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
 
 	// set MQTT LWP topic
-	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial);
+	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial());
 	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
 	
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
@@ -205,10 +205,12 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("\n\r");
 	os_printf("SDK version: %s\n\r", system_get_sdk_version());
-#ifndef DEBUG_NO_METER
 	os_printf("Software version: %s\n\r", VERSION);
-#else
-	os_printf("Software version: %s (DEBUG_NO_METER)\n\r", VERSION);
+#ifdef DEBUG
+	os_printf("\t(DEBUG)\n\r");
+#endif
+#ifdef DEBUG_NO_METER
+	os_printf("\t(DEBUG_NO_METER)\n\r");
 #endif
 
 #ifndef DEBUG_NO_METER

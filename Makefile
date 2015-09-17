@@ -120,7 +120,10 @@ ifeq ($(FLAVOR),release)
     LDFLAGS += -g -O2
 endif
 
-#DEBUG_NO_METER ?= 1
+ifeq ($(DEBUG), 1)
+    CFLAGS += -DDEBUG
+endif
+
 ifeq ($(DEBUG_NO_METER), 1)
     CFLAGS += -DDEBUG_NO_METER
 endif
