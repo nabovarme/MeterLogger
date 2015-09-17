@@ -103,7 +103,7 @@ void kmp_request_send() {
 	int topic_l;
 	int message_l;
 
-	topic_l = os_sprintf(topic, "/sample/v1/0000000/%u", get_unix_time());
+	topic_l = os_sprintf(topic, "/sample/v1/9999999/%u", get_unix_time());
 	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
 
 	if (mqtt_client) {
