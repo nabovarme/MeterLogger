@@ -161,7 +161,16 @@ ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
-	INFO("MQTT: Connected\r\n");
+	unsigned char topic[128];
+	int topic_l;
+
+#ifdef DEBUG
+	os_printf("\n\rMQTT: Connected\n\r");
+#endif
+
+	// set MQTT LWP topic and subscribe to /config/v1/serial/#
+	topic_l = os_sprintf(topic, "/config/v1/%u/#", kmp_get_received_serial());
+	MQTT_Subscribe(client, topic, 0);
 
 	// set mqtt_client kmp_request should use to return data
 	kmp_set_mqtt_client(client);
@@ -195,7 +204,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
 
-	INFO("Receive topic: %s, data: %s \r\n", topicBuf, dataBuf);
+#ifdef DEBUG
+	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
+#endif
 	
 	os_free(topicBuf);
 	os_free(dataBuf);

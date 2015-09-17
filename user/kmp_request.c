@@ -43,11 +43,13 @@ void kmp_request_init() {
 	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
 }
 
+// helper function to pass mqtt client struct from user_main.c to here
 ICACHE_FLASH_ATTR
 void kmp_set_mqtt_client(MQTT_Client* client) {
 	mqtt_client = client;
 }
 
+// helper function to pass received kmp_serial to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial() {
 	return kmp_serial;
