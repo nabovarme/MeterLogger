@@ -132,10 +132,6 @@ ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
     CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
 endif
 
-ifeq ($(ESP03), 1)
-    CFLAGS += -DESP03
-endif
-
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
