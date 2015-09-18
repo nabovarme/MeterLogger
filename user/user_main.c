@@ -1,32 +1,3 @@
-/* main.c -- MQTT client example
-*
-* Copyright (c) 2014-2015, Tuan PM <tuanpm at live dot com>
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* * Redistributions of source code must retain the above copyright notice,
-* this list of conditions and the following disclaimer.
-* * Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in the
-* documentation and/or other materials provided with the distribution.
-* * Neither the name of Redis nor the names of its contributors may be used
-* to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*/
 #include "ets_sys.h"
 #include "driver/uart.h"
 #include "osapi.h"
@@ -42,7 +13,7 @@
 #include "unix_time.h"
 #include "user_main.h"
 #include "kmp_request.h"
-#include "config.h"
+#include "led.h"
 
 #define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
@@ -125,10 +96,12 @@ ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
 		//Set GPI14 to LOW
 		gpio_output_set(0, BIT14, BIT14, 0);
+		led_pattern_b();
 	}
 	else {
 		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
+		led_pattern_a();
 	}
 	
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
@@ -139,21 +112,9 @@ ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
 		//Set GPI15 to HIGH
 		gpio_output_set(BIT15, 0, BIT15, 0);
 	}
-	
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
-		//Set GPIO2 to LOW
-		gpio_output_set(0, BIT2, BIT2, 0);
-	}
-	else {
-		//Set GPIO2 to HIGH
-		gpio_output_set(BIT2, 0, BIT2, 0);
-	}
 }
 	
 ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
-	//Set GPIO2 to HIGH
-	gpio_output_set(BIT2, 0, BIT2, 0);
-	
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
 	
@@ -163,6 +124,9 @@ ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
 #ifdef DEBUG
 	os_printf("\n\rac 1 and 2 off\n\r");
 #endif
+	
+	led_stop_pattern();
+	led_off();
 }
 	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -225,12 +189,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef DEBUG
 		os_printf("\n\rac test on\n\r");
 #endif
+		led_pattern_a();
+		
 		// set GPIO14 low and GPIO15 high
 		gpio_output_set(0, BIT14, BIT14, 0);
 		gpio_output_set(BIT15, 0, BIT15, 0);
-	
-		// set GPIO2 low (turn blue led off)
-		gpio_output_set(0, BIT2, BIT2, 0);
 	
 		os_timer_disarm(&ac_test_timer);
 		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
@@ -240,12 +203,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef DEBUG
 		os_printf("\n\rac 1 on\n\r");
 #endif
+		led_pattern_a();
+		
 		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
-		
-		//Set GPIO2 to LOW
-		gpio_output_set(0, BIT2, BIT2, 0);
-		
+				
 		// wait 10 seconds and turn ac output off
 		os_timer_disarm(&ac_out_off_timer);
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
@@ -255,11 +217,10 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef DEBUG
 		os_printf("\n\rac 2 on\n\r");
 #endif
+		led_pattern_b();
+		
 		//Set GPI15 to HIGH
 		gpio_output_set(BIT15, 0, BIT15, 0);
-		
-		//Set GPIO2 to HIGH
-		gpio_output_set(BIT2, 0, BIT2, 0);
 		
 		// wait 10 seconds and turn ac output off
 		os_timer_disarm(&ac_out_off_timer);
@@ -312,9 +273,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
 
-	//Set GPIO2 to output mode
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);	
-	
+	led_init();
 
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
