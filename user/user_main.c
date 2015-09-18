@@ -96,12 +96,12 @@ ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
 		//Set GPI14 to LOW
 		gpio_output_set(0, BIT14, BIT14, 0);
-		led_pattern_b();
+		led_pattern_a();
 	}
 	else {
 		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
-		led_pattern_a();
+		led_pattern_b();
 	}
 	
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
