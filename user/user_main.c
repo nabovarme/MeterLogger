@@ -266,6 +266,12 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
 		os_timer_arm(&ac_out_off_timer, 10000, 0);
 	}
+	else {
+		// turn ac output off
+		os_timer_disarm(&ac_out_off_timer);
+		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+		os_timer_arm(&ac_out_off_timer, 0, 0);
+	}
 
 #ifdef DEBUG
 	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
