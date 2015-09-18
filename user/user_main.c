@@ -96,12 +96,12 @@ ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
 		//Set GPI14 to LOW
 		gpio_output_set(0, BIT14, BIT14, 0);
-		led_pattern_a();
+		led_pattern_b();
 	}
 	else {
 		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
-		led_pattern_b();
+		led_pattern_a();
 	}
 	
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
@@ -191,9 +191,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		led_pattern_a();
 		
-		// set GPIO14 low and GPIO15 high
-		gpio_output_set(0, BIT14, BIT14, 0);
-		gpio_output_set(BIT15, 0, BIT15, 0);
+		// set GPIO14 high and GPIO15 low
+		gpio_output_set(BIT14, 0, BIT14, 0);
+		gpio_output_set(0, BIT15, BIT15, 0);
 	
 		os_timer_disarm(&ac_test_timer);
 		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
