@@ -36,7 +36,7 @@ ICACHE_FLASH_ATTR void led_pattern_a(void) {
 ICACHE_FLASH_ATTR void led_pattern_b(void) {
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
-	os_timer_arm(&led_blinker_timer, 400, 1);
+	os_timer_arm(&led_blinker_timer, 200, 1);
 }
 
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {
