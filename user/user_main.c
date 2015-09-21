@@ -13,6 +13,7 @@
 #include "unix_time.h"
 #include "user_main.h"
 #include "kmp_request.h"
+#include "cron.h"
 #include "led.h"
 
 #define user_proc_task_prio			0
@@ -173,10 +174,12 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-	char *topicBuf = (char*)os_zalloc(topic_len+1),
-			*dataBuf = (char*)os_zalloc(data_len+1);
-
+	char *topicBuf = (char*)os_zalloc(topic_len + 1);
+	char *dataBuf = (char*)os_zalloc(data_len + 1);
 	MQTT_Client* client = (MQTT_Client*)args;
+	
+	char *str;
+	char function_name[FUNCTIONNAME_L];
 
 	os_memcpy(topicBuf, topic, topic_len);
 	topicBuf[topic_len] = 0;
@@ -184,8 +187,27 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
 
-	// mqtt rpc dispatcher goes here	
-	if (strncmp(dataBuf, "0", 1) == 0) {
+#ifdef DEBUG
+	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
+#endif
+
+	// mqtt rpc dispatcher goes here
+	// parse mqtt topic for function call name
+	str = strtok(topicBuf, "/");
+	while (str != NULL) {
+		strncpy(function_name, str, FUNCTIONNAME_L);   // save last parameter as function_name
+		str = strtok(NULL, "/");
+	}
+	
+	if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
+		// found set_cron
+		add_cron_job_from_query(dataBuf);
+	}
+	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
+		// found clear_cron
+		clear_cron_jobs();
+	}
+	else if (strncmp(dataBuf, "0", 1) == 0) {
 #ifdef DEBUG
 		os_printf("\n\rac test on\n\r");
 #endif
@@ -234,10 +256,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
 		os_timer_arm(&ac_out_off_timer, 0, 0);
 	}
-
-#ifdef DEBUG
-	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
-#endif
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
@@ -274,6 +292,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
 
 	led_init();
+	cron_init();
 
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request

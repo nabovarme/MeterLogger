@@ -122,6 +122,7 @@ endif
 
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG
+#    CFLAGS += -DDEBUG -DPRINTF_DEBUG
 endif
 
 ifeq ($(DEBUG_NO_METER), 1)
