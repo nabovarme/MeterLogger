@@ -11,7 +11,7 @@ cron_jobs_t cron_jobs;
 
 ICACHE_FLASH_ATTR
 void cron_init() {
-	cron_jobs.n = 0;
+	memset(&cron_jobs, 0, sizeof(cron_jobs));
 }
 
 ICACHE_FLASH_ATTR
