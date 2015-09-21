@@ -188,7 +188,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	dataBuf[data_len] = 0;
 
 #ifdef DEBUG
-	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
+	//os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
 #endif
 
 	// parse mqtt topic for function call name

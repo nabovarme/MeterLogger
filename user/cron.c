@@ -70,7 +70,7 @@ ICACHE_FLASH_ATTR void debug_cron_jobs() {
 	
 	i = cron_jobs.n;
 	while (i) {
-		os_printf("jobs: %u\n\rminute: %s\n\rhour: %s\n\rday_of_month: %s\n\rmonth: %s\n\rday_of_week: %s\n\rcommand: %s\n\r", 
+		os_printf("j: %u\tm: %s\th: %s\tdom: %s\tmon: %s\tdow: %s\tc: %s\n\r", 
 			i,
 			cron_jobs.cron_job_list[i - 1].minute,
 			cron_jobs.cron_job_list[i - 1].hour,
