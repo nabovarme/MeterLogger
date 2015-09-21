@@ -191,7 +191,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
 #endif
 
-	// mqtt rpc dispatcher goes here
 	// parse mqtt topic for function call name
 	str = strtok(topicBuf, "/");
 	while (str != NULL) {
@@ -199,6 +198,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		str = strtok(NULL, "/");
 	}
 	
+	// mqtt rpc dispatcher goes here
 	if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
 		add_cron_job_from_query(dataBuf);
@@ -207,21 +207,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found clear_cron
 		clear_cron_jobs();
 	}
-	else if (strncmp(dataBuf, "0", 1) == 0) {
-#ifdef DEBUG
-		os_printf("\n\rac test on\n\r");
-#endif
-		led_pattern_a();
-		
-		// set GPIO14 high and GPIO15 low
-		gpio_output_set(BIT14, 0, BIT14, 0);
-		gpio_output_set(0, BIT15, BIT15, 0);
-	
-		os_timer_disarm(&ac_test_timer);
-		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
-		os_timer_arm(&ac_test_timer, 120000, 1);
-	}
-	else if (strncmp(dataBuf, "1", 1) == 0) {
+	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
+		// found open
 #ifdef DEBUG
 		os_printf("\n\rac 1 on\n\r");
 #endif
@@ -235,7 +222,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
 		os_timer_arm(&ac_out_off_timer, 10000, 0);
 	}
-	else if (strncmp(dataBuf, "2", 1) == 0) {
+	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
+		// found close
 #ifdef DEBUG
 		os_printf("\n\rac 2 on\n\r");
 #endif
@@ -249,12 +237,28 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
 		os_timer_arm(&ac_out_off_timer, 10000, 0);
 	}
-	else {
+	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
+		// found off
 		// turn ac output off
 		os_timer_disarm(&ac_test_timer);
 		os_timer_disarm(&ac_out_off_timer);
 		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
 		os_timer_arm(&ac_out_off_timer, 0, 0);
+	}
+	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
+		// found test
+#ifdef DEBUG
+		os_printf("\n\rac test on\n\r");
+#endif
+		led_pattern_a();
+		
+		// set GPIO14 high and GPIO15 low
+		gpio_output_set(BIT14, 0, BIT14, 0);
+		gpio_output_set(0, BIT15, BIT15, 0);
+	
+		os_timer_disarm(&ac_test_timer);
+		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
+		os_timer_arm(&ac_test_timer, 120000, 1);
 	}
 	
 	os_free(topicBuf);
