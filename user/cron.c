@@ -5,13 +5,21 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "unix_time.h"
 #include "cron.h"
 
 cron_jobs_t cron_jobs;
+static volatile os_timer_t minute_timer;
 
 ICACHE_FLASH_ATTR
 void cron_init() {
+	// zero out cron_jobs struct
 	memset(&cron_jobs, 0, sizeof(cron_jobs));
+
+	// check if there are any cron jobs to run every minute
+	os_timer_disarm(&minute_timer);
+	os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
+	os_timer_arm(&minute_timer, 60000, 1);
 }
 
 ICACHE_FLASH_ATTR
@@ -50,30 +58,38 @@ unsigned int add_cron_job_from_query(char *query) {
 		
 		str = strtok_r(NULL, "&", &context_query_string);
 	}
-#ifdef DEBUG
-	debug_cron_jobs();
-#endif
 	
 	return cron_jobs.n;
 }
 
 ICACHE_FLASH_ATTR void clear_cron_jobs() {
+#ifdef DEBUG
+	debug_cron_jobs();
+#endif
 	memset(&cron_jobs, 0, sizeof(cron_jobs));
 #ifdef DEBUG
 	os_printf("\n\rcleared all jobs\n\r");
 #endif
 }
 
+ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
+#ifdef DEBUG
+	//os_printf("t: %s\n\r", sntp_get_real_time(get_unix_time()));
+	os_printf("rtc: %u\n\r", get_unix_time());
+#endif
+	// convert current unix time to hour, minutes... suitable for comparing with crontab
+	// check if any jobs should have run the last minute
+}
 
 ICACHE_FLASH_ATTR void debug_cron_jobs() {
 	unsigned int i;
 	
 	i = cron_jobs.n;
 	while (i) {
-		os_printf("j: %u\tm: %s\th: %s\tdom: %s\tmon: %s\tdow: %s\tc: %s\n\r", 
+		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\n\r", 
 			i,
-			cron_jobs.cron_job_list[i - 1].minute,
 			cron_jobs.cron_job_list[i - 1].hour,
+			cron_jobs.cron_job_list[i - 1].minute,
 			cron_jobs.cron_job_list[i - 1].day_of_month,
 			cron_jobs.cron_job_list[i - 1].month,
 			cron_jobs.cron_job_list[i - 1].day_of_week,
