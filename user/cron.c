@@ -112,8 +112,7 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 	}
 	
 	// check if any jobs should have run the last minute
-	i = cron_jobs.n;
-	while (i) {	// UGLY: should be for (...)
+	for (i = cron_jobs.n; i > 0; i--) {
 		run_command = 0;
 #ifdef DEBUG
 		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\n\r", 
@@ -171,16 +170,13 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 			os_printf("run: %s\n\r", cron_jobs.cron_job_list[i - 1].command);
 #endif
 		}
-		
-		i--;
 	}
 }
 
 ICACHE_FLASH_ATTR void debug_cron_jobs() {
 	unsigned char i;
 	
-	i = cron_jobs.n;
-	while (i) {
+	for (i = cron_jobs.n; i > 0; i--) { 
 		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\n\r", 
 			i,
 			cron_jobs.cron_job_list[i - 1].hour,
@@ -189,6 +185,5 @@ ICACHE_FLASH_ATTR void debug_cron_jobs() {
 			cron_jobs.cron_job_list[i - 1].month,
 			cron_jobs.cron_job_list[i - 1].day_of_week,
 			cron_jobs.cron_job_list[i - 1].command);
-		i--;
 	}
 }
