@@ -77,9 +77,9 @@ ICACHE_FLASH_ATTR void clear_cron_jobs() {
 ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 	struct tm *dt;
 	time_t unix_time;
-#ifdef DEBUG
 	unix_time = get_unix_time() + (2 * 60 * 60);	// BUG here - time zone support needed
 	dt = localtime(&unix_time);
+#ifdef DEBUG
 	os_printf("%02d:%02d:%02d %d.%d.%d\r\n", dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900);
 	os_printf("rtc: %u\n\r", get_unix_time());
 #endif
