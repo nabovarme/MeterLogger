@@ -79,10 +79,12 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 	time_t unix_time;
 	unix_time = get_unix_time() + (2 * 60 * 60);	// BUG here - time zone support needed
 	dt = localtime(&unix_time);
+	
 #ifdef DEBUG
 	os_printf("%02d:%02d:%02d %d.%d.%d\r\n", dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900);
 	os_printf("rtc: %u\n\r", get_unix_time());
 #endif
+	
 	// sync to ntp time
 	if (dt->tm_sec == 0) {
 		if (sec_drift) {
@@ -91,7 +93,9 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 			os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
 			os_timer_arm(&minute_timer, 60000, 1);
 			sec_drift = 0;
+#ifdef DEBUG
 			os_printf("normal\n\r");
+#endif
 		}
 	}
 	else {
@@ -99,7 +103,9 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		os_timer_disarm(&minute_timer);
 		os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
 		os_timer_arm(&minute_timer, (sec_drift * 1000), 0);
+#ifdef
 		os_printf("adjusting by %d s\n\r", sec_drift);
+#endif
 	}
 	
 	// convert current unix time to hour, minutes... suitable for comparing with crontab
