@@ -23,7 +23,7 @@ typedef struct {
 typedef cron_job_t cron_job_list_t[CRON_JOBS_MAX];
 
 typedef struct {
-    unsigned int n;
+    unsigned char n;
     cron_job_list_t cron_job_list;
 } cron_jobs_t;
 

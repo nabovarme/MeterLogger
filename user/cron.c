@@ -77,12 +77,15 @@ ICACHE_FLASH_ATTR void clear_cron_jobs() {
 ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 	struct tm *dt;
 	time_t unix_time;
+	unsigned char i;
+	unsigned char run_command;
+	
 	unix_time = get_unix_time() + (2 * 60 * 60);	// BUG here - time zone support needed
 	dt = localtime(&unix_time);
 	
 #ifdef DEBUG
 	os_printf("%02d:%02d:%02d %d.%d.%d\r\n", dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900);
-	os_printf("rtc: %u\n\r", get_unix_time());
+	//os_printf("rtc: %u\n\r", get_unix_time());
 #endif
 	
 	// sync to ntp time
@@ -94,7 +97,7 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 			os_timer_arm(&minute_timer, 60000, 1);
 			sec_drift = 0;
 #ifdef DEBUG
-			os_printf("normal\n\r");
+			//os_printf("normal\n\r");
 #endif
 		}
 	}
@@ -103,17 +106,78 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		os_timer_disarm(&minute_timer);
 		os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
 		os_timer_arm(&minute_timer, (sec_drift * 1000), 0);
-#ifdef
-		os_printf("adjusting by %d s\n\r", sec_drift);
+#ifdef DEBUG
+		//os_printf("adjusting by %d s\n\r", sec_drift);
 #endif
 	}
 	
-	// convert current unix time to hour, minutes... suitable for comparing with crontab
 	// check if any jobs should have run the last minute
+	i = cron_jobs.n;
+	while (i) {	// UGLY: should be for (...)
+		run_command = 0;
+#ifdef DEBUG
+		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\n\r", 
+			i,
+			cron_jobs.cron_job_list[i - 1].hour,
+			cron_jobs.cron_job_list[i - 1].minute,
+			cron_jobs.cron_job_list[i - 1].day_of_month,
+			cron_jobs.cron_job_list[i - 1].month,
+			cron_jobs.cron_job_list[i - 1].day_of_week,
+			cron_jobs.cron_job_list[i - 1].command);
+#endif
+		// check cron jobs hour value
+		if (strncmp(cron_jobs.cron_job_list[i - 1].hour, "*", KEY_VALUE_L) == 0) {
+			run_command++;
+		}
+		else if (dt->tm_hour == atoi(cron_jobs.cron_job_list[i - 1].hour)) {
+			run_command++;
+		}
+		
+		// check cron jobs minute value
+		if (strncmp(cron_jobs.cron_job_list[i - 1].minute, "*", KEY_VALUE_L) == 0) {
+			run_command++;
+		}
+		else if (dt->tm_min == atoi(cron_jobs.cron_job_list[i - 1].minute)) {
+			run_command++;
+		}
+		
+		// check cron jobs day_of_month value
+		if (strncmp(cron_jobs.cron_job_list[i - 1].day_of_month, "*", KEY_VALUE_L) == 0) {
+			run_command++;
+		}
+		else if (dt->tm_mday == atoi(cron_jobs.cron_job_list[i - 1].day_of_month)) {
+			run_command++;
+		}
+		
+		// check cron jobs month value
+		if (strncmp(cron_jobs.cron_job_list[i - 1].month, "*", KEY_VALUE_L) == 0) {
+			run_command++;
+		}
+		else if ((dt->tm_mon + 1) == atoi(cron_jobs.cron_job_list[i - 1].month)) {
+			run_command++;
+		}
+		
+		// check cron jobs day_of_week value
+		if (strncmp(cron_jobs.cron_job_list[i - 1].day_of_week, "*", KEY_VALUE_L) == 0) {
+			run_command++;
+		}
+		else if (dt->tm_wday == atoi(cron_jobs.cron_job_list[i - 1].day_of_week) % 7) {		// (0 or 7 is Sun therefore % 7
+			run_command++;
+		}
+
+		// we need to run the command
+		if (run_command == 5) {
+#ifdef DEBUG
+			os_printf("run: %s\n\r", cron_jobs.cron_job_list[i - 1].command);
+#endif
+		}
+		
+		i--;
+	}
 }
 
 ICACHE_FLASH_ATTR void debug_cron_jobs() {
-	unsigned int i;
+	unsigned char i;
 	
 	i = cron_jobs.n;
 	while (i) {
