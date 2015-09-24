@@ -40,6 +40,21 @@ void ac_test_timer_func(void *arg) {
 	}
 }
 
+ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
+#ifdef DEBUG
+	os_printf("\n\rac 1 and 2 off\n\r");
+#endif
+	
+	//Set GPI14 to LOW
+	gpio_output_set(0, BIT14, BIT14, 0);
+	
+	//Set GPI15 to LOW
+	gpio_output_set(0, BIT15, BIT15, 0);
+
+	led_stop_pattern();
+	led_off();
+}
+
 ICACHE_FLASH_ATTR
 void ac_test() {
 #ifdef DEBUG
@@ -66,6 +81,11 @@ void ac_motor_valve_open() {
 	
 	//Set GPI14 to HIGH
 	gpio_output_set(BIT14, 0, BIT14, 0);
+	
+	// wait 60 seconds and turn ac output off
+	os_timer_disarm(&ac_out_off_timer);
+	os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+	os_timer_arm(&ac_out_off_timer, 60000, 0);
 }
 
 ICACHE_FLASH_ATTR
@@ -78,22 +98,19 @@ void ac_motor_valve_close() {
 	
 	//Set GPI15 to HIGH
 	gpio_output_set(BIT15, 0, BIT15, 0);
+	
+	// wait 60 seconds and turn ac output off
+	os_timer_disarm(&ac_out_off_timer);
+	os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+	os_timer_arm(&ac_out_off_timer, 60000, 0);
 }
 
 ICACHE_FLASH_ATTR
 void ac_off() {
-#ifdef DEBUG
-	os_printf("\n\rac 1 and 2 off\n\r");
-#endif
-	
+	// turn ac output off
 	os_timer_disarm(&ac_test_timer);
-	//Set GPI14 to LOW
-	gpio_output_set(0, BIT14, BIT14, 0);
-	
-	//Set GPI15 to LOW
-	gpio_output_set(0, BIT15, BIT15, 0);
-
-	led_off();
-	led_stop_pattern();
+	os_timer_disarm(&ac_out_off_timer);
+	os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
+	os_timer_arm(&ac_out_off_timer, 0, 0);
 }
 
