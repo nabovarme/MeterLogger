@@ -15,6 +15,7 @@
 #include "kmp_request.h"
 #include "cron.h"
 #include "led.h"
+#include "ac_out.h"
 
 #define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
@@ -28,9 +29,6 @@ static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
 static volatile os_timer_t kmp_request_send_timer;
-
-static volatile os_timer_t ac_test_timer;
-static volatile os_timer_t ac_out_off_timer;
 
 uint16 counter = 0;
 
@@ -92,44 +90,6 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
 }
 
-ICACHE_FLASH_ATTR void ac_test_timer_func(void *arg) {
-	// do blinky stuff
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
-		//Set GPI14 to LOW
-		gpio_output_set(0, BIT14, BIT14, 0);
-		led_pattern_b();
-	}
-	else {
-		//Set GPI14 to HIGH
-		gpio_output_set(BIT14, 0, BIT14, 0);
-		led_pattern_a();
-	}
-	
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
-		//Set GPI15 to LOW
-		gpio_output_set(0, BIT15, BIT15, 0);
-	}
-	else {
-		//Set GPI15 to HIGH
-		gpio_output_set(BIT15, 0, BIT15, 0);
-	}
-}
-
-ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
-	//Set GPI14 to LOW
-	gpio_output_set(0, BIT14, BIT14, 0);
-	
-	//Set GPI15 to LOW
-	gpio_output_set(0, BIT15, BIT15, 0);
-
-#ifdef DEBUG
-	os_printf("\n\rac 1 and 2 off\n\r");
-#endif
-	
-	led_stop_pattern();
-	led_off();
-}
-	
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
 	if(status == STATION_GOT_IP){ 
@@ -209,56 +169,20 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
-#ifdef DEBUG
-		os_printf("\n\rac 1 on\n\r");
-#endif
-		led_pattern_a();
-		
-		//Set GPI14 to HIGH
-		gpio_output_set(BIT14, 0, BIT14, 0);
-				
-		// wait 10 seconds and turn ac output off
-		os_timer_disarm(&ac_out_off_timer);
-		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
-		os_timer_arm(&ac_out_off_timer, 10000, 0);
+		ac_motor_valve_open();
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
-#ifdef DEBUG
-		os_printf("\n\rac 2 on\n\r");
-#endif
-		led_pattern_b();
-		
-		//Set GPI15 to HIGH
-		gpio_output_set(BIT15, 0, BIT15, 0);
-		
-		// wait 10 seconds and turn ac output off
-		os_timer_disarm(&ac_out_off_timer);
-		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
-		os_timer_arm(&ac_out_off_timer, 10000, 0);
+		ac_motor_valve_close();
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off
 		// turn ac output off
-		os_timer_disarm(&ac_test_timer);
-		os_timer_disarm(&ac_out_off_timer);
-		os_timer_setfn(&ac_out_off_timer, (os_timer_func_t *)ac_out_off_timer_func, NULL);
-		os_timer_arm(&ac_out_off_timer, 0, 0);
+		ac_off();
 	}
 	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
 		// found test
-#ifdef DEBUG
-		os_printf("\n\rac test on\n\r");
-#endif
-		led_pattern_a();
-		
-		// set GPIO14 high and GPIO15 low
-		gpio_output_set(BIT14, 0, BIT14, 0);
-		gpio_output_set(0, BIT15, BIT15, 0);
-	
-		os_timer_disarm(&ac_test_timer);
-		os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
-		os_timer_arm(&ac_test_timer, 120000, 1);
+		ac_test();
 	}
 	
 	os_free(topicBuf);
@@ -291,13 +215,11 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// initialize the GPIO subsystem
 	gpio_init();
 	
-	//Set GPIO14 and GPIO15 to output mode
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+	ac_out_init();
 
 	led_init();
 	cron_init();
-
+	
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 	os_timer_disarm(&kmp_request_send_timer);

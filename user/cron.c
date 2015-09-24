@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "unix_time.h"
+#include "ac_out.h"
 #include "cron.h"
 
 cron_jobs_t cron_jobs;
@@ -169,6 +170,18 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 #ifdef DEBUG
 			os_printf("run: %s\n\r", cron_jobs.cron_job_list[i - 1].command);
 #endif
+			if (strncmp(cron_jobs.cron_job_list[i - 1].command, "open", COMMAND_L) == 0) {
+				ac_motor_valve_open();
+			}
+			else if (strncmp(cron_jobs.cron_job_list[i - 1].command, "close", COMMAND_L) == 0) {
+				ac_motor_valve_close();
+			}
+			else if (strncmp(cron_jobs.cron_job_list[i - 1].command, "off", COMMAND_L) == 0) {
+				ac_off();
+			}
+			else if (strncmp(cron_jobs.cron_job_list[i - 1].command, "test", COMMAND_L) == 0) {
+				ac_test();
+			}
 		}
 	}
 }
