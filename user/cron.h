@@ -4,7 +4,7 @@
 #define KEY_VALUE_L     64
 #define COMMAND_L       32
 
-#define CRON_JOBS_MAX   8
+#define CRON_JOBS_MAX   64
 #define CRON_FIELD_L    8
 
 // sample mqtt topic and message
@@ -32,5 +32,5 @@ ICACHE_FLASH_ATTR unsigned int add_cron_job_from_query(char *query);
 ICACHE_FLASH_ATTR void clear_cron_jobs();
 ICACHE_FLASH_ATTR void minute_timer_func(void *arg);
 
-ICACHE_FLASH_ATTR void debug_cron_jobs();
+//ICACHE_FLASH_ATTR void debug_cron_jobs();
 
