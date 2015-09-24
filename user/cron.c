@@ -133,7 +133,10 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		*/
 #endif
 		// check cron jobs hour value
-		if (strncmp(cron_jobs.cron_job_list[i].hour, "*", KEY_VALUE_L) == 0) {
+		if (strncmp(cron_jobs.cron_job_list[i].hour, "*", CRON_FIELD_L) == 0) {
+			run_command++;
+		}
+		else if (strncmp(cron_jobs.cron_job_list[i].hour, "", CRON_FIELD_L) == 0) {
 			run_command++;
 		}
 		else if (dt->tm_hour == atoi(cron_jobs.cron_job_list[i].hour)) {
@@ -141,7 +144,10 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		}
 		
 		// check cron jobs minute value
-		if (strncmp(cron_jobs.cron_job_list[i].minute, "*", KEY_VALUE_L) == 0) {
+		if (strncmp(cron_jobs.cron_job_list[i].minute, "*", CRON_FIELD_L) == 0) {
+			run_command++;
+		}
+		else if (strncmp(cron_jobs.cron_job_list[i].minute, "", CRON_FIELD_L) == 0) {
 			run_command++;
 		}
 		else if (dt->tm_min == atoi(cron_jobs.cron_job_list[i].minute)) {
@@ -149,7 +155,10 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		}
 		
 		// check cron jobs day_of_month value
-		if (strncmp(cron_jobs.cron_job_list[i].day_of_month, "*", KEY_VALUE_L) == 0) {
+		if (strncmp(cron_jobs.cron_job_list[i].day_of_month, "*", CRON_FIELD_L) == 0) {
+			run_command++;
+		}
+		else if (strncmp(cron_jobs.cron_job_list[i].day_of_month, "", CRON_FIELD_L) == 0) {
 			run_command++;
 		}
 		else if (dt->tm_mday == atoi(cron_jobs.cron_job_list[i].day_of_month)) {
@@ -157,7 +166,10 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		}
 		
 		// check cron jobs month value
-		if (strncmp(cron_jobs.cron_job_list[i].month, "*", KEY_VALUE_L) == 0) {
+		if (strncmp(cron_jobs.cron_job_list[i].month, "*", CRON_FIELD_L) == 0) {
+			run_command++;
+		}
+		else if (strncmp(cron_jobs.cron_job_list[i].month, "", CRON_FIELD_L) == 0) {
 			run_command++;
 		}
 		else if ((dt->tm_mon + 1) == atoi(cron_jobs.cron_job_list[i].month)) {
@@ -165,7 +177,10 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 		}
 		
 		// check cron jobs day_of_week value
-		if (strncmp(cron_jobs.cron_job_list[i].day_of_week, "*", KEY_VALUE_L) == 0) {
+		if (strncmp(cron_jobs.cron_job_list[i].day_of_week, "*", CRON_FIELD_L) == 0) {
+			run_command++;
+		}
+		else if (strncmp(cron_jobs.cron_job_list[i].day_of_week, "", CRON_FIELD_L) == 0) {
 			run_command++;
 		}
 		else if (dt->tm_wday == atoi(cron_jobs.cron_job_list[i].day_of_week) % 7) {		// (0 or 7 is Sun therefore % 7
