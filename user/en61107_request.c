@@ -24,7 +24,7 @@ uint16_t register_list[8];
 // allocate struct for response
 en61107_response_t response;
 
-MQTT_Client *mqtt_client = NULL;	// initialize to NULL
+static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
 static volatile os_timer_t en61107_get_serial_timer;
 static volatile os_timer_t en61107_get_register_timer;

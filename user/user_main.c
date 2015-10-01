@@ -249,7 +249,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #else
-	os_timer_disarm(en61107&_request_send_timer);
+	os_timer_disarm(en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
 	os_timer_arm(&en61107_request_send_timer, 10000, 0);
 #endif
