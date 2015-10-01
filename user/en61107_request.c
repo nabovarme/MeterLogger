@@ -17,7 +17,7 @@ volatile unsigned int fifo_head, fifo_tail;
 volatile unsigned char fifo_buffer[QUEUE_SIZE];
 
 // allocate frame to send
-unsigned char frame[KMP_FRAME_L];
+unsigned char frame[EN61107_FRAME_L];
 unsigned int frame_length;
 uint16_t register_list[8];
 
@@ -107,7 +107,7 @@ void en61107_request_send() {
 	en61107_requests_sent++;
 #ifdef DEBUG_NO_METER
 	unsigned char topic[128];
-	unsigned char message[KMP_FRAME_L];
+	unsigned char message[EN61107_FRAME_L];
 	int topic_l;
 	int message_l;
 	
