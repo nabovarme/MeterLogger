@@ -12,7 +12,11 @@
 #include "user_config.h"
 #include "unix_time.h"
 #include "user_main.h"
-#include "kmp_request.h"
+#ifndef EN61107
+	#include "kmp_request.h"
+#else
+	#include "en61107_request.h"
+#endif
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
@@ -28,7 +32,11 @@ MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
+#ifndef EN61107
 static volatile os_timer_t kmp_request_send_timer;
+#else
+static volatile os_timer_t en61107_request_send_timer;
+#endif
 
 uint16 counter = 0;
 
@@ -90,6 +98,12 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
 }
 
+#ifdef EN61107
+ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
+	en61107_request_send();
+}
+#endif
+
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
 	if(status == STATION_GOT_IP){ 
@@ -114,7 +128,11 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Subscribe(client, topic, 0);
 
 	// set mqtt_client kmp_request should use to return data
+#ifndef EN61107
 	kmp_set_mqtt_client(client);
+#else
+	en61107_set_mqtt_client(client);
+#endif
 	
 	// sample once and start sample timer
 	sample_timer_func(NULL);
@@ -210,7 +228,11 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 
 	// start kmp_request
+#ifndef EN61107
 	kmp_request_init();
+#else
+	en61107_request_init();
+#endif
 	
 	// initialize the GPIO subsystem
 	gpio_init();
@@ -222,10 +244,16 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
+#ifndef EN61107
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
-		
+#else
+	os_timer_disarm(en61107&_request_send_timer);
+	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
+	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+#endif
+			
 	// start waiting for serial number after 16 seconds
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
 	os_timer_disarm(&config_mode_timer);

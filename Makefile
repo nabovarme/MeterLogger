@@ -133,6 +133,10 @@ ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
     CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
 endif
 
+ifeq ($(EN61107), 1)
+    CFLAGS += -DEN61107
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
