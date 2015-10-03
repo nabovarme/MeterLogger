@@ -15,7 +15,11 @@
 #include "osapi.h"
 #include "driver/uart_register.h"
 #include "user_interface.h"
-#include "kmp_request.h"
+#ifndef EN61107
+	#include "kmp_request.h"
+#else
+#include "en61107_request.h"
+#endif
 //#include "ssc.h"
 
 
@@ -213,9 +217,17 @@ uart0_rx_intr_handler(void *para)
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+#ifndef EN61107
 			kmp_fifo_put(RcvChar);
+#else
+			en61107_fifo_put(RcvChar);
+#endif
 			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
+#ifndef EN61107
 				system_os_post(kmp_received_task_prio, 0, 0);
+#else
+				system_os_post(en61107_received_task_prio, 0, 0);
+#endif
 			}
 		}
 	}
@@ -224,9 +236,17 @@ uart0_rx_intr_handler(void *para)
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+#ifndef EN61107
 			kmp_fifo_put(RcvChar);
+#else
+			en61107_fifo_put(RcvChar);
+#endif
 			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
+#ifndef EN61107
 				system_os_post(kmp_received_task_prio, 0, 0);
+#else
+				system_os_post(en61107_received_task_prio, 0, 0);
+#endif
 			}
 		}
 	}

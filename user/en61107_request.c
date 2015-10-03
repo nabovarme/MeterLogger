@@ -26,7 +26,7 @@ en61107_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-static volatile os_timer_t en61107_get_serial_timer;
+static volatile os_timer_t en61107_get_data_timer;
 static volatile os_timer_t en61107_get_register_timer;
 
 static volatile os_timer_t en61107_receive_timeout_timer;
@@ -56,11 +56,15 @@ unsigned int en61107_get_received_serial() {
 }
 
 ICACHE_FLASH_ATTR
-void en61107_get_serial_timer_func() {
-	// get serial
-	// prepare frame
-	frame_length = en61107_get_serial(frame);
+void en61107_get_data_timer_func() {
+	// change to 300 bps
+	uart_init(BIT_RATE_300, BIT_RATE_300);
+
+	frame_length = en61107_get_data(frame);
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
+	
+	// reply comes at 1200 bps
+	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 }
 
 ICACHE_FLASH_ATTR
@@ -91,9 +95,9 @@ void en61107_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
-    os_timer_disarm(&en61107_get_serial_timer);
-    os_timer_setfn(&en61107_get_serial_timer, (os_timer_func_t *)en61107_get_serial_timer_func, NULL);
-    os_timer_arm(&en61107_get_serial_timer, 0, 0);		// now
+    os_timer_disarm(&en61107_get_data_timer);
+    os_timer_setfn(&en61107_get_data_timer, (os_timer_func_t *)en61107_get_data_timer_func, NULL);
+    os_timer_arm(&en61107_get_data_timer, 0, 0);		// now
 	
     os_timer_disarm(&en61107_get_register_timer);
     os_timer_setfn(&en61107_get_register_timer, (os_timer_func_t *)en61107_get_register_timer_func, NULL);

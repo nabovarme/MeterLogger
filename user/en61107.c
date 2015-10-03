@@ -10,7 +10,6 @@
 
 unsigned char *en61107_frame;
 unsigned int en61107_frame_length;
-unsigned int en61107_data_length;
 
 en61107_response_t *en61107_response;
 
@@ -20,8 +19,14 @@ unsigned int en61107_get_type(unsigned char *frame) {
 }
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_serial(unsigned char *frame) {
-	return 0;
+unsigned int en61107_get_data(unsigned char *frame) {
+    // clear frame
+    en61107_frame = frame;
+    memset(en61107_frame, 0x00, EN61107_FRAME_L);
+	
+	strncpy(en61107_frame, "/?!\r\n", EN61107_FRAME_L);
+	
+	return strlen(en61107_frame);
 }
 
 ICACHE_FLASH_ATTR

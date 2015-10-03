@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define EN61107_FRAME_L         1024
+#define EN61107_FRAME_L         8
 
 typedef struct {
     int16_t rid;
@@ -24,7 +24,7 @@ ICACHE_FLASH_ATTR
 unsigned int en61107_get_type(unsigned char *frame);
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_serial(unsigned char *frame);
+unsigned int en61107_get_data(unsigned char *frame);
 
 ICACHE_FLASH_ATTR
 unsigned int en61107_set_clock(unsigned char *frame, uint64_t unix_time);
