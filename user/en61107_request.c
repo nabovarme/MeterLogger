@@ -131,6 +131,16 @@ void en61107_request_send() {
 
 ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
+	unsigned char c;
+	unsigned int i;
+	unsigned char message[EN61107_FRAME_L];
+	int message_l;
+
+	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+		message[i++] = c;
+	}
+	message_l = i;
+	
 }
 
 

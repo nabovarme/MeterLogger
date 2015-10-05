@@ -1,7 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define EN61107_FRAME_L         8
+#define EN61107_FRAME_L         256
+
+// customer
+// heat energy
+// mass register
+// hours
 
 typedef struct {
     int16_t rid;
