@@ -17,7 +17,7 @@ volatile unsigned int fifo_head, fifo_tail;
 volatile unsigned char fifo_buffer[QUEUE_SIZE];
 
 // allocate frame to send
-unsigned char frame[EN61107_FRAME_L];
+char frame[EN61107_FRAME_L];
 unsigned int frame_length;
 uint16_t register_list[8];
 
@@ -59,7 +59,7 @@ ICACHE_FLASH_ATTR
 void en61107_get_data_timer_func() {
 	// change to 300 bps
 	uart_init(BIT_RATE_300, BIT_RATE_300);
-
+	
 	frame_length = en61107_get_data(frame);
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
 	

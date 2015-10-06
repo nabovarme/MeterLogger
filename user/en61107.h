@@ -26,16 +26,16 @@ typedef struct {
 } en61107_response_t;
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_type(unsigned char *frame);
+unsigned int en61107_get_type(char *frame);
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_data(unsigned char *frame);
+unsigned int en61107_get_data(char *frame);
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_set_clock(unsigned char *frame, uint64_t unix_time);
+unsigned int en61107_set_clock(char *frame, uint64_t unix_time);
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length);
+unsigned int en61107_get_register(char *frame, uint16_t *register_list, uint16_t register_list_length);
 
 ICACHE_FLASH_ATTR
-int en61107_decode_frame(unsigned char *frame, unsigned char frame_length, en61107_response_t *response);
+int en61107_decode_frame(char *frame, unsigned char frame_length, en61107_response_t *response);
