@@ -15,11 +15,8 @@
 #include "osapi.h"
 #include "driver/uart_register.h"
 #include "user_interface.h"
-#ifndef EN61107
-	#include "kmp_request.h"
-#else
+#include "kmp_request.h"
 #include "en61107_request.h"
-#endif
 //#include "ssc.h"
 
 
@@ -54,11 +51,13 @@ uart_config(uint8 uart_no)
   }
 
   uart_div_modify(uart_no, UART_CLK_FREQ / (UartDev.baut_rate));
-  
-  WRITE_PERI_REG(UART_CONF0(uart_no), UartDev.exist_parity
-                 | UartDev.parity
-                 | (TWO_STOP_BIT << UART_STOP_BIT_NUM_S)
-                 | (EIGHT_BITS << UART_BIT_NUM_S));
+
+  UartDev.exist_parity = (UartDev.parity == NONE_BITS ? STICK_PARITY_DIS : STICK_PARITY_EN);
+  WRITE_PERI_REG(UART_CONF0(uart_no),
+  			((UartDev.exist_parity & UART_PARITY_EN_M)  <<  UART_PARITY_EN_S) |
+			((UartDev.parity & UART_PARITY_M) << UART_PARITY_S ) |
+			((UartDev.stop_bits & UART_STOP_BIT_NUM) << UART_STOP_BIT_NUM_S) |
+			((UartDev.data_bits & UART_BIT_NUM) << UART_BIT_NUM_S));
 
   //clear rx and tx fifo,not ready
   SET_PERI_REG_MASK(UART_CONF0(uart_no), UART_RXFIFO_RST | UART_TXFIFO_RST);
@@ -100,7 +99,7 @@ uart_config(uint8 uart_no)
  * Parameters   : uint8 TxChar - character to tx
  * Returns      : OK
 *******************************************************************************/
-LOCAL STATUS
+STATUS
 uart_tx_one_char(uint8 uart, uint8 TxChar)
 {
     while (true)
@@ -271,9 +270,33 @@ void ICACHE_FLASH_ATTR
 uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
 {
   // rom use 74880 baut_rate, here reinitialize
+#ifndef EN61107
   UartDev.baut_rate = uart0_br;
+  UartDev.exist_parity = STICK_PARITY_DIS;
+  UartDev.data_bits = EIGHT_BITS;
+  UartDev.parity = NONE_BITS;
+  UartDev.stop_bits = TWO_STOP_BIT;
+#else
+  UartDev.baut_rate = uart0_br;
+  UartDev.exist_parity = STICK_PARITY_EN;
+  UartDev.data_bits = SEVEN_BITS;
+  UartDev.parity = EVEN_BITS;
+  UartDev.stop_bits = TWO_STOP_BIT;
+#endif
   uart_config(UART0);
+#ifndef EN61107
   UartDev.baut_rate = uart1_br;
+  UartDev.exist_parity = STICK_PARITY_DIS;
+  UartDev.data_bits = EIGHT_BITS;
+  UartDev.parity = NONE_BITS;
+  UartDev.stop_bits = TWO_STOP_BIT;
+#else
+  UartDev.baut_rate = uart1_br;
+  UartDev.exist_parity = STICK_PARITY_EN;
+  UartDev.data_bits = SEVEN_BITS;
+  UartDev.parity = EVEN_BITS;
+  UartDev.stop_bits = TWO_STOP_BIT;
+#endif
   uart_config(UART1);
   ETS_UART_INTR_ENABLE();
 

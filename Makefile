@@ -233,6 +233,8 @@ flashblank:
 
 screen:
 	screen /dev/ttyUSB0 1200,cstopb
+screen300:
+	screen /dev/ttyUSB0 300,cs7,parenb,-parodd,cstopb
 
 test: flash
 	screen $(ESPPORT) 115200

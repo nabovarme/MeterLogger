@@ -12,11 +12,8 @@
 #include "user_config.h"
 #include "unix_time.h"
 #include "user_main.h"
-#ifndef EN61107
-	#include "kmp_request.h"
-#else
-	#include "en61107_request.h"
-#endif
+#include "kmp_request.h"
+#include "en61107_request.h"
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
@@ -32,11 +29,8 @@ MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
-#ifndef EN61107
 static volatile os_timer_t kmp_request_send_timer;
-#else
 static volatile os_timer_t en61107_request_send_timer;
-#endif
 
 uint16 counter = 0;
 
@@ -98,11 +92,9 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
 }
 
-#ifdef EN61107
 ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
 }
-#endif
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 //	httpd_user_init();	//state 1 = config mode
@@ -249,7 +241,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #else
-	os_timer_disarm(en61107_request_send_timer);
+	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
 	os_timer_arm(&en61107_request_send_timer, 10000, 0);
 #endif
