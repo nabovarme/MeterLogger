@@ -85,7 +85,11 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
+#ifndef EN61107
 	kmp_request_send();
+#else
+	en61107_request_send();
+#endif
 }
 
 ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
@@ -214,7 +218,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 
-#ifndef DEBUG_NO_METER
+#ifndef DEBUG
 	// disable serial debug
 	system_set_os_print(0);
 #endif

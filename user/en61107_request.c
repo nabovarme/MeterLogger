@@ -63,7 +63,7 @@ void en61107_get_data_timer_func() {
 	frame_length = en61107_get_data(frame);
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
 	
-	// reply comes at 1200 bps
+	// reply comes at 300 bps 7e1 NOT 7e2 as stated in docs
 	//uart_init(BIT_RATE_1200, BIT_RATE_1200);
 }
 
@@ -101,12 +101,12 @@ void en61107_request_send() {
 	
     os_timer_disarm(&en61107_get_register_timer);
     os_timer_setfn(&en61107_get_register_timer, (os_timer_func_t *)en61107_get_register_timer_func, NULL);
-    os_timer_arm(&en61107_get_register_timer, 400, 0);		// after 0.4 seconds
+    os_timer_arm(&en61107_get_register_timer, 4500, 0);		// after 4.5 seconds
 	
 	// start retransmission timeout timer
     os_timer_disarm(&en61107_receive_timeout_timer);
     os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-    os_timer_arm(&en61107_receive_timeout_timer, 2000, 0);		// after 2 seconds
+    os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);		// after 6 seconds
 	
 	en61107_requests_sent++;
 #ifdef DEBUG_NO_METER
@@ -133,14 +133,43 @@ ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
 	unsigned char c;
 	unsigned int i;
+	uint64_t current_unix_time;
+	char current_unix_time_string[64];	// BUGFIX var
+	char key_value[128];
+	unsigned char topic[128];
 	unsigned char message[EN61107_FRAME_L];
+	int key_value_l;
+	int topic_l;
 	int message_l;
 
+	memset(message, 0x00, EN61107_FRAME_L);			// clear message buffer
+	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
 		message[i++] = c;
 	}
 	message_l = i;
 	
+	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+    if (current_unix_time) {	// only send mqtt if we got current time via ntp
+   		// prepare for mqtt transmission if we got serial number from meter
+        
+   		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
+   		os_sprintf(current_unix_time_string, "%lu", current_unix_time);
+   		topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", 9999999, current_unix_time_string);
+
+   		//strcpy(message, "");	// clear it
+		
+		key_value_l = os_sprintf(key_value, "test=%s&", message);
+		strncpy(message, key_value, key_value_l);
+	}
+	
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		if (message_l > 1) {
+			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		}
+	}
+	en61107_requests_sent = 0;	// reset retry counter
 }
 
 
