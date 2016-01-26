@@ -6,8 +6,8 @@ use Sys::Syslog;
 use Net::MQTT::Simple;
 use DBI;
 
-use lib qw( /var/www/perl/lib/ );
-#use lib qw( /opt/local/apache2/perl/ );
+#use lib qw( /var/www/perl/lib/ );
+use lib qw( /opt/local/apache2/perl/ );
 use Nabovarme::Db;
 
 openlog($0, "ndelay,pid", "local0");
