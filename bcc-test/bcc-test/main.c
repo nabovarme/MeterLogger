@@ -48,7 +48,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     bcc = en61107_frame[en61107_frame_length - 1];
     calculated_bcc = 0;
     for (i = 0; i < data_length; i++) {
-        printf("#%d %c (0x%x)\n", i, en61107_frame[i], en61107_frame[i]);
+        //printf("#%d %c (0x%x)\n", i, en61107_frame[i], en61107_frame[i]);
         if (en61107_frame[i] == 0x02) {
             // stx
             calculated_bcc = 0;
@@ -88,7 +88,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                         //printf(">%s<\n", rid_value_unit_string);
                         rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 
-                        // parse register number, value and optional unit
+                        // parse register number, value and unit unless rid == 0
                         memset(rid_string, 0, EN61107_REGISTER_L);
                         pos = strstr(rid_value_unit_string, "(");
                         if (pos != NULL) {
@@ -106,16 +106,16 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                         memset(unit_string, 0, EN61107_REGISTER_L);
                         pos = strstr(rid_value_unit_string_ptr, ")");
                         if (pos != NULL) {
-                            if (strlen(value_string)) {
-                                unit_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(unit_string, rid_value_unit_string_ptr, unit_string_length);
-                                printf("rid: %s value: %s unit: %s\n", rid_string, value_string, unit_string);
-                            }
-                            else {
-                                // serial number
+                            if (strncmp(rid_string, "0", 1) == 0) {
+                                // serial number, no unit
                                 serial_string_length = pos - rid_value_unit_string_ptr;
                                 memcpy(serial_string, rid_value_unit_string_ptr, serial_string_length);
                                 printf("rid: %s serial: %s\n", rid_string, serial_string);
+                            }
+                            else {
+                                unit_string_length = pos - rid_value_unit_string_ptr;
+                                memcpy(unit_string, rid_value_unit_string_ptr, unit_string_length);
+                                printf("rid: %s value: %s unit: %s\n", rid_string, value_string, unit_string);
                             }
                         }
 
