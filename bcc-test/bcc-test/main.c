@@ -52,39 +52,35 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                 // etx
                 if (bcc == calculated_bcc) {
                     // crc ok
+                    // parse model
                     memset(model_string, 0, EN61107_REGISTER_L);    // clear model_string (null terminalte)
                     pos = strstr(en61107_frame, stx);               // find position of stx char
                     if (pos != NULL) {                              // if found stx char
                         length = pos - en61107_frame;
-                        memcpy(model_string, en61107_frame, length - 2);
+                        memcpy(model_string, en61107_frame + 1, length - 3);
                         printf(">%s<\n", model_string);
                         en61107_frame += length + 3;
                     }
                     
+                    // parse etx
                     memset(registers_string, 0, EN61107_FRAME_L);
-                    pos = strstr(en61107_frame, etx);
+                    pos = strstr(en61107_frame, etx);               // find position of etx
                     if (pos != NULL) {
                         length = pos - en61107_frame;
                         memcpy(registers_string, en61107_frame, length);
-                        printf(">%s<\n", registers_string);
-                        //en61107_frame += length + 2;
                     }
 
+                    // parse values
                     memset(value_string, 0, EN61107_REGISTER_L);
                     registers_string_ptr = registers_string;
-                    do {
-                        pos = strstr(registers_string_ptr, separator);
-                        if (pos != NULL) {
-                            length = pos - registers_string_ptr;
-                            memcpy(value_string, registers_string_ptr, length);
-                            printf(">%s<\n", value_string);
+                    while ((pos = strstr(registers_string_ptr, separator)) != NULL) {
+                        length = pos - registers_string_ptr;
+                        memcpy(value_string, registers_string_ptr, length);
+                        printf(">%s<\n", value_string);
 
-                            registers_string_ptr += length + 2;
-                        }
+                        registers_string_ptr += length + 2;
                     }
-                    while (pos != NULL);
-                    //length = strstr(en61107_frame, separator) - en61107_frame;
-                    //memcpy(value_string, en61107_frame, length);
+
                     return 1;
                 }
             }
