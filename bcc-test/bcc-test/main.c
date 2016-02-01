@@ -14,11 +14,33 @@
 //  0x0050 : 29 21 0D 0A 03 00 00 00 00 00 00 00 00 00 00 00 : )!..............
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
 
 #define EN61107_FRAME_L 256
 #define EN61107_REGISTER_L 32
+#define EN61107_RID_L 6
+#define EN61107_UNIT_L 5
+#define EN61107_VALUE_L 10
+#define EN61107_SERIAL_L 13
+#define EN61107_METER_TYPE_L 8
+
+typedef struct {
+    char rid[EN61107_RID_L];
+    char unit[EN61107_UNIT_L];
+    char value[EN61107_VALUE_L];
+} en61107_response_register_t;
+
+typedef en61107_response_register_t en61107_response_register_list_t[8];   // max 8 registers per request
+
+typedef struct {
+    char en61107_response_serial[EN61107_SERIAL_L];
+    char en61107_response_meter_type[EN61107_METER_TYPE_L];
+    en61107_response_register_list_t en61107_response_register_list;
+} en61107_response_t;
+
+en61107_response_t en_61107_response;
 
 char data[EN61107_FRAME_L] = "\x2F\x4B\x41\x4D\x20\x4D\x43\x0D\x0A\x02\x30\x2E\x30\x28\x30\x30\x30\x30\x30\x30\x30\x30\x30\x34\x30\x29\x0D\x0A\x36\x2E\x38\x28\x30\x30\x30\x30\x30\x2E\x30\x30\x2A\x4D\x57\x68\x29\x0D\x0A\x36\x2E\x32\x36\x28\x30\x30\x30\x30\x30\x30\x2E\x30\x2A\x6D\x33\x29\x0D\x0A\x36\x2E\x33\x31\x28\x30\x30\x35\x33\x31\x38\x39\x2A\x68\x29\x21\x0D\x0A\x03\x0e";
 
@@ -32,14 +54,14 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     const char *separator = "\x0D\x0A";
     const char *stx = "\x02";
     const char *etx = "\x21\x0D\x0A\x03";
-    char model_string[EN61107_REGISTER_L];
+    char meter_type_string[EN61107_REGISTER_L];
     char rid_value_unit_string[EN61107_REGISTER_L];
     char rid_string[EN61107_REGISTER_L];
     char value_string[EN61107_REGISTER_L];
     char serial_string[EN61107_REGISTER_L];
     char unit_string[EN61107_REGISTER_L];
-    char registers_string[EN61107_FRAME_L];
-    char *registers_string_ptr;
+    char register_list_string[EN61107_FRAME_L];
+    char *register_list_string_ptr;
     char *rid_value_unit_string_ptr;
     char *pos;
     size_t length;
@@ -69,30 +91,33 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                 // etx
                 if (bcc == calculated_bcc) {
                     // crc ok
-                    // parse model
-                    memset(model_string, 0, EN61107_REGISTER_L);    // clear model_string (null terminalte)
+                    // parse meter_type
+                    memset(&en_61107_response, 0, sizeof(en_61107_response));
+                    memset(meter_type_string, 0, EN61107_REGISTER_L);    // clear meter_type_string (null terminalte)
                     pos = strstr(en61107_frame, stx);               // find position of stx char
                     if (pos != NULL) {                              // if found stx char...
-                        length = pos - en61107_frame;               // ...save model string
-                        memcpy(model_string, en61107_frame + 1, length - 3);
-                        printf("model: %s\n", model_string);
+                        length = pos - en61107_frame;               // ...save meter_type string
+                        // DEBUG: check if length - 3 is >= 0
+                        memcpy(en_61107_response.en61107_response_meter_type, en61107_frame + 1, length - 3);
+                        //memcpy(meter_type_string, en61107_frame + 1, length - 3);
+                        printf("meter type: %s\n", meter_type_string);
                         en61107_frame += length + 3;
                     }
                     
-                    // parse etx
-                    memset(registers_string, 0, EN61107_FRAME_L);
+                    // parse to etx and save to register_list_string
+                    memset(register_list_string, 0, EN61107_FRAME_L);
                     pos = strstr(en61107_frame, etx);               // find position of etx
                     if (pos != NULL) {
                         length = pos - en61107_frame;
-                        memcpy(registers_string, en61107_frame, length);
+                        memcpy(register_list_string, en61107_frame, length);
                     }
 
                     // parse values
                     memset(rid_value_unit_string, 0, EN61107_REGISTER_L);
-                    registers_string_ptr = registers_string;        // force pointer arithmetics
-                    while ((pos = strstr(registers_string_ptr, separator)) != NULL) {
-                        length = pos - registers_string_ptr;
-                        memcpy(rid_value_unit_string, registers_string_ptr, length);
+                    register_list_string_ptr = register_list_string;        // force pointer arithmetics
+                    while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
+                        length = pos - register_list_string_ptr;
+                        memcpy(rid_value_unit_string, register_list_string_ptr, length);
                         //printf(">%s<\n", rid_value_unit_string);
                         rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 
@@ -127,7 +152,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                             }
                         }
 
-                        registers_string_ptr += length + 2;
+                        register_list_string_ptr += length + 2;
                     }
 
                     return 1;
