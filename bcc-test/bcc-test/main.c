@@ -47,7 +47,7 @@ char data[EN61107_FRAME_L] = "\x2F\x4B\x41\x4D\x20\x4D\x43\x0D\x0A\x02\x30\x2E\x
 unsigned int data_length = 86;
 
 int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) {
-    unsigned int i;
+    unsigned int i, j;
     uint8_t bcc;
     uint8_t calculated_bcc;
     
@@ -56,10 +56,6 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     const char *etx = "\x21\x0D\x0A\x03";
     char meter_type_string[EN61107_REGISTER_L];
     char rid_value_unit_string[EN61107_REGISTER_L];
-    char rid_string[EN61107_REGISTER_L];
-    char value_string[EN61107_REGISTER_L];
-    char serial_string[EN61107_REGISTER_L];
-    char unit_string[EN61107_REGISTER_L];
     char register_list_string[EN61107_FRAME_L];
     char *register_list_string_ptr;
     char *rid_value_unit_string_ptr;
@@ -69,6 +65,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     size_t value_string_length;
     size_t unit_string_length;
     size_t serial_string_length;
+    
     
     // sanity check
     if (!en61107_frame_length) {
@@ -99,8 +96,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                         length = pos - en61107_frame;               // ...save meter_type string
                         // DEBUG: check if length - 3 is >= 0
                         memcpy(en_61107_response.en61107_response_meter_type, en61107_frame + 1, length - 3);
-                        //memcpy(meter_type_string, en61107_frame + 1, length - 3);
-                        printf("meter type: %s\n", meter_type_string);
+                        printf("meter type: %s\n", en_61107_response.en61107_response_meter_type);
                         en61107_frame += length + 3;
                     }
                     
@@ -113,6 +109,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                     }
 
                     // parse values
+                    j = 0;
                     memset(rid_value_unit_string, 0, EN61107_REGISTER_L);
                     register_list_string_ptr = register_list_string;        // force pointer arithmetics
                     while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
@@ -122,33 +119,32 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                         rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 
                         // parse register number, value and unit unless rid == 0
-                        memset(rid_string, 0, EN61107_REGISTER_L);
                         pos = strstr(rid_value_unit_string, "(");
                         if (pos != NULL) {
                             rid_string_length = pos - rid_value_unit_string;
-                            memcpy(rid_string, rid_value_unit_string, rid_string_length);
+                            memcpy(en_61107_response.en61107_response_register_list[j].rid, rid_value_unit_string, rid_string_length);
                             rid_value_unit_string_ptr += rid_string_length + 1;
                         }
-                        memset(value_string, 0, EN61107_REGISTER_L);
                         pos = strstr(rid_value_unit_string_ptr, "*");
                         if (pos != NULL) {
                             value_string_length = pos - rid_value_unit_string_ptr;
-                            memcpy(value_string, rid_value_unit_string_ptr, value_string_length);
+                            memcpy(en_61107_response.en61107_response_register_list[j].value, rid_value_unit_string_ptr, value_string_length);
                             rid_value_unit_string_ptr += value_string_length + 1;
                         }
-                        memset(unit_string, 0, EN61107_REGISTER_L);
                         pos = strstr(rid_value_unit_string_ptr, ")");
                         if (pos != NULL) {
-                            if (strncmp(rid_string, "0", 1) == 0) {
+                            if (strncmp(en_61107_response.en61107_response_register_list[j].rid, "0", 1) == 0) {
                                 // serial number, no unit
                                 serial_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(serial_string, rid_value_unit_string_ptr, serial_string_length);
-                                printf("rid: %s serial: %s\n", rid_string, serial_string);
+                                memcpy(en_61107_response.en61107_response_serial, rid_value_unit_string_ptr, serial_string_length);
+                                printf("rid: %s serial: %s\n", en_61107_response.en61107_response_register_list[j].rid, en_61107_response.en61107_response_serial);
                             }
                             else {
                                 unit_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(unit_string, rid_value_unit_string_ptr, unit_string_length);
-                                printf("rid: %s value: %s unit: %s\n", rid_string, value_string, unit_string);
+                                memcpy(en_61107_response.en61107_response_register_list[j].unit, rid_value_unit_string_ptr, unit_string_length);
+                                printf("rid: %s value: %s unit: %s\n", en_61107_response.en61107_response_register_list[j].rid, en_61107_response.en61107_response_register_list[j].value, en_61107_response.en61107_response_register_list[j].unit);
+                                j++;
+
                             }
                         }
 
