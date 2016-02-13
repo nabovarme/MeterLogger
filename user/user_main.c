@@ -214,6 +214,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef DEBUG_NO_METER
 	os_printf("\t(DEBUG_NO_METER)\n\r");
 #endif
+#ifdef DEBUG_MQTT_PING
+	os_printf("\t(DEBUG_MQTT_PING)\n\r");
+#endif
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif

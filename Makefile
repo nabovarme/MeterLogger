@@ -133,6 +133,10 @@ ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
     CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
 endif
 
+ifeq ($(DEBUG_MQTT_PING), 1)
+    CFLAGS += -DDEBUG_MQTT_PING
+endif
+
 ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
 endif

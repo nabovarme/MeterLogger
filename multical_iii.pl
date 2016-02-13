@@ -1,4 +1,4 @@
-#! /opt/local/bin/perl -w
+#! /usr/bin/perl -w
 
 use strict;
 use Data::Dumper;
@@ -11,7 +11,7 @@ my $port_obj;
 my $res;
 my ($c, $s);
 
-$port_obj = new Device::SerialPort('/dev/tty.usbserial-A6YNEE07') || die "$!\n";
+$port_obj = new Device::SerialPort('/dev/ttyUSB0') || die "$!\n";
 $port_obj->databits(7);
 $port_obj->stopbits(2);
 $port_obj->parity('even');
