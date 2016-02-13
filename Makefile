@@ -141,6 +141,10 @@ ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
 endif
 
+ifeq ($(THERMO_NC), 1)
+    CFLAGS += -DTHERMO_NC
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld

@@ -148,7 +148,7 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-	char *topicBuf = (char*)os_zalloc(topic_len + 1);
+	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
 	MQTT_Client* client = (MQTT_Client*)args;
 	
@@ -183,11 +183,13 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
-		ac_motor_valve_open();
+		//ac_motor_valve_open();
+		ac_thermo_open();
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
-		ac_motor_valve_close();
+		//ac_motor_valve_close();
+		ac_thermo_close();
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off
@@ -220,6 +222,11 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
+#ifdef THERMO_NC
+	os_printf("\t(THERMO_NC)\n\r");
+#else
+	os_printf("\t(THERMO_NO)\n\r");
+#endif
 
 #ifndef DEBUG
 	// disable serial debug
@@ -240,6 +247,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 	led_init();
 	cron_init();
+	
+	// close thermo motor (AC OUT 1) DEBUG: should read state from flash
+	ac_thermo_close();
 	
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request

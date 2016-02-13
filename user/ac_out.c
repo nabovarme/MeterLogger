@@ -106,6 +106,38 @@ void ac_motor_valve_close() {
 }
 
 ICACHE_FLASH_ATTR
+void ac_thermo_open() {
+#ifdef DEBUG
+	os_printf("\n\rac 1 on\n\r");
+#endif
+	led_pattern_b();
+
+#ifdef THERMO_NC	
+	//Set GPI14 to HIGH
+	gpio_output_set(BIT14, 0, BIT14, 0);
+#else	// THERMO_NO
+	//Set GPI14 to LOW
+	gpio_output_set(0, BIT14, BIT14, 0);
+#endif
+}
+
+ICACHE_FLASH_ATTR
+void ac_thermo_close() {
+#ifdef DEBUG
+	os_printf("\n\rac 2 on\n\r");
+#endif
+	led_pattern_a();
+	
+#ifdef THERMO_NC	
+	//Set GPI14 to LOW
+	gpio_output_set(0, BIT14, BIT14, 0);
+#else	// THERMO_NO
+	//Set GPI14 to HIGHT
+	gpio_output_set(BIT14, 0, BIT14, 0);
+#endif
+}
+
+ICACHE_FLASH_ATTR
 void ac_off() {
 	// turn ac output off
 	os_timer_disarm(&ac_test_timer);
