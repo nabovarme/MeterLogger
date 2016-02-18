@@ -4,6 +4,7 @@
 
 #include "led.h"
 #include "ac_out.h"
+#include "config.h"
 
 static volatile os_timer_t ac_test_timer;
 static volatile os_timer_t ac_out_off_timer;

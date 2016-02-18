@@ -46,6 +46,7 @@ typedef struct{
 	uint8_t mqtt_pass[32];
 	uint32_t mqtt_keepalive;
 	uint8_t security;
+	uint8_t ac_thermo_state;	// thermo actuator state
 } SYSCFG;
 
 typedef struct {
