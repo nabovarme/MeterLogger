@@ -196,6 +196,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// turn ac output off
 		ac_off();
 	}
+	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
+		// found pwm
+		// start ac 1 pwm
+		ac_thermo_pwm(atoi(dataBuf));
+	}
 	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
 		// found test
 		ac_test();
