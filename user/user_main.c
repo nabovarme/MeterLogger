@@ -40,7 +40,6 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	// make sure the device is in AP and STA combined mode
 	INFO("\r\nAP mode\r\n");
 	
-	CFG_Load();
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
@@ -65,8 +64,6 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
-
-	CFG_Load();
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
