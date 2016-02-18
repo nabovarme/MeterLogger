@@ -7,5 +7,5 @@ ICACHE_FLASH_ATTR void ac_motor_valve_open();
 ICACHE_FLASH_ATTR void ac_motor_valve_close();
 ICACHE_FLASH_ATTR void ac_thermo_open();
 ICACHE_FLASH_ATTR void ac_thermo_close();
-ICACHE_FLASH_ATTR void ac_thermo_pwm(unsigned char pwm);
+ICACHE_FLASH_ATTR void ac_thermo_pwm(unsigned int pwm);
 ICACHE_FLASH_ATTR void ac_off();

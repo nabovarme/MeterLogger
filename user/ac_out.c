@@ -9,7 +9,7 @@ static volatile os_timer_t ac_test_timer;
 static volatile os_timer_t ac_out_off_timer;
 static volatile os_timer_t ac_pwm_timer;
 
-unsigned char ac_pwm_duty_cycle;
+unsigned int ac_pwm_duty_cycle;
 typedef enum {ON, OFF} ac_pwm_state_t;
 ac_pwm_state_t ac_pwm_state = OFF;
 
@@ -62,14 +62,6 @@ ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 	// do ac 1 pwm
-	/*
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
-		led_on();
-	}
-	else {
-		led_off();
-	}
-	*/
 	if (ac_pwm_state == OFF) {
 		ac_pwm_state = ON;
 		if (ac_pwm_duty_cycle > 0) {
@@ -82,13 +74,14 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 			gpio_output_set(0, BIT14, BIT14, 0);
 #endif
 		}
+		// reload timer
 		os_timer_disarm(&ac_pwm_timer);
 		os_timer_setfn(&ac_pwm_timer, (os_timer_func_t *)ac_pwm_timer_func, NULL);
-		os_timer_arm(&ac_pwm_timer, ac_pwm_duty_cycle * 10, 1);		// pwm frequency 1 second
+		os_timer_arm(&ac_pwm_timer, ac_pwm_duty_cycle * 10, 1);		// pwm frequency 10 second
 	}
 	else if (ac_pwm_state == ON) {
 		ac_pwm_state = OFF;
-		if (ac_pwm_duty_cycle < 100) {
+		if (ac_pwm_duty_cycle < 1000) {
 			led_off();
 #ifdef THERMO_NC	
 			//Set GPI14 to LOW
@@ -98,9 +91,10 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 			gpio_output_set(BIT14, 0, BIT14, 0);
 #endif
 		}
+		// reload timer
 		os_timer_disarm(&ac_pwm_timer);
 		os_timer_setfn(&ac_pwm_timer, (os_timer_func_t *)ac_pwm_timer_func, NULL);
-		os_timer_arm(&ac_pwm_timer, (100 - ac_pwm_duty_cycle) * 10, 1);		// pwm frequency 1 second
+		os_timer_arm(&ac_pwm_timer, (1000 - ac_pwm_duty_cycle) * 10, 1);		// pwm frequency 10 second
 	}
 }
 
@@ -187,7 +181,7 @@ void ac_thermo_close() {
 }
 
 ICACHE_FLASH_ATTR
-void ac_thermo_pwm(unsigned char duty_cycle) {
+void ac_thermo_pwm(unsigned int duty_cycle) {
 #ifdef DEBUG
 	os_printf("\n\rac 1 pwm\n\r");
 #endif
