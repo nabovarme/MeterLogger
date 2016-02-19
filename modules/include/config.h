@@ -32,6 +32,8 @@
 #define USER_CONFIG_H_
 #include "os_type.h"
 #include "user_config.h"
+#include "cron.h"
+
 typedef struct{
 	uint32_t cfg_holder;
 	uint8_t device_id[16];
@@ -47,6 +49,7 @@ typedef struct{
 	uint32_t mqtt_keepalive;
 	uint8_t security;
 	uint8_t ac_thermo_state;	// thermo actuator state
+	cron_jobs_t cron_jobs;
 } SYSCFG;
 
 typedef struct {

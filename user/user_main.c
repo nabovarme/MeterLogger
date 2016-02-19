@@ -239,6 +239,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_set_os_print(0);
 #endif
 
+	CFG_Load();
+
 	// start kmp_request
 #ifndef EN61107
 	kmp_request_init();
@@ -255,7 +257,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	cron_init();
 	
 	// load thermo motor state from flash(AC OUT 1)
-	CFG_Load();
 	if (sysCfg.ac_thermo_state) {
 		ac_thermo_open();
 	}
