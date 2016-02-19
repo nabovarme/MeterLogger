@@ -182,14 +182,12 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found open
 		//ac_motor_valve_open();
 		sysCfg.ac_thermo_state = 1;
-		CFG_Save();
 		ac_thermo_open();
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
 		//ac_motor_valve_close();
 		sysCfg.ac_thermo_state = 0;
-		CFG_Save();
 		ac_thermo_close();
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
