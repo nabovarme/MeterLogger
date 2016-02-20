@@ -12,10 +12,16 @@
 #include "user_config.h"
 #include "unix_time.h"
 #include "user_main.h"
+#include "kmp_request.h"
+#include "en61107_request.h"
+#include "cron.h"
 #include "led.h"
+#include "ac_out.h"
 
 #define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
+
+extern unsigned int kmp_serial;
 
 os_event_t user_proc_task_queue[user_proc_task_queue_len];
 
@@ -23,8 +29,13 @@ MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
+static volatile os_timer_t kmp_request_send_timer;
+static volatile os_timer_t en61107_request_send_timer;
+static volatile os_timer_t power_wd_timer;
 
 uint16 counter = 0;
+
+unsigned char shutdown = 0;
 
 ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
     struct softap_config ap_conf;
@@ -33,7 +44,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	INFO("\r\nAP mode\r\n");
 	
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_sprintf(ap_conf.ssid, AP_SSID, STA_SSID);
+	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
 	os_sprintf(ap_conf.password, AP_PASSWORD);
 	ap_conf.authmode = AUTH_WPA_PSK;
@@ -74,7 +85,32 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
-	// do something
+#ifndef EN61107
+	kmp_request_send();
+#else
+	en61107_request_send();
+#endif
+}
+
+ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
+	kmp_request_send();
+}
+
+ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
+	en61107_request_send();
+}
+
+ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
+	uint16_t vdd;
+	vdd = system_get_vdd33();
+	if ((vdd < 3520) && (shutdown == 0)) {
+		//os_printf("\n\rvdd: %d\n\r", vdd);
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			shutdown = 1;
+			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);
+		}
+	}
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -100,6 +136,13 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	topic_l = os_sprintf(topic, "/config/v1/%u/#", kmp_get_received_serial());
 	MQTT_Subscribe(client, topic, 0);
 
+	// set mqtt_client kmp_request should use to return data
+#ifndef EN61107
+	kmp_set_mqtt_client(client);
+#else
+	en61107_set_mqtt_client(client);
+#endif
+	
 	// sample once and start sample timer
 	sample_timer_func(NULL);
     os_timer_disarm(&sample_timer);
@@ -142,6 +185,42 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		str = strtok(NULL, "/");
 	}
 	
+	// mqtt rpc dispatcher goes here
+	if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
+		// found set_cron
+		add_cron_job_from_query(dataBuf);
+	}
+	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
+		// found clear_cron
+		clear_cron_jobs();
+	}
+	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
+		// found open
+		//ac_motor_valve_open();
+		sysCfg.ac_thermo_state = 1;
+		ac_thermo_open();
+	}
+	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
+		// found close
+		//ac_motor_valve_close();
+		sysCfg.ac_thermo_state = 0;
+		ac_thermo_close();
+	}
+	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
+		// found off
+		// turn ac output off
+		ac_off();
+	}
+	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
+		// found pwm
+		// start ac 1 pwm
+		ac_thermo_pwm(atoi(dataBuf));
+	}
+	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
+		// found test
+		ac_test();
+	}
+	
 	os_free(topicBuf);
 	os_free(dataBuf);
 }
@@ -176,13 +255,44 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 	CFG_Load();
 
+	// start kmp_request
+#ifndef EN61107
+	kmp_request_init();
+#else
+	en61107_request_init();
+#endif
+	
 	// initialize the GPIO subsystem
 	gpio_init();
 	
+	ac_out_init();
+
 	led_init();
-		
+	cron_init();
+	
+	// load thermo motor state from flash(AC OUT 1)
+	if (sysCfg.ac_thermo_state) {
+		ac_thermo_open();
+	}
+	else {
+		ac_thermo_close();
+	}
+	
+	os_timer_disarm(&power_wd_timer);
+	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
+	os_timer_arm(&power_wd_timer, 50, 1);
+
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
+#ifndef EN61107
+	os_timer_disarm(&kmp_request_send_timer);
+	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
+	os_timer_arm(&kmp_request_send_timer, 10000, 0);
+#else
+	os_timer_disarm(&en61107_request_send_timer);
+	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
+	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+#endif
 			
 	// start waiting for serial number after 16 seconds
 	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
