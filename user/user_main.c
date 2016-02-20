@@ -152,6 +152,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
+	unsigned char reply_topic[128];
+	unsigned char reply_message[8];
+	int reply_topic_l;
+	int reply_message_l;
+
 	os_memcpy(topicBuf, topic, topic_len);
 	topicBuf[topic_len] = 0;
 
@@ -178,6 +183,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found clear_cron
 		clear_cron_jobs();
 	}
+	else if (strncmp(function_name, "get_cron", FUNCTIONNAME_L) == 0) {
+		// found get_cron
+		reply_topic_l = os_sprintf(reply_topic, "/get_cron/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "%d", sysCfg.cron_jobs.n);
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
 		//ac_motor_valve_open();
@@ -203,6 +218,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
 		// found test
 		ac_test();
+	}
+	else if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
+		// found ping
+		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "");
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
 	}
 	
 	os_free(topicBuf);
