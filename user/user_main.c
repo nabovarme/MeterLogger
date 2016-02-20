@@ -31,6 +31,7 @@ static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
 static volatile os_timer_t kmp_request_send_timer;
 static volatile os_timer_t en61107_request_send_timer;
+static volatile os_timer_t power_wd_timer;
 
 uint16 counter = 0;
 
@@ -95,6 +96,14 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
+}
+
+ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
+	uint16_t vdd;
+	vdd = system_get_vdd33();
+	if (vdd < 65535) {
+		os_printf("\n\rvdd: %d\n\r", vdd);
+	}
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
@@ -262,6 +271,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 		ac_thermo_close();
 	}
 	
+	os_timer_disarm(&power_wd_timer);
+	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
+	os_timer_arm(&power_wd_timer, 50, 1);
+
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifndef EN61107
