@@ -35,6 +35,8 @@ static volatile os_timer_t power_wd_timer;
 
 uint16 counter = 0;
 
+unsigned char shutdown = 0;
+
 ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
     struct softap_config ap_conf;
 	
@@ -101,8 +103,13 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	vdd = system_get_vdd33();
-	if (vdd < 65535) {
-		os_printf("\n\rvdd: %d\n\r", vdd);
+	if ((vdd < 3520) && (shutdown == 0)) {
+		//os_printf("\n\rvdd: %d\n\r", vdd);
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			shutdown = 1;
+			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);
+		}
 	}
 }
 
