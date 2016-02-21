@@ -37,4 +37,8 @@ thermo actuator is normal closed
 | Topic                | Message                                                                                           |
 | :------------------- | :------------------------------------------------------------------------------------------------ |
 | /sample/v1/9999999/0 | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
+| /ping/v1/9999999/[unix time] |                                                                                           |
+| /get_cron/v1/9999999/[unix time] | 12                                                                                    |
+
+
 
