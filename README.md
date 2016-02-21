@@ -22,16 +22,19 @@ thermo actuator is normal closed
   
   
 **MQTT format for messages sent _to_ meter**  
-```
-/config/v1/9999999/ping =>  
-/config/v1/9999999/open =>  
-/config/v1/9999999/close =>  
-/config/v1/9999999/set_cron => minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open  
-/config/v1/9999999/ping =>  
-/config/v1/9999999/get_cron =>  
-```
 
+| Topic                       | Message                                                            |
+| :-------------------------- | :----------------------------------------------------------------- |
+| /config/v1/9999999/ping     |                                                                    |
+| /config/v1/9999999/open     |                                                                    |
+| /config/v1/9999999/close    |                                                                    |
+| /config/v1/9999999/set_cron | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
+| /config/v1/9999999/ping     |                                                                    |
+| /config/v1/9999999/get_cron |                                                                    |
+  
 **MQTT format for messages sent _from_ meter**  
-```
-/sample/v1/9999999/0	heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&  
-```
+
+| Topic                | Message                                                                                           |
+| :------------------- | :------------------------------------------------------------------------------------------------ |
+| /sample/v1/9999999/0 | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
+
