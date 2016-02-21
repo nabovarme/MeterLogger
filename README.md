@@ -26,6 +26,7 @@ thermo actuator is normal closed
 
 
 **MQTT parameters**
+
 /config/v1/9999999/ping => 
 /config/v1/9999999/open => 
 /config/v1/9999999/close => 
