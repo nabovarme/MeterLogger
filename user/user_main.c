@@ -229,6 +229,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
+	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
+		// found version
+		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "%s-%s", system_get_sdk_version(), VERSION);
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
