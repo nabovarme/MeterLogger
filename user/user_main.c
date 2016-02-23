@@ -205,6 +205,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		sysCfg.ac_thermo_state = 0;
 		ac_thermo_close();
 	}
+	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
+		// found status
+		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "%s", sysCfg.ac_thermo_state ? "open" : "close");
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off
 		// turn ac output off

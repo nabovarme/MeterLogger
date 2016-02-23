@@ -28,6 +28,7 @@ thermo actuator is normal closed
 | /config/v1/9999999/ping     |                                                                    |
 | /config/v1/9999999/open     |                                                                    |
 | /config/v1/9999999/close    |                                                                    |
+| /config/v1/9999999/status   |                                                                    |
 | /config/v1/9999999/set_cron | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
 | /config/v1/9999999/get_cron |                                                                    |
 | /config/v1/9999999/ping     |                                                                    |
@@ -41,6 +42,7 @@ thermo actuator is normal closed
 | /get_cron/v1/9999999/[unix time] | 12                                                                                                   |
 | /ping/v1/9999999/[unix time]     |                                                                                                      |
 | /version/v1/9999999/[unix time]  | [sdk version]-[git version]                                                                          |
+| /status/v1/9999999/[unix time]   | [open|close]                                                                          |
 
 
 
