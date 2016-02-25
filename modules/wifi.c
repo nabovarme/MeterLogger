@@ -151,11 +151,11 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 		// try fallback network
 		wifiFallbackEnabled = 1;
     	
-		os_printf("BACKUP_SSID\r\n");
+		os_printf("FALLBACK_SSID\r\n");
 		os_memset(&stationConf, 0, sizeof(struct station_config));
 		
-		os_sprintf(stationConf.ssid, "%s", STA_BACKUP_SSID);
-		os_sprintf(stationConf.password, "%s", STA_BACKUP_PASS);
+		os_sprintf(stationConf.ssid, "%s", STA_FALLBACK_SSID);
+		os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
 		
 		wifi_station_set_config_current(&stationConf);
 		
@@ -173,7 +173,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		
 		while (info != NULL) {
 			info = info->next.stqe_next;
-			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_BACKUP_SSID, sizeof(STA_BACKUP_SSID)) == 0)) {
+			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback();
 				wifi_station_connect();
 			}
