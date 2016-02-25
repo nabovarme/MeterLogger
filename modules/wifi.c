@@ -26,7 +26,8 @@ uint8_t* config_pass;
 static uint8_t wifiStatus = STATION_IDLE;
 static uint8_t lastWifiStatus = STATION_IDLE;
 int networkStatus = 0;		// check network state
-char wifiFallbackEnabled = 0;
+char wifi_fallback_enabled = 0;
+char wifi_fallback_present = 0;
 
 static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 {
@@ -59,15 +60,28 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		{
 
 			INFO("STATION_NO_AP_FOUND\r\n");
-			wifi_station_connect();
-
+			if (wifi_fallback_present == 0) {
+				os_timer_disarm(&wifi_reconnect_default_timer);
+				os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
+				os_timer_arm(&wifi_reconnect_default_timer, 0, 0);
+			}
+			else {
+				wifi_station_connect();
+			}
 
 		}
 		else if(wifi_station_get_connect_status() == STATION_CONNECT_FAIL)
 		{
 
 			INFO("STATION_CONNECT_FAIL\r\n");
-			wifi_station_connect();
+			if (wifi_fallback_present == 0) {
+				os_timer_disarm(&wifi_reconnect_default_timer);
+				os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
+				os_timer_arm(&wifi_reconnect_default_timer, 0, 0);
+			}
+			else {
+				wifi_station_connect();
+			}
 
 		}
 		else
@@ -88,9 +102,10 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
 	struct station_config stationConf;
 
-	if (wifiFallbackEnabled == 1) {
+	if (wifi_fallback_enabled == 1) {
 		// go back to saved network
 		os_printf("DEFAULT_SSID\r\n");
+		wifi_station_disconnect();
 		wifi_set_opmode_current(STATION_MODE);
 		os_memset(&stationConf, 0, sizeof(struct station_config));
 		wifi_station_get_config(&stationConf);
@@ -102,13 +117,60 @@ static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
 		
 		wifi_station_connect();
 		
-		wifiFallbackEnabled = 0;
+		wifi_fallback_enabled = 0;
 	}
 }
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 //	user_test_ping();
 	wifi_station_scan(NULL, wifi_scan_done_cb);
+}
+
+void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
+	struct bss_info *info = (struct bss_info *)arg;
+	
+	if (status == OK) {
+		info = info->next.stqe_next;	// ignore first
+		
+		while (info != NULL) {
+			info = info->next.stqe_next;
+			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
+				wifi_fallback_present = 1;
+				wifi_fallback();
+			}
+			else {
+				wifi_fallback_present = 0;
+			}
+		}
+	}
+	os_timer_disarm(&network_check_timer);
+	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
+	os_timer_arm(&network_check_timer, 10000, 0);
+}
+
+void ICACHE_FLASH_ATTR wifi_fallback() {
+	struct station_config stationConf;
+	
+	if (wifi_fallback_enabled == 0) {
+		// try fallback network
+		wifi_fallback_enabled = 1;
+    	
+		os_printf("FALLBACK_SSID\r\n");
+		wifi_station_disconnect();
+		wifi_set_opmode_current(STATION_MODE);
+		os_memset(&stationConf, 0, sizeof(struct station_config));
+		wifi_station_get_config(&stationConf);
+		
+		os_sprintf(stationConf.ssid, "%s", STA_FALLBACK_SSID);
+		os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
+		
+		wifi_station_set_config_current(&stationConf);
+		wifi_station_connect();
+		
+		//os_timer_disarm(&wifi_reconnect_default_timer);
+		//os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
+		//os_timer_arm(&wifi_reconnect_default_timer, 30000, 0);	// stay on fallback network for 30 seconds
+	}
 }
 
 void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb)
@@ -143,48 +205,6 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_connect();
 }
 
-void ICACHE_FLASH_ATTR wifi_fallback() {
-	struct station_config stationConf;
-	
-	if (wifiFallbackEnabled == 0) {
-		// try fallback network
-		wifiFallbackEnabled = 1;
-    	
-		os_printf("FALLBACK_SSID\r\n");
-		wifi_set_opmode_current(STATION_MODE);
-		os_memset(&stationConf, 0, sizeof(struct station_config));
-		wifi_station_get_config(&stationConf);
-		
-		os_sprintf(stationConf.ssid, "%s", STA_FALLBACK_SSID);
-		os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
-		
-		wifi_station_set_config_current(&stationConf);
-		
-		os_timer_disarm(&wifi_reconnect_default_timer);
-		os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
-		os_timer_arm(&wifi_reconnect_default_timer, 30000, 0);	// stay on fallback network for 30 seconds
-	}
-}
-
-void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
-	struct bss_info *info = (struct bss_info *)arg;
-	
-	if (status == OK) {
-		info = info->next.stqe_next;	// ignore first
-		
-		while (info != NULL) {
-			info = info->next.stqe_next;
-			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
-				wifi_fallback();
-				wifi_station_connect();
-			}
-		}
-	}
-	os_timer_disarm(&network_check_timer);
-	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, 10000, 0);
-}
-
 /*
 void ICACHE_FLASH_ATTR user_ping_recv(void *arg, void *pdata) {
 	struct ping_resp *ping_resp = pdata;
@@ -202,7 +222,7 @@ void ICACHE_FLASH_ATTR user_ping_recv(void *arg, void *pdata) {
 
 void ICACHE_FLASH_ATTR user_ping_sent(void *arg, void *pdata) {
 	//os_printf("user ping finish \r\n");
-	if ((networkStatus == -1) && (wifiFallbackEnabled == 0)) {
+	if ((networkStatus == -1) && (wifi_fallback_enabled == 0)) {
 		wifi_fallback();
 		wifi_station_connect();
 	}
