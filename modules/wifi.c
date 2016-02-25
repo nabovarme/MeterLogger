@@ -51,7 +51,6 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		{
 
 			INFO("STATION_WRONG_PASSWORD\r\n");
-			wifi_fallback();
 			wifi_station_connect();
 
 
@@ -60,7 +59,6 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		{
 
 			INFO("STATION_NO_AP_FOUND\r\n");
-			wifi_fallback();
 			wifi_station_connect();
 
 
@@ -69,7 +67,6 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		{
 
 			INFO("STATION_CONNECT_FAIL\r\n");
-			wifi_fallback();
 			wifi_station_connect();
 
 		}
@@ -94,7 +91,9 @@ static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
 	if (wifiFallbackEnabled == 1) {
 		// go back to saved network
 		os_printf("DEFAULT_SSID\r\n");
+		wifi_set_opmode_current(STATION_MODE);
 		os_memset(&stationConf, 0, sizeof(struct station_config));
+		wifi_station_get_config(&stationConf);
     	
 		os_sprintf(stationConf.ssid, "%s", config_ssid);
 		os_sprintf(stationConf.password, "%s", config_pass);
@@ -138,7 +137,7 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, 10000, 0);	
+	os_timer_arm(&network_check_timer, 10000, 0);
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
@@ -152,7 +151,9 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 		wifiFallbackEnabled = 1;
     	
 		os_printf("FALLBACK_SSID\r\n");
+		wifi_set_opmode_current(STATION_MODE);
 		os_memset(&stationConf, 0, sizeof(struct station_config));
+		wifi_station_get_config(&stationConf);
 		
 		os_sprintf(stationConf.ssid, "%s", STA_FALLBACK_SSID);
 		os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
@@ -224,4 +225,4 @@ void ICACHE_FLASH_ATTR user_test_ping(void) {
 	ping_start(ping_opt);
 	
 }
-/*
+*/
