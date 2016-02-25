@@ -17,7 +17,11 @@
 
 static ETSTimer WiFiLinker;
 WifiCallback wifiCb = NULL;
+uint8_t* config_ssid;
+uint8_t* config_pass;
 static uint8_t wifiStatus = STATION_IDLE, lastWifiStatus = STATION_IDLE;
+unsigned char wifiBackupEnabled = 0;
+
 static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 {
 	struct ip_info ipConfig;
@@ -28,6 +32,7 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 	if (wifiStatus == STATION_GOT_IP && ipConfig.ip.addr != 0)
 	{
 
+		os_printf("\n\rUP\n\r");
 		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)wifi_check_ip, NULL);
 		os_timer_arm(&WiFiLinker, 2000, 0);
 
@@ -35,11 +40,14 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 	}
 	else
 	{
+		os_printf("\n\rDOWN\n\r");
 		if(wifi_station_get_connect_status() == STATION_WRONG_PASSWORD)
 		{
 
 			INFO("STATION_WRONG_PASSWORD\r\n");
+			os_printf("STATION_WRONG_PASSWORD\r\n");
 			wifi_station_connect();
+			WIFI_Backup_Connect();
 
 
 		}
@@ -47,7 +55,8 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 		{
 
 			INFO("STATION_NO_AP_FOUND\r\n");
-			wifi_station_connect();
+			os_printf("STATION_NO_AP_FOUND\r\n");
+			WIFI_Backup_Connect();
 
 
 		}
@@ -55,12 +64,14 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 		{
 
 			INFO("STATION_CONNECT_FAIL\r\n");
+			os_printf("STATION_CONNECT_FAIL\r\n");
 			wifi_station_connect();
 
 		}
 		else
 		{
 			INFO("STATION_IDLE\r\n");
+			os_printf("STATION_IDLE\r\n");
 		}
 
 		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)wifi_check_ip, NULL);
@@ -81,6 +92,8 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_set_opmode(STATION_MODE);
 	wifi_station_set_auto_connect(FALSE);
 	wifiCb = cb;
+	config_ssid = ssid;
+	config_pass = pass;
 
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 
@@ -97,3 +110,34 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_connect();
 }
 
+void ICACHE_FLASH_ATTR WIFI_Backup_Connect() {
+	struct station_config stationConf;
+	if (wifiBackupEnabled) {
+		// go back to saved network
+		os_printf("DEFAULT_SSID\r\n");
+		os_memset(&stationConf, 0, sizeof(struct station_config));
+	
+		os_sprintf(stationConf.ssid, "%s", config_ssid);
+		os_sprintf(stationConf.password, "%s", config_pass);
+	
+		wifi_station_set_config_current(&stationConf);
+		
+		wifi_station_connect();
+		wifiBackupEnabled = 1;
+		wifiBackupEnabled = 1;
+	}
+	else {
+		// try backup network
+		os_printf("BACKUP_SSID\r\n");
+		os_memset(&stationConf, 0, sizeof(struct station_config));
+	
+		os_sprintf(stationConf.ssid, "%s", "Loppen Public");
+		os_sprintf(stationConf.password, "%s", "");
+	
+		wifi_station_set_config_current(&stationConf);
+		
+		wifi_station_connect();
+		wifiBackupEnabled = 1;
+	}
+
+}
