@@ -9,45 +9,52 @@
 #include "osapi.h"
 #include "espconn.h"
 #include "os_type.h"
+#include <ping.h>
 #include "mem.h"
 #include "mqtt_msg.h"
 #include "debug.h"
 #include "user_config.h"
 #include "config.h"
 
-static ETSTimer WiFiLinker;
+static os_timer_t wifi_check_timer;
+static os_timer_t wifi_reconnect_default_timer;
+static os_timer_t network_check_timer;
+
 WifiCallback wifiCb = NULL;
 uint8_t* config_ssid;
 uint8_t* config_pass;
-static uint8_t wifiStatus = STATION_IDLE, lastWifiStatus = STATION_IDLE;
-unsigned char wifiBackupEnabled = 0;
+static uint8_t wifiStatus = STATION_IDLE;
+static uint8_t lastWifiStatus = STATION_IDLE;
+int networkStatus = 0;		// check network state
+char wifiBackupEnabled = 0;
 
-static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
+static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 {
 	struct ip_info ipConfig;
 
-	os_timer_disarm(&WiFiLinker);
+	os_timer_disarm(&wifi_check_timer);
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifiStatus = wifi_station_get_connect_status();
 	if (wifiStatus == STATION_GOT_IP && ipConfig.ip.addr != 0)
 	{
 
-		os_printf("\n\rUP\n\r");
-		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)wifi_check_ip, NULL);
-		os_timer_arm(&WiFiLinker, 2000, 0);
+		//os_printf("\n\rUP\n\r");
+		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
+		os_timer_arm(&wifi_check_timer, 2000, 0);
 
 
 	}
 	else
 	{
-		os_printf("\n\rDOWN\n\r");
+		//os_printf("\n\rDOWN\n\r");
 		if(wifi_station_get_connect_status() == STATION_WRONG_PASSWORD)
 		{
 
 			INFO("STATION_WRONG_PASSWORD\r\n");
-			os_printf("STATION_WRONG_PASSWORD\r\n");
+			if (wifiBackupEnabled == 0) {
+				wifi_backup();
+			}
 			wifi_station_connect();
-			WIFI_Backup_Connect();
 
 
 		}
@@ -55,8 +62,10 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 		{
 
 			INFO("STATION_NO_AP_FOUND\r\n");
-			os_printf("STATION_NO_AP_FOUND\r\n");
-			WIFI_Backup_Connect();
+			if (wifiBackupEnabled == 0) {
+				wifi_backup();
+			}
+			wifi_station_connect();
 
 
 		}
@@ -64,24 +73,46 @@ static void ICACHE_FLASH_ATTR wifi_check_ip(void *arg)
 		{
 
 			INFO("STATION_CONNECT_FAIL\r\n");
-			os_printf("STATION_CONNECT_FAIL\r\n");
+			if (wifiBackupEnabled == 0) {
+				wifi_backup();
+			}
 			wifi_station_connect();
 
 		}
 		else
 		{
 			INFO("STATION_IDLE\r\n");
-			os_printf("STATION_IDLE\r\n");
 		}
 
-		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)wifi_check_ip, NULL);
-		os_timer_arm(&WiFiLinker, 500, 0);
+		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
+		os_timer_arm(&wifi_check_timer, 500, 0);
 	}
 	if(wifiStatus != lastWifiStatus){
 		lastWifiStatus = wifiStatus;
 		if(wifiCb)
 			wifiCb(wifiStatus);
 	}
+}
+
+static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
+	struct station_config stationConf;
+
+	// go back to saved network
+	os_printf("DEFAULT_SSID\r\n");
+	os_memset(&stationConf, 0, sizeof(struct station_config));
+
+	os_sprintf(stationConf.ssid, "%s", config_ssid);
+	os_sprintf(stationConf.password, "%s", config_pass);
+
+	wifi_station_set_config_current(&stationConf);
+	
+	wifi_station_connect();
+	
+	wifiBackupEnabled = 0;
+}
+
+static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
+	user_test_ping();
 }
 
 void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb)
@@ -102,42 +133,75 @@ void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	wifi_station_set_config(&stationConf);
 
-	os_timer_disarm(&WiFiLinker);
-	os_timer_setfn(&WiFiLinker, (os_timer_func_t *)wifi_check_ip, NULL);
-	os_timer_arm(&WiFiLinker, 1000, 0);
+	// start wifi link watchdog
+	os_timer_disarm(&wifi_check_timer);
+	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
+	os_timer_arm(&wifi_check_timer, 1000, 0);
+	
+	// start network watchdog
+	os_timer_disarm(&network_check_timer);
+	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
+	os_timer_arm(&network_check_timer, 10000, 1);	
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
 }
 
-void ICACHE_FLASH_ATTR WIFI_Backup_Connect() {
+void ICACHE_FLASH_ATTR wifi_backup() {
 	struct station_config stationConf;
-	if (wifiBackupEnabled) {
-		// go back to saved network
-		os_printf("DEFAULT_SSID\r\n");
-		os_memset(&stationConf, 0, sizeof(struct station_config));
 	
-		os_sprintf(stationConf.ssid, "%s", config_ssid);
-		os_sprintf(stationConf.password, "%s", config_pass);
+	// try backup network
+	wifiBackupEnabled = 1;
+
+	os_printf("BACKUP_SSID\r\n");
+	os_memset(&stationConf, 0, sizeof(struct station_config));
 	
-		wifi_station_set_config_current(&stationConf);
-		
-		wifi_station_connect();
-		wifiBackupEnabled = 1;
-		wifiBackupEnabled = 1;
+	os_sprintf(stationConf.ssid, "%s", STA_BACKUP_SSID);
+	os_sprintf(stationConf.password, "%s", STA_BACKUP_PASS);
+	
+	wifi_station_set_config_current(&stationConf);
+	
+	os_timer_disarm(&wifi_reconnect_default_timer);
+	os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
+	os_timer_arm(&wifi_reconnect_default_timer, 30000, 0);	// stay on backup network for 30 seconds
+}
+
+void ICACHE_FLASH_ATTR user_ping_recv(void *arg, void *pdata) {
+	struct ping_resp *ping_resp = pdata;
+	struct ping_option *ping_opt = arg;
+	
+	if (ping_resp->ping_err == -1) {
+		//os_printf("ping host fail \r\n");
+		networkStatus = -1;	// ping host failed state
 	}
 	else {
-		// try backup network
-		os_printf("BACKUP_SSID\r\n");
-		os_memset(&stationConf, 0, sizeof(struct station_config));
-	
-		os_sprintf(stationConf.ssid, "%s", "Loppen Public");
-		os_sprintf(stationConf.password, "%s", "");
-	
-		wifi_station_set_config_current(&stationConf);
-		
-		wifi_station_connect();
-		wifiBackupEnabled = 1;
+	    //os_printf("ping recv: byte = %d, time = %d ms \r\n",ping_resp->bytes,ping_resp->resp_time);
+		networkStatus = 1;	// network ok state
 	}
+}
 
+void ICACHE_FLASH_ATTR user_ping_sent(void *arg, void *pdata) {
+	//os_printf("user ping finish \r\n");
+	if ((networkStatus == -1) && (wifiBackupEnabled == 0)) {
+		wifi_backup();
+		wifi_station_connect();
+	}
+}
+
+
+void ICACHE_FLASH_ATTR user_test_ping(void) {
+	struct ping_option *ping_opt = NULL;
+	const char* ping_ip = "8.8.8.8";
+	
+	ping_opt = (struct ping_option *)os_zalloc(sizeof(struct ping_option));
+	
+	ping_opt->count = 2;    //  try to ping how many times
+	ping_opt->coarse_time = 2;  // ping interval
+	ping_opt->ip = ipaddr_addr(ping_ip);
+	
+	ping_regist_recv(ping_opt,user_ping_recv);
+	ping_regist_sent(ping_opt,user_ping_sent);
+	
+	ping_start(ping_opt);
+	
 }

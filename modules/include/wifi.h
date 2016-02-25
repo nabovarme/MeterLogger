@@ -10,6 +10,11 @@
 #include "os_type.h"
 typedef void (*WifiCallback)(uint8_t);
 void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb);
-void ICACHE_FLASH_ATTR WIFI_Backup_Connect();
+
+void ICACHE_FLASH_ATTR wifi_backup();
+
+void ICACHE_FLASH_ATTR user_ping_recv(void *arg, void *pdata);
+void ICACHE_FLASH_ATTR user_ping_sent(void *arg, void *pdata);
+void ICACHE_FLASH_ATTR user_test_ping(void);
 
 #endif /* USER_WIFI_H_ */
