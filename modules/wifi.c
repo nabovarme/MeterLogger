@@ -16,7 +16,7 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME 6000
+#define NETWORK_CHECK_TIME 4500
 
 static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
@@ -136,13 +136,12 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				wifi_fallback_present = 1;
 				if (wifi_fallback_last_present == 0) {	// if fallback network just appeared
 					wifi_fallback();					// change to it...
-					wifi_fallback_last_present = 1;
 				}
 			}
 			else {
 				wifi_fallback_present = 0;
-				wifi_fallback_last_present = 0;
 			}
+			wifi_fallback_last_present = wifi_fallback_present;
 		}
 	}
 	os_timer_disarm(&network_check_timer);
