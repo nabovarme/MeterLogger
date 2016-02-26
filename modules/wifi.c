@@ -120,19 +120,30 @@ static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
 }
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
+	struct scan_config config;
+
+	os_memset(&config, 0, sizeof(config));
+	config.ssid = STA_FALLBACK_SSID;
 //	user_test_ping();
-	wifi_station_scan(NULL, wifi_scan_done_cb);
+	wifi_station_scan(&config, wifi_scan_done_cb);
+//	wifi_station_scan(NULL, wifi_scan_done_cb);
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
+	char ssid[33];
 	struct bss_info *info = (struct bss_info *)arg;
 	
-	if (status == OK) {
-		info = info->next.stqe_next;	// ignore first
+	if ((arg != NULL) && (status == OK)) {
+		//info = info->next.stqe_next;	// ignore first
 		
 		while (info != NULL) {
 			info = info->next.stqe_next;
-			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
+			if (info->ssid != NULL) {
+				os_memset(ssid, 0, sizeof(ssid));
+				os_strncpy(ssid, info->ssid, 32);
+				os_printf("%s\n\r", ssid);
+			}
+			if ((info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = 1;
 				if (wifi_fallback_last_present == 0) {	// if fallback network just appeared
 					wifi_fallback();					// change to it...

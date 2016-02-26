@@ -307,6 +307,11 @@ ICACHE_FLASH_ATTR void user_init(void) {
 		ac_thermo_close();
 	}
 	
+	// do everything else in system_init_done
+	system_init_done_cb(&system_init_done);
+}
+
+ICACHE_FLASH_ATTR void system_init_done(void) {
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifndef EN61107
