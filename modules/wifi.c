@@ -29,6 +29,7 @@ static uint8_t wifiStatus = STATION_IDLE;
 static uint8_t lastWifiStatus = STATION_IDLE;
 int networkStatus = 0;		// check network state
 char wifi_fallback_present = 0;
+char wifi_fallback_last_present = 0;
 
 static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 {
@@ -133,10 +134,14 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			info = info->next.stqe_next;
 			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = 1;
-				wifi_fallback();
+				if (wifi_fallback_last_present == 0) {	// if fallback network just appeared
+					wifi_fallback();					// change to it...
+					wifi_fallback_last_present = 1;
+				}
 			}
 			else {
 				wifi_fallback_present = 0;
+				wifi_fallback_last_present = 0;
 			}
 		}
 	}
@@ -162,7 +167,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_connect();
 }
 
-void ICACHE_FLASH_ATTR WIFI_Connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb)
+void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb)
 {
 	struct station_config stationConf;
 

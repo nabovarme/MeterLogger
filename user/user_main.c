@@ -78,7 +78,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
-	WIFI_Connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
+	wifi_connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
