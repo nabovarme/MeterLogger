@@ -16,7 +16,7 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME 4500
+#define NETWORK_CHECK_TIME 6000
 
 static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
