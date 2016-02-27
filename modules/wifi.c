@@ -16,7 +16,7 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME 10000
+#define NETWORK_CHECK_TIME 3000
 #define NETWORK_CHECK_TIME_FIRST 2000
 
 #define WIFI_CHECK_TIME 2000
@@ -145,7 +145,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
     
 	wifi_station_set_config_current(&stationConf);
 	
-//	wifi_station_connect();
+	wifi_station_connect();
 }
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
@@ -162,7 +162,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
 	
 	wifi_station_set_config_current(&stationConf);
-//	wifi_station_connect();
+	wifi_station_connect();
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
