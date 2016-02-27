@@ -16,8 +16,9 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME	10000
-#define WIFI_CHECK_TIME		2000
+#define NETWORK_CHECK_TIME 10000
+#define WIFI_CHECK_TIME 2000
+#define WIFI_CHECK_TIME_RECONNECT 500
 
 static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
@@ -30,11 +31,18 @@ static uint8_t wifi_status = STATION_IDLE;
 static uint8_t last_wifi_status = STATION_IDLE;
 char wifi_fallback_present = 0;
 char wifi_fallback_last_present = 0;
+char wifi_scan_runnning = 0;
 
 static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	struct ip_info ipConfig;
 
 	os_timer_disarm(&wifi_check_timer);
+	if (wifi_scan_runnning == 1) {
+		// if we are scanning networks, rescedule timer
+		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
+		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
+		return;
+	}
 	
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifi_status = wifi_station_get_connect_status();
@@ -60,7 +68,7 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 		}
 
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, (WIFI_CHECK_TIME / 4), 0);
+		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_RECONNECT, 0);
 	}
 	
 	if (wifi_status != last_wifi_status) {
@@ -73,6 +81,8 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 	struct scan_config config;
+	
+	wifi_scan_runnning = 1;
 
 	// scan for fallback network
 	os_memset(&config, 0, sizeof(config));
@@ -109,6 +119,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		
 		wifi_fallback_last_present = wifi_fallback_present;
 	}
+	wifi_scan_runnning = 0;
+	
 	// restart network_check_timer
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
@@ -175,7 +187,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
+	os_timer_arm(&network_check_timer, 1000, 0);
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
