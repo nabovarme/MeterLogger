@@ -43,7 +43,7 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	// if we are scanning networks, reschedule timer
 	if (wifi_scan_runnning == 1) {
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
+		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_RECONNECT, 0);
 		return;
 	}
 	
