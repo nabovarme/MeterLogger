@@ -8,23 +8,6 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
-#define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
-//#define MQTT_HOST			"10.0.1.3"
-#define MQTT_PORT			1883
-#define MQTT_BUF_SIZE		1024
-#define MQTT_KEEPALIVE		120	 /*second*/
-
-#define MQTT_CLIENT_ID		"ESP_%08X"
-#define MQTT_USER			"esp8266"
-#define MQTT_PASS			"chah5Kai"
-
-#define STA_SSID "Slux"
-#define STA_PASS "w1reless"
-//#define STA_SSID "Loppen Public"
-//#define STA_PASS ""
-#define STA_FALLBACK_SSID "stofferFon"
-#define STA_FALLBACK_PASS "w1reless"
-#define STA_TYPE AUTH_WPA2_PSK
 
 #define AP_SSID	"KAM_%07u"
 #define AP_PASSWORD	"aabbccddeeff"

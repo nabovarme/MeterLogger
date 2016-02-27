@@ -127,7 +127,7 @@ static mqtt_message_t* ICACHE_FLASH_ATTR fini_message(mqtt_connection_t* connect
 
 void ICACHE_FLASH_ATTR mqtt_msg_init(mqtt_connection_t* connection, uint8_t* buffer, uint16_t buffer_length)
 {
-  memset(connection, 0, sizeof(connection));
+  memset(connection, 0, sizeof(mqtt_connection_t));
   connection->buffer = buffer;
   connection->buffer_length = buffer_length;
 }
@@ -450,7 +450,7 @@ mqtt_message_t* ICACHE_FLASH_ATTR mqtt_msg_unsubscribe(mqtt_connection_t* connec
   if(append_string(connection, topic, strlen(topic)) < 0)
     return fail_message(connection);
 
-  return fini_message(connection, MQTT_MSG_TYPE_SUBSCRIBE, 0, 1, 0);
+  return fini_message(connection, MQTT_MSG_TYPE_UNSUBSCRIBE, 0, 1, 0);
 }
 
 mqtt_message_t* ICACHE_FLASH_ATTR mqtt_msg_pingreq(mqtt_connection_t* connection)

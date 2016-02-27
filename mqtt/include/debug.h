@@ -5,17 +5,19 @@
  *      Author: Minh
  */
 
-//#define PRINTF_DEBUG
-
 #ifndef USER_DEBUG_H_
 #define USER_DEBUG_H_
 
-#ifndef INFO
-#ifdef PRINTF_DEBUG
-#define INFO os_printf
+#if defined(GLOBAL_DEBUG_ON)
+#define MQTT_DEBUG_ON
+#endif
+#if defined(MQTT_DEBUG_ON)
+#define INFO( format, ... ) os_printf( format, ## __VA_ARGS__ )
 #else
-#define INFO(...) /**/
+#define INFO( format, ... )
 #endif
-#endif
+// #ifndef INFO
+// #define INFO os_printf
+// #endif
 
 #endif /* USER_DEBUG_H_ */
