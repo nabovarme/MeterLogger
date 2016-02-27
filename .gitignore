@@ -1,2 +1,4 @@
 /build/*
 ._*
+/firmware/0x00000.bin
+/firmware/0x40000.bin
