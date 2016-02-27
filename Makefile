@@ -141,8 +141,8 @@ ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
 endif
 
-ifeq ($(THERMO_NC), 1)
-    CFLAGS += -DTHERMO_NC
+ifeq ($(THERMO_NO), 1)
+    CFLAGS += -DTHERMO_NO
 endif
 
 # various paths from the SDK used in this project

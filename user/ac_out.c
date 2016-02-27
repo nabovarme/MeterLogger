@@ -67,12 +67,12 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 		ac_pwm_state = ON;
 		if (ac_pwm_duty_cycle > 0) {
 			led_on();
-#ifdef THERMO_NC	
-			//Set GPI14 to HIGH
-			gpio_output_set(BIT14, 0, BIT14, 0);
-#else	// THERMO_NO
+#ifdef THERMO_NO	
 			//Set GPI14 to LOW
 			gpio_output_set(0, BIT14, BIT14, 0);
+#else	// THERMO_NC
+			//Set GPI14 to HIGH
+			gpio_output_set(BIT14, 0, BIT14, 0);
 #endif
 		}
 		// reload timer
@@ -84,12 +84,12 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 		ac_pwm_state = OFF;
 		if (ac_pwm_duty_cycle < 1000) {
 			led_off();
-#ifdef THERMO_NC	
-			//Set GPI14 to LOW
-			gpio_output_set(0, BIT14, BIT14, 0);
-#else	// THERMO_NO
+#ifdef THERMO_NO
 			//Set GPI14 to HIGHT
 			gpio_output_set(BIT14, 0, BIT14, 0);
+#else	// THERMO_NC
+			//Set GPI14 to LOW
+			gpio_output_set(0, BIT14, BIT14, 0);
 #endif
 		}
 		// reload timer
@@ -156,12 +156,12 @@ void ac_thermo_open() {
 #endif
 	led_pattern_b();
 
-#ifdef THERMO_NC	
-	//Set GPI14 to HIGH
-	gpio_output_set(BIT14, 0, BIT14, 0);
-#else	// THERMO_NO
+#ifdef THERMO_NO	
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
+#else	// THERMO_NC
+	//Set GPI14 to HIGH
+	gpio_output_set(BIT14, 0, BIT14, 0);
 #endif
 	sysCfg.ac_thermo_state = 1;
 	CFG_Save();
@@ -174,12 +174,12 @@ void ac_thermo_close() {
 #endif
 	led_pattern_a();
 	
-#ifdef THERMO_NC	
-	//Set GPI14 to LOW
-	gpio_output_set(0, BIT14, BIT14, 0);
-#else	// THERMO_NO
+#ifdef THERMO_NO
 	//Set GPI14 to HIGHT
 	gpio_output_set(BIT14, 0, BIT14, 0);
+#else	// THERMO_NC
+	//Set GPI14 to LOW
+	gpio_output_set(0, BIT14, BIT14, 0);
 #endif
 	sysCfg.ac_thermo_state = 0;
 	CFG_Save();

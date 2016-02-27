@@ -271,10 +271,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
-#ifdef THERMO_NC
-	os_printf("\t(THERMO_NC)\n\r");
-#else
+#ifdef THERMO_NO
 	os_printf("\t(THERMO_NO)\n\r");
+#else
+	os_printf("\t(THERMO_NC)\n\r");
 #endif
 
 #ifndef DEBUG
