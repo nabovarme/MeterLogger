@@ -77,7 +77,6 @@ static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 	os_memset(&config, 0, sizeof(config));
 	config.ssid = STA_FALLBACK_SSID;
 	wifi_station_scan(&config, wifi_scan_done_cb);
-	wifi_station_scan(NULL, wifi_scan_done_cb);
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
