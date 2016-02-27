@@ -32,7 +32,7 @@ use led to indicate ac state
 | /config/v1/9999999/close    |                                                                    |
 | /config/v1/9999999/status   |                                                                    |
 | /config/v1/9999999/set_cron | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
-| /config/v1/9999999/get_cron |                                                                    |
+| /config/v1/9999999/cron     |                                                                    |
 | /config/v1/9999999/ping     |                                                                    |
 | /config/v1/9999999/version  |                                                                    |
   
@@ -41,7 +41,7 @@ use led to indicate ac state
 | Topic                            | Message                                                                                              |
 | :------------------------------- | :--------------------------------------------------------------------------------------------------- |
 | /sample/v1/9999999/0             | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
-| /get_cron/v1/9999999/[unix time] | 12                                                                                                   |
+| /cron/v1/9999999/[unix time]     | 12                                                                                                   |
 | /ping/v1/9999999/[unix time]     |                                                                                                      |
 | /version/v1/9999999/[unix time]  | [sdk version]-[git version]                                                                          |
 | /status/v1/9999999/[unix time]   | [open|close]                                                                          |

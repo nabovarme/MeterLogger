@@ -183,9 +183,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found clear_cron
 		clear_cron_jobs();
 	}
-	else if (strncmp(function_name, "get_cron", FUNCTIONNAME_L) == 0) {
-		// found get_cron
-		reply_topic_l = os_sprintf(reply_topic, "/get_cron/v1/%u/%u", kmp_serial, get_unix_time());
+	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
+		// found cron
+		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_serial, get_unix_time());
 		reply_message_l = os_sprintf(reply_message, "%d", sysCfg.cron_jobs.n);
 
 		if (&mqttClient) {
