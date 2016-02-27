@@ -17,7 +17,10 @@
 #include "config.h"
 
 #define NETWORK_CHECK_TIME 10000
+#define NETWORK_CHECK_TIME_FIRST 2000
+
 #define WIFI_CHECK_TIME 2000
+#define WIFI_CHECK_TIME_FIRST 1000
 #define WIFI_CHECK_TIME_RECONNECT 500
 
 static os_timer_t wifi_check_timer;
@@ -37,8 +40,8 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	struct ip_info ipConfig;
 
 	os_timer_disarm(&wifi_check_timer);
+	// if we are scanning networks, reschedule timer
 	if (wifi_scan_runnning == 1) {
-		// if we are scanning networks, rescedule timer
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
 		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
 		return;
@@ -182,12 +185,12 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start wifi link watchdog
 	os_timer_disarm(&wifi_check_timer);
 	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-	os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
+	os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_FIRST, 0);
 	
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, 1000, 0);
+	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME_FIRST, 0);
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
