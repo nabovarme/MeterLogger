@@ -16,7 +16,8 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME 10000
+#define NETWORK_CHECK_TIME	10000
+#define WIFI_CHECK_TIME		2000
 
 static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
@@ -39,7 +40,7 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	wifi_status = wifi_station_get_connect_status();
 	if (wifi_status == STATION_GOT_IP && ipConfig.ip.addr != 0) {
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, 2000, 0);
+		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
 	}
 	else {
 		if (wifi_station_get_connect_status() == STATION_WRONG_PASSWORD) {
@@ -59,7 +60,7 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 		}
 
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, 500, 0);
+		os_timer_arm(&wifi_check_timer, (WIFI_CHECK_TIME / 4), 0);
 	}
 	
 	if (wifi_status != last_wifi_status) {
@@ -108,6 +109,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		
 		wifi_fallback_last_present = wifi_fallback_present;
 	}
+	// restart network_check_timer
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
 	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
@@ -128,7 +130,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
     
 	wifi_station_set_config_current(&stationConf);
 	
-	wifi_station_connect();
+//	wifi_station_connect();
 }
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
@@ -145,7 +147,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
 	
 	wifi_station_set_config_current(&stationConf);
-	wifi_station_connect();
+//	wifi_station_connect();
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
@@ -168,7 +170,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start wifi link watchdog
 	os_timer_disarm(&wifi_check_timer);
 	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-	os_timer_arm(&wifi_check_timer, 1000, 0);
+	os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
 	
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
