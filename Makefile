@@ -145,6 +145,10 @@ ifeq ($(THERMO_NO), 1)
     CFLAGS += -DTHERMO_NO
 endif
 
+ifeq ($(LED_ON_AC), 1)
+    CFLAGS += -DLED_ON_AC
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld

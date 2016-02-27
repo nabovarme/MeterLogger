@@ -28,12 +28,16 @@ void ac_test_timer_func(void *arg) {
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
 		//Set GPI14 to LOW
 		gpio_output_set(0, BIT14, BIT14, 0);
+#ifdef LED_ON_AC
 		led_pattern_b();
+#endif
 	}
 	else {
 		//Set GPI14 to HIGH
 		gpio_output_set(BIT14, 0, BIT14, 0);
+#ifdef LED_ON_AC
 		led_pattern_a();
+#endif
 	}
 	
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
@@ -58,7 +62,9 @@ ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
 	gpio_output_set(0, BIT15, BIT15, 0);
 
 	led_stop_pattern();
+#ifdef LED_ON_AC
 	led_off();
+#endif
 }
 
 ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
@@ -66,7 +72,9 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 	if (ac_pwm_state == OFF) {
 		ac_pwm_state = ON;
 		if (ac_pwm_duty_cycle > 0) {
+#ifdef LED_ON_AC
 			led_on();
+#endif
 #ifdef THERMO_NO	
 			//Set GPI14 to LOW
 			gpio_output_set(0, BIT14, BIT14, 0);
@@ -83,7 +91,9 @@ ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
 	else if (ac_pwm_state == ON) {
 		ac_pwm_state = OFF;
 		if (ac_pwm_duty_cycle < 1000) {
+#ifdef LED_ON_AC
 			led_off();
+#endif
 #ifdef THERMO_NO
 			//Set GPI14 to HIGHT
 			gpio_output_set(BIT14, 0, BIT14, 0);
@@ -104,7 +114,9 @@ void ac_test() {
 #ifdef DEBUG
 	os_printf("\n\rac test on\n\r");
 #endif
+#ifdef LED_ON_AC
 	led_pattern_a();
+#endif
 	
 	// set GPIO14 high and GPIO15 low
 	gpio_output_set(BIT14, 0, BIT14, 0);
@@ -121,7 +133,9 @@ void ac_motor_valve_open() {
 	os_printf("\n\rac 1 on\n\r");
 #endif
 	ac_off();
+#ifdef LED_ON_AC
 	led_pattern_a();
+#endif
 	
 	//Set GPI14 to HIGH
 	gpio_output_set(BIT14, 0, BIT14, 0);
@@ -138,7 +152,9 @@ void ac_motor_valve_close() {
 	os_printf("\n\rac 2 on\n\r");
 #endif
 	ac_off();
+#ifdef LED_ON_AC
 	led_pattern_b();
+#endif
 	
 	//Set GPI15 to HIGH
 	gpio_output_set(BIT15, 0, BIT15, 0);
@@ -154,7 +170,9 @@ void ac_thermo_open() {
 #ifdef DEBUG
 	os_printf("\n\rac 1 open\n\r");
 #endif
+#ifdef LED_ON_AC
 	led_pattern_b();
+#endif
 
 #ifdef THERMO_NO	
 	//Set GPI14 to LOW
@@ -172,7 +190,9 @@ void ac_thermo_close() {
 #ifdef DEBUG
 	os_printf("\n\rac 1 close\n\r");
 #endif
+#ifdef LED_ON_AC
 	led_pattern_a();
+#endif
 	
 #ifdef THERMO_NO
 	//Set GPI14 to HIGHT
@@ -190,7 +210,9 @@ void ac_thermo_pwm(unsigned int duty_cycle) {
 #ifdef DEBUG
 	os_printf("\n\rac 1 pwm\n\r");
 #endif
+#ifdef LED_ON_AC
 	led_stop_pattern();
+#endif
 	ac_pwm_duty_cycle = duty_cycle;
 	os_timer_disarm(&ac_pwm_timer);
 	os_timer_setfn(&ac_pwm_timer, (os_timer_func_t *)ac_pwm_timer_func, NULL);

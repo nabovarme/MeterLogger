@@ -14,12 +14,14 @@ meter type is KMP (Multical 601)
 EN61107=1  
 meter type is en61107 (Multical 66)  
   
-THERMO_NC=0  
-thermo actuator is normal open  
-  
-THERMO_NC=1  
+THERMO_NO=0  
 thermo actuator is normal closed  
   
+THERMO_NO=1  
+thermo actuator is normal open  
+  
+LED_ON_AC=1  
+use led to indicate ac state  
   
 **MQTT format for messages sent _to_ meter**  
 
