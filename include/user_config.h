@@ -19,10 +19,4 @@
 #define STA_FALLBACK_PASS "w1reless"
 #define STA_TYPE AUTH_WPA2_PSK
 
-#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
-#define QUEUE_BUFFER_SIZE		 		10240
-
-#define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
-//PROTOCOL_NAMEv311			/*MQTT version 3.11 compatible with https://eclipse.org/paho/clients/testing/*/
-#endif
-
+#endif	// _USER_CONFIG_H_

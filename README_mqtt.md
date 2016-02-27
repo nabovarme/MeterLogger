@@ -1,5 +1,7 @@
 **esp_mqtt**
 ==========
+![](https://travis-ci.org/tuanpmt/esp_mqtt.svg?branch=master)
+
 This is MQTT client library for ESP8266, port from: [MQTT client library for Contiki](https://github.com/esar/contiki-mqtt) (thanks)
 
 
@@ -8,8 +10,9 @@ This is MQTT client library for ESP8266, port from: [MQTT client library for Con
 
  * Support subscribing, publishing, authentication, will messages, keep alive pings and all 3 QoS levels (it should be a fully functional client).
  * Support multiple connection (to multiple hosts).
- * Support SSL connection (max 1024 bit key size)
+ * Support SSL connection (sdk 1.3 with path)
  * Easy to setup and use
+ * Update support SDK 1.3
 
 **Compile:**
 
@@ -18,7 +21,7 @@ Make sure to add PYTHON PATH and compile PATH to Eclipse environment variable if
 for Windows:
 
 ```bash
-git clone https://github.com/tuanpmt/esp_mqtt
+git clone --recursive https://github.com/tuanpmt/esp_mqtt
 cd esp_mqtt
 #clean
 mingw32-make clean
@@ -31,7 +34,7 @@ mingw32-make ESPPORT="COM1" flash
 for Mac or Linux:
 
 ```bash
-git clone https://github.com/tuanpmt/esp_mqtt
+git clone --recursive https://github.com/tuanpmt/esp_mqtt
 cd esp_mqtt
 #clean
 make clean
@@ -253,10 +256,6 @@ SDK esp_iot_sdk_v0.9.4_14_12_19 or higher
 **Authors:**
 [Tuan PM](https://twitter.com/TuanPMT)
 
-**Donations**
-
-Invite me to a coffee
-[![Donate](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JR9RVLFC4GE6J)
 
 
 **LICENSE - "MIT License"**

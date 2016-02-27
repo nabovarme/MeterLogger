@@ -19,7 +19,7 @@
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
-#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
+#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
 #define QUEUE_BUFFER_SIZE		 		10240
 
 #define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
