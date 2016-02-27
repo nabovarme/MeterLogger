@@ -16,7 +16,7 @@
 #include "user_config.h"
 #include "config.h"
 
-#define NETWORK_CHECK_TIME 10000
+#define NETWORK_CHECK_TIME 6000
 
 static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
@@ -31,50 +31,39 @@ int networkStatus = 0;		// check network state
 char wifi_fallback_present = 0;
 char wifi_fallback_last_present = 0;
 
-static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
-{
+static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	struct ip_info ipConfig;
 
 	os_timer_disarm(&wifi_check_timer);
 	
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifiStatus = wifi_station_get_connect_status();
-	if (wifiStatus == STATION_GOT_IP && ipConfig.ip.addr != 0)
-	{
-
-		//os_printf("\n\rUP\n\r");
+	if (wifiStatus == STATION_GOT_IP && ipConfig.ip.addr != 0) {
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
 		os_timer_arm(&wifi_check_timer, 2000, 0);
-
-
 	}
-	else
-	{
+	else {
 		//os_printf("\n\rDOWN\n\r");
-		if(wifi_station_get_connect_status() == STATION_WRONG_PASSWORD)
-		{
+		if (wifi_station_get_connect_status() == STATION_WRONG_PASSWORD) {
 
 			INFO("STATION_WRONG_PASSWORD\r\n");
 			wifi_station_connect();
 
 
 		}
-		else if(wifi_station_get_connect_status() == STATION_NO_AP_FOUND)
-		{
+		else if (wifi_station_get_connect_status() == STATION_NO_AP_FOUND) {
 
 			INFO("STATION_NO_AP_FOUND\r\n");
 			wifi_station_connect();
 
 		}
-		else if(wifi_station_get_connect_status() == STATION_CONNECT_FAIL)
-		{
+		else if (wifi_station_get_connect_status() == STATION_CONNECT_FAIL) {
 
 			INFO("STATION_CONNECT_FAIL\r\n");
 			wifi_station_connect();
 
 		}
-		else
-		{
+		else {
 			INFO("STATION_IDLE\r\n");
 		}
 
@@ -82,10 +71,11 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		os_timer_arm(&wifi_check_timer, 500, 0);
 	}
 	
-	if(wifiStatus != lastWifiStatus){
+	if (wifiStatus != lastWifiStatus) {
 		lastWifiStatus = wifiStatus;
-		if(wifiCb)
+		if (wifiCb) {
 			wifiCb(wifiStatus);
+		}
 	}
 }
 
