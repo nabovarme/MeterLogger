@@ -30,7 +30,6 @@ static uint8_t lastWifiStatus = STATION_IDLE;
 int networkStatus = 0;		// check network state
 char wifi_fallback_present = 0;
 char wifi_fallback_last_present = 0;
-//char wifi_scan_running = 0;
 
 static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 {
@@ -64,28 +63,14 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 		{
 
 			INFO("STATION_NO_AP_FOUND\r\n");
-			if (wifi_fallback_present == 0) {
-				os_timer_disarm(&wifi_reconnect_default_timer);
-				os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
-				os_timer_arm(&wifi_reconnect_default_timer, 0, 0);
-			}
-			else {
-				wifi_station_connect();
-			}
+			wifi_station_connect();
 
 		}
 		else if(wifi_station_get_connect_status() == STATION_CONNECT_FAIL)
 		{
 
 			INFO("STATION_CONNECT_FAIL\r\n");
-			if (wifi_fallback_present == 0) {
-				os_timer_disarm(&wifi_reconnect_default_timer);
-				os_timer_setfn(&wifi_reconnect_default_timer, (os_timer_func_t *)wifi_reconnect_default_timer_func, NULL);
-				os_timer_arm(&wifi_reconnect_default_timer, 0, 0);
-			}
-			else {
-				wifi_station_connect();
-			}
+			wifi_station_connect();
 
 		}
 		else
@@ -104,7 +89,48 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg)
 	}
 }
 
-static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
+static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
+	struct scan_config config;
+
+	os_memset(&config, 0, sizeof(config));
+	config.ssid = STA_FALLBACK_SSID;
+//	user_test_ping();
+	wifi_station_scan(&config, wifi_scan_done_cb);
+	wifi_station_scan(NULL, wifi_scan_done_cb);
+}
+
+void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
+	struct bss_info *info;
+	
+	wifi_fallback_present = 0;
+	
+	if ((arg != NULL) && (status == OK)) {
+		info = (struct bss_info *)arg;
+		//info = info->next.stqe_next;	// ignore first
+		wifi_fallback_present == 0;
+		
+		while ((info != NULL) && (wifi_fallback_present == 0)) {
+			info = info->next.stqe_next;
+			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
+				wifi_fallback_present = 1;
+			}
+		}
+		
+		if ((wifi_fallback_present == 1) && (wifi_fallback_last_present == 0)) {
+			wifi_fallback();
+		}
+		else if ((wifi_fallback_present == 0) && (wifi_fallback_last_present == 1)) {
+			wifi_default();
+		}
+		
+		wifi_fallback_last_present = wifi_fallback_present;
+	}
+	os_timer_disarm(&network_check_timer);
+	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
+	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
+}
+
+void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
 
 	// go back to saved network
@@ -120,45 +146,6 @@ static void ICACHE_FLASH_ATTR wifi_reconnect_default_timer_func(void *arg) {
 	wifi_station_set_config_current(&stationConf);
 	
 	wifi_station_connect();
-}
-
-static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
-	struct scan_config config;
-
-	os_memset(&config, 0, sizeof(config));
-	config.ssid = STA_FALLBACK_SSID;
-//	user_test_ping();
-	wifi_station_scan(&config, wifi_scan_done_cb);
-	wifi_station_scan(NULL, wifi_scan_done_cb);
-//	wifi_scan_running = 1;
-}
-
-void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
-	struct bss_info *info;
-	
-	if ((arg != NULL) && (status == OK)) {
-		info = (struct bss_info *)arg;
-		//info = info->next.stqe_next;	// ignore first
-		
-		while (info != NULL) {
-			info = info->next.stqe_next;
-			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
-				wifi_fallback_present = 1;
-				if (wifi_fallback_last_present == 0) {	// if fallback network just appeared
-					wifi_fallback();					// change to it...
-				}
-			}
-			else {
-				wifi_fallback_present = 0;
-			}
-			wifi_fallback_last_present = wifi_fallback_present;
-		}
-	}
-	os_timer_disarm(&network_check_timer);
-	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
-
-//	wifi_scan_running = 0;
 }
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
