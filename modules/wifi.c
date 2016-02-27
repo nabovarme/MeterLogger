@@ -16,7 +16,7 @@
 #include "config.h"
 #include "led.h"
 
-#define NETWORK_CHECK_TIME 3000
+#define NETWORK_CHECK_TIME 5000
 #define NETWORK_CHECK_TIME_FIRST 2000
 
 #define WIFI_CHECK_TIME 2000
