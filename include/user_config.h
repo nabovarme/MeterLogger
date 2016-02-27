@@ -8,11 +8,16 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
-
 #define AP_SSID	"KAM_%07u"
 #define AP_PASSWORD	"aabbccddeeff"
 
-#define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
+#define STA_SSID "Slux"
+#define STA_PASS "w1reless"
+//#define STA_SSID "Loppen Public"
+//#define STA_PASS ""
+#define STA_FALLBACK_SSID "stofferFon"
+#define STA_FALLBACK_PASS "w1reless"
+#define STA_TYPE AUTH_WPA2_PSK
 
 #define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 #define QUEUE_BUFFER_SIZE		 		10240
