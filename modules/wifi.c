@@ -22,12 +22,11 @@ static os_timer_t wifi_check_timer;
 static os_timer_t wifi_reconnect_default_timer;
 static os_timer_t network_check_timer;
 
-WifiCallback wifiCb = NULL;
+WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
 uint8_t* config_pass;
-static uint8_t wifiStatus = STATION_IDLE;
-static uint8_t lastWifiStatus = STATION_IDLE;
-int networkStatus = 0;		// check network state
+static uint8_t wifi_status = STATION_IDLE;
+static uint8_t last_wifi_status = STATION_IDLE;
 char wifi_fallback_present = 0;
 char wifi_fallback_last_present = 0;
 
@@ -37,31 +36,23 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 	os_timer_disarm(&wifi_check_timer);
 	
 	wifi_get_ip_info(STATION_IF, &ipConfig);
-	wifiStatus = wifi_station_get_connect_status();
-	if (wifiStatus == STATION_GOT_IP && ipConfig.ip.addr != 0) {
+	wifi_status = wifi_station_get_connect_status();
+	if (wifi_status == STATION_GOT_IP && ipConfig.ip.addr != 0) {
 		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
 		os_timer_arm(&wifi_check_timer, 2000, 0);
 	}
 	else {
-		//os_printf("\n\rDOWN\n\r");
 		if (wifi_station_get_connect_status() == STATION_WRONG_PASSWORD) {
-
 			INFO("STATION_WRONG_PASSWORD\r\n");
 			wifi_station_connect();
-
-
 		}
 		else if (wifi_station_get_connect_status() == STATION_NO_AP_FOUND) {
-
 			INFO("STATION_NO_AP_FOUND\r\n");
 			wifi_station_connect();
-
 		}
 		else if (wifi_station_get_connect_status() == STATION_CONNECT_FAIL) {
-
 			INFO("STATION_CONNECT_FAIL\r\n");
 			wifi_station_connect();
-
 		}
 		else {
 			INFO("STATION_IDLE\r\n");
@@ -71,10 +62,10 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 		os_timer_arm(&wifi_check_timer, 500, 0);
 	}
 	
-	if (wifiStatus != lastWifiStatus) {
-		lastWifiStatus = wifiStatus;
-		if (wifiCb) {
-			wifiCb(wifiStatus);
+	if (wifi_status != last_wifi_status) {
+		last_wifi_status = wifi_status;
+		if (wifi_cb) {
+			wifi_cb(wifi_status);
 		}
 	}
 }
@@ -82,9 +73,9 @@ static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 	struct scan_config config;
 
+	// scan for fallback network
 	os_memset(&config, 0, sizeof(config));
 	config.ssid = STA_FALLBACK_SSID;
-//	user_test_ping();
 	wifi_station_scan(&config, wifi_scan_done_cb);
 	wifi_station_scan(NULL, wifi_scan_done_cb);
 }
@@ -94,9 +85,10 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	
 	wifi_fallback_present = 0;
 	
+	// check if fallback network is present
 	if ((arg != NULL) && (status == OK)) {
 		info = (struct bss_info *)arg;
-		//info = info->next.stqe_next;	// ignore first
+		//info = info->next.stqe_next;	// ignore first. DEBUG: appearently not needed in newer SDK versions
 		wifi_fallback_present == 0;
 		
 		while ((info != NULL) && (wifi_fallback_present == 0)) {
@@ -106,9 +98,11 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			}
 		}
 		
+		// if fallback network appeared connect to it
 		if ((wifi_fallback_present == 1) && (wifi_fallback_last_present == 0)) {
 			wifi_fallback();
 		}
+		// if fallback network disappeared connect to default network
 		else if ((wifi_fallback_present == 0) && (wifi_fallback_last_present == 1)) {
 			wifi_default();
 		}
@@ -155,14 +149,13 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_connect();
 }
 
-void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb)
-{
+void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
 	wifi_set_opmode(STATION_MODE);
 	wifi_station_set_auto_connect(FALSE);
-	wifiCb = cb;
+	wifi_cb = cb;
 	config_ssid = ssid;
 	config_pass = pass;
 
@@ -186,45 +179,3 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
 }
-
-/*
-void ICACHE_FLASH_ATTR user_ping_recv(void *arg, void *pdata) {
-	struct ping_resp *ping_resp = pdata;
-	struct ping_option *ping_opt = arg;
-	
-	if (ping_resp->ping_err == -1) {
-		//os_printf("ping host fail \r\n");
-		networkStatus = -1;	// ping host failed state
-	}
-	else {
-	    //os_printf("ping recv: byte = %d, time = %d ms \r\n",ping_resp->bytes,ping_resp->resp_time);
-		networkStatus = 1;	// network ok state
-	}
-}
-
-void ICACHE_FLASH_ATTR user_ping_sent(void *arg, void *pdata) {
-	//os_printf("user ping finish \r\n");
-	if ((networkStatus == -1) && (wifi_fallback_enabled == 0)) {
-		wifi_fallback();
-		wifi_station_connect();
-	}
-}
-
-
-void ICACHE_FLASH_ATTR user_test_ping(void) {
-	struct ping_option *ping_opt = NULL;
-	const char* ping_ip = "8.8.8.8";
-	
-	ping_opt = (struct ping_option *)os_zalloc(sizeof(struct ping_option));
-	
-	ping_opt->count = 2;    //  try to ping how many times
-	ping_opt->coarse_time = 2;  // ping interval
-	ping_opt->ip = ipaddr_addr(ping_ip);
-	
-	ping_regist_recv(ping_opt,user_ping_recv);
-	ping_regist_sent(ping_opt,user_ping_sent);
-	
-	ping_start(ping_opt);
-	
-}
-*/
