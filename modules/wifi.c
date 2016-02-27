@@ -9,12 +9,12 @@
 #include "osapi.h"
 #include "espconn.h"
 #include "os_type.h"
-//#include <ping.h>
 #include "mem.h"
 #include "mqtt_msg.h"
 #include "debug.h"
 #include "user_config.h"
 #include "config.h"
+#include "led.h"
 
 #define NETWORK_CHECK_TIME 3000
 #define NETWORK_CHECK_TIME_FIRST 2000
@@ -114,10 +114,12 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present == 1) && (wifi_fallback_last_present == 0)) {
 			wifi_fallback();
+			led_pattern_b();
 		}
 		// if fallback network disappeared connect to default network
 		else if ((wifi_fallback_present == 0) && (wifi_fallback_last_present == 1)) {
 			wifi_default();
+			led_stop_pattern();
 		}
 		
 		wifi_fallback_last_present = wifi_fallback_present;
@@ -194,4 +196,6 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_station_connect();
+	
+	led_stop_pattern();
 }
