@@ -44,7 +44,7 @@ ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
 	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
 	os_sprintf(ap_conf.password, AP_PASSWORD);
-	ap_conf.authmode = AUTH_WPA_PSK;
+	ap_conf.authmode = STA_TYPE;
 	ap_conf.channel = 7;
 	ap_conf.max_connection = 4;
 	ap_conf.ssid_hidden = 0;

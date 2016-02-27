@@ -8,6 +8,7 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
+// MQTT
 #define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
 //#define MQTT_HOST			"10.0.1.3"
 #define MQTT_PORT			1883
@@ -18,6 +19,16 @@
 #define MQTT_USER			"esp8266"
 #define MQTT_PASS			"chah5Kai"
 
+#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
+
+#define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
+
+#define QUEUE_BUFFER_SIZE		 		10240
+
+#define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
+//PROTOCOL_NAMEv311			/*MQTT version 3.11 compatible with https://eclipse.org/paho/clients/testing/*/
+
+// WIRELESS
 #define STA_SSID "Slux"
 #define STA_PASS "w1reless"
 //#define STA_SSID "Loppen Public"
@@ -29,12 +40,5 @@
 #define AP_SSID	"KAM_%07u"
 #define AP_PASSWORD	"aabbccddeeff"
 
-#define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
-
-#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
-#define QUEUE_BUFFER_SIZE		 		10240
-
-#define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
-//PROTOCOL_NAMEv311			/*MQTT version 3.11 compatible with https://eclipse.org/paho/clients/testing/*/
 #endif
 
