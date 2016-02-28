@@ -1,6 +1,7 @@
 #ifndef _USER_CONFIG_H_
 #define _USER_CONFIG_H_
 
+//#define PRINTF_DEBUG
 
 #define CFG_HOLDER	0x00FF55A4	/* Change this value to load default configurations */
 #define CFG_LOCATION	0x3C	/* Please don't change or if you know what you doing */
@@ -19,7 +20,7 @@
 #define MQTT_USER			"esp8266"
 #define MQTT_PASS			"chah5Kai"
 
-#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
+#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
