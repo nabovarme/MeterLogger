@@ -29,8 +29,12 @@ MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
 static volatile os_timer_t config_mode_timer;
 static volatile os_timer_t sample_mode_timer;
-static volatile os_timer_t kmp_request_send_timer;
 static volatile os_timer_t en61107_request_send_timer;
+#ifndef EN61107
+static volatile os_timer_t kmp_request_send_timer;
+#else
+static volatile os_timer_t en61107_request_send_timer;
+#endif
 
 uint16 counter = 0;
 
