@@ -257,12 +257,10 @@ static void kmp_received_task(os_event_t *events) {
 
 
 // fifo
-ICACHE_FLASH_ATTR
 unsigned int kmp_fifo_in_use() {
 	return fifo_head - fifo_tail;
 }
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_put(unsigned char c) {
 	if (kmp_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
@@ -277,7 +275,6 @@ unsigned char kmp_fifo_put(unsigned char c) {
 	}
 }
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_get(unsigned char *c) {
 	if (kmp_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
@@ -292,7 +289,6 @@ unsigned char kmp_fifo_get(unsigned char *c) {
 	}
 }
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_snoop(unsigned char *c, unsigned int pos) {
 	if (kmp_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];

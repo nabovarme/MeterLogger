@@ -30,14 +30,10 @@ ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events);
 
 // fifo
-ICACHE_FLASH_ATTR
 unsigned int kmp_fifo_in_use();
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_put(unsigned char c);
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_get(unsigned char *c);
 
-ICACHE_FLASH_ATTR
 unsigned char kmp_fifo_snoop(unsigned char *c, unsigned int pos);
