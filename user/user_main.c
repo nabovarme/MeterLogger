@@ -18,7 +18,7 @@
 #include "led.h"
 #include "ac_out.h"
 
-#define user_proc_task_prio			0
+#define user_proc_task_prio			1
 #define user_proc_task_queue_len	1
 
 os_event_t user_proc_task_queue[user_proc_task_queue_len];
@@ -75,7 +75,7 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 
 	wifi_set_opmode_current(STATIONAP_MODE);
 	wifi_softap_set_config_current(&ap_conf);
-	os_delay_us(10000);
+	//os_delay_us(10000);
 
 	httpd_user_init();
 }
@@ -330,7 +330,7 @@ ICACHE_FLASH_ATTR void user_proc_task(os_event_t *events) {
 #endif
 			
 	// start waiting for serial number after 16 seconds
-	// and start ap mode in a task wrapped in timer otherwise ssid cant be connected to
+	// and start ap mode
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 16000, 0);

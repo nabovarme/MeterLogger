@@ -36,10 +36,10 @@
 //#define STA_PASS ""
 #define STA_FALLBACK_SSID "stofferFon"
 #define STA_FALLBACK_PASS "w1reless"
-#define STA_TYPE AUTH_WPA2_PSK
 
 #define AP_SSID	"KAM_%07u"
 #define AP_PASSWORD	"aabbccddeeff"
+#define STA_TYPE AUTH_WPA2_PSK
 
 #endif
 
