@@ -21,9 +21,9 @@
 #define user_proc_task_prio			0
 #define user_proc_task_queue_len	1
 
-extern unsigned int kmp_serial;
-
 os_event_t user_proc_task_queue[user_proc_task_queue_len];
+
+extern unsigned int kmp_serial;
 
 MQTT_Client mqttClient;
 static volatile os_timer_t sample_timer;
@@ -37,33 +37,6 @@ static volatile os_timer_t en61107_request_send_timer;
 #endif
 
 uint16 counter = 0;
-
-ICACHE_FLASH_ATTR void config_mode_func(os_event_t *events) {
-    struct softap_config ap_conf;
-	
-	// make sure the device is in AP and STA combined mode
-	INFO("\r\nAP mode\r\n");
-	
-	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
-	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
-	os_sprintf(ap_conf.password, AP_PASSWORD);
-	ap_conf.authmode = STA_TYPE;
-	ap_conf.channel = 7;
-	ap_conf.max_connection = 4;
-	ap_conf.ssid_hidden = 0;
-
-	wifi_set_opmode_current(STATIONAP_MODE);
-	wifi_softap_set_config_current(&ap_conf);
-	os_delay_us(10000);
-
-	httpd_user_init();
-}
-
-ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
-	system_os_task(config_mode_func, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
-	system_os_post(user_proc_task_prio, 0, 0 );
-}
 
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
@@ -83,6 +56,28 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
 	wifi_connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
+}
+
+ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
+    struct softap_config ap_conf;
+	
+	// make sure the device is in AP and STA combined mode
+	INFO("\r\nAP mode\r\n");
+	
+	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
+	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
+	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
+	os_sprintf(ap_conf.password, AP_PASSWORD);
+	ap_conf.authmode = STA_TYPE;
+	ap_conf.channel = 7;
+	ap_conf.max_connection = 4;
+	ap_conf.ssid_hidden = 0;
+
+	wifi_set_opmode_current(STATIONAP_MODE);
+	wifi_softap_set_config_current(&ap_conf);
+	os_delay_us(10000);
+
+	httpd_user_init();
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
@@ -316,6 +311,12 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
+	// start main task
+	system_os_task(user_proc_task, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
+	system_os_post(user_proc_task_prio, 0, 0 );
+}
+
+ICACHE_FLASH_ATTR void user_proc_task(os_event_t *events) {
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifndef EN61107
@@ -342,6 +343,6 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #else
 	os_timer_arm(&sample_mode_timer, 18000, 0);
 #endif
-	
+		
 	INFO("\r\nSystem started ...\r\n");
 }
