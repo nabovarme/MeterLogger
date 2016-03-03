@@ -15,8 +15,11 @@
 #include "osapi.h"
 #include "driver/uart_register.h"
 #include "user_interface.h"
-#include "kmp_request.h"
-#include "en61107_request.h"
+#ifndef EN61107
+	#include "kmp_request.h"
+#else
+	#include "en61107_request.h"
+#endif
 //#include "ssc.h"
 
 

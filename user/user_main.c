@@ -17,11 +17,12 @@
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
+#include "fifo.h"
 
-//#define user_proc_task_prio			1
-//#define user_proc_task_queue_len	1
+#define mqtt_dispatch_proc_task_prio		0
+#define mqtt_dispatch_proc_task_queue_len	64
 
-//os_event_t user_proc_task_queue[user_proc_task_queue_len];
+os_event_t mqtt_dispatch_proc_task_queue[mqtt_dispatch_proc_task_queue_len];
 
 extern unsigned int kmp_serial;
 
@@ -38,9 +39,16 @@ static volatile os_timer_t en61107_request_send_timer;
 
 uint16 counter = 0;
 
+// fifo
+#define MQTT_DISPATCH_PROC_QUEUE_SIZE 256
+unsigned char mqtt_dispatch_proc_queue[MQTT_DISPATCH_PROC_QUEUE_SIZE];
+
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
+	
+	fifo_init(mqtt_dispatch_proc_queue, MQTT_DISPATCH_PROC_QUEUE_SIZE);
+	system_os_task(mqtt_dispatch_proc_task, mqtt_dispatch_proc_task_prio, mqtt_dispatch_proc_task_queue, mqtt_dispatch_proc_task_queue_len);
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
@@ -68,10 +76,10 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
 	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_sprintf(ap_conf.password, AP_PASSWORD);
-	ap_conf.authmode = AUTH_WPA_WPA2_PSK;
+	ap_conf.authmode = STA_TYPE;
 	ap_conf.ssid_len = 0;
 	ap_conf.beacon_interval = 100;
-	ap_conf.channel = 7;
+	ap_conf.channel = 1;
 	ap_conf.max_connection = 4;
 	ap_conf.ssid_hidden = 0;
 
@@ -144,6 +152,14 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
+	/*
+	uint32_t i;
+	for (i = 0; i == data_len; i++) {
+		fifo_put(data[i]);
+	}
+	*/
+	system_os_post(mqtt_dispatch_proc_task_prio, 0, 0);
+
 	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
 	MQTT_Client* client = (MQTT_Client*)args;
@@ -251,6 +267,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
+}
+
+ICACHE_FLASH_ATTR static void mqtt_dispatch_proc_task(os_event_t *events) {
+	//os_printf("\n\rpost\n\r");
+	//while (fifo_get())
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {

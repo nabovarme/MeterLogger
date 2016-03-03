@@ -1,6 +1,6 @@
 #include "mqtt.h"
 
-#define kmp_received_task_prio			1
+#define kmp_received_task_prio			2
 #define kmp_received_task_queue_length	64
 
 os_event_t    kmp_received_task_queue[kmp_received_task_queue_length];
