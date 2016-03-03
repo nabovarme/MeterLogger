@@ -17,12 +17,12 @@
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
-#include "fifo.h"
+//#include "fifo.h"
 
-#define mqtt_dispatch_proc_task_prio		0
-#define mqtt_dispatch_proc_task_queue_len	64
+//#define mqtt_dispatch_proc_task_prio		0
+//#define mqtt_dispatch_proc_task_queue_len	64
 
-os_event_t mqtt_dispatch_proc_task_queue[mqtt_dispatch_proc_task_queue_len];
+//os_event_t mqtt_dispatch_proc_task_queue[mqtt_dispatch_proc_task_queue_len];
 
 extern unsigned int kmp_serial;
 
@@ -39,16 +39,12 @@ static volatile os_timer_t en61107_request_send_timer;
 
 uint16 counter = 0;
 
-// fifo
-#define MQTT_DISPATCH_PROC_QUEUE_SIZE 256
-unsigned char mqtt_dispatch_proc_queue[MQTT_DISPATCH_PROC_QUEUE_SIZE];
-
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
 	
-	fifo_init(mqtt_dispatch_proc_queue, MQTT_DISPATCH_PROC_QUEUE_SIZE);
-	system_os_task(mqtt_dispatch_proc_task, mqtt_dispatch_proc_task_prio, mqtt_dispatch_proc_task_queue, mqtt_dispatch_proc_task_queue_len);
+//	fifo_init(mqtt_dispatch_proc_queue, mqtt_dispatch_proc_task_queue_len);
+//	system_os_task(mqtt_dispatch_proc_task, mqtt_dispatch_proc_task_prio, mqtt_dispatch_proc_task_queue, mqtt_dispatch_proc_task_queue_len);
 	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
@@ -158,7 +154,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		fifo_put(data[i]);
 	}
 	*/
-	system_os_post(mqtt_dispatch_proc_task_prio, 0, 0);
+	//system_os_post(mqtt_dispatch_proc_task_prio, 0, data);
 
 	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
