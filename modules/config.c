@@ -47,8 +47,7 @@ static volatile os_timer_t config_save_timer;
 char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR
-cfg_save()
-{
+cfg_save() {
 	 //INFO("cfg_save() essid: %s pw: %s\n", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
 	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
@@ -73,9 +72,7 @@ cfg_save()
 }
 
 void ICACHE_FLASH_ATTR
-cfg_load()
-{
-
+cfg_load() {
 	INFO("\r\nload ...\r\n");
 	/*
 	char essid[128];
@@ -120,12 +117,10 @@ cfg_load()
 
 		cfg_save();
 	}
-
 }
 
 void ICACHE_FLASH_ATTR
-cfg_save_defered()
-{
+cfg_save_defered() {
 	os_timer_disarm(&config_save_timer);
 	os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
 	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
