@@ -59,6 +59,8 @@ typedef struct {
 
 void ICACHE_FLASH_ATTR CFG_Save();
 void ICACHE_FLASH_ATTR CFG_Load();
+void ICACHE_FLASH_ATTR CFG_Save_Defered();
+ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
 extern SYSCFG sysCfg;
 

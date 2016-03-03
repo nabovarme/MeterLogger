@@ -11,17 +11,12 @@
 #include "cron.h"
 #include "config.h"
 
-#define SAVE_DEFER_TIME 2000
-static volatile os_timer_t config_save_timer;
-char config_save_timer_running;
-
 static volatile os_timer_t minute_timer;
 char sec_drift;
 
 ICACHE_FLASH_ATTR
 void cron_init() {
 	//memset(&sysCfg.cron_jobs, 0, sizeof(cron_job_t));
-	config_save_timer_running = 0;
 
 	// check if there are any cron jobs to run every minute
 	os_timer_disarm(&minute_timer);
@@ -74,10 +69,7 @@ unsigned int add_cron_job_from_query(char *query) {
 			str = strtok_r(NULL, "&", &context_query_string);
 		}
 		// save it to flash
-		// run CFG_Save() defered 1 second
-		os_timer_disarm(&config_save_timer);
-		os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-		os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
+		CFG_Save_Defered();
 	}
 	
 	return sysCfg.cron_jobs.n;
@@ -91,10 +83,7 @@ void clear_cron_jobs() {
 	memset(&sysCfg.cron_jobs, 0, sizeof(cron_job_t));
 	
 	// save it to flash
-	// run CFG_Save() defered 1 second
-	os_timer_disarm(&config_save_timer);
-	os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
+	CFG_Save_Defered();
 #ifdef DEBUG
 	os_printf("\n\rcleared all jobs\n\r");
 #endif
@@ -228,24 +217,6 @@ void minute_timer_func(void *arg) {
 				ac_test();
 			}
 		}
-	}
-}
-
-ICACHE_FLASH_ATTR
-void config_save_timer_func(void *arg) {
-	if (config_save_timer_running) {
-		// reschedule
-		os_timer_disarm(&config_save_timer);
-		os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-		os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
-	}
-	else {
-		// stop timer
-		os_timer_disarm(&config_save_timer);
-		config_save_timer_running = 0;
-
-		os_printf("\n\rsaved\n\r");
-		CFG_Save();		
 	}
 }
 

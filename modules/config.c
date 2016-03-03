@@ -42,6 +42,10 @@
 SYSCFG sysCfg;
 SAVE_FLAG saveFlag;
 
+#define SAVE_DEFER_TIME 2000
+static volatile os_timer_t config_save_timer;
+char config_save_timer_running;
+
 void ICACHE_FLASH_ATTR
 CFG_Save()
 {
@@ -117,4 +121,29 @@ CFG_Load()
 		CFG_Save();
 	}
 
+}
+
+void ICACHE_FLASH_ATTR
+CFG_Save_Defered()
+{
+	os_timer_disarm(&config_save_timer);
+	os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
+	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
+}
+
+ICACHE_FLASH_ATTR
+void config_save_timer_func(void *arg) {
+	if (config_save_timer_running) {
+		// reschedule
+		os_timer_disarm(&config_save_timer);
+		os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
+		os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
+	}
+	else {
+		// stop timer
+		os_timer_disarm(&config_save_timer);
+		config_save_timer_running = 0;
+
+		CFG_Save();		
+	}
 }

@@ -182,7 +182,7 @@ void ac_thermo_open() {
 	gpio_output_set(BIT14, 0, BIT14, 0);
 #endif
 	sysCfg.ac_thermo_state = 1;
-	CFG_Save();
+	CFG_Save_Defered();
 }
 
 ICACHE_FLASH_ATTR
@@ -202,7 +202,7 @@ void ac_thermo_close() {
 	gpio_output_set(0, BIT14, BIT14, 0);
 #endif
 	sysCfg.ac_thermo_state = 0;
-	CFG_Save();
+	CFG_Save_Defered();
 }
 
 ICACHE_FLASH_ATTR
