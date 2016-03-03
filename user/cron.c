@@ -11,6 +11,7 @@
 #include "cron.h"
 #include "config.h"
 
+#define SAVE_DEFER_TIME 2000
 static volatile os_timer_t config_save_timer;
 char config_save_timer_running;
 
@@ -76,7 +77,7 @@ unsigned int add_cron_job_from_query(char *query) {
 		// run CFG_Save() defered 1 second
 		os_timer_disarm(&config_save_timer);
 		os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-		os_timer_arm(&config_save_timer, 1000, 0);
+		os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
 	}
 	
 	return sysCfg.cron_jobs.n;
@@ -93,7 +94,7 @@ void clear_cron_jobs() {
 	// run CFG_Save() defered 1 second
 	os_timer_disarm(&config_save_timer);
 	os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-	os_timer_arm(&config_save_timer, 1000, 0);
+	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
 #ifdef DEBUG
 	os_printf("\n\rcleared all jobs\n\r");
 #endif
@@ -236,13 +237,14 @@ void config_save_timer_func(void *arg) {
 		// reschedule
 		os_timer_disarm(&config_save_timer);
 		os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
-		os_timer_arm(&config_save_timer, 1000, 0);
+		os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
 	}
 	else {
 		// stop timer
 		os_timer_disarm(&config_save_timer);
 		config_save_timer_running = 0;
 
+		os_printf("\n\rsaved\n\r");
 		CFG_Save();		
 	}
 }
