@@ -43,9 +43,6 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
 	
-//	fifo_init(mqtt_dispatch_proc_queue, mqtt_dispatch_proc_task_queue_len);
-//	system_os_task(mqtt_dispatch_proc_task, mqtt_dispatch_proc_task_prio, mqtt_dispatch_proc_task_queue, mqtt_dispatch_proc_task_queue_len);
-	
 	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
 
 	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
@@ -148,13 +145,8 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-	/*
-	uint32_t i;
-	for (i = 0; i == data_len; i++) {
-		fifo_put(data[i]);
-	}
-	*/
-	//system_os_post(mqtt_dispatch_proc_task_prio, 0, data);
+//	uint32_t t1, t2;
+//	t1 = system_get_rtc_time();
 
 	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
@@ -263,11 +255,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
-}
-
-ICACHE_FLASH_ATTR static void mqtt_dispatch_proc_task(os_event_t *events) {
-	//os_printf("\n\rpost\n\r");
-	//while (fifo_get())
+//	t2 = system_get_rtc_time();
+//	os_printf("\n\rtdiff: %u\n\r", t2 - t1);
 }
 
 ICACHE_FLASH_ATTR void user_init(void) {
