@@ -18,10 +18,10 @@
 #include "led.h"
 #include "ac_out.h"
 
-#define user_proc_task_prio			1
-#define user_proc_task_queue_len	1
+//#define user_proc_task_prio			1
+//#define user_proc_task_queue_len	1
 
-os_event_t user_proc_task_queue[user_proc_task_queue_len];
+//os_event_t user_proc_task_queue[user_proc_task_queue_len];
 
 extern unsigned int kmp_serial;
 
@@ -311,12 +311,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
-	// start main task
-	system_os_task(user_proc_task, user_proc_task_prio, user_proc_task_queue, user_proc_task_queue_len);
-	system_os_post(user_proc_task_prio, 0, 0 );
-}
-
-ICACHE_FLASH_ATTR void user_proc_task(os_event_t *events) {
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifndef EN61107
@@ -335,14 +329,15 @@ ICACHE_FLASH_ATTR void user_proc_task(os_event_t *events) {
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 16000, 0);
 		
-	// wait for 70 seconds from boot and go to station mode
+	// wait for 120 seconds from boot and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 #ifndef DEBUG_SHORT_WEB_CONFIG_TIME
-	os_timer_arm(&sample_mode_timer, 70000, 0);
+	os_timer_arm(&sample_mode_timer, 120000, 0);
 #else
 	os_timer_arm(&sample_mode_timer, 18000, 0);
 #endif
 		
 	INFO("\r\nSystem started ...\r\n");
 }
+
