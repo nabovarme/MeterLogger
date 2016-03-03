@@ -75,7 +75,8 @@ unsigned int add_cron_job_from_query(char *query) {
 	return sysCfg.cron_jobs.n;
 }
 
-ICACHE_FLASH_ATTR void clear_cron_jobs() {
+ICACHE_FLASH_ATTR
+void clear_cron_jobs() {
 #ifdef DEBUG
 	//debug_cron_jobs();
 #endif
@@ -88,7 +89,8 @@ ICACHE_FLASH_ATTR void clear_cron_jobs() {
 #endif
 }
 
-ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+void minute_timer_func(void *arg) {
 	struct tm *dt;
 	time_t unix_time;
 	unsigned char i;
@@ -219,7 +221,8 @@ ICACHE_FLASH_ATTR void minute_timer_func(void *arg) {
 }
 
 /*
-ICACHE_FLASH_ATTR void debug_cron_jobs() {
+ICACHE_FLASH_ATTR
+void debug_cron_jobs() {
 	unsigned char i;
 	
 	for (i = 0; i < sysCfg.cron_jobs.n; i++) { 

@@ -59,21 +59,22 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
-    struct softap_config ap_conf;
+	struct softap_config ap_conf;
 	
-	// make sure the device is in AP and STA combined mode
 	INFO("\r\nAP mode\r\n");
 	
+	wifi_softap_get_config(&ap_conf);
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
+	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
 	os_sprintf(ap_conf.password, AP_PASSWORD);
-	ap_conf.authmode = STA_TYPE;
+	ap_conf.authmode = AUTH_WPA_WPA2_PSK;
+	ap_conf.ssid_len = 0;
+	ap_conf.beacon_interval = 100;
 	ap_conf.channel = 7;
 	ap_conf.max_connection = 4;
 	ap_conf.ssid_hidden = 0;
 
-	wifi_set_opmode_current(STATIONAP_MODE);
 	wifi_softap_set_config_current(&ap_conf);
 
 	httpd_user_init();
@@ -305,6 +306,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 		ac_thermo_close();
 	}
 	
+	// make sure the device is in AP and STA combined mode
+    wifi_set_opmode_current(STATIONAP_MODE);
+	
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
 }
@@ -327,7 +331,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 16000, 0);
-		
+
 	// wait for 120 seconds from boot and go to station mode
 	os_timer_disarm(&sample_mode_timer);
 	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
