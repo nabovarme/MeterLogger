@@ -43,9 +43,9 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
 	
-	MQTT_InitConnection(&mqttClient, sysCfg.mqtt_host, sysCfg.mqtt_port, sysCfg.security);
+	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
-	MQTT_InitClient(&mqttClient, sysCfg.device_id, sysCfg.mqtt_user, sysCfg.mqtt_pass, sysCfg.mqtt_keepalive, 1);
+	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
 
 	// set MQTT LWP topic
 	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial());
@@ -56,7 +56,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
-	wifi_connect(sysCfg.sta_ssid, sysCfg.sta_pwd, wifiConnectCb);
+	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifiConnectCb);
 }
 
 ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
@@ -189,7 +189,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
 		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_serial, get_unix_time());
-		reply_message_l = os_sprintf(reply_message, "%d", sysCfg.cron_jobs.n);
+		reply_message_l = os_sprintf(reply_message, "%d", sys_cfg.cron_jobs.n);
 
 		if (&mqttClient) {
 			// if mqtt_client is initialized
@@ -199,19 +199,19 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
 		//ac_motor_valve_open();
-		sysCfg.ac_thermo_state = 1;
+		sys_cfg.ac_thermo_state = 1;
 		ac_thermo_open();
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
 		//ac_motor_valve_close();
-		sysCfg.ac_thermo_state = 0;
+		sys_cfg.ac_thermo_state = 0;
 		ac_thermo_close();
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
 		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_serial, get_unix_time());
-		reply_message_l = os_sprintf(reply_message, "%s", sysCfg.ac_thermo_state ? "open" : "close");
+		reply_message_l = os_sprintf(reply_message, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 		if (&mqttClient) {
 			// if mqtt_client is initialized
@@ -287,7 +287,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_set_os_print(0);
 #endif
 
-	CFG_Load();
+	cfg_load();
 
 	// start kmp_request
 #ifndef EN61107
@@ -305,7 +305,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	cron_init();
 	
 	// load thermo motor state from flash(AC OUT 1)
-	if (sysCfg.ac_thermo_state) {
+	if (sys_cfg.ac_thermo_state) {
 		ac_thermo_open();
 	}
 	else {

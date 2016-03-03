@@ -50,18 +50,18 @@ typedef struct{
 	uint8_t security;
 	uint8_t ac_thermo_state;	// thermo actuator state
 	cron_jobs_t cron_jobs;
-} SYSCFG;
+} syscfg_t;
 
 typedef struct {
     uint8 flag;
     uint8 pad[3];
 } SAVE_FLAG;
 
-void ICACHE_FLASH_ATTR CFG_Save();
-void ICACHE_FLASH_ATTR CFG_Load();
-void ICACHE_FLASH_ATTR CFG_Save_Defered();
+void ICACHE_FLASH_ATTR cfg_save();
+void ICACHE_FLASH_ATTR cfg_load();
+void ICACHE_FLASH_ATTR cfg_save_defered();
 ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
-extern SYSCFG sysCfg;
+extern syscfg_t sys_cfg;
 
 #endif /* USER_CONFIG_H_ */

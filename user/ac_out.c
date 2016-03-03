@@ -181,8 +181,8 @@ void ac_thermo_open() {
 	//Set GPI14 to HIGH
 	gpio_output_set(BIT14, 0, BIT14, 0);
 #endif
-	sysCfg.ac_thermo_state = 1;
-	CFG_Save_Defered();
+	sys_cfg.ac_thermo_state = 1;
+	cfg_save_defered();
 }
 
 ICACHE_FLASH_ATTR
@@ -201,8 +201,8 @@ void ac_thermo_close() {
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
 #endif
-	sysCfg.ac_thermo_state = 0;
-	CFG_Save_Defered();
+	sys_cfg.ac_thermo_state = 0;
+	cfg_save_defered();
 }
 
 ICACHE_FLASH_ATTR
