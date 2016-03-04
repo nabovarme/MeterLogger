@@ -10,8 +10,25 @@
 #include "c_types.h"
 #include "unix_time.h"
 
-uint64 unix_time = 0;
+static volatile os_timer_t sntp_check_timer;
+
+uint32_t init_time;
+uint32_t current_unix_time;
 bool unix_time_mutex = false;
+
+uint64 boot_time;
+
+ICACHE_FLASH_ATTR void sntp_check_timer_func(void *arg) {
+	current_unix_time = sntp_get_current_timestamp();
+	
+	if (current_unix_time == 0) {
+		os_timer_arm(&sntp_check_timer, 100, 0);
+	} else {
+		os_timer_disarm(&sntp_check_timer);
+		// save init time for use in uptime()
+		init_time = current_unix_time;
+	}
+}
 
 ICACHE_FLASH_ATTR void init_unix_time(void) {
 	// init sntp
@@ -23,15 +40,28 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 	sntp_set_timezone(1);	// need support for dayligh saving
 	sntp_init();
 	os_free(addr);
+	
+	// start timer to make sure we go ntp reply
+	os_timer_disarm(&sntp_check_timer);
+	os_timer_setfn(&sntp_check_timer, (os_timer_func_t *)sntp_check_timer_func, NULL);
+	os_timer_arm(&sntp_check_timer, 100, 0);
 }
 
-ICACHE_FLASH_ATTR uint32 get_unix_time(void) {
-	uint32 current_unix_time;
-
+ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
 	current_unix_time = sntp_get_current_timestamp();
 	if (current_unix_time > 0) {			// if initialized
 		current_unix_time -= (1 * 60 * 60);	// bug in sdk - no correction for time zone
 	}
 
 	return current_unix_time;
+}
+
+ICACHE_FLASH_ATTR uint32_t uptime(void) {
+	current_unix_time = sntp_get_current_timestamp();
+	if (init_time == 0) {
+		return 0;
+	}
+	else {
+		return current_unix_time - init_time;
+	}
 }

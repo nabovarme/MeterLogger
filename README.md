@@ -35,6 +35,7 @@ use led to indicate ac state
 | /config/v1/9999999/cron     |                                                                    |
 | /config/v1/9999999/ping     |                                                                    |
 | /config/v1/9999999/version  |                                                                    |
+| /config/v1/9999999/uptime   |                                                                    |
   
 **MQTT format for messages sent _from_ meter**  
 
@@ -44,7 +45,8 @@ use led to indicate ac state
 | /cron/v1/9999999/[unix time]     | 12                                                                                                   |
 | /ping/v1/9999999/[unix time]     |                                                                                                      |
 | /version/v1/9999999/[unix time]  | [sdk version]-[git version]                                                                          |
-| /status/v1/9999999/[unix time]   | [open|close]                                                                          |
+| /status/v1/9999999/[unix time]   | [open|close]                                                                                         |
+| /uptime/v1/9999999/[unix time]   | [uptime in seconds]                                                                                  |
 
 
 
