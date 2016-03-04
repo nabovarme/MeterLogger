@@ -22,7 +22,8 @@ ICACHE_FLASH_ATTR void sntp_check_timer_func(void *arg) {
 	current_unix_time = sntp_get_current_timestamp();
 	
 	if (current_unix_time == 0) {
-		os_timer_arm(&sntp_check_timer, 100, 0);
+		os_timer_disarm(&sntp_check_timer);
+		os_timer_arm(&sntp_check_timer, 2000, 0);
 	} else {
 		os_timer_disarm(&sntp_check_timer);
 		// save init time for use in uptime()
@@ -44,7 +45,7 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 	// start timer to make sure we go ntp reply
 	os_timer_disarm(&sntp_check_timer);
 	os_timer_setfn(&sntp_check_timer, (os_timer_func_t *)sntp_check_timer_func, NULL);
-	os_timer_arm(&sntp_check_timer, 100, 0);
+	os_timer_arm(&sntp_check_timer, 2000, 0);
 }
 
 ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
