@@ -12,7 +12,6 @@ Esp8266 http server - core routines
  */
 
 
-#include "espmissingincludes.h"
 #include "c_types.h"
 #include "user_interface.h"
 #include "espconn.h"
@@ -75,6 +74,8 @@ static const MimeMap mimeTypes[]={
 	{"png", "image/png"},
 	{NULL, "text/html"}, //default value
 };
+
+static volatile os_timer_t httpdDisconnectTimer;
 
 //Returns a static char* to a mime type for a given url to a file.
 const char ICACHE_FLASH_ATTR *httpdGetMimetype(char *url) {
@@ -487,4 +488,25 @@ void ICACHE_FLASH_ATTR httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 	INFO("Httpd init, conn=%p\n", &httpdConn);
 	espconn_regist_connectcb(&httpdConn, httpdConnectCb);
 	espconn_accept(&httpdConn);
+}
+
+void ICACHE_FLASH_ATTR httpdStop() {
+	INFO("Httpd stopping\n");
+	
+	if (espconn_delete(&httpdConn) == 0) {
+	    os_timer_disarm(&httpdDisconnectTimer);
+		httpdRetireConn(connData);
+		INFO("Httpd stopped\n");
+	}
+	else {
+		espconn_disconnect(&httpdConn);
+	    os_timer_disarm(&httpdDisconnectTimer);
+	    os_timer_setfn(&httpdDisconnectTimer, (os_timer_func_t *)httpdDisconnectTimerFunc, NULL);
+	    os_timer_arm(&httpdDisconnectTimer, 1000, 0);
+		INFO("Httpd still running rescheduling httpdStop\n");
+	}
+}
+
+void ICACHE_FLASH_ATTR httpdDisconnectTimerFunc(void *arg) {
+	httpdStop();
 }

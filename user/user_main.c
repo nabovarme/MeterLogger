@@ -43,6 +43,9 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
 	
+	// stop http configuration server
+	httpdStop();
+	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
 	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
