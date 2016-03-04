@@ -494,7 +494,7 @@ MQTT_Task(os_event_t *e)
   * @retval None
   */
 void ICACHE_FLASH_ATTR
-MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32 port, uint8_t security)
+MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32_t port, uint8_t security)
 {
 	uint32_t temp;
 	INFO("MQTT_InitConnection\r\n");
