@@ -1,12 +1,8 @@
-#include "ets_sys.h"
-#include "osapi.h"
+#include <esp8266.h>
 #include "debug.h"
-#include "gpio.h"
-#include "user_interface.h"
-#include "mem.h"
 #include "led.h"
 
-static volatile os_timer_t led_blinker_timer;
+static os_timer_t led_blinker_timer;
 
 ICACHE_FLASH_ATTR void led_init(void) {
 	//Set GPIO2 to output mode

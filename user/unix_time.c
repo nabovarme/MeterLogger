@@ -1,16 +1,8 @@
-//#include "ets_sys.h"
-//#include "driver/uart.h"
-#include "osapi.h"
-//#include "wifi.h"
-//#include "config.h"
+#include <esp8266.h>
 #include "debug.h"
-//#include "gpio.h"
-#include "user_interface.h"
-#include "mem.h"
-#include "c_types.h"
 #include "unix_time.h"
 
-static volatile os_timer_t sntp_check_timer;
+static os_timer_t sntp_check_timer;
 
 uint32_t init_time;
 uint32_t current_unix_time;

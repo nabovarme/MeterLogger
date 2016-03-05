@@ -1,7 +1,5 @@
-#include "user_interface.h"
-#include "osapi.h"
+#include <esp8266.h>
 #include "driver/uart.h"
-
 #include "unix_time.h"
 #include "mqtt.h"
 #include "kmp.h"
@@ -26,10 +24,10 @@ kmp_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-static volatile os_timer_t kmp_get_serial_timer;
-static volatile os_timer_t kmp_get_register_timer;
+static os_timer_t kmp_get_serial_timer;
+static os_timer_t kmp_get_register_timer;
 
-static volatile os_timer_t kmp_receive_timeout_timer;
+static os_timer_t kmp_receive_timeout_timer;
 
 unsigned int kmp_requests_sent;
 

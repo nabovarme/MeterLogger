@@ -4,12 +4,8 @@
  *  Created on: Dec 30, 2014
  *      Author: Minh
  */
+#include <esp8266.h>
 #include "wifi.h"
-#include "user_interface.h"
-#include "osapi.h"
-#include "espconn.h"
-#include "os_type.h"
-#include "mem.h"
 #include "mqtt_msg.h"
 #include "debug.h"
 #include "user_config.h"

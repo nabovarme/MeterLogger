@@ -1,13 +1,9 @@
-#include "ets_sys.h"
+#include <esp8266.h>
 #include "driver/uart.h"
-#include "osapi.h"
 #include "mqtt.h"
 #include "wifi.h"
 #include "config.h"
 #include "debug.h"
-#include "gpio.h"
-#include "user_interface.h"
-#include "mem.h"
 #include "httpd_user_init.h"
 #include "user_config.h"
 #include "unix_time.h"
@@ -17,24 +13,18 @@
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
-//#include "fifo.h"
-
-//#define mqtt_dispatch_proc_task_prio		0
-//#define mqtt_dispatch_proc_task_queue_len	64
-
-//os_event_t mqtt_dispatch_proc_task_queue[mqtt_dispatch_proc_task_queue_len];
 
 extern unsigned int kmp_serial;
 
 MQTT_Client mqttClient;
-static volatile os_timer_t sample_timer;
-static volatile os_timer_t config_mode_timer;
-static volatile os_timer_t sample_mode_timer;
-static volatile os_timer_t en61107_request_send_timer;
+static os_timer_t sample_timer;
+static os_timer_t config_mode_timer;
+static os_timer_t sample_mode_timer;
+static os_timer_t en61107_request_send_timer;
 #ifndef EN61107
-static volatile os_timer_t kmp_request_send_timer;
+static os_timer_t kmp_request_send_timer;
 #else
-static volatile os_timer_t en61107_request_send_timer;
+static os_timer_t en61107_request_send_timer;
 #endif
 
 uint16 counter = 0;

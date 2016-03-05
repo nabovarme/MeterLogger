@@ -28,11 +28,7 @@
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
 */
-#include "ets_sys.h"
-#include "os_type.h"
-#include "mem.h"
-#include "osapi.h"
-#include "user_interface.h"
+#include <esp8266.h>
 
 #include "mqtt.h"
 #include "config.h"
@@ -43,7 +39,7 @@ syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
 
 #define SAVE_DEFER_TIME 2000
-static volatile os_timer_t config_save_timer;
+static os_timer_t config_save_timer;
 char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR

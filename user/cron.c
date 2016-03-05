@@ -1,17 +1,12 @@
-#include "ets_sys.h"
-#include "osapi.h"
-#include "user_interface.h"
+#include <esp8266.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <time.h>
 #include "unix_time.h"
 #include "ac_out.h"
 #include "cron.h"
 #include "config.h"
 
-static volatile os_timer_t minute_timer;
+static os_timer_t minute_timer;
 char sec_drift;
 
 ICACHE_FLASH_ATTR

@@ -12,13 +12,8 @@ Esp8266 http server - core routines
  */
 
 
-#include "c_types.h"
-#include "user_interface.h"
-#include "espconn.h"
-#include "mem.h"
-#include "osapi.h"
+#include <esp8266.h>
 
-#include "espconn.h"
 #include "httpd.h"
 #include "io.h"
 #include "espfs.h"
@@ -75,7 +70,7 @@ static const MimeMap mimeTypes[]={
 	{NULL, "text/html"}, //default value
 };
 
-static volatile os_timer_t httpdDisconnectTimer;
+static os_timer_t httpdDisconnectTimer;
 
 //Returns a static char* to a mime type for a given url to a file.
 const char ICACHE_FLASH_ATTR *httpdGetMimetype(char *url) {

@@ -30,7 +30,6 @@
 
 #ifndef USER_CONFIG_H_
 #define USER_CONFIG_H_
-#include "os_type.h"
 #include "user_config.h"
 #include "cron.h"
 

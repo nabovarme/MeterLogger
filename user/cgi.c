@@ -13,15 +13,10 @@ flash as a binary. Also handles the hit counter on the main page.
  */
 
 
-#include <string.h>
-#include <osapi.h>
-#include "user_interface.h"
-#include "mem.h"
+#include <esp8266.h>
 #include "httpd.h"
 #include "cgi.h"
 #include "io.h"
-#include <ip_addr.h>
-#include "espmissingincludes.h"
 #include "debug.h"
 
 

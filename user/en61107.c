@@ -1,8 +1,4 @@
-#include <string.h>
-
-#include "ets_sys.h"
-#include "osapi.h"
-#include "user_interface.h"
+#include <esp8266.h>
 
 #include "en61107.h"
 

@@ -7,7 +7,6 @@
 
 #ifndef USER_WIFI_H_
 #define USER_WIFI_H_
-#include "os_type.h"
 typedef void (*WifiCallback)(uint8_t);
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg);

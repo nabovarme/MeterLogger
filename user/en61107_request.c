@@ -1,5 +1,4 @@
-#include "user_interface.h"
-#include "osapi.h"
+#include <esp8266.h>
 #include "driver/uart.h"
 
 #include "unix_time.h"
@@ -26,10 +25,10 @@ en61107_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-static volatile os_timer_t en61107_get_data_timer;
-static volatile os_timer_t en61107_get_register_timer;
+static os_timer_t en61107_get_data_timer;
+static os_timer_t en61107_get_register_timer;
 
-static volatile os_timer_t en61107_receive_timeout_timer;
+static os_timer_t en61107_receive_timeout_timer;
 
 unsigned int en61107_requests_sent;
 

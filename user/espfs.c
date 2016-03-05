@@ -20,12 +20,7 @@ It's written for use with httpd, but doesn't need to be used as such.
 
 #ifdef __ets__
 //esp build
-#include "c_types.h"
-#include "user_interface.h"
-#include "espconn.h"
-#include "mem.h"
-#include "osapi.h"
-#include "espmissingincludes.h"
+#include <esp8266.h>
 #include "debug.h"
 #else
 //Test build

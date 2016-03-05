@@ -1,5 +1,3 @@
-#include "mqtt.h"
-
 #define en61107_received_task_prio			2
 #define en61107_received_task_queue_length	64
 

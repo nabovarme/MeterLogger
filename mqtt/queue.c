@@ -29,11 +29,7 @@
 */
 #include "queue.h"
 
-#include "user_interface.h"
-#include "osapi.h"
-#include "os_type.h"
-#include "mem.h"
-#include "proto.h"
+#include <esp8266.h>
 void ICACHE_FLASH_ATTR QUEUE_Init(QUEUE *queue, int bufferSize)
 {
 	queue->buf = (uint8_t*)os_zalloc(bufferSize);

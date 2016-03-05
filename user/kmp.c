@@ -80,11 +80,7 @@
  @235:	@"Liter/imp value for input B"};
  */
 
-#include <string.h>
-
-#include "ets_sys.h"
-#include "osapi.h"
-#include "user_interface.h"
+#include <esp8266.h>
 
 #include "kmp.h"
 

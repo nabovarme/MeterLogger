@@ -1,14 +1,12 @@
-#include "ets_sys.h"
-#include "osapi.h"
-#include "user_interface.h"
+#include <esp8266.h>
 
 #include "led.h"
 #include "ac_out.h"
 #include "config.h"
 
-static volatile os_timer_t ac_test_timer;
-static volatile os_timer_t ac_out_off_timer;
-static volatile os_timer_t ac_pwm_timer;
+static os_timer_t ac_test_timer;
+static os_timer_t ac_out_off_timer;
+static os_timer_t ac_pwm_timer;
 
 unsigned int ac_pwm_duty_cycle;
 typedef enum {ON, OFF} ac_pwm_state_t;

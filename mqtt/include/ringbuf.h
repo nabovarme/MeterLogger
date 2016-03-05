@@ -1,8 +1,7 @@
 #ifndef _RING_BUF_H_
 #define _RING_BUF_H_
 
-#include <os_type.h>
-#include <stdlib.h>
+#include <esp8266.h>
 #include "typedef.h"
 
 typedef struct{
