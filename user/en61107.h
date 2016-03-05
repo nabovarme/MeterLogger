@@ -1,5 +1,3 @@
-#include <stdint.h>
-#include <stdbool.h>
 
 #define EN61107_FRAME_L         256
 

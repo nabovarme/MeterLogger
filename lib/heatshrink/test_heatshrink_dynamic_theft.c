@@ -1,7 +1,6 @@
 #include "heatshrink_config.h"
 #ifdef HEATSHRINK_HAS_THEFT
 
-#include <stdint.h>
 #include <ctype.h>
 #include <assert.h>
 #include <string.h>

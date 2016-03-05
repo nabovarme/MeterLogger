@@ -1,5 +1,3 @@
-#include <stdint.h>
-#include <stdbool.h>
 
 #define KMP_FRAME_L         1024
 

@@ -3,7 +3,6 @@ Simple and stupid file decompressor for an espfs image. Mostly used as a testbed
 the decompressors: code compiled natively is way easier to debug using gdb et all :)
 */
 #include <stdio.h>
-#include <stdint.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
