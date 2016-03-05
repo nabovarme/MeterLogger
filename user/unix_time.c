@@ -4,7 +4,7 @@
 
 static os_timer_t sntp_check_timer;
 
-uint32_t init_time;
+uint32_t init_time = 0;
 uint32_t current_unix_time;
 bool unix_time_mutex = false;
 
@@ -19,7 +19,9 @@ ICACHE_FLASH_ATTR void sntp_check_timer_func(void *arg) {
 	} else {
 		os_timer_disarm(&sntp_check_timer);
 		// save init time for use in uptime()
-		init_time = current_unix_time;
+		if (init_time == 0) {		// only set init_time at boot
+			init_time = current_unix_time;
+		}
 	}
 }
 
