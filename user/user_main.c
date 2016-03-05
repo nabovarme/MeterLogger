@@ -91,7 +91,6 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
-//	httpd_user_init();	//state 1 = config mode
 	if(status == STATION_GOT_IP){ 
 		init_unix_time();
 		MQTT_Connect(&mqttClient);
