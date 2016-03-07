@@ -21,10 +21,16 @@ static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t en61107_request_send_timer;
-#ifndef EN61107
+#ifdef EN61107
+static os_timer_t en61107_request_send_timer;
+#elif defined PULSE
 static os_timer_t kmp_request_send_timer;
 #else
-static os_timer_t en61107_request_send_timer;
+static os_timer_t kmp_request_send_timer;
+#endif
+
+#ifdef PULSE
+static os_timer_t debounce_timer;
 #endif
 
 uint16 counter = 0;
@@ -75,10 +81,12 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
-#ifndef EN61107
+#ifdef EN61107
+	en61107_request_send();
+#elif defined PULSE
 	kmp_request_send();
 #else
-	en61107_request_send();
+	kmp_request_send();
 #endif
 }
 
@@ -89,6 +97,12 @@ ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
 }
+
+#ifdef PULSE
+ICACHE_FLASH_ATTR void debounce_timer_func(void *arg) {
+	ETS_GPIO_INTR_ENABLE();		// Enable gpio interrupts
+}
+#endif
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 	if(status == STATION_GOT_IP){ 
@@ -113,10 +127,12 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Subscribe(client, topic, 0);
 
 	// set mqtt_client kmp_request should use to return data
-#ifndef EN61107
+#ifdef EN61107
+	en61107_set_mqtt_client(client);
+#elif defined PULSE
 	kmp_set_mqtt_client(client);
 #else
-	en61107_set_mqtt_client(client);
+	kmp_set_mqtt_client(client);
 #endif
 	
 	// sample once and start sample timer
@@ -261,6 +277,42 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 //	os_printf("\n\rtdiff: %u\n\r", t2 - t1);
 }
 
+#ifdef PULSE
+ICACHE_FLASH_ATTR void gpio_int_init() {
+	os_printf("gpio_int_init()\n");
+	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
+	ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);						// GPIO0 interrupt handler
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
+	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
+	//PIN_PULLDOWN_DIS(PERIPHS_IO_MUX_GPIO0_U);						// disable pullodwn
+	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
+	ETS_GPIO_INTR_ENABLE();											// Enable gpio interrupts
+	//wdt_feed();
+}
+#endif
+
+#ifdef PULSE
+void gpio_int_handler() {
+	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
+	//wdt_feed();
+	
+	uint32 gpio_status;
+	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+	//clear interrupt status
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
+	
+	ets_uart_printf("GPIO Interrupt!\r\n");
+	//GPIO_OUTPUT_SET(2, 0);
+	
+	// arm the debounce timer to enable GPIO interrupt again
+	os_timer_disarm(&debounce_timer);
+	os_timer_setfn(&debounce_timer, (os_timer_func_t *)debounce_timer_func, NULL);
+	os_timer_arm(&debounce_timer, 1000, 0);	
+}
+#endif
+
 ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("\n\r");
@@ -292,14 +344,20 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	cfg_load();
 
 	// start kmp_request
-#ifndef EN61107
+#ifdef EN61107
+	en61107_request_init();
+#elif defined PULSE
 	kmp_request_init();
 #else
-	en61107_request_init();
+	kmp_request_init();
 #endif
 	
 	// initialize the GPIO subsystem
 	gpio_init();
+	// enable gpio interrupt for pulse meters
+#ifdef PULSE
+	gpio_int_init();
+#endif
 	
 	ac_out_init();
 
@@ -324,14 +382,18 @@ ICACHE_FLASH_ATTR void user_init(void) {
 ICACHE_FLASH_ATTR void system_init_done(void) {
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
-#ifndef EN61107
+#ifdef EN61107
+	os_timer_disarm(&en61107_request_send_timer);
+	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
+	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+#elif defined PULSE
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #else
-	os_timer_disarm(&en61107_request_send_timer);
-	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
-	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+	os_timer_disarm(&kmp_request_send_timer);
+	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
+	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #endif
 			
 	// start waiting for serial number after 16 seconds
