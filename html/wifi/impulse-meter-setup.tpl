@@ -81,18 +81,18 @@ window.onload=function(e) {
     <td rowspan="4" align="left" valign="top"><div id="aps">Scanning...</div><br><br><br>WiFi password, if applicable: <br>
     <input type="text" name="passwd" value="%WiFiPasswd%"></td>
     <td>&nbsp;</td>
-    <td align="left" valign="top">Meter serial: <br />
-    <input type="text" name="impulse_meter_serial" value="%ImpulseMeterSerial%"></td>
+    <td align="left" valign="top">Meter serial (must be 7 digits): <br />
+    <input type="text" name="impulse_meter_serial" value="%ImpulseMeterSerial%" maxlength="32"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter energy in kWh: <br />
-    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%"></td>
+    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%" maxlength="32"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Impulses pr. kWh: <br />
-    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%"></td>
+    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%" maxlength="32"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
