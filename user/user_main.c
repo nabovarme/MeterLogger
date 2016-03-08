@@ -23,13 +23,13 @@ static os_timer_t sample_mode_timer;
 static os_timer_t en61107_request_send_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
-#elif defined PULSE
+#elif defined IMPULSE
 static os_timer_t kmp_request_send_timer;
 #else
 static os_timer_t kmp_request_send_timer;
 #endif
 
-#ifdef PULSE
+#ifdef IMPULSE
 static os_timer_t debounce_timer;
 #endif
 
@@ -83,7 +83,7 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 #ifdef EN61107
 	en61107_request_send();
-#elif defined PULSE
+#elif defined IMPULSE
 	kmp_request_send();
 #else
 	kmp_request_send();
@@ -98,7 +98,7 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
 }
 
-#ifdef PULSE
+#ifdef IMPULSE
 ICACHE_FLASH_ATTR void debounce_timer_func(void *arg) {
 	ETS_GPIO_INTR_ENABLE();		// Enable gpio interrupts
 }
@@ -129,7 +129,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
 	en61107_set_mqtt_client(client);
-#elif defined PULSE
+#elif defined IMPULSE
 	kmp_set_mqtt_client(client);
 #else
 	kmp_set_mqtt_client(client);
@@ -277,7 +277,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 //	os_printf("\n\rtdiff: %u\n\r", t2 - t1);
 }
 
-#ifdef PULSE
+#ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
 	os_printf("gpio_int_init()\n");
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
@@ -293,7 +293,7 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 }
 #endif
 
-#ifdef PULSE
+#ifdef IMPULSE
 void gpio_int_handler() {
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 	//wdt_feed();
@@ -346,7 +346,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// start kmp_request
 #ifdef EN61107
 	en61107_request_init();
-#elif defined PULSE
+#elif defined IMPULSE
 	kmp_request_init();
 #else
 	kmp_request_init();
@@ -354,8 +354,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	// initialize the GPIO subsystem
 	gpio_init();
-	// enable gpio interrupt for pulse meters
-#ifdef PULSE
+	// enable gpio interrupt for impulse meters
+#ifdef IMPULSE
 	gpio_int_init();
 #endif
 	
@@ -386,7 +386,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
 	os_timer_arm(&en61107_request_send_timer, 10000, 0);
-#elif defined PULSE
+#elif defined IMPULSE
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);

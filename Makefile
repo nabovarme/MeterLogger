@@ -141,8 +141,8 @@ ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
 endif
 
-ifeq ($(PULSE), 1)
-    CFLAGS += -DPULSE
+ifeq ($(IMPULSE), 1)
+    CFLAGS += -DIMPULSE
 endif
 
 ifeq ($(THERMO_NO), 1)
