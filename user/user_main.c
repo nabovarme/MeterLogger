@@ -118,6 +118,7 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void debounce_timer_func(void *arg) {
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
 	ETS_GPIO_INTR_ENABLE();		// Enable gpio interrupts
 	os_printf("\n\rimpulse_meter_count: %lu\n\r", impulse_meter_count);
 }
@@ -301,9 +302,10 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 	os_printf("gpio_int_init()\n");
 	impulse_meter_count = 0;
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
-	ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);						// GPIO0 interrupt handler
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
+	//ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);					// GPIO0 interrupt handler
+	gpio_intr_handler_register(gpio_int_handler, NULL);
 	//PIN_PULLDOWN_DIS(PERIPHS_IO_MUX_GPIO0_U);						// disable pullodwn
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
@@ -314,10 +316,13 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 #endif
 
 #ifdef IMPULSE
-void gpio_int_handler() {
+void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	uint32_t gpio_status;
 
+	gpio_intr_ack(interrupt_mask);
+
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
 	//wdt_feed();
 	impulse_meter_count++;
 	
