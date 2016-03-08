@@ -59,11 +59,16 @@ HttpdBuiltInUrl builtInUrls[]={
 
 //Enable the line below to protect the WiFi configuration with an username/password combo.
 //	{"/wifi/*", authBasic, myPassFn},
-
-	{"/wifi", cgiRedirect, "/wifi/wifi.tpl"},
-	{"/wifi/", cgiRedirect, "/wifi/wifi.tpl"},
+#ifdef IMPULSE
+	{"/wifi", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
+	{"/wifi/", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
+	{"/wifi/impulse-meter-setup.tpl", cgiEspFsTemplate, tplWlan},
+#else
+	{"/wifi", cgiRedirect, "/wifi/wifi-setup.tpl"},
+	{"/wifi/", cgiRedirect, "/wifi/wifi-setup.tpl"},
+	{"/wifi/wifi-setup.tpl", cgiEspFsTemplate, tplWlan},
+#endif
 	{"/wifi/wifiscan.cgi", cgiWiFiScan, NULL},
-	{"/wifi/wifi.tpl", cgiEspFsTemplate, tplWlan},
 	{"/wifi/connect.cgi", cgiWiFiConnect, NULL},
 	{"/wifi/setmode.cgi", cgiWifiSetMode, NULL},
 
