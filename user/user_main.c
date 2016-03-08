@@ -15,6 +15,10 @@
 #include "ac_out.h"
 
 extern unsigned int kmp_serial;
+#ifdef IMPULSE
+unsigned int impulse_meter_serial;
+volatile uint32_t impulse_meter_count;
+#endif
 
 MQTT_Client mqttClient;
 static os_timer_t sample_timer;
@@ -84,7 +88,21 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
-	kmp_request_send();
+	unsigned char mqtt_topic[128];
+	unsigned char mqtt_message[8];
+	int mqtt_topic_l;
+	int mqtt_message_l;
+	
+	impulse_meter_serial = 9999;
+
+	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
+	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&count=%lu imp&", system_get_free_heap_size(), impulse_meter_count);
+
+	if (&mqttClient) {
+		// if mqtt_client is initialized
+		MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	}
+	;
 #else
 	kmp_request_send();
 #endif
@@ -101,6 +119,7 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void debounce_timer_func(void *arg) {
 	ETS_GPIO_INTR_ENABLE();		// Enable gpio interrupts
+	os_printf("\n\rimpulse_meter_count: %lu\n\r", impulse_meter_count);
 }
 #endif
 
@@ -130,7 +149,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #ifdef EN61107
 	en61107_set_mqtt_client(client);
 #elif defined IMPULSE
-	kmp_set_mqtt_client(client);
+	//kmp_set_mqtt_client(client);
 #else
 	kmp_set_mqtt_client(client);
 #endif
@@ -280,6 +299,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
 	os_printf("gpio_int_init()\n");
+	impulse_meter_count = 0;
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);						// GPIO0 interrupt handler
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
@@ -295,16 +315,17 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 
 #ifdef IMPULSE
 void gpio_int_handler() {
+	uint32_t gpio_status;
+
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 	//wdt_feed();
+	impulse_meter_count++;
 	
-	uint32 gpio_status;
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 	
 	ets_uart_printf("GPIO Interrupt!\r\n");
-	//GPIO_OUTPUT_SET(2, 0);
 	
 	// arm the debounce timer to enable GPIO interrupt again
 	os_timer_disarm(&debounce_timer);
@@ -320,6 +341,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("Software version: %s\n\r", VERSION);
 #ifdef DEBUG
 	os_printf("\t(DEBUG)\n\r");
+#endif
+#ifdef IMPULSE
+	os_printf("\t(IMPULSE)\n\r");
 #endif
 #ifdef DEBUG_NO_METER
 	os_printf("\t(DEBUG_NO_METER)\n\r");
@@ -347,7 +371,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef EN61107
 	en61107_request_init();
 #elif defined IMPULSE
-	kmp_request_init();
+	//kmp_request_init();
 #else
 	kmp_request_init();
 #endif
@@ -387,9 +411,9 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
 	os_timer_arm(&en61107_request_send_timer, 10000, 0);
 #elif defined IMPULSE
-	os_timer_disarm(&kmp_request_send_timer);
-	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
-	os_timer_arm(&kmp_request_send_timer, 10000, 0);
+	//os_timer_disarm(&kmp_request_send_timer);
+	//os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
+	//os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #else
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
