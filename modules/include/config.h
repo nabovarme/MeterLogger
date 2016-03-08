@@ -49,6 +49,11 @@ typedef struct{
 	uint8_t security;
 	uint8_t ac_thermo_state;	// thermo actuator state
 	cron_jobs_t cron_jobs;
+#ifdef IMPULSE
+	char impulse_meter_serial[32 + 1];
+	char impulse_meter_energy[32 + 1];
+	char impulses_per_kwh[32 + 1];
+#endif
 } syscfg_t;
 
 typedef struct {

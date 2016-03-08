@@ -74,31 +74,25 @@ window.onload=function(e) {
 </head>
 <body>
 <div id="main">
-<p>
-Current WiFi mode: %WiFiMode%
-</p>
-<p>
-Note: %WiFiapwarn%
-</p>
 <form name="wifiform" action="setup.cgi" method="post">
 <p>
 <table border="0" cellspacing="10">
   <tr align="left" valign="top">
     <td rowspan="4" align="left" valign="top"><div id="aps">Scanning...</div><br><br><br>WiFi password, if applicable: <br>
-    <input type="text" name="passwd" val="w1reless"></td>
+    <input type="text" name="passwd" value="%WiFiPasswd%"></td>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter serial: <br />
-    <input type="text" name="impulse_meter_serial" val="Unknown"></td>
+    <input type="text" name="impulse_meter_serial" value="%ImpulseMeterSerial%"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter energy in kWh: <br />
-    <input type="text" name="impulse_meter_energy" val="Unknown"></td>
+    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Impulses pr. kWh: <br />
-    <input type="text" name="impulses_per_kwh" val="Unknown"></td>
+    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>

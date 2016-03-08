@@ -62,11 +62,11 @@ HttpdBuiltInUrl builtInUrls[]={
 #ifdef IMPULSE
 	{"/wifi", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
 	{"/wifi/", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
-	{"/wifi/impulse-meter-setup.tpl", cgiEspFsTemplate, tplWlan},
+	{"/wifi/impulse-meter-setup.tpl", cgiEspFsTemplate, tplSetup},
 #else
 	{"/wifi", cgiRedirect, "/wifi/wifi-setup.tpl"},
 	{"/wifi/", cgiRedirect, "/wifi/wifi-setup.tpl"},
-	{"/wifi/wifi-setup.tpl", cgiEspFsTemplate, tplWlan},
+	{"/wifi/wifi-setup.tpl", cgiEspFsTemplate, tplSetup},
 #endif
 	{"/wifi/setup.cgi", cgiSetup, NULL},
 	{"/wifi/wifiscan.cgi", cgiWiFiScan, NULL},

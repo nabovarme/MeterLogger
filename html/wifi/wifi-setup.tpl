@@ -86,8 +86,8 @@ To connect to a WiFi network, please select one of the detected networks...<br>
 <div id="aps">Scanning...</div>
 <br>
 WiFi password, if applicable: <br />
-<input type="text" name="passwd" val="%WiFiPasswd%"> <br />
-<input type="submit" name="connect" value="Connect!">
+<input type="text" name="passwd" value="%WiFiPasswd%"> <br />
+<input type="submit" name="connect" value="Connect">
 </p>
 </div>
 </body>

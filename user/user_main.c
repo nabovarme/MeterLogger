@@ -383,9 +383,15 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	en61107_request_init();
 #elif defined IMPULSE
 	// no init needed
-#ifdef DEBUG_NO_METER
-	impulse_meter_serial = 9999999;
-#endif // DEBUG_NO_METER
+	//#ifdef DEBUG_NO_METER
+	os_printf("seial: %s energy: %s imp/kWh: %s\n", sys_cfg.impulse_meter_serial, sys_cfg.impulse_meter_energy, sys_cfg.impulses_per_kwh);
+	if (atoi(sys_cfg.impulse_meter_serial)) {
+		impulse_meter_serial = atoi(sys_cfg.impulse_meter_serial);
+	}
+	else {
+		impulse_meter_serial = 9999999;
+	}
+	//#endif // DEBUG_NO_METER
 #else
 	kmp_request_init();
 #endif

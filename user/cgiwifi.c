@@ -178,6 +178,11 @@ static void ICACHE_FLASH_ATTR reassTimerCb(void *arg) {
 int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char essid[128];
 	char passwd[128];
+#ifdef IMPULSE
+	char impulse_meter_serial[32 + 1];
+	char impulse_meter_energy[32 + 1];
+	char impulses_per_kwh[8 + 1];
+#endif
 	static ETSTimer reassTimer;
 	
 	if (connData->conn==NULL) {
@@ -187,24 +192,34 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	
 	httpdFindArg(connData->postBuff, "essid", essid, sizeof(essid));
 	httpdFindArg(connData->postBuff, "passwd", passwd, sizeof(passwd));
+#ifdef IMPULSE
+	httpdFindArg(connData->postBuff, "impulse_meter_serial", impulse_meter_serial, sizeof(impulse_meter_serial));
+	httpdFindArg(connData->postBuff, "impulse_meter_energy", impulse_meter_energy, sizeof(impulse_meter_energy));
+	httpdFindArg(connData->postBuff, "impulses_per_kwh", impulses_per_kwh, sizeof(impulses_per_kwh));
+#endif
 
 	os_strncpy((char*)sys_cfg.sta_ssid, essid, 32);
 	os_strncpy((char*)sys_cfg.sta_pwd, passwd, 64);
+#ifdef IMPULSE
+	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
+	os_strncpy((char*)sys_cfg.impulse_meter_energy, impulse_meter_energy, 32 + 1);
+	os_strncpy((char*)sys_cfg.impulses_per_kwh, impulses_per_kwh, 8 + 1);
+#endif
+
+	cfg_save();
 
 	INFO("Try to connect to AP %s pw %s\n", essid, passwd);
 
 	//Schedule disconnect/connect
 	os_timer_disarm(&reassTimer);
 	os_timer_setfn(&reassTimer, reassTimerCb, NULL);
-//Set to 0 if you want to disable the actual reconnecting bit
-#ifdef DEMO_MODE
-	httpdRedirect(connData, "/wifi");
-#else
 	os_timer_arm(&reassTimer, 1000, 0);
+#ifdef IMPULSE
+	httpdRedirect(connData, "setting_up.html");
+#else
 	httpdRedirect(connData, "connecting.html");
-	cfg_save();
-	
 #endif
+	
 	return HTTPD_CGI_DONE;
 }
 
@@ -232,30 +247,47 @@ int ICACHE_FLASH_ATTR cgiWifiSetMode(HttpdConnData *connData) {
 }
 
 //Template code for the WLAN page.
-void ICACHE_FLASH_ATTR tplWlan(HttpdConnData *connData, char *token, void **arg) {
+void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg) {
 	char buff[1024];
 	int x;
-	static struct station_config stconf;
+	//static struct station_config stconf;
 	if (token==NULL) return;
-	wifi_station_get_config(&stconf);
+	//wifi_station_get_config(&stconf);
+	cfg_load();
 
 	os_strcpy(buff, "Unknown");
 	if (os_strcmp(token, "WiFiMode")==0) {
 		x=wifi_get_opmode();
-		if (x==1) os_strcpy(buff, "Client");
-		if (x==2) os_strcpy(buff, "SoftAP");
-		if (x==3) os_strcpy(buff, "STA+AP");
-	} else if (os_strcmp(token, "currSsid")==0) {
-		os_strcpy(buff, (char*)stconf.ssid);
-	} else if (os_strcmp(token, "WiFiPasswd")==0) {
-		os_strcpy(buff, (char*)stconf.password);
-	} else if (os_strcmp(token, "WiFiapwarn")==0) {
-		x=wifi_get_opmode();
-		if (x==2) {
+		if (x == 1) os_strcpy(buff, "Client");
+		if (x == 2) os_strcpy(buff, "SoftAP");
+		if (x == 3) os_strcpy(buff, "STA+AP");
+	}
+	else if (os_strcmp(token, "currSsid") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.sta_ssid);
+	}
+	else if (os_strcmp(token, "WiFiPasswd") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.sta_pwd);
+	}
+	else if (os_strcmp(token, "WiFiapwarn") == 0) {
+		x = wifi_get_opmode();
+		if (x == 2) {
 			os_strcpy(buff, "<b>Can't scan in this mode.</b> Click <a href=\"setmode.cgi?mode=3\">here</a> to go to STA+AP mode.");
-		} else {
+		}
+		else {
 			os_strcpy(buff, "Click <a href=\"setmode.cgi?mode=2\">here</a> to go to standalone AP mode.");
 		}
 	}
+#ifdef IMPULSE
+	else if (os_strcmp(token, "ImpulseMeterSerial") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
+	}
+	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.impulse_meter_energy);
+	}
+	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.impulses_per_kwh);
+	}
+#endif
+
 	httpdSend(connData, buff, -1);
 }
