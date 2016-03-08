@@ -94,7 +94,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	en61107_request_send();
 #elif defined IMPULSE
 	unsigned char mqtt_topic[128];
-	unsigned char mqtt_message[8];
+	unsigned char mqtt_message[128];
 	int mqtt_topic_l;
 	int mqtt_message_l;
 	
@@ -337,9 +337,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
-	
-	ets_uart_printf("GPIO Interrupt!\r\n");
-	
+		
 	// arm the debounce timer to enable GPIO interrupt again
 	os_timer_disarm(&debounce_timer);
 	os_timer_setfn(&debounce_timer, (os_timer_func_t *)debounce_timer_func, NULL);
