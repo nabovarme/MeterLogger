@@ -37,7 +37,11 @@
 #define STA_FALLBACK_SSID "stofferFon"
 #define STA_FALLBACK_PASS "w1reless"
 
+#ifdef IMPULSE
+#define AP_SSID	"EL_%07u"
+#else
 #define AP_SSID	"KAM_%07u"
+#endif
 #define AP_PASSWORD	"aabbccddeeff"
 #define STA_TYPE AUTH_WPA_WPA2_PSK
 

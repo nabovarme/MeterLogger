@@ -71,7 +71,11 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 	wifi_softap_get_config(&ap_conf);
 	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
+#ifdef IMPULSE
+	os_sprintf(ap_conf.ssid, AP_SSID, impulse_meter_serial);
+#else
 	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
+#endif
 	os_sprintf(ap_conf.password, AP_PASSWORD);
 	ap_conf.authmode = STA_TYPE;
 	ap_conf.ssid_len = 0;
@@ -95,8 +99,6 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	int mqtt_message_l;
 	
 	int current_energy;
-	
-	impulse_meter_serial = 9999;
 	
 	current_energy = (impulse_meter_count - last_impulse_meter_count) * 10 * 60;
 	last_impulse_meter_count = impulse_meter_count;
@@ -382,7 +384,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef EN61107
 	en61107_request_init();
 #elif defined IMPULSE
-	//kmp_request_init();
+	// no init needed
+#ifdef DEBUG_NO_METER
+	impulse_meter_serial = 9999999;
+#endif // DEBUG_NO_METER
 #else
 	kmp_request_init();
 #endif
