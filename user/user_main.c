@@ -18,6 +18,7 @@ extern unsigned int kmp_serial;
 #ifdef IMPULSE
 unsigned int impulse_meter_serial;
 volatile uint32_t impulse_meter_count;
+volatile uint32_t last_impulse_meter_count;
 #endif
 
 MQTT_Client mqttClient;
@@ -93,16 +94,20 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	int mqtt_topic_l;
 	int mqtt_message_l;
 	
+	int current_energy;
+	
 	impulse_meter_serial = 9999;
+	
+	current_energy = (impulse_meter_count - last_impulse_meter_count) * 10 * 60;
+	last_impulse_meter_count = impulse_meter_count;
 
 	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
-	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&count=%lu imp&", system_get_free_heap_size(), impulse_meter_count);
+	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%u W&e1=%lu kWh&", system_get_free_heap_size(), current_energy, impulse_meter_count * 10);
 
 	if (&mqttClient) {
 		// if mqtt_client is initialized
 		MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
-	;
 #else
 	kmp_request_send();
 #endif
@@ -301,6 +306,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 ICACHE_FLASH_ATTR void gpio_int_init() {
 	os_printf("gpio_int_init()\n");
 	impulse_meter_count = 0;
+	last_impulse_meter_count = 0;
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
