@@ -341,7 +341,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	// arm the debounce timer to enable GPIO interrupt again
 	os_timer_disarm(&debounce_timer);
 	os_timer_setfn(&debounce_timer, (os_timer_func_t *)debounce_timer_func, NULL);
-	os_timer_arm(&debounce_timer, 1000, 0);	
+	os_timer_arm(&debounce_timer, 200, 0);	
 }
 #endif
 

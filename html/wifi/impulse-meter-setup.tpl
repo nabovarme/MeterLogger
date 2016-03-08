@@ -82,37 +82,35 @@ Note: %WiFiapwarn%
 </p>
 <form name="wifiform" action="setup.cgi" method="post">
 <p>
-To connect to a WiFi network, please select one of the detected networks...<br>
-<div id="aps">Scanning...</div>
-<br>
 <table border="0" cellspacing="10">
   <tr align="left" valign="top">
-    <td>WiFi password, if applicable: <br />
+    <td rowspan="4" align="left" valign="top"><div id="aps">Scanning...</div><br><br><br>WiFi password, if applicable: <br>
     <input type="text" name="passwd" val="w1reless"></td>
     <td>&nbsp;</td>
-    <td>Meter serial: <br />
+    <td align="left" valign="top">Meter serial: <br />
     <input type="text" name="impulse_meter_serial" val="Unknown"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>Meter energy in kWh: <br />
+    <td align="left" valign="top">Meter energy in kWh: <br />
     <input type="text" name="impulse_meter_energy" val="Unknown"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>Impulses pr. kWh: <br />
+    <td align="left" valign="top">Impulses pr. kWh: <br />
     <input type="text" name="impulses_per_kwh" val="Unknown"></td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
+    <td align="left" valign="top">&nbsp;</td>
+  </tr>
+  <tr>
+   <td align="left" valign="top">&nbsp;</td>
    <td>&nbsp;</td>
-  <td>&nbsp;</td>
-   <td><br />
+   <td align="left" valign="top"><br />
     <input type="submit" name="connect" value="Setup"></td>
  </tr>
-</table>
-</p>
+</table></p>
 </div>
 </body>
 </html>
