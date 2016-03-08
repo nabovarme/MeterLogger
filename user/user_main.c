@@ -14,9 +14,12 @@
 #include "led.h"
 #include "ac_out.h"
 
-extern unsigned int kmp_serial;
+extern uint32_t kmp_serial;
 #ifdef IMPULSE
-unsigned int impulse_meter_serial;
+uint32_t impulse_meter_serial;
+uint32_t impulse_meter_energy;
+uint32_t impulses_per_kwh;
+
 volatile uint32_t impulse_meter_count;
 volatile uint32_t last_impulse_meter_count;
 #endif
@@ -100,11 +103,11 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	
 	int current_energy;
 	
-	current_energy = (impulse_meter_count - last_impulse_meter_count) * 10 * 60;
+	current_energy = (impulse_meter_count - last_impulse_meter_count) * impulses_per_kwh * 60;
 	last_impulse_meter_count = impulse_meter_count;
 
 	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
-	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%u W&e1=%lu Wh&", system_get_free_heap_size(), current_energy, impulse_meter_count * 10);
+	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%u W&e1=%lu Wh&", system_get_free_heap_size(), current_energy, impulse_meter_energy + impulse_meter_count * impulses_per_kwh);
 
 	if (&mqttClient) {
 		// if mqtt_client is initialized
@@ -382,13 +385,16 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef EN61107
 	en61107_request_init();
 #elif defined IMPULSE
-	//os_printf("seial: %s energy: %s imp/kWh: %s\n", sys_cfg.impulse_meter_serial, sys_cfg.impulse_meter_energy, sys_cfg.impulses_per_kwh);
 	if (atoi(sys_cfg.impulse_meter_serial)) {
 		impulse_meter_serial = atoi(sys_cfg.impulse_meter_serial);
 	}
 	else {
 		impulse_meter_serial = 9999999;
 	}
+
+	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
+
+	impulses_per_kwh = atoi(sys_cfg.impulses_per_kwh);
 #else
 	kmp_request_init();
 #endif
