@@ -68,8 +68,8 @@ HttpdBuiltInUrl builtInUrls[]={
 	{"/wifi/", cgiRedirect, "/wifi/wifi-setup.tpl"},
 	{"/wifi/wifi-setup.tpl", cgiEspFsTemplate, tplWlan},
 #endif
+	{"/wifi/setup.cgi", cgiSetup, NULL},
 	{"/wifi/wifiscan.cgi", cgiWiFiScan, NULL},
-	{"/wifi/connect.cgi", cgiWiFiConnect, NULL},
 	{"/wifi/setmode.cgi", cgiWifiSetMode, NULL},
 
 	{"*", cgiEspFsHook, NULL}, //Catch-all cgi function for the filesystem

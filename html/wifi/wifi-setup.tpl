@@ -80,7 +80,7 @@ Current WiFi mode: %WiFiMode%
 <p>
 Note: %WiFiapwarn%
 </p>
-<form name="wifiform" action="connect.cgi" method="post">
+<form name="wifiform" action="setup.cgi" method="post">
 <p>
 To connect to a WiFi network, please select one of the detected networks...<br>
 <div id="aps">Scanning...</div>

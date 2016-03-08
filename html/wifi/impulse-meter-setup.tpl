@@ -80,14 +80,38 @@ Current WiFi mode: %WiFiMode%
 <p>
 Note: %WiFiapwarn%
 </p>
-<form name="wifiform" action="connect.cgi" method="post">
+<form name="wifiform" action="setup.cgi" method="post">
 <p>
 To connect to a WiFi network, please select one of the detected networks...<br>
 <div id="aps">Scanning...</div>
 <br>
-WiFi password, if applicable: <br />
-<input type="text" name="passwd" val="%WiFiPasswd%"> <br />
-<input type="submit" name="connect" value="Connect!">
+<table border="0" cellspacing="10">
+  <tr align="left" valign="top">
+    <td>WiFi password, if applicable: <br />
+    <input type="text" name="passwd" val="w1reless"></td>
+    <td>&nbsp;</td>
+    <td>Meter serial: <br />
+    <input type="text" name="impulse_meter_serial" val="Unknown"></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>Meter energy in kWh: <br />
+    <input type="text" name="impulse_meter_energy" val="Unknown"></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>Impulses pr. kWh: <br />
+    <input type="text" name="impulses_per_kwh" val="Unknown"></td>
+  </tr>
+  <tr>
+   <td>&nbsp;</td>
+  <td>&nbsp;</td>
+   <td><br />
+    <input type="submit" name="connect" value="Setup"></td>
+ </tr>
+</table>
 </p>
 </div>
 </body>
