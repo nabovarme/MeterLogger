@@ -107,7 +107,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	last_impulse_meter_count = impulse_meter_count;
 
 	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
-	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%u W&e1=%lu Wh&", system_get_free_heap_size(), current_energy, impulse_meter_energy + impulse_meter_count * impulses_per_kwh);
+	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%u W&e1=%lu Wh&", system_get_free_heap_size(), current_energy, (impulse_meter_energy * 1000) + (impulse_meter_count * impulses_per_kwh));
 
 	if (&mqttClient) {
 		// if mqtt_client is initialized
