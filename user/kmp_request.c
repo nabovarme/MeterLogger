@@ -7,7 +7,7 @@
 
 #define QUEUE_SIZE 256
 
-unsigned int kmp_serial = 0;
+uint32_t kmp_serial = 0;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
