@@ -193,7 +193,11 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #endif
 
 	// set MQTT LWP topic and subscribe to /config/v1/serial/#
+#ifdef IMPULSE
+	topic_l = os_sprintf(topic, "/config/v1/%u/#", impulse_meter_serial);
+#else
 	topic_l = os_sprintf(topic, "/config/v1/%u/#", kmp_get_received_serial());
+#endif
 	MQTT_Subscribe(client, topic, 0);
 
 	// set mqtt_client kmp_request should use to return data
@@ -360,6 +364,22 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
+#ifdef IMPULSE
+	else if (strncmp(function_name, "save", FUNCTIONNAME_L) == 0) {
+		// found save - save conf to flash
+		cfg_load();
+		sys_cfg.impulse_meter_count = impulse_meter_count;
+		cfg_save();
+		
+		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "saved");
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
+#endif
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
@@ -369,9 +389,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
-	os_printf("gpio_int_init()\n");
-	impulse_meter_count = 0;
-	last_impulse_meter_count = 0;
+	impulse_meter_count = sys_cfg.impulse_meter_count;				// load impulse_meter_count from flash
+	last_impulse_meter_count = impulse_meter_count;
+	
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
