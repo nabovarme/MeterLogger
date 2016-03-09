@@ -74,12 +74,6 @@ window.onload=function(e) {
 </head>
 <body>
 <div id="main">
-<p>
-Current WiFi mode: %WiFiMode%
-</p>
-<p>
-Note: %WiFiapwarn%
-</p>
 <form name="wifiform" action="setup.cgi" method="post">
 <p>
 To connect to a WiFi network, please select one of the detected networks...<br>
