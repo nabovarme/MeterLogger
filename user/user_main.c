@@ -107,7 +107,6 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	// for pseudo float print
 	char current_energy_kwh[32];
 	char acc_energy_kwh[32];
-    double result;
     uint32_t result_int, result_frac;
 	int8_t exponent;
 	unsigned char leading_zeroes[16];
@@ -118,31 +117,29 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	
 	acc_energy = (impulse_meter_energy * 1000) + (impulse_meter_count * (1000 / impulses_per_kwh));
 	
-	// for current_energy...
-	// ...divide by 1000 and prepare decimal string in kWh
-	result = current_energy / 1000;
-	result_int = (int32_t)result;
-	result_frac = current_energy - result_int * 1000;
-	
-	// prepare decimal string
-	strcpy(leading_zeroes, "");
-	for (i = 0; i < (exponent - impulse_meter_decimal_number_length(result_frac)); i++) {
-		strcat(leading_zeroes, "0");
-	}
-	os_sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
+    // for current_energy...
+    // ...divide by 1000 and prepare decimal string in kWh
+    result_int = (int32_t)(current_energy / 1000);
+    result_frac = current_energy - result_int * 1000;
+    
+    // prepare decimal string
+    strcpy(leading_zeroes, "");
+    for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
+        strcat(leading_zeroes, "0");
+    }
+    sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-	// for current_energy...
-	// ...divide by 1000 and prepare decimal string in kWh
-	result = acc_energy / 1000;
-	result_int = (int32_t)result;
-	result_frac = current_energy - result_int * 1000;
-	
-	// prepare decimal string
-	strcpy(leading_zeroes, "");
-	for (i = 0; i < (exponent - impulse_meter_decimal_number_length(result_frac)); i++) {
-		strcat(leading_zeroes, "0");
-	}
-	os_sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
+    // for acc_energy...
+    // ...divide by 1000 and prepare decimal string in kWh
+    result_int = (int32_t)(acc_energy / 1000);
+    result_frac = acc_energy - result_int * 1000;
+    
+    // prepare decimal string
+    strcpy(leading_zeroes, "");
+    for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
+        strcat(leading_zeroes, "0");
+    }
+    sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
 	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
 	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
