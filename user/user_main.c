@@ -51,6 +51,9 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	// stop http configuration server
 	httpdStop();
 	
+	// reload save configuration - could have changed via web config after boot
+	cfg_load();
+	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
 	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
