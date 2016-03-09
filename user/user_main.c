@@ -53,6 +53,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	
 	// reload save configuration - could have changed via web config after boot
 	cfg_load();
+	impulse_meter_init();
 	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
@@ -407,6 +408,21 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 }
 
 ICACHE_FLASH_ATTR
+void impulse_meter_init(void) {
+	impulse_meter_serial = atoi(sys_cfg.impulse_meter_serial);
+	if (impulse_meter_serial == 0) {
+		impulse_meter_serial = 9999999;
+	}
+	
+	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
+	
+	impulses_per_kwh = atoi(sys_cfg.impulses_per_kwh);
+	if (impulses_per_kwh == 0) {
+		impulses_per_kwh = 100;		// if not set set to some default != 0
+	}
+}
+
+ICACHE_FLASH_ATTR
 unsigned int impulse_meter_decimal_number_length(int n) {
 	int digits;
 	
@@ -456,17 +472,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef EN61107
 	en61107_request_init();
 #elif defined IMPULSE
-	impulse_meter_serial = atoi(sys_cfg.impulse_meter_serial);
-	if (impulse_meter_serial == 0) {
-		impulse_meter_serial = 9999999;
-	}
-
-	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
-
-	impulses_per_kwh = atoi(sys_cfg.impulses_per_kwh);
-	if (impulses_per_kwh == 0) {
-		impulses_per_kwh = 100;		// if not set set to some default != 0
-	}
+	impulse_meter_init();
 #else
 	kmp_request_init();
 #endif

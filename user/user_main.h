@@ -18,6 +18,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init();
 void gpio_int_handler();
+ICACHE_FLASH_ATTR void impulse_meter_init(void);
 ICACHE_FLASH_ATTR unsigned int impulse_meter_decimal_number_length(int n);
 #endif
 
