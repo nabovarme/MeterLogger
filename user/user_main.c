@@ -53,7 +53,9 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	
 	// reload save configuration - could have changed via web config after boot
 	cfg_load();
+#ifdef IMPULSE
 	impulse_meter_init();
+#endif
 	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
