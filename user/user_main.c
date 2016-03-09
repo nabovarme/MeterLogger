@@ -60,7 +60,11 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
 
 	// set MQTT LWP topic
+#ifdef IMPULSE
+	topic_l = os_sprintf(topic, "/offline/v1/%u", impulse_meter_serial);
+#else
 	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial());
+#endif
 	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
 	
 	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
