@@ -21,8 +21,6 @@ uint32_t impulses_per_kwh;
 
 volatile uint32_t impulse_meter_count;
 volatile uint32_t last_impulse_meter_count;
-#else
-extern uint32_t kmp_serial;
 #endif
 
 MQTT_Client mqttClient;
@@ -88,7 +86,7 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 #ifdef IMPULSE
 	os_sprintf(ap_conf.ssid, AP_SSID, impulse_meter_serial);
 #else
-	os_sprintf(ap_conf.ssid, AP_SSID, kmp_serial);
+	os_sprintf(ap_conf.ssid, AP_SSID, kmp_get_received_serial());
 #endif
 	os_sprintf(ap_conf.password, AP_PASSWORD);
 	ap_conf.authmode = STA_TYPE;
@@ -279,7 +277,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%d", sys_cfg.cron_jobs.n);
 
@@ -305,7 +303,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
@@ -333,7 +331,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "");
 
@@ -347,7 +345,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s-%s", system_get_sdk_version(), VERSION);
 
@@ -361,7 +359,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", kmp_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%u", uptime());
 
