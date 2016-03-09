@@ -15,7 +15,7 @@
 #include "ac_out.h"
 
 #ifdef IMPULSE
-uint32_t impulse_meter_serial;
+char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
 uint32_t impulse_meter_energy;
 uint32_t impulses_per_kwh;
 
@@ -61,9 +61,9 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 
 	// set MQTT LWP topic
 #ifdef IMPULSE
-	topic_l = os_sprintf(topic, "/offline/v1/%u", impulse_meter_serial);
+	topic_l = os_sprintf(topic, "/offline/v1/%s", impulse_meter_serial);
 #else
-	topic_l = os_sprintf(topic, "/offline/v1/%u", kmp_get_received_serial());
+	topic_l = os_sprintf(topic, "/offline/v1/%07u", kmp_get_received_serial());
 #endif
 	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
 	
@@ -150,7 +150,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     }
     sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%u/%u", impulse_meter_serial, get_unix_time());
+	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 
 	if (&mqttClient) {
@@ -198,9 +198,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 
 	// set MQTT LWP topic and subscribe to /config/v1/serial/#
 #ifdef IMPULSE
-	topic_l = os_sprintf(topic, "/config/v1/%u/#", impulse_meter_serial);
+	topic_l = os_sprintf(topic, "/config/v1/%s/#", impulse_meter_serial);
 #else
-	topic_l = os_sprintf(topic, "/config/v1/%u/#", kmp_get_received_serial());
+	topic_l = os_sprintf(topic, "/config/v1/%07u/#", kmp_get_received_serial());
 #endif
 	MQTT_Subscribe(client, topic, 0);
 
@@ -275,9 +275,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%d", sys_cfg.cron_jobs.n);
 
@@ -301,9 +301,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
@@ -329,9 +329,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "");
 
@@ -343,9 +343,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s-%s", system_get_sdk_version(), VERSION);
 
@@ -357,9 +357,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
-		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", kmp_get_received_serial(), get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%u", uptime());
 
@@ -375,7 +375,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		sys_cfg.impulse_meter_count = impulse_meter_count;
 		cfg_save();
 		
-		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		reply_message_l = os_sprintf(reply_message, "saved");
 
 		if (&mqttClient) {
@@ -433,9 +433,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 
 ICACHE_FLASH_ATTR
 void impulse_meter_init(void) {
-	impulse_meter_serial = atoi(sys_cfg.impulse_meter_serial);
-	if (impulse_meter_serial == 0) {
-		impulse_meter_serial = 9999999;
+	os_strncpy(impulse_meter_serial, sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN);
+	if (atoi(impulse_meter_serial) == 0) {
+		os_strcpy(impulse_meter_serial, "9999999");
 	}
 	
 	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);

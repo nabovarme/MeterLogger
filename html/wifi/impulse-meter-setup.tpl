@@ -82,17 +82,17 @@ window.onload=function(e) {
     <input type="text" name="passwd" value="%WiFiPasswd%"></td>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter serial (must be 7 digits): <br />
-    <input type="text" name="impulse_meter_serial" value="%ImpulseMeterSerial%" maxlength="7"></td>
+    <input type="text" name="impulse_meter_serial" value="%ImpulseMeterSerial%" maxlength="12"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter energy in kWh: <br />
-    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%" maxlength="32"></td>
+    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%" maxlength="16"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td align="left" valign="top">Impulses pr. kWh: <br />
-    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%" maxlength="32"></td>
+    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%" maxlength="16"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>

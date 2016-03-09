@@ -33,6 +33,10 @@
 #include "user_config.h"
 #include "cron.h"
 
+#ifdef IMPULSE
+#define IMPULSE_METER_SERIAL_LEN	13
+#endif
+
 typedef struct{
 	uint32_t cfg_holder;
 	uint8_t device_id[16];
@@ -50,7 +54,7 @@ typedef struct{
 	uint8_t ac_thermo_state;	// thermo actuator state
 	cron_jobs_t cron_jobs;
 #ifdef IMPULSE
-	char impulse_meter_serial[32 + 1];
+	char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
 	char impulse_meter_energy[32 + 1];
 	char impulses_per_kwh[32 + 1];
 	uint32_t impulse_meter_count;

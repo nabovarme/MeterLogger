@@ -38,7 +38,7 @@
 #define STA_FALLBACK_PASS "w1reless"
 
 #ifdef IMPULSE
-#define AP_SSID	"EL_%07u"
+#define AP_SSID	"EL_%s"
 #else
 #define AP_SSID	"KAM_%07u"
 #endif
