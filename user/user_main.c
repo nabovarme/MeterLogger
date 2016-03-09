@@ -14,7 +14,6 @@
 #include "led.h"
 #include "ac_out.h"
 
-extern uint32_t kmp_serial;
 #ifdef IMPULSE
 uint32_t impulse_meter_serial;
 uint32_t impulse_meter_energy;
@@ -22,6 +21,8 @@ uint32_t impulses_per_kwh;
 
 volatile uint32_t impulse_meter_count;
 volatile uint32_t last_impulse_meter_count;
+#else
+extern uint32_t kmp_serial;
 #endif
 
 MQTT_Client mqttClient;
@@ -261,7 +262,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", impulse_meter_serial, get_unix_time());
+#else
 		reply_topic_l = os_sprintf(reply_topic, "/cron/v1/%u/%u", kmp_serial, get_unix_time());
+#endif
 		reply_message_l = os_sprintf(reply_message, "%d", sys_cfg.cron_jobs.n);
 
 		if (&mqttClient) {
@@ -283,7 +288,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", impulse_meter_serial, get_unix_time());
+#else
 		reply_topic_l = os_sprintf(reply_topic, "/status/v1/%u/%u", kmp_serial, get_unix_time());
+#endif
 		reply_message_l = os_sprintf(reply_message, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 		if (&mqttClient) {
@@ -307,7 +316,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", impulse_meter_serial, get_unix_time());
+#else
 		reply_topic_l = os_sprintf(reply_topic, "/ping/v1/%u/%u", kmp_serial, get_unix_time());
+#endif
 		reply_message_l = os_sprintf(reply_message, "");
 
 		if (&mqttClient) {
@@ -317,7 +330,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", impulse_meter_serial, get_unix_time());
+#else
 		reply_topic_l = os_sprintf(reply_topic, "/version/v1/%u/%u", kmp_serial, get_unix_time());
+#endif
 		reply_message_l = os_sprintf(reply_message, "%s-%s", system_get_sdk_version(), VERSION);
 
 		if (&mqttClient) {
@@ -327,7 +344,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", impulse_meter_serial, get_unix_time());
+#else
 		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%u/%u", kmp_serial, get_unix_time());
+#endif
 		reply_message_l = os_sprintf(reply_message, "%u", uptime());
 
 		if (&mqttClient) {
