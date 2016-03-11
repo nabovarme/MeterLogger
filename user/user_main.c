@@ -20,7 +20,10 @@ uint32_t impulse_meter_energy;
 uint32_t impulses_per_kwh;
 
 volatile uint32_t impulse_meter_count;
-volatile uint32_t last_impulse_meter_count;
+
+volatile uint32_t impulse_time;
+volatile uint32_t last_impulse_time;
+volatile uint32_t current_energy;	// in W
 #endif
 
 MQTT_Client mqttClient;
@@ -37,7 +40,7 @@ static os_timer_t kmp_request_send_timer;
 #endif
 
 #ifdef IMPULSE
-static os_timer_t debounce_timer;
+static os_timer_t impulse_meter_calculate_timer;
 #endif
 
 uint16 counter = 0;
@@ -110,34 +113,19 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	int mqtt_topic_l;
 	int mqtt_message_l;
 	
-	uint32_t current_energy;
 	uint32_t acc_energy;
 	
 	// for pseudo float print
 	char current_energy_kwh[32];
 	char acc_energy_kwh[32];
+	
     uint32_t result_int, result_frac;
 	int8_t exponent;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
-	current_energy = (impulse_meter_count - last_impulse_meter_count) * (1000 / impulses_per_kwh) * 60;
-	last_impulse_meter_count = impulse_meter_count;
-	
 	acc_energy = (impulse_meter_energy * 1000) + (impulse_meter_count * (1000 / impulses_per_kwh));
 	
-    // for current_energy...
-    // ...divide by 1000 and prepare decimal string in kWh
-    result_int = (int32_t)(current_energy / 1000);
-    result_frac = current_energy - result_int * 1000;
-    
-    // prepare decimal string
-    strcpy(leading_zeroes, "");
-    for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
-        strcat(leading_zeroes, "0");
-    }
-    sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
-
     // for acc_energy...
     // ...divide by 1000 and prepare decimal string in kWh
     result_int = (int32_t)(acc_energy / 1000);
@@ -150,8 +138,26 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     }
     sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-	mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
-	mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+	if (impulse_time > (uptime() - 60)) {
+    	// for current_energy...
+    	// ...divide by 1000 and prepare decimal string in kWh
+    	result_int = (int32_t)(current_energy / 1000);
+    	result_frac = current_energy - result_int * 1000;
+    	
+    	// prepare decimal string
+    	strcpy(leading_zeroes, "");
+    	for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
+    	    strcat(leading_zeroes, "0");
+    	}
+    	sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
+    	
+		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
+		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+	}
+	else {	// no pulse last minute - no current energy calculated
+		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
+		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&e1=%s kWh&", system_get_free_heap_size(), acc_energy_kwh);
+	}
 
 	if (&mqttClient) {
 		// if mqtt_client is initialized
@@ -171,10 +177,29 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 }
 
 #ifdef IMPULSE
-ICACHE_FLASH_ATTR void debounce_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
+	uint32_t impulse_time_diff;
+
+	impulse_time = uptime();
+	//os_printf("\n\rimpulse_time: %lu\n\r", impulse_time);
+	//os_printf("\n\rlast_impulse_time: %lu\n\r", last_impulse_time);
+	impulse_time_diff = impulse_time - last_impulse_time;
+	os_printf("\n\rdiff: %lu\n\r", impulse_time_diff);
+	last_impulse_time = impulse_time;
+
+	if (impulse_time_diff) {
+		current_energy = 3600 / impulse_time_diff * (1000 / impulses_per_kwh);
+	}
+	else {
+		// max interval
+		current_energy = 3600 * (1000 / impulses_per_kwh);
+	}
+
+	// enable gpio interrupt again
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
-	ETS_GPIO_INTR_ENABLE();		// Enable gpio interrupts
-	os_printf("\n\rimpulse_meter_count: %lu\n\r", impulse_meter_count);
+	ETS_GPIO_INTR_ENABLE();
+	os_printf("\n\rcount: %u\n\r", impulse_meter_count);
+	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
 }
 #endif
 
@@ -394,7 +419,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
 	impulse_meter_count = sys_cfg.impulse_meter_count;				// load impulse_meter_count from flash
-	last_impulse_meter_count = impulse_meter_count;
 	
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
@@ -426,9 +450,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 		
 	// arm the debounce timer to enable GPIO interrupt again
-	os_timer_disarm(&debounce_timer);
-	os_timer_setfn(&debounce_timer, (os_timer_func_t *)debounce_timer_func, NULL);
-	os_timer_arm(&debounce_timer, 200, 0);	
+	os_timer_disarm(&impulse_meter_calculate_timer);
+	os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
+	os_timer_arm(&impulse_meter_calculate_timer, 200, 0);	
 }
 
 ICACHE_FLASH_ATTR
@@ -444,6 +468,12 @@ void impulse_meter_init(void) {
 	if (impulses_per_kwh == 0) {
 		impulses_per_kwh = 100;		// if not set set to some default != 0
 	}
+	
+	impulse_time = uptime();
+	last_impulse_time = impulse_time;
+#ifdef DEBUG
+	os_printf("t: %u\n", impulse_time);
+#endif // DEBUG
 }
 
 ICACHE_FLASH_ATTR
@@ -506,7 +536,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// enable gpio interrupt for impulse meters
 #ifdef IMPULSE
 	gpio_int_init();
-#endif
+#endif // IMPULSE
 	
 	ac_out_init();
 
