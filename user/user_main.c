@@ -181,10 +181,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
 
 	impulse_time = uptime();
-	//os_printf("\n\rimpulse_time: %lu\n\r", impulse_time);
-	//os_printf("\n\rlast_impulse_time: %lu\n\r", last_impulse_time);
 	impulse_time_diff = impulse_time - last_impulse_time;
-	os_printf("\n\rdiff: %lu\n\r", impulse_time_diff);
 	last_impulse_time = impulse_time;
 
 	if (impulse_time_diff) {
@@ -198,8 +195,9 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	// enable gpio interrupt again
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
 	ETS_GPIO_INTR_ENABLE();
-	os_printf("\n\rcount: %u\n\r", impulse_meter_count);
+#ifdef DEBUG
 	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
+#endif // DEBUG
 }
 #endif
 
