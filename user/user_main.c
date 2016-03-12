@@ -207,7 +207,8 @@ ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	vdd = system_get_vdd33();
 	if ((vdd < 3200) && (shutdown == false)) {
-		os_printf("\n\rvdd: %d\n\r", vdd);
+		cfg_save();
+//		os_printf("\n\rvdd: %d\n\r", vdd);
 		if (&mqttClient) {
 			// if mqtt_client is initialized
 			shutdown = true;
