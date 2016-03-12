@@ -247,6 +247,9 @@ flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 flashblank:
 	$(ESPTOOL) -p $(ESPPORT) write_flash 0x0 firmware/blank512k.bin
 
+flash107th_bit_0xff:
+	$(ESPTOOL) -p $(ESPPORT) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
+
 screen:
 	screen /dev/ttyUSB0 1200,cstopb
 minicom:

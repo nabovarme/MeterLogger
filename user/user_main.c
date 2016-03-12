@@ -24,6 +24,8 @@ volatile uint32_t impulse_meter_count;
 volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
 volatile uint32_t current_energy;	// in W
+
+bool shutdown = false;
 #endif
 
 MQTT_Client mqttClient;
@@ -41,6 +43,7 @@ static os_timer_t kmp_request_send_timer;
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
+static os_timer_t power_wd_timer;
 #endif
 
 uint16 counter = 0;
@@ -197,7 +200,22 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
 #endif // DEBUG
 }
-#endif
+#endif // IMPULSE
+
+#ifdef IMPULSE
+ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
+	uint16_t vdd;
+	vdd = system_get_vdd33();
+	if ((vdd < 3200) && (shutdown == false)) {
+		os_printf("\n\rvdd: %d\n\r", vdd);
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			shutdown = true;
+			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);	// DEBUG: needs serial
+		}
+	}
+}
+#endif // IMPULSE
 
 ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
 	if(status == STATION_GOT_IP){ 
@@ -467,6 +485,10 @@ void impulse_meter_init(void) {
 	
 	impulse_time = uptime();
 	last_impulse_time = impulse_time;
+	
+	os_timer_disarm(&power_wd_timer);
+	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
+	os_timer_arm(&power_wd_timer, 50, 1);
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
 #endif // DEBUG
