@@ -44,6 +44,7 @@ static os_timer_t kmp_request_send_timer;
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
 static os_timer_t power_wd_timer;
+uint16_t vdd_init;
 #endif
 
 uint16 counter = 0;
@@ -157,6 +158,11 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 	}
+	else {
+		// send empty message to keep mqtt alive
+		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
+		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&", system_get_free_heap_size());
+	}
 
 	if (&mqttClient) {
 		// if mqtt_client is initialized
@@ -206,7 +212,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	vdd = system_get_vdd33();
-	if ((vdd < 3200) && (shutdown == false)) {
+	if ((vdd < (vdd_init - 100)) && (shutdown == false)) {
 		cfg_save();
 //		os_printf("\n\rvdd: %d\n\r", vdd);
 		if (&mqttClient) {
@@ -486,6 +492,10 @@ void impulse_meter_init(void) {
 	
 	impulse_time = uptime();
 	last_impulse_time = impulse_time;
+	
+	// start power watch dog
+	vdd_init = system_get_vdd33();
+	os_printf("\n\rvdd init: %d\n\r", vdd_init);
 	
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
