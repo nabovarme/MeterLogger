@@ -79,7 +79,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
-	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifiConnectCb);
+	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 }
 
 ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
@@ -227,12 +227,10 @@ ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 }
 #endif // IMPULSE
 
-ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status) {
-	if(status == STATION_GOT_IP){ 
+ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
+	if (status == STATION_GOT_IP) {
 		init_unix_time();
 		MQTT_Connect(&mqttClient);
-	} else {
-		MQTT_Disconnect(&mqttClient);
 	}
 }
 
@@ -271,7 +269,8 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
-	INFO("MQTT: Disconnected\r\n");
+	INFO("MQTT: Disconnected - reconnect\r\n");
+	MQTT_Connect(&mqttClient);
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {

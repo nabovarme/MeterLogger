@@ -10,7 +10,7 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg);
 ICACHE_FLASH_ATTR void impulse_meter_timer_func(void *arg);
 ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg);
 #endif
-ICACHE_FLASH_ATTR void wifiConnectCb(uint8_t status);
+ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status);
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args);
