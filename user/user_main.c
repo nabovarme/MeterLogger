@@ -138,7 +138,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     }
     sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-	if (impulse_time > (uptime() - 60)) {
+	if (impulse_time > (uptime() - 60)) {	// only if impulser received last minute
     	// for current_energy...
     	// ...divide by 1000 and prepare decimal string in kWh
     	result_int = (int32_t)(current_energy / 1000);
@@ -153,10 +153,6 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     	
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-	}
-	else {	// no pulse last minute - no current energy calculated
-		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
-		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&e1=%s kWh&", system_get_free_heap_size(), acc_energy_kwh);
 	}
 
 	if (&mqttClient) {
