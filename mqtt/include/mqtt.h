@@ -67,7 +67,9 @@ typedef enum {
 	WIFI_CONNECTING_ERROR,
 	WIFI_CONNECTED,
 	DNS_RESOLVE,
+	TCP_DISCONNECTING,
 	TCP_DISCONNECTED,
+	TCP_RECONNECT_DISCONNECTING,
 	TCP_RECONNECT_REQ,
 	TCP_RECONNECT,
 	TCP_CONNECTING,
@@ -78,8 +80,11 @@ typedef enum {
 	MQTT_SUBSCIBE_SEND,
 	MQTT_SUBSCIBE_SENDING,
 	MQTT_DATA,
+	MQTT_KEEPALIVE_SEND,
 	MQTT_PUBLISH_RECV,
-	MQTT_PUBLISHING
+	MQTT_PUBLISHING,
+	MQTT_DELETING,
+	MQTT_DELETED,
 } tConnState;
 
 typedef void (*MqttCallback)(uint32_t *args);
@@ -96,6 +101,7 @@ typedef struct  {
 	MqttCallback connectedCb;
 	MqttCallback disconnectedCb;
 	MqttCallback publishedCb;
+	MqttCallback timeoutCb;
 	MqttDataCallback dataCb;
 	ETSTimer mqttTimer;
 	uint32_t keepAliveTick;
@@ -125,10 +131,12 @@ typedef struct  {
 
 void ICACHE_FLASH_ATTR MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32_t port, uint8_t security);
 void ICACHE_FLASH_ATTR MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_user, uint8_t* client_pass, uint32_t keepAliveTime, uint8_t cleanSession);
+void ICACHE_FLASH_ATTR MQTT_DeleteClient(MQTT_Client *mqttClient);
 void ICACHE_FLASH_ATTR MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, uint8_t will_qos, uint8_t will_retain);
 void ICACHE_FLASH_ATTR MQTT_OnConnected(MQTT_Client *mqttClient, MqttCallback connectedCb);
 void ICACHE_FLASH_ATTR MQTT_OnDisconnected(MQTT_Client *mqttClient, MqttCallback disconnectedCb);
 void ICACHE_FLASH_ATTR MQTT_OnPublished(MQTT_Client *mqttClient, MqttCallback publishedCb);
+void ICACHE_FLASH_ATTR MQTT_OnTimeout(MQTT_Client *mqttClient, MqttCallback timeoutCb);
 void ICACHE_FLASH_ATTR MQTT_OnData(MQTT_Client *mqttClient, MqttDataCallback dataCb);
 BOOL ICACHE_FLASH_ATTR MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos);
 void ICACHE_FLASH_ATTR MQTT_Connect(MQTT_Client *mqttClient);
