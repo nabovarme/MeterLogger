@@ -157,17 +157,20 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     	
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		}
 	}
 	else {
-		// send empty message to keep mqtt alive
-		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
-		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&", system_get_free_heap_size());
+		// send ping to keep mqtt alive
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Ping(&mqttClient);
+		}
 	}
 
-	if (&mqttClient) {
-		// if mqtt_client is initialized
-		MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
-	}
 #else
 	kmp_request_send();
 #endif
