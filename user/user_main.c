@@ -485,14 +485,15 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
-//		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
+		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
 //		if ((impulse_edge_to_edge_time > 10 * 1000) && (impulse_edge_to_edge_time < 300 * 1000)) {
+		if (impulse_edge_to_edge_time > 10) {
 			// arm the debounce timer to enable GPIO interrupt again
 			impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
 			os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
 			os_timer_arm(&impulse_meter_calculate_timer, 100, 0);
-//		}
+		}
 	}
 	else {						// falling edge
 		impulse_falling_edge_time = system_get_time();
