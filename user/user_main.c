@@ -430,7 +430,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		cfg_save();
 		
 		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%s/%u", impulse_meter_serial, get_unix_time());
-		reply_message_l = os_sprintf(reply_message, "saved");
+		reply_message_l = os_sprintf(reply_message, "%u", sys_cfg.impulse_meter_count);
 
 		if (&mqttClient) {
 			// if mqtt_client is initialized
