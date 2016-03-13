@@ -25,6 +25,8 @@ volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
 volatile uint32_t current_energy;	// in W
 
+uint32_t impulse_falling_edge_time;
+uint32_t impulse_rising_edge_time;
 #ifdef POWER_WD
 // for power wd
 bool shutdown = false;
@@ -192,28 +194,24 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
-	bool impulse_pin_state;
 
-	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
-	if (!impulse_pin_state) {	// if impulse is still going on...
-		impulse_time = uptime();
-		impulse_time_diff = impulse_time - last_impulse_time;
-		last_impulse_time = impulse_time;
+	impulse_time = uptime();
+	impulse_time_diff = impulse_time - last_impulse_time;
+	last_impulse_time = impulse_time;
 
-		if (impulse_time_diff) {
-			current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
-		}
-		else {
-			// max interval
-			current_energy = 3600 * (1000 / impulses_per_kwh);
-		
-		}
+	if (impulse_time_diff) {
+		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
+	}
+	else {
+		// max interval
+		current_energy = 3600 * (1000 / impulses_per_kwh);
+	}
 
 #ifdef DEBUG
-		os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
-		os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
+	os_printf("\n\rimpulse length: %u\n\r", impulse_rising_edge_time - impulse_falling_edge_time);
+	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
+	os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
 #endif // DEBUG
-	}
 }
 #endif // IMPULSE
 
@@ -468,6 +466,8 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	uint32_t gpio_status;
 	bool impulse_pin_state;
+	
+	uint32_t impulse_edge_to_edge_time;
 
 	gpio_intr_ack(interrupt_mask);
 
@@ -480,12 +480,22 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 	
 	// only count real meter impulses, not noise
-	if (!impulse_pin_state) {		// falling edge
-		// arm the debounce timer to enable GPIO interrupt again
-		impulse_meter_count++;
-		os_timer_disarm(&impulse_meter_calculate_timer);
-		os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
-		os_timer_arm(&impulse_meter_calculate_timer, 80, 0);
+	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
+	os_printf("%s\n", impulse_pin_state ? "H" : "L");
+	if (impulse_pin_state) {	// rising edge
+		impulse_rising_edge_time = system_get_time();
+		
+//		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
+//		if ((impulse_edge_to_edge_time > 10 * 1000) && (impulse_edge_to_edge_time < 300 * 1000)) {
+			// arm the debounce timer to enable GPIO interrupt again
+			impulse_meter_count++;
+			os_timer_disarm(&impulse_meter_calculate_timer);
+			os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
+			os_timer_arm(&impulse_meter_calculate_timer, 100, 0);
+//		}
+	}
+	else {						// falling edge
+		impulse_falling_edge_time = system_get_time();
 	}
 
 	// enable gpio interrupt again
