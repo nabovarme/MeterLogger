@@ -448,7 +448,7 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
 	//ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);					// GPIO0 interrupt handler
 	gpio_intr_handler_register(gpio_int_handler, NULL);
-	//PIN_PULLDOWN_DIS(PERIPHS_IO_MUX_GPIO0_U);						// disable pullodwn
+	PIN_PULLDWN_DIS(PERIPHS_IO_MUX_GPIO0_U);						// disable pullodwn
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
