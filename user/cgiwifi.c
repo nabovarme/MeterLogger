@@ -204,6 +204,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
 	os_strncpy((char*)sys_cfg.impulse_meter_energy, impulse_meter_energy, 32 + 1);
 	os_strncpy((char*)sys_cfg.impulses_per_kwh, impulses_per_kwh, 8 + 1);
+	sys_cfg.impulse_meter_count = 0;
 #endif
 
 	cfg_save();

@@ -108,7 +108,15 @@ cfg_load() {
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
-
+		
+#ifdef IMPULSE
+		sys_cfg.ac_thermo_state = 0;
+		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+		os_sprintf(sys_cfg.impulse_meter_serial, DEFAULT_METER_SERIAL);
+		os_sprintf(sys_cfg.impulse_meter_energy, "0");
+		os_sprintf(sys_cfg.impulses_per_kwh, "100");
+		sys_cfg.impulse_meter_count = 0;
+#endif
 		INFO(" default configuration\r\n");
 
 		cfg_save();

@@ -115,7 +115,7 @@ void en61107_request_send() {
 	int message_l;
 	
 	// fake serial for testing without meter
-	en61107_serial = 9999999;
+	en61107_serial = atoi(DEFAULT_METER_SERIAL);
 
 	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", en61107_serial, get_unix_time());
 	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
@@ -154,7 +154,7 @@ static void en61107_received_task(os_event_t *events) {
         
    		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
    		os_sprintf(current_unix_time_string, "%lu", current_unix_time);
-   		topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", 9999999, current_unix_time_string);
+   		topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", atoi(DEFAULT_METER_SERIAL), current_unix_time_string);
 
    		//strcpy(message, "");	// clear it
 		

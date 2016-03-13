@@ -112,7 +112,7 @@ void kmp_request_send() {
 #endif
 #ifdef DEBUG_NO_METER
 	// fake serial for testing without meter
-	kmp_serial = 9999999;
+	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
 	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
 	message_l = os_sprintf(message, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());

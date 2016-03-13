@@ -9,6 +9,8 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
+#define DEFAULT_METER_SERIAL	"9999999"
+
 // MQTT
 #define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
 //#define MQTT_HOST			"10.0.1.3"
