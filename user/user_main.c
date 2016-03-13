@@ -487,7 +487,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		
 		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
 //		if ((impulse_edge_to_edge_time > 10 * 1000) && (impulse_edge_to_edge_time < 300 * 1000)) {
-		if (impulse_edge_to_edge_time > 10) {
+		if ((impulse_edge_to_edge_time > 10) && (impulse_edge_to_edge_time < 300)) {
 			// arm the debounce timer to enable GPIO interrupt again
 			impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
