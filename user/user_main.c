@@ -25,8 +25,11 @@ volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
 volatile uint32_t current_energy;	// in W
 
+#ifdef POWER_WD
+// for power wd
 bool shutdown = false;
-#endif
+#endif // POWER_WD
+#endif // ENDIF IMPULSE
 
 MQTT_Client mqttClient;
 static os_timer_t sample_timer;
@@ -43,8 +46,10 @@ static os_timer_t kmp_request_send_timer;
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
+#ifdef POWER_WD
 static os_timer_t power_wd_timer;
 uint16_t vdd_init;
+#endif // POWER_WD
 #endif
 
 uint16 counter = 0;
@@ -153,7 +158,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     	for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
     	    strcat(leading_zeroes, "0");
     	}
-    	sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
+    	os_sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
     	
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
@@ -187,31 +192,33 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
+	bool impulse_pin_state;
 
-	impulse_time = uptime();
-	impulse_time_diff = impulse_time - last_impulse_time;
-	last_impulse_time = impulse_time;
+	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
+	if (!impulse_pin_state) {	// if impulse is still going on...
+		impulse_time = uptime();
+		impulse_time_diff = impulse_time - last_impulse_time;
+		last_impulse_time = impulse_time;
 
-	if (impulse_time_diff) {
-		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
-	}
-	else {
-		// max interval
-		current_energy = 3600 * (1000 / impulses_per_kwh);
+		if (impulse_time_diff) {
+			current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
+		}
+		else {
+			// max interval
+			current_energy = 3600 * (1000 / impulses_per_kwh);
 		
-	}
+		}
 
-	// enable gpio interrupt again
-	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
-	ETS_GPIO_INTR_ENABLE();
 #ifdef DEBUG
-	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
-	os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
+		os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
+		os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
 #endif // DEBUG
+	}
 }
 #endif // IMPULSE
 
 #ifdef IMPULSE
+#ifdef POWER_WD
 ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	vdd = system_get_vdd33();
@@ -225,6 +232,7 @@ ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 		}
 	}
 }
+#endif // POWER_WD
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
@@ -448,10 +456,9 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
 	//ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);					// GPIO0 interrupt handler
 	gpio_intr_handler_register(gpio_int_handler, NULL);
-	PIN_PULLDWN_DIS(PERIPHS_IO_MUX_GPIO0_U);						// disable pullodwn
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
-	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_POSEDGE);	// Interrupt on falling GPIO0 edge
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
 	ETS_GPIO_INTR_ENABLE();											// Enable gpio interrupts
 	//wdt_feed();
 }
@@ -460,22 +467,30 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 #ifdef IMPULSE
 void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	uint32_t gpio_status;
+	bool impulse_pin_state;
 
 	gpio_intr_ack(interrupt_mask);
 
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
 	//wdt_feed();
-	impulse_meter_count++;
 	
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
-		
-	// arm the debounce timer to enable GPIO interrupt again
-	os_timer_disarm(&impulse_meter_calculate_timer);
-	os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
-	os_timer_arm(&impulse_meter_calculate_timer, 200, 0);	
+	
+	// only count real meter impulses, not noise
+	if (!impulse_pin_state) {		// falling edge
+		// arm the debounce timer to enable GPIO interrupt again
+		impulse_meter_count++;
+		os_timer_disarm(&impulse_meter_calculate_timer);
+		os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
+		os_timer_arm(&impulse_meter_calculate_timer, 80, 0);
+	}
+
+	// enable gpio interrupt again
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
+	ETS_GPIO_INTR_ENABLE();
 }
 
 ICACHE_FLASH_ATTR
@@ -494,7 +509,8 @@ void impulse_meter_init(void) {
 	
 	impulse_time = uptime();
 	last_impulse_time = impulse_time;
-	
+
+#ifdef POWER_WD
 	// start power watch dog
 	vdd_init = system_get_vdd33();
 	os_printf("\n\rvdd init: %d\n\r", vdd_init);
@@ -502,6 +518,7 @@ void impulse_meter_init(void) {
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 	os_timer_arm(&power_wd_timer, 50, 1);
+#endif
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
 #endif // DEBUG
@@ -544,6 +561,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("\t(THERMO_NO)\n\r");
 #else
 	os_printf("\t(THERMO_NC)\n\r");
+#endif
+#ifdef POWER_WD
+	os_printf("\t(POWER_WD)\n\r");
 #endif
 
 #ifndef DEBUG

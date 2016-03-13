@@ -153,6 +153,10 @@ ifeq ($(LED_ON_AC), 1)
     CFLAGS += -DLED_ON_AC
 endif
 
+ifeq ($(POWER_WD), 1)
+    CFLAGS += -DPOWER_WD
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
