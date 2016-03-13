@@ -283,7 +283,7 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
 	}
 	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
-		os_strcpy(buff, (char*)sys_cfg.impulse_meter_energy);
+		os_sprintf(buff, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)) / 1000);
 	}
 	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.impulses_per_kwh);
