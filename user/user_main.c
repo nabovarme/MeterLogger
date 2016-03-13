@@ -506,9 +506,6 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 ICACHE_FLASH_ATTR
 void impulse_meter_init(void) {
 	os_strncpy(impulse_meter_serial, sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN);
-	if (atoi(impulse_meter_serial) == 0) {
-		os_strcpy(impulse_meter_serial, DEFAULT_METER_SERIAL);
-	}
 	
 	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
 	
