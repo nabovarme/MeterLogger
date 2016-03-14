@@ -479,7 +479,14 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
-		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
+		if (impulse_rising_edge_time > impulse_falling_edge_time) {
+			impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
+		}
+		else {
+			// system time wrapped
+			impulse_edge_to_edge_time = UINT32_MAX - impulse_falling_edge_time + impulse_rising_edge_time;
+		}
+		
 		// check if impulse period is 100 mS...
 		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
