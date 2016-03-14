@@ -208,7 +208,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	}
 
 #ifdef DEBUG
-	os_printf("\n\rimpulse length: %u\n\r", impulse_rising_edge_time - impulse_falling_edge_time);
+//	os_printf("\n\rimpulse length: %u\n\r", impulse_rising_edge_time - impulse_falling_edge_time);
 	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
 	os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
 #endif // DEBUG
@@ -285,9 +285,6 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-//	uint32_t t1, t2;
-//	t1 = system_get_rtc_time();
-
 	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
 	MQTT_Client* client = (MQTT_Client*)args;
@@ -441,8 +438,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
-//	t2 = system_get_rtc_time();
-//	os_printf("\n\rtdiff: %u\n\r", t2 - t1);
 }
 
 #ifdef IMPULSE
@@ -481,13 +476,12 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	
 	// only count real meter impulses, not noise
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
-	os_printf("%s\n", impulse_pin_state ? "H" : "L");
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
 		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
-//		if ((impulse_edge_to_edge_time > 10 * 1000) && (impulse_edge_to_edge_time < 300 * 1000)) {
-		if ((impulse_edge_to_edge_time > 10) && (impulse_edge_to_edge_time < 300 * 1000)) {
+		// check if impulse period is 100 mS...
+		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
 			impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
