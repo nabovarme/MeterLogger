@@ -200,11 +200,8 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	last_impulse_time = impulse_time;
 
 	if (impulse_time_diff) {
+		// only calculate if not zero interval
 		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
-	}
-	else {
-		// max interval
-		current_energy = 3600 * (1000 / impulses_per_kwh);
 	}
 
 #ifdef DEBUG
