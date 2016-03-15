@@ -199,15 +199,16 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	impulse_time_diff = impulse_time - last_impulse_time;
 	last_impulse_time = impulse_time;
 
-	if (impulse_time_diff) {
-		// only calculate if not zero interval
+	if (impulse_time_diff) {	// only calculate if not zero interval
+#ifdef DEBUG
+		os_printf("wrapped\n");
+#endif
 		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
 	}
 
 #ifdef DEBUG
-//	os_printf("\n\rimpulse length: %u\n\r", impulse_rising_edge_time - impulse_falling_edge_time);
-	os_printf("\n\rcurrent_energy: %u\n\r", current_energy);
-	os_printf("\n\rimpulse_time_diff: %u\n\r", impulse_time_diff);
+	os_printf("current_energy: %u\n", current_energy);
+	os_printf("impulse_time_diff: %u\n", impulse_time_diff);
 #endif // DEBUG
 }
 #endif // IMPULSE
@@ -471,8 +472,11 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	//clear interrupt status
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 	
-	// only count real meter impulses, not noise
+	os_delay_us(1000);	// wait 1 mS to avoid reading on slope
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
+#ifdef DEBUG
+	os_printf("%s\n", impulse_pin_state ? "H" : "L");
+#endif
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
@@ -485,6 +489,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		}
 		
 		// check if impulse period is 100 mS...
+#ifdef DEBUG
+		os_printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
+#ifdef DEBUG
 		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
 			impulse_meter_count++;
