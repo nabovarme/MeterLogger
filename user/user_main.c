@@ -200,9 +200,6 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	last_impulse_time = impulse_time;
 
 	if (impulse_time_diff) {	// only calculate if not zero interval
-#ifdef DEBUG
-		os_printf("wrapped\n");
-#endif
 		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
 	}
 
@@ -485,6 +482,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		}
 		else {
 			// system time wrapped
+#ifdef DEBUG
+		os_printf("wrapped\n");
+#endif
 			impulse_edge_to_edge_time = UINT32_MAX - impulse_falling_edge_time + impulse_rising_edge_time;
 		}
 		
