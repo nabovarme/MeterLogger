@@ -57,7 +57,7 @@ typedef struct{
 	char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
 	char impulse_meter_energy[32 + 1];
 	char impulses_per_kwh[32 + 1];
-	uint32_t impulse_meter_count;
+	volatile uint32_t impulse_meter_count;
 #endif
 } syscfg_t;
 

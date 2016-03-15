@@ -19,8 +19,6 @@ char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
 uint32_t impulse_meter_energy;
 uint32_t impulses_per_kwh;
 
-volatile uint32_t impulse_meter_count;
-
 volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
 volatile uint32_t current_energy;	// in W
@@ -135,7 +133,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
-	acc_energy = (impulse_meter_energy * 1000) + (impulse_meter_count * (1000 / impulses_per_kwh));
+	acc_energy = (impulse_meter_energy * 1000) + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
     // for acc_energy...
     // ...divide by 1000 and prepare decimal string in kWh
@@ -417,8 +415,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 	else if (strncmp(function_name, "save", FUNCTIONNAME_L) == 0) {
 		// found save - save conf to flash
-		cfg_load();
-		sys_cfg.impulse_meter_count = impulse_meter_count;
 		cfg_save();
 		
 		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%s/%u", impulse_meter_serial, get_unix_time());
@@ -437,8 +433,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
-	impulse_meter_count = sys_cfg.impulse_meter_count;				// load impulse_meter_count from flash
-	
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
 	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
@@ -494,7 +488,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 #endif	// DEBUG
 		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
-			impulse_meter_count++;
+			sys_cfg.impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
 			os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
 			os_timer_arm(&impulse_meter_calculate_timer, 100, 0);
