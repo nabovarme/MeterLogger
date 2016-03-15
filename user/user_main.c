@@ -624,20 +624,25 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
 	os_timer_arm(&en61107_request_send_timer, 10000, 0);
 #elif defined IMPULSE
-	//os_timer_disarm(&kmp_request_send_timer);
-	//os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
-	//os_timer_arm(&kmp_request_send_timer, 10000, 0);
+	// do nothing here
 #else
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #endif
 			
+#ifdef IMPULSE
+	// start config mode at boot - dont wait for impulse based meters        
+	os_timer_disarm(&config_mode_timer);
+	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+	os_timer_arm(&config_mode_timer, 100, 0);
+#else
 	// start waiting for serial number after 16 seconds
 	// and start ap mode
 	os_timer_disarm(&config_mode_timer);
 	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 	os_timer_arm(&config_mode_timer, 16000, 0);
+#endif
 
 	// wait for 120 seconds from boot and go to station mode
 	os_timer_disarm(&sample_mode_timer);
