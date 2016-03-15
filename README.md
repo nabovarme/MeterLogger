@@ -8,6 +8,9 @@ dont wait for meter to answer
 DEBUG_SHORT_WEB_CONFIG_TIME=1  
 dont wait for web config  
   
+IMPULSE=1  
+meter type is impulse based (100 mS) 
+  
 EN61107=0  
 meter type is KMP (Multical 601)  
   
@@ -45,7 +48,7 @@ enable power brown out watch dog
 
 | Topic                                           | Message                                                                                              |
 | :---------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| /sample/v1/9999999/0                            | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
+| /sample/v1/9999999/[unix time]                  | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
 | /cron/v1/9999999/[unix time]                    | 12                                                                                                   |
 | /ping/v1/9999999/[unix time]                    |                                                                                                      |
 | /version/v1/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
