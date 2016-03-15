@@ -23,6 +23,8 @@ volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
 volatile uint32_t current_energy;	// in W
 
+volatile uint32_t last_impulse_meter_count;
+
 uint32_t impulse_falling_edge_time;
 uint32_t impulse_rising_edge_time;
 #ifdef POWER_WD
@@ -167,6 +169,13 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 		}
+
+		// set offset for next calculation
+		last_impulse_meter_count = sys_cfg.impulse_meter_count;
+		last_impulse_time = impulse_time;
+#ifdef DEBUG
+		os_printf("current_energy: %u\n", current_energy);
+#endif
 	}
 	else {
 		// send ping to keep mqtt alive
@@ -192,18 +201,23 @@ ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
+	uint32_t impulse_meter_count_diff;
 
 	impulse_time = uptime();
 	impulse_time_diff = impulse_time - last_impulse_time;
-	last_impulse_time = impulse_time;
+	
+	impulse_meter_count_diff = sys_cfg.impulse_meter_count - last_impulse_meter_count;
+#ifdef DEBUG
+	os_printf("count: %u\tl count: %u\timp time: %u\tlast imp time: %u\n", sys_cfg.impulse_meter_count, last_impulse_meter_count, impulse_time, last_impulse_time);
+	os_printf("count diff: %u\timp time diff: %u\n", impulse_meter_count_diff, impulse_time_diff);
+#endif
 
-	if (impulse_time_diff) {	// only calculate if not zero interval
-		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff;
+	if (impulse_time_diff && impulse_meter_count_diff) {	// only calculate if not zero interval or zero meter count diff - should not happen
+		current_energy = 3600 * (1000 / impulses_per_kwh) / impulse_time_diff * impulse_meter_count_diff;
 	}
 
 #ifdef DEBUG
 	os_printf("current_energy: %u\n", current_energy);
-	os_printf("impulse_time_diff: %u\n", impulse_time_diff);
 #endif // DEBUG
 }
 #endif // IMPULSE
@@ -466,7 +480,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	os_delay_us(1000);	// wait 1 mS to avoid reading on slope
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
 #ifdef DEBUG
-	os_printf("%s\n", impulse_pin_state ? "H" : "L");
+//	os_printf("%s\n", impulse_pin_state ? "H" : "L");
 #endif
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
@@ -515,7 +529,9 @@ void impulse_meter_init(void) {
 	}
 	
 	impulse_time = uptime();
-	last_impulse_time = impulse_time;
+	last_impulse_time = 0;
+	
+	last_impulse_meter_count = sys_cfg.impulse_meter_count;
 
 #ifdef POWER_WD
 	// start power watch dog
