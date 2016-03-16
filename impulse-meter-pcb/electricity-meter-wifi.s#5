@@ -11236,10 +11236,10 @@ Standard 2-pin 5 mm header</description>
 <instance part="U$1" gate="G$4" x="58.42" y="66.04" smashed="yes"/>
 <instance part="R2" gate="G$1" x="72.39" y="33.02" rot="R180"/>
 <instance part="GND2" gate="1" x="66.04" y="5.08"/>
-<instance part="U$1" gate="G$5" x="160.02" y="63.5"/>
-<instance part="U$1" gate="G$6" x="160.02" y="60.96"/>
-<instance part="U$1" gate="G$7" x="160.02" y="58.42"/>
-<instance part="U$1" gate="G$8" x="160.02" y="55.88"/>
+<instance part="U$1" gate="G$5" x="160.02" y="63.5" smashed="yes"/>
+<instance part="U$1" gate="G$6" x="160.02" y="60.96" smashed="yes"/>
+<instance part="U$1" gate="G$7" x="160.02" y="58.42" smashed="yes"/>
+<instance part="U$1" gate="G$8" x="160.02" y="55.88" smashed="yes"/>
 </instances>
 <busses>
 </busses>
