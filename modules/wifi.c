@@ -12,7 +12,7 @@
 #include "config.h"
 #include "led.h"
 
-#define NETWORK_CHECK_TIME 4000
+#define NETWORK_CHECK_TIME 5000
 
 static os_timer_t network_check_timer;
 
