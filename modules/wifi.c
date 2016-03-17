@@ -32,39 +32,22 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifi_status = wifi_station_get_connect_status();
 
-//	os_printf("event %x\n", evt->event);
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
+			// do nothing
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
 #ifdef DEBUG
-			os_printf("disconnect from ssid %s, reason %d\n",
-						evt->event_info.disconnected.ssid,
-						evt->event_info.disconnected.reason);
+			os_printf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
 			if 	(wifi_reconnect) {
 				wifi_station_connect();	// reconnect
 			}
 			break;
-//		case EVENT_STAMODE_AUTHMODE_CHANGE:
-//			os_printf("mode: %d -> %d\n",
-//						evt->event_info.auth_change.old_mode,
-//						evt->event_info.auth_change.new_mode);
-//			break;
 		case EVENT_STAMODE_GOT_IP:
 			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
 			wifi_cb(wifi_status);
 			break;
-//		case EVENT_SOFTAPMODE_STACONNECTED:
-//			os_printf("station: " MACSTR "join, AID = %d\n",
-//						MAC2STR(evt->event_info.sta_connected.mac),
-//						evt->event_info.sta_connected.aid);
-//			break;
-//		case EVENT_SOFTAPMODE_STADISCONNECTED:
-//			os_printf("station: " MACSTR "leave, AID = %d\n",
-//						MAC2STR(evt->event_info.sta_disconnected.mac),
-//						evt->event_info.sta_disconnected.aid);
-//			break;
 		default:
 			break;
 	}
