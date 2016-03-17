@@ -12,7 +12,7 @@
 #include "config.h"
 #include "led.h"
 
-#define NETWORK_CHECK_TIME 5000
+#define NETWORK_CHECK_TIME 4000
 
 static os_timer_t network_check_timer;
 
@@ -32,45 +32,51 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifi_status = wifi_station_get_connect_status();
 
-	os_printf("event %x\n", evt->event);
+//	os_printf("event %x\n", evt->event);
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
+#ifdef DEBUG
 			os_printf("connect to ssid %s, channel %d\n",
 						evt->event_info.connected.ssid,
 						evt->event_info.connected.channel);
+#endif
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
+#ifdef DEBUG
 			os_printf("disconnect from ssid %s, reason %d\n",
 						evt->event_info.disconnected.ssid,
 						evt->event_info.disconnected.reason);
-						if 	(wifi_reconnect) {
-							wifi_station_connect();
-						}
+#endif
+			if 	(wifi_reconnect) {
+				wifi_station_connect();	// reconnect
+			}
 			break;
-		case EVENT_STAMODE_AUTHMODE_CHANGE:
-			os_printf("mode: %d -> %d\n",
-						evt->event_info.auth_change.old_mode,
-						evt->event_info.auth_change.new_mode);
-			break;
+//		case EVENT_STAMODE_AUTHMODE_CHANGE:
+//			os_printf("mode: %d -> %d\n",
+//						evt->event_info.auth_change.old_mode,
+//						evt->event_info.auth_change.new_mode);
+//			break;
 		case EVENT_STAMODE_GOT_IP:
+#ifdef DEBUG
 			os_printf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR,
 						IP2STR(&evt->event_info.got_ip.ip),
 						IP2STR(&evt->event_info.got_ip.mask),
 						IP2STR(&evt->event_info.got_ip.gw));
 			os_printf("\n");
+#endif
 			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
 			wifi_cb(wifi_status);
 			break;
-		case EVENT_SOFTAPMODE_STACONNECTED:
-			os_printf("station: " MACSTR "join, AID = %d\n",
-						MAC2STR(evt->event_info.sta_connected.mac),
-						evt->event_info.sta_connected.aid);
-			break;
-		case EVENT_SOFTAPMODE_STADISCONNECTED:
-			os_printf("station: " MACSTR "leave, AID = %d\n",
-						MAC2STR(evt->event_info.sta_disconnected.mac),
-						evt->event_info.sta_disconnected.aid);
-			break;
+//		case EVENT_SOFTAPMODE_STACONNECTED:
+//			os_printf("station: " MACSTR "join, AID = %d\n",
+//						MAC2STR(evt->event_info.sta_connected.mac),
+//						evt->event_info.sta_connected.aid);
+//			break;
+//		case EVENT_SOFTAPMODE_STADISCONNECTED:
+//			os_printf("station: " MACSTR "leave, AID = %d\n",
+//						MAC2STR(evt->event_info.sta_disconnected.mac),
+//						evt->event_info.sta_disconnected.aid);
+//			break;
 		default:
 			break;
 	}
@@ -84,8 +90,9 @@ static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 //		os_memset(&config, 0, sizeof(config));
 //		config.ssid = STA_FALLBACK_SSID;
 //		wifi_station_scan(&config, wifi_scan_done_cb);	// scanning for specific ssid does not work in SDK 1.5.2
-		wifi_station_scan(NULL, wifi_scan_done_cb);
 		wifi_scan_runnning = true;
+		wifi_station_scan(NULL, wifi_scan_done_cb);
+		os_printf("scan running\n");
 	}
 }
 
@@ -120,9 +127,13 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		wifi_fallback_last_present = wifi_fallback_present;
 	}
 	
-	if (status == OK) {
-		wifi_scan_runnning = false;
-	}
+	wifi_scan_runnning = false;
+	os_printf("scan done\n");
+
+	// start network watchdog again
+	os_timer_disarm(&network_check_timer);
+	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
+	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
@@ -184,7 +195,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 1);
+	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_reconnect = true;	// let wifi_handle_event_cb() handle reconnect on disconnect
