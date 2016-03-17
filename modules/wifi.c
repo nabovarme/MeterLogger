@@ -92,7 +92,7 @@ static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 //		wifi_station_scan(&config, wifi_scan_done_cb);	// scanning for specific ssid does not work in SDK 1.5.2
 		wifi_scan_runnning = true;
 		wifi_station_scan(NULL, wifi_scan_done_cb);
-		os_printf("scan running\n");
+//		os_printf("scan running\n");
 	}
 }
 
@@ -128,7 +128,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	}
 	
 	wifi_scan_runnning = false;
-	os_printf("scan done\n");
+//	os_printf("scan done\n");
 
 	// start network watchdog again
 	os_timer_disarm(&network_check_timer);
