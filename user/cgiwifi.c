@@ -39,6 +39,8 @@ typedef struct {
 //Static scan status storage.
 ScanResultData cgiWifiAps;
 
+static os_timer_t resetTimer;
+
 //Callback the code calls when a wlan ap scan is done. Basically stores the result in
 //the cgiWifiAps struct.
 void ICACHE_FLASH_ATTR wifiScanDoneCb(void *arg, STATUS status) {
@@ -141,36 +143,39 @@ static struct station_config stconf;
 //This routine is ran some time after a connection attempt to an access point. If
 //the connect succeeds, this gets the module in STA-only mode.
 static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
-	int x=wifi_station_get_connect_status();
-	if (x==STATION_GOT_IP) {
-		//Go to STA mode. This needs a reset, so do that.
-		INFO("Got IP. Going into STA mode..\n");
-		wifi_set_opmode(1);
-		system_restart();
-	} else {
-		INFO("Connect fail. Not going into STA-only mode.\n");
-		//Maybe also pass this through on the webpage?
-	}
+//	int x=wifi_station_get_connect_status();
+//	if (x==STATION_GOT_IP) {
+//		//Go to STA mode. This needs a reset, so do that.
+//		INFO("Got IP. Going into STA mode..\n");
+#ifdef DEBUG
+	os_printf("restarting...\n");
+#endif
+//		wifi_set_opmode(1);
+	system_restart();
+//	} else {
+//		INFO("Connect fail. Not going into STA-only mode.\n");
+//		//Maybe also pass this through on the webpage?
+//	}
 }
 
 //Actually connect to a station. This routine is timed because I had problems
 //with immediate connections earlier. It probably was something else that caused it,
 //but I can't be arsed to put the code back :P
-static void ICACHE_FLASH_ATTR reassTimerCb(void *arg) {
-	int x;
-	static ETSTimer resetTimer;
-	INFO("Try to connect to AP....\n");
-	wifi_station_disconnect();
-	wifi_station_set_config(&stconf);
-	wifi_station_connect();
-	x=wifi_get_opmode();
-	if (x!=1) {
-		//Schedule disconnect/connect
-		os_timer_disarm(&resetTimer);
-		os_timer_setfn(&resetTimer, resetTimerCb, NULL);
-		os_timer_arm(&resetTimer, 4000, 0);
-	}
-}
+//static void ICACHE_FLASH_ATTR reassTimerCb(void *arg) {
+//	int x;
+//	static ETSTimer resetTimer;
+//	INFO("Try to connect to AP....\n");
+//	wifi_station_disconnect();
+//	wifi_station_set_config(&stconf);
+//	wifi_station_connect();
+//	x=wifi_get_opmode();
+//	if (x!=1) {
+//		//Schedule disconnect/connect
+//		os_timer_disarm(&resetTimer);
+//		os_timer_setfn(&resetTimer, resetTimerCb, NULL);
+//		os_timer_arm(&resetTimer, 4000, 0);
+//	}
+//}
 
 
 //This cgi uses the routines above to connect to a specific access point with the
@@ -212,15 +217,20 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	INFO("Try to connect to AP %s pw %s\n", essid, passwd);
 
 	//Schedule disconnect/connect
-	os_timer_disarm(&reassTimer);
-	os_timer_setfn(&reassTimer, reassTimerCb, NULL);
-	os_timer_arm(&reassTimer, 1000, 0);
+	os_timer_disarm(&resetTimer);
+	os_timer_setfn(&resetTimer, resetTimerCb, NULL);
+	os_timer_arm(&resetTimer, 1000, 0);
 #ifdef IMPULSE
 	httpdRedirect(connData, "setting_up.html");
 #else
 	httpdRedirect(connData, "connecting.html");
 #endif
 	
+	// restart to go directly to sample mode after 5 seconds
+	os_timer_disarm(&resetTimer);
+	os_timer_setfn(&resetTimer, resetTimerCb, NULL);
+	os_timer_arm(&resetTimer, 5000, 0);
+
 	return HTTPD_CGI_DONE;
 }
 

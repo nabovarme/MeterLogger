@@ -178,7 +178,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 		// set offset for next calculation
 		last_impulse_meter_count = sys_cfg.impulse_meter_count;
 		last_impulse_time = impulse_time;
-#ifdef DEBUG
+#ifdef DEBUGX
 		os_printf("current_energy: %u\n", current_energy);
 #endif
 	}
@@ -212,7 +212,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	impulse_time_diff = impulse_time - last_impulse_time;
 	
 	impulse_meter_count_diff = sys_cfg.impulse_meter_count - last_impulse_meter_count;
-#ifdef DEBUG
+#ifdef DEBUGX
 	os_printf("count: %u\tl count: %u\timp time: %u\tlast imp time: %u\n", sys_cfg.impulse_meter_count, last_impulse_meter_count, impulse_time, last_impulse_time);
 	os_printf("count diff: %u\timp time diff: %u\n", impulse_meter_count_diff, impulse_time_diff);
 #endif
@@ -221,7 +221,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 		current_energy = 3600 * (1000 / impulses_per_kwh) * impulse_meter_count_diff / impulse_time_diff;
 	}
 
-#ifdef DEBUG
+#ifdef DEBUGX
 	os_printf("current_energy: %u\n", current_energy);
 #endif // DEBUG
 }
@@ -519,7 +519,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		}
 		
 		// check if impulse period is 100 mS...
-#ifdef DEBUG
+#ifdef DEBUGX
 		os_printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
 #endif	// DEBUG
 		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
@@ -583,6 +583,8 @@ unsigned int impulse_meter_decimal_number_length(int n) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
+	struct rst_info *rtc_info;
+
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("\n\r");
 	os_printf("SDK version: %s\n\r", system_get_sdk_version());
@@ -616,6 +618,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_set_os_print(0);
 #endif
 
+	rtc_info = system_get_rst_info();
+#ifdef DEBUG
+	os_printf("rst: %u\n", rtc_info->reason);
+#endif	// DEBUG
 	cfg_load();
 
 	// start kmp_request
@@ -668,28 +674,48 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #endif
-			
-#ifdef IMPULSE
-	// start config mode at boot - dont wait for impulse based meters        
-	os_timer_disarm(&config_mode_timer);
-	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-	os_timer_arm(&config_mode_timer, 100, 0);
+
+	if ((rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
+		// fast boot if reset, go in sample/station mode
+#ifdef DEBUG
+		os_printf("fast boot\n");
+#endif
+		os_timer_disarm(&sample_mode_timer);
+		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
+#ifdef EN61107
+		os_timer_arm(&sample_mode_timer, 12000, 0);
+#elif defined IMPULSE
+		os_timer_arm(&sample_mode_timer, 100, 0);
 #else
-	// start waiting for serial number after 16 seconds
-	// and start ap mode
-	os_timer_disarm(&config_mode_timer);
-	os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-	os_timer_arm(&config_mode_timer, 16000, 0);
+		os_timer_arm(&sample_mode_timer, 12000, 0);
+#endif
+	}
+	else {
+#ifdef DEBUG
+		os_printf("normal boot\n");
+#endif
+#ifdef IMPULSE
+		// start config mode at boot - dont wait for impulse based meters        
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 100, 0);
+#else
+		// start waiting for serial number after 16 seconds
+		// and start ap mode
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 16000, 0);
 #endif
 
-	// wait for 120 seconds from boot and go to station mode
-	os_timer_disarm(&sample_mode_timer);
-	os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
+		// wait for 120 seconds from boot and go to station mode
+		os_timer_disarm(&sample_mode_timer);
+		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 #ifndef DEBUG_SHORT_WEB_CONFIG_TIME
-	os_timer_arm(&sample_mode_timer, 120000, 0);
+		os_timer_arm(&sample_mode_timer, 120000, 0);
 #else
-	os_timer_arm(&sample_mode_timer, 18000, 0);
+		os_timer_arm(&sample_mode_timer, 18000, 0);
 #endif
+	}
 		
 	INFO("\r\nSystem started ...\r\n");
 }
