@@ -583,8 +583,6 @@ unsigned int impulse_meter_decimal_number_length(int n) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
-	struct rst_info *rtc_info;
-
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 	os_printf("\n\r");
 	os_printf("SDK version: %s\n\r", system_get_sdk_version());
@@ -618,10 +616,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_set_os_print(0);
 #endif
 
-	rtc_info = system_get_rst_info();
-#ifdef DEBUG
-	os_printf("rst: %u\n", rtc_info->reason);
-#endif	// DEBUG
 	cfg_load();
 
 	// start kmp_request
@@ -661,6 +655,13 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
+	struct rst_info *rtc_info;
+
+	rtc_info = system_get_rst_info();
+#ifdef DEBUG
+	os_printf("rst: %u\n", rtc_info->reason);
+#endif	// DEBUG
+
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifdef EN61107
