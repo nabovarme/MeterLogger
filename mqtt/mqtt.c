@@ -36,7 +36,7 @@
 #include "mqtt.h"
 #include "queue.h"
 
-#define MQTT_TASK_PRIO        		1
+#define MQTT_TASK_PRIO        		USER_TASK_PRIO_1
 #define MQTT_TASK_QUEUE_SIZE    	1
 #define MQTT_SEND_TIMOUT			5
 

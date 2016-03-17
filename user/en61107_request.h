@@ -1,4 +1,4 @@
-#define en61107_received_task_prio			2
+#define en61107_received_task_prio			USER_TASK_PRIO_2
 #define en61107_received_task_queue_length	64
 
 os_event_t    en61107_received_task_queue[en61107_received_task_queue_length];
