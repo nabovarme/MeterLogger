@@ -35,11 +35,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 //	os_printf("event %x\n", evt->event);
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
-#ifdef DEBUG
-			os_printf("connect to ssid %s, channel %d\n",
-						evt->event_info.connected.ssid,
-						evt->event_info.connected.channel);
-#endif
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
 #ifdef DEBUG
@@ -57,13 +52,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 //						evt->event_info.auth_change.new_mode);
 //			break;
 		case EVENT_STAMODE_GOT_IP:
-#ifdef DEBUG
-			os_printf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR,
-						IP2STR(&evt->event_info.got_ip.ip),
-						IP2STR(&evt->event_info.got_ip.mask),
-						IP2STR(&evt->event_info.got_ip.gw));
-			os_printf("\n");
-#endif
 			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
 			wifi_cb(wifi_status);
 			break;
