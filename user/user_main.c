@@ -135,6 +135,11 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
+#ifdef DEBUG
+	system_print_meminfo();
+	os_printf("free heap=%lu", system_get_free_heap_size());
+#endif
+
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = (impulse_meter_energy * 1000) + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
@@ -420,6 +425,23 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		reply_topic_l = os_sprintf(reply_topic, "/uptime/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		reply_message_l = os_sprintf(reply_message, "%u", uptime());
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
+	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
+		// found mem
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/mem/v1/%07u/%u", impulse_meter_serial, get_unix_time());
+#else
+		reply_topic_l = os_sprintf(reply_topic, "/mem/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+		reply_message_l = os_sprintf(reply_message, "heap=%lu&", system_get_free_heap_size());
+#ifdef DEBUG
+		system_print_meminfo();
+#endif
 
 		if (&mqttClient) {
 			// if mqtt_client is initialized

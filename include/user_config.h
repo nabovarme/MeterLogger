@@ -26,7 +26,11 @@
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
-#define QUEUE_BUFFER_SIZE		 		10240
+#ifdef IMPULSE
+#define QUEUE_BUFFER_SIZE		 		20480		// larger queue for impulse meters
+#else
+#define QUEUE_BUFFER_SIZE		 		10240		// DEBUG: check if we could have larger queue for this as welle after SDK 1.5.2
+#endif // IMPULSE
 
 #define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
 //PROTOCOL_NAMEv311			/*MQTT version 3.11 compatible with https://eclipse.org/paho/clients/testing/*/
