@@ -13,14 +13,7 @@
 #include "led.h"
 
 #define NETWORK_CHECK_TIME 5000
-#define NETWORK_CHECK_TIME_FIRST 2000
 
-#define WIFI_CHECK_TIME 2000
-#define WIFI_CHECK_TIME_FIRST 1000
-#define WIFI_CHECK_TIME_RECONNECT 500
-
-static os_timer_t wifi_check_timer;
-static os_timer_t wifi_reconnect_default_timer;
 static os_timer_t network_check_timer;
 
 WifiCallback wifi_cb = NULL;
@@ -28,108 +21,114 @@ uint8_t* config_ssid;
 uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
 static uint8_t last_wifi_status = STATION_IDLE;
-char wifi_fallback_present = 0;
-char wifi_fallback_last_present = 0;
-char wifi_scan_runnning = 0;
+bool wifi_fallback_present = false;
+bool wifi_fallback_last_present = false;
+volatile bool wifi_scan_runnning = false;
+volatile bool wifi_reconnect = false;
 
-static void ICACHE_FLASH_ATTR wifi_check_timer_func(void *arg) {
+void wifi_handle_event_cb(System_Event_t *evt) {
 	struct ip_info ipConfig;
 
-	os_timer_disarm(&wifi_check_timer);
-	// if we are scanning networks, reschedule timer
-	if (wifi_scan_runnning == 1) {
-		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_RECONNECT, 0);
-		return;
-	}
-	
 	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifi_status = wifi_station_get_connect_status();
-	if (wifi_status == STATION_GOT_IP && ipConfig.ip.addr != 0) {
-		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME, 0);
-	}
-	else {
-		if (wifi_station_get_connect_status() == STATION_WRONG_PASSWORD) {
-			INFO("STATION_WRONG_PASSWORD\r\n");
-			wifi_station_connect();
-		}
-		else if (wifi_station_get_connect_status() == STATION_NO_AP_FOUND) {
-			INFO("STATION_NO_AP_FOUND\r\n");
-			wifi_station_connect();
-		}
-		else if (wifi_station_get_connect_status() == STATION_CONNECT_FAIL) {
-			INFO("STATION_CONNECT_FAIL\r\n");
-			wifi_station_connect();
-		}
-		else {
-			INFO("STATION_IDLE\r\n");
-		}
 
-		os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-		os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_RECONNECT, 0);
-	}
-	
-	if (wifi_status != last_wifi_status) {
-		last_wifi_status = wifi_status;
-		if (wifi_cb) {
+	os_printf("event %x\n", evt->event);
+	switch (evt->event) {
+		case EVENT_STAMODE_CONNECTED:
+			os_printf("connect to ssid %s, channel %d\n",
+						evt->event_info.connected.ssid,
+						evt->event_info.connected.channel);
+			break;
+		case EVENT_STAMODE_DISCONNECTED:
+			os_printf("disconnect from ssid %s, reason %d\n",
+						evt->event_info.disconnected.ssid,
+						evt->event_info.disconnected.reason);
+						if 	(wifi_reconnect) {
+							wifi_station_connect();
+						}
+			break;
+		case EVENT_STAMODE_AUTHMODE_CHANGE:
+			os_printf("mode: %d -> %d\n",
+						evt->event_info.auth_change.old_mode,
+						evt->event_info.auth_change.new_mode);
+			break;
+		case EVENT_STAMODE_GOT_IP:
+			os_printf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR,
+						IP2STR(&evt->event_info.got_ip.ip),
+						IP2STR(&evt->event_info.got_ip.mask),
+						IP2STR(&evt->event_info.got_ip.gw));
+			os_printf("\n");
+			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
 			wifi_cb(wifi_status);
-		}
+			break;
+		case EVENT_SOFTAPMODE_STACONNECTED:
+			os_printf("station: " MACSTR "join, AID = %d\n",
+						MAC2STR(evt->event_info.sta_connected.mac),
+						evt->event_info.sta_connected.aid);
+			break;
+		case EVENT_SOFTAPMODE_STADISCONNECTED:
+			os_printf("station: " MACSTR "leave, AID = %d\n",
+						MAC2STR(evt->event_info.sta_disconnected.mac),
+						evt->event_info.sta_disconnected.aid);
+			break;
+		default:
+			break;
 	}
 }
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
 	struct scan_config config;
 	
-	wifi_scan_runnning = 1;
-
-	// scan for fallback network
-	os_memset(&config, 0, sizeof(config));
-	config.ssid = STA_FALLBACK_SSID;
-	wifi_station_scan(&config, wifi_scan_done_cb);
+	if (!wifi_scan_runnning) {
+		// scan for fallback network
+//		os_memset(&config, 0, sizeof(config));
+//		config.ssid = STA_FALLBACK_SSID;
+//		wifi_station_scan(&config, wifi_scan_done_cb);	// scanning for specific ssid does not work in SDK 1.5.2
+		wifi_station_scan(NULL, wifi_scan_done_cb);
+		wifi_scan_runnning = true;
+	}
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	
-	wifi_fallback_present = 0;
+	wifi_fallback_present = false;
 	
 	// check if fallback network is present
 	if ((arg != NULL) && (status == OK)) {
 		info = (struct bss_info *)arg;
-		//info = info->next.stqe_next;	// ignore first. DEBUG: appearently not needed in newer SDK versions
-		wifi_fallback_present == 0;
+		wifi_fallback_present = false;
 		
-		while ((info != NULL) && (wifi_fallback_present == 0)) {
-			info = info->next.stqe_next;
+		while ((info != NULL) && (!wifi_fallback_present)) {
 			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
-				wifi_fallback_present = 1;
+				wifi_fallback_present = true;
 			}
+			info = info->next.stqe_next;
 		}
 		
 		// if fallback network appeared connect to it
-		if ((wifi_fallback_present == 1) && (wifi_fallback_last_present == 0)) {
+		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
 			wifi_fallback();
 			led_pattern_b();
 		}
 		// if fallback network disappeared connect to default network
-		else if ((wifi_fallback_present == 0) && (wifi_fallback_last_present == 1)) {
+		else if ((!wifi_fallback_present) && (wifi_fallback_last_present)) {
 			wifi_default();
 			led_stop_pattern();
 		}
 		
 		wifi_fallback_last_present = wifi_fallback_present;
 	}
-	wifi_scan_runnning = 0;
 	
-	// restart network_check_timer
-	os_timer_disarm(&network_check_timer);
-	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
+	if (status == OK) {
+		wifi_scan_runnning = false;
+	}
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
+	
+	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
 
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
@@ -142,12 +141,13 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	os_sprintf(stationConf.password, "%s", config_pass);
     
 	wifi_station_set_config_current(&stationConf);
-	
 	wifi_station_connect();
 }
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
+
+	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
 
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
@@ -178,19 +178,17 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	os_sprintf(stationConf.ssid, "%s", ssid);
 	os_sprintf(stationConf.password, "%s", pass);
 
+	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);
 
-	// start wifi link watchdog
-	os_timer_disarm(&wifi_check_timer);
-	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_check_timer_func, NULL);
-	os_timer_arm(&wifi_check_timer, WIFI_CHECK_TIME_FIRST, 0);
-	
 	// start network watchdog
 	os_timer_disarm(&network_check_timer);
 	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME_FIRST, 0);
+	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 1);
 
 	wifi_station_set_auto_connect(TRUE);
+	wifi_reconnect = true;	// let wifi_handle_event_cb() handle reconnect on disconnect
+	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
 	led_stop_pattern();

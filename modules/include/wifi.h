@@ -9,6 +9,7 @@
 #define USER_WIFI_H_
 typedef void (*WifiCallback)(uint8_t);
 
+void wifi_handle_event_cb(System_Event_t *evt);
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg);
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);
 void ICACHE_FLASH_ATTR wifi_default();
