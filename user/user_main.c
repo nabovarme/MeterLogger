@@ -56,6 +56,8 @@ uint16_t vdd_init;
 
 uint16 counter = 0;
 
+struct rst_info *rtc_info;
+
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
@@ -438,6 +440,23 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
+	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
+		// found mem
+#ifdef IMPULSE
+		reply_topic_l = os_sprintf(reply_topic, "/reset_reason/v1/%07u/%u", impulse_meter_serial, get_unix_time());
+#else
+		reply_topic_l = os_sprintf(reply_topic, "/reset_reason/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+		reply_message_l = os_sprintf(reply_message, "heap=%d&", (rtc_info != NULL) ? rtc_info->reason : -1);
+#ifdef DEBUG
+		system_print_meminfo();
+#endif
+
+		if (&mqttClient) {
+			// if mqtt_client is initialized
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+		}
+	}
 #ifdef IMPULSE
 	else if (strncmp(function_name, "save", FUNCTIONNAME_L) == 0) {
 		// found save - save conf to flash
@@ -642,11 +661,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
-	struct rst_info *rtc_info;
-
 	rtc_info = system_get_rst_info();
 #ifdef DEBUG
-	os_printf("rst: %u\n", rtc_info->reason);
+	os_printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 #endif	// DEBUG
 	
 	init_unix_time();
@@ -665,7 +682,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #endif
 
-	if ((rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
+	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
 		// fast boot if reset, go in sample/station mode
 #ifdef DEBUG
 		os_printf("fast boot\n");
