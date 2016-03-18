@@ -139,7 +139,7 @@ ESP-07</text>
 <text x="1.5875" y="60.96" size="1.016" layer="25" ratio="15">v.1.2.1</text>
 <text x="3.33375" y="25.4" size="1.016" layer="25" font="fixed">Part     RS#
 JP1, JP2 821-8701
-R1       721-7820
+R1,R2    721-7820
 C1       any</text>
 <wire x1="2.69875" y1="31.75" x2="10.795" y2="31.75" width="0.1524" layer="25"/>
 <wire x1="10.795" y1="31.75" x2="19.3675" y2="31.75" width="0.1524" layer="25"/>
