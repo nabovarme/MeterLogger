@@ -134,11 +134,6 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	int8_t exponent;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
-	
-#ifdef DEBUG
-	system_print_meminfo();
-	os_printf("free heap=%lu", system_get_free_heap_size());
-#endif
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = (impulse_meter_energy * 1000) + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
@@ -178,7 +173,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 		// set offset for next calculation
 		last_impulse_meter_count = sys_cfg.impulse_meter_count;
 		last_impulse_time = impulse_time;
-#ifdef DEBUGX
+#ifdef DEBUG
 		os_printf("current_energy: %u\n", current_energy);
 #endif
 	}
@@ -212,7 +207,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 	impulse_time_diff = impulse_time - last_impulse_time;
 	
 	impulse_meter_count_diff = sys_cfg.impulse_meter_count - last_impulse_meter_count;
-#ifdef DEBUGX
+#ifdef DEBUG
 	os_printf("count: %u\tl count: %u\timp time: %u\tlast imp time: %u\n", sys_cfg.impulse_meter_count, last_impulse_meter_count, impulse_time, last_impulse_time);
 	os_printf("count diff: %u\timp time diff: %u\n", impulse_meter_count_diff, impulse_time_diff);
 #endif
@@ -221,7 +216,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 		current_energy = 3600 * (1000 / impulses_per_kwh) * impulse_meter_count_diff / impulse_time_diff;
 	}
 
-#ifdef DEBUGX
+#ifdef DEBUG
 	os_printf("current_energy: %u\n", current_energy);
 #endif // DEBUG
 }
@@ -314,10 +309,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 	os_memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
-
-#ifdef DEBUG
-	//os_printf("\n\rReceive topic: %s, data: %s \n\r", topicBuf, dataBuf);
-#endif
 
 	// parse mqtt topic for function call name
 	str = strtok(topicBuf, "/");
@@ -501,9 +492,6 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	
 	os_delay_us(1000);	// wait 1 mS to avoid reading on slope
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
-#ifdef DEBUG
-//	os_printf("%s\n", impulse_pin_state ? "H" : "L");
-#endif
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
@@ -519,7 +507,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		}
 		
 		// check if impulse period is 100 mS...
-#ifdef DEBUGX
+#ifdef DEBUG
 		os_printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
 #endif	// DEBUG
 		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
