@@ -510,7 +510,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 #ifdef DEBUG
 		os_printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
 #endif	// DEBUG
-		if ((impulse_edge_to_edge_time > 90 * 1000) && (impulse_edge_to_edge_time < 110 * 1000)) {
+		if ((impulse_edge_to_edge_time > 80 * 1000) && (impulse_edge_to_edge_time < 120 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
 			sys_cfg.impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
