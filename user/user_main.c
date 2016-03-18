@@ -242,7 +242,6 @@ ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
-		init_unix_time();
 		MQTT_Connect(&mqttClient);
 	}
 }
@@ -649,6 +648,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef DEBUG
 	os_printf("rst: %u\n", rtc_info->reason);
 #endif	// DEBUG
+	
+	init_unix_time();
 
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
