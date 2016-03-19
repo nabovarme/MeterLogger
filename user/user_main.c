@@ -72,9 +72,6 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	cfg_load();
 	// ...and restore sys_cfg.impulse_meter_count
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
-#ifdef IMPULSE
-	impulse_meter_init();
-#endif
 	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
