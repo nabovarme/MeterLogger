@@ -61,12 +61,17 @@ struct rst_info *rtc_info;
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
+	uint32_t impulse_meter_count_temp;
 	
 	// stop http configuration server
 	httpdStop();
-	
-	// reload save configuration - could have changed via web config after boot
+
+	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
+	impulse_meter_count_temp = sys_cfg.impulse_meter_count;
+	// reload save configuration
 	cfg_load();
+	// ...and restore sys_cfg.impulse_meter_count
+	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
 #ifdef IMPULSE
 	impulse_meter_init();
 #endif
