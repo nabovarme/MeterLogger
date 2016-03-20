@@ -61,17 +61,23 @@ struct rst_info *rtc_info;
 ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
+#ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
+#endif // IMPULSE
 	
 	// stop http configuration server
 	httpdStop();
 
+#ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
 	impulse_meter_count_temp = sys_cfg.impulse_meter_count;
+#endif // IMPULSE
 	// reload save configuration
 	cfg_load();
+#ifdef IMPULSE
 	// ...and restore sys_cfg.impulse_meter_count
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
+#endif // IMPULSE
 	
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
