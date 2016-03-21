@@ -34,6 +34,7 @@
 #include "config.h"
 #include "user_config.h"
 #include "debug.h"
+#include <utils.h>
 
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
@@ -44,8 +45,12 @@ char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR
 cfg_save() {
-	 //INFO("cfg_save() essid: %s pw: %s\n", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
-	 spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+	// calculate checksum without ccit_crc16 and impulse_meter_count
+	sys_cfg.ccit_crc16 = ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count));	
+#ifdef DEBUG
+    os_printf("saved crc: %x\n", sys_cfg.ccit_crc16);
+#endif // DEBUG
+	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 
 	if (saveFlag.flag == 0) {
@@ -69,6 +74,7 @@ cfg_save() {
 
 void ICACHE_FLASH_ATTR
 cfg_load() {
+
 	INFO("\r\nload ...\r\n");
 	/*
 	char essid[128];
@@ -89,10 +95,21 @@ cfg_load() {
 		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
-	if(sys_cfg.cfg_holder != CFG_HOLDER){
+
+#ifdef DEBUG
+	os_printf("calculated crc: %x\n", ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count)));
+	os_printf("crc: %x\n", sys_cfg.ccit_crc16);
+#endif // DEBUG
+
+	// if checksum fails...
+	if (sys_cfg.ccit_crc16 != ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count))) {
+#ifdef DEBUG
+		os_printf("config crc error\n");
+#endif // DEBUG
+	}
+	
+	if (sys_cfg.cfg_holder != CFG_HOLDER) {		// if first time config
 		os_memset(&sys_cfg, 0x00, sizeof sys_cfg);
-
-
 		sys_cfg.cfg_holder = CFG_HOLDER;
 
 		os_sprintf(sys_cfg.sta_ssid, "%s", STA_SSID);
