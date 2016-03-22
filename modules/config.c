@@ -1,33 +1,4 @@
-/*
-/* config.c
-*
-* Copyright (c) 2014-2015, Tuan PM <tuanpm at live dot com>
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* * Redistributions of source code must retain the above copyright notice,
-* this list of conditions and the following disclaimer.
-* * Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in the
-* documentation and/or other materials provided with the distribution.
-* * Neither the name of Redis nor the names of its contributors may be used
-* to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*/
+#include <stddef.h>
 #include <esp8266.h>
 
 #include "mqtt.h"
@@ -45,46 +16,42 @@ char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR
 cfg_save() {
-	// calculate checksum without ccit_crc16 and impulse_meter_count
-	sys_cfg.ccit_crc16 = ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count));	
-#ifdef DEBUG
-    os_printf("saved crc: %x\n", sys_cfg.ccit_crc16);
-#endif // DEBUG
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+	uint32_t impulse_meter_count_temp;
+	int i = 0;
+	
+	do {
+		// try to save until sys_cfg.impulse_meter_count does not change
+		impulse_meter_count_temp = sys_cfg.impulse_meter_count;
 
-	if (saveFlag.flag == 0) {
-		spi_flash_erase_sector(CFG_LOCATION + 1);
-		spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sys_cfg, sizeof(syscfg_t));
-		saveFlag.flag = 1;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	} else {
-		spi_flash_erase_sector(CFG_LOCATION + 0);
-		spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sys_cfg, sizeof(syscfg_t));
-		saveFlag.flag = 0;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	}
+		// calculate checksum on sys_cfg struct without ccit_crc16
+		sys_cfg.ccit_crc16 = ccit_crc16(&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
+		spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+	
+		if (saveFlag.flag == 0) {
+			spi_flash_erase_sector(CFG_LOCATION + 1);
+			spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+							(uint32 *)&sys_cfg, sizeof(syscfg_t));
+			saveFlag.flag = 1;
+			spi_flash_erase_sector(CFG_LOCATION + 3);
+			spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+		} else {
+			spi_flash_erase_sector(CFG_LOCATION + 0);
+			spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
+							(uint32 *)&sys_cfg, sizeof(syscfg_t));
+			saveFlag.flag = 0;
+			spi_flash_erase_sector(CFG_LOCATION + 3);
+			spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+		}
+	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
 }
 
 void ICACHE_FLASH_ATTR
 cfg_load() {
-
+	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
-	/*
-	char essid[128];
-	char passwd[128];
-	os_memset(essid, 0x00, sizeof essid);
-	os_memset(passwd, 0x00, sizeof passwd);
-	os_strncpy(essid, (char*)sys_cfg.sta_ssid, 32);
-	os_strncpy(passwd, (char*)sys_cfg.sta_pwd, 64);
-	INFO("cfg_load() essid: %s pw: %s\n", essid, passwd);
-	*/
 	
 	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
@@ -96,21 +63,13 @@ cfg_load() {
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
 
-#ifdef DEBUG
-	os_printf("calculated crc: %x\n", ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count)));
-	os_printf("crc: %x\n", sys_cfg.ccit_crc16);
-#endif // DEBUG
-
 	// if checksum fails...
-	if (sys_cfg.ccit_crc16 != ccit_crc16(&sys_cfg, sizeof(syscfg_t) - sizeof(sys_cfg.ccit_crc16) - sizeof(sys_cfg.impulse_meter_count))) {
+	if (sys_cfg.ccit_crc16 != ccit_crc16(&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
 #ifdef DEBUG
-		os_printf("config crc error\n");
+		os_printf("config crc error, default conf loaded\n");
 #endif // DEBUG
-	}
-	
-	if (sys_cfg.cfg_holder != CFG_HOLDER) {		// if first time config
-		os_memset(&sys_cfg, 0x00, sizeof sys_cfg);
-		sys_cfg.cfg_holder = CFG_HOLDER;
+		// if first time config load default conf
+		os_memset(&sys_cfg, 0x00, sizeof(syscfg_t));
 
 		os_sprintf(sys_cfg.sta_ssid, "%s", STA_SSID);
 		os_sprintf(sys_cfg.sta_pwd, "%s", STA_PASS);
@@ -137,6 +96,11 @@ cfg_load() {
 		INFO(" default configuration\r\n");
 
 		cfg_save();
+	}
+	else {
+#ifdef DEBUG
+		os_printf("config crc ok\n");
+#endif // DEBUG
 	}
 }
 
