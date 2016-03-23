@@ -55,68 +55,69 @@ uint16_t ccit_crc16(uint8_t *data_p, unsigned int length) {
 
 ICACHE_FLASH_ATTR
 void float_to_string(float value, char *value_string, int8_t max_decimals) {
-    uint32_t value_int;
-    float value_frac;
-    uint32_t pos;
-    uint32_t i;
-    
-    value_int = (int32_t)value;
-    value_frac = value - value_int;
-    
-    if (value_frac && max_decimals) {
-        sprintf(value_string, "%d.", (int32_t)value);
-        pos = strlen(value_string);
-        i = 0;
-        while (value_frac && (i < max_decimals)) {
-            value_frac *= 10;
-            value_string[pos++] = (uint32_t)value_frac + '0';
-            value_frac = value_frac - (uint32_t)value_frac;
-            i++;
-        }
-        value_string[pos] = 0;        
-    }
-    else {
-        sprintf(value_string, "%d", (int32_t)value);
-    }
+	uint32_t value_int;
+	float value_frac;
+	uint32_t pos;
+	uint32_t i;
+	
+	value_int = (int32_t)value;
+	value_frac = value - value_int;
+	
+	if (value_frac && max_decimals) {
+		sprintf(value_string, "%d.", (int32_t)value);
+		pos = strlen(value_string);
+		i = 0;
+		while (value_frac && (i < max_decimals)) {
+			value_frac *= 10;
+			value_string[pos++] = (uint32_t)value_frac + '0';
+			value_frac = value_frac - (uint32_t)value_frac;
+			i++;
+		}
+		value_string[pos] = 0;        
+	}
+	else {
+		os_sprintf(value_string, "%d", (int32_t)value);
+	}
 }
 
 ICACHE_FLASH_ATTR
 float string_to_float(unsigned char *value_string, int8_t max_decimals) {
-    uint32_t len;
-    uint32_t value_int;
-    uint32_t pos;
-    float f;
-    float value_frac;
-    uint32_t i;
-    
-    len = strlen(value_string);
-    
-    //cheking for valid string
-    if (!len) {
-        return 0;
-    }
-    
-    // integer part
-    value_int = 0;
-    pos = 0;
-    while(pos < len && value_string[pos] != '.') {
-        value_int = 10 * value_int + (value_string[pos++] - '0');
-    }
-    
-    // checking if only integer
-    if (pos == len) {
-        return value_int;
-    }
-    
-    // fractional part
-    value_frac = 0.0;
-    f = 1.0;
-    i = 0;
-    pos++;
-    while (pos < len && i < max_decimals) {
-        f *= 0.1;
-        value_frac += f * (value_string[pos++] - '0');
-        i++;
-    }
-    return value_frac + value_int;
+	float value_int;
+	float value_frac;
+	float f;
+	uint32_t len;
+	uint32_t pos;
+	uint32_t i;
+	
+	len = strlen(value_string);
+	
+	//cheking for valid string
+	if (!len) {
+		return 0;
+	}
+	
+	// integer part
+	value_int = 0;
+	pos = 0;
+	while(pos < len && value_string[pos] != '.') {
+		value_int = 10 * value_int + (value_string[pos++] - '0');
+	}
+	
+	// checking if only integer
+	if (pos == len) {
+		return value_int;
+	}
+	
+	// fractional part
+	value_frac = 0.0;
+	f = 1.0;
+	i = 0;
+	pos++;
+	while (pos < len && i < max_decimals) {
+		f *= 10;
+		value_frac += (value_string[pos++] - '0') / f;
+		i++;
+	}
+	
+	return value_int + value_frac;
 }

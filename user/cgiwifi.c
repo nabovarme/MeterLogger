@@ -294,6 +294,8 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 	}
 	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
 		os_sprintf(buff, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)) / 1000);
+//		float_to_string(string_to_float(sys_cfg.impulse_meter_energy, 2) + sys_cfg.impulse_meter_count * (1000.0 / atoi(sys_cfg.impulses_per_kwh)) / 1000, buff, 2);
+//		os_printf("x: %s\n", buff);
 	}
 	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.impulses_per_kwh);

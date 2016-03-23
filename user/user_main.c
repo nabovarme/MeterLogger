@@ -17,6 +17,7 @@
 #ifdef IMPULSE
 char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
 uint32_t impulse_meter_energy;
+//float impulse_meter_energy;
 uint32_t impulses_per_kwh;
 
 volatile uint32_t impulse_time;
@@ -555,6 +556,7 @@ void impulse_meter_init(void) {
 	os_strncpy(impulse_meter_serial, sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN);
 	
 	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
+//	impulse_meter_energy = string_to_float(sys_cfg.impulse_meter_energy, 2);
 	
 	impulses_per_kwh = atoi(sys_cfg.impulses_per_kwh);
 	if (impulses_per_kwh == 0) {
