@@ -13,6 +13,7 @@
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
+#include "utils.h"
 
 #ifdef IMPULSE
 char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
@@ -147,7 +148,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 	unsigned int i;
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
-		acc_energy = (impulse_meter_energy * 1000) + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
+		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
 	    // for acc_energy...
 	    // ...divide by 1000 and prepare decimal string in kWh
@@ -156,7 +157,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     
 	    // prepare decimal string
 	    strcpy(leading_zeroes, "");
-	    for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
+	    for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
 	        strcat(leading_zeroes, "0");
 	    }
 	    sprintf(acc_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
@@ -168,7 +169,7 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
     	
     	// prepare decimal string
     	strcpy(leading_zeroes, "");
-    	for (i = 0; i < (3 - impulse_meter_decimal_number_length(result_frac)); i++) {
+    	for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
     	    strcat(leading_zeroes, "0");
     	}
     	os_sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
@@ -580,18 +581,6 @@ void impulse_meter_init(void) {
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
 #endif // DEBUG
-}
-
-ICACHE_FLASH_ATTR
-unsigned int impulse_meter_decimal_number_length(int n) {
-	int digits;
-	
-	digits = n < 0;	//count "minus"
-	do {
-		digits++;
-	} while (n /= 10);
-	
-	return digits;
 }
 #endif // IMPULSE
 

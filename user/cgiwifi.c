@@ -185,6 +185,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char passwd[128];
 #ifdef IMPULSE
 	char impulse_meter_serial[32 + 1];
+	char impulse_meter_energy_kw[32 + 1];
 	char impulse_meter_energy[32 + 1];
 	char impulses_per_kwh[8 + 1];
 #endif
@@ -199,7 +200,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	httpdFindArg(connData->postBuff, "passwd", passwd, sizeof(passwd));
 #ifdef IMPULSE
 	httpdFindArg(connData->postBuff, "impulse_meter_serial", impulse_meter_serial, sizeof(impulse_meter_serial));
-	httpdFindArg(connData->postBuff, "impulse_meter_energy", impulse_meter_energy, sizeof(impulse_meter_energy));
+	httpdFindArg(connData->postBuff, "impulse_meter_energy", impulse_meter_energy_kw, sizeof(impulse_meter_energy_kw));
 	httpdFindArg(connData->postBuff, "impulses_per_kwh", impulses_per_kwh, sizeof(impulses_per_kwh));
 #endif
 
@@ -207,6 +208,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	os_strncpy((char*)sys_cfg.sta_pwd, passwd, 64);
 #ifdef IMPULSE
 	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
+	kw_to_w_str(impulse_meter_energy_kw, impulse_meter_energy);
 	os_strncpy((char*)sys_cfg.impulse_meter_energy, impulse_meter_energy, 32 + 1);
 	os_strncpy((char*)sys_cfg.impulses_per_kwh, impulses_per_kwh, 8 + 1);
 	sys_cfg.impulse_meter_count = 0;
@@ -260,6 +262,9 @@ int ICACHE_FLASH_ATTR cgiWifiSetMode(HttpdConnData *connData) {
 //Template code for the WLAN page.
 void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg) {
 	char buff[1024];
+#ifdef IMPULSE
+	char impulse_meter_energy[32 + 1];
+#endif // IMPULSE
 	int x;
 	//static struct station_config stconf;
 	if (token==NULL) return;
@@ -293,9 +298,8 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
 	}
 	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
-		os_sprintf(buff, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)) / 1000);
-//		float_to_string(string_to_float(sys_cfg.impulse_meter_energy, 2) + sys_cfg.impulse_meter_count * (1000.0 / atoi(sys_cfg.impulses_per_kwh)) / 1000, buff, 2);
-//		os_printf("x: %s\n", buff);
+		os_sprintf(impulse_meter_energy, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)));
+		w_to_kw_str(impulse_meter_energy, buff);
 	}
 	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.impulses_per_kwh);

@@ -362,22 +362,6 @@ uint16_t kmp_crc16() {
 }
 
 ICACHE_FLASH_ATTR
-int kmp_pow(int x, int y) {
-    int i;
-    int result;
-    
-    if (y == 0) {
-        return 1;
-    }
-    
-    result = x;
-    for (i = 1; i < y; i++) {
-        result *= x;
-    }
-    return result;
-}
-
-ICACHE_FLASH_ATTR
 double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     double result;
     int8_t sign_i = (si_ex & 0x80) >> 7;
@@ -387,18 +371,18 @@ double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     // powf(-1, (double)sign_i) * value * powf(10, (powf(-1, (double)sign_e) * exponent));
     if (sign_i) {
         if (sign_e) {
-            result = -1 * value / kmp_pow(10, exponent);
+            result = -1 * value / int_pow(10, exponent);
         }
         else {
-            result = -1 * value * kmp_pow(10, exponent);
+            result = -1 * value * int_pow(10, exponent);
         }
     }
     else {
         if (sign_e) {
-            result = value / (double)kmp_pow(10, exponent);
+            result = value / (double)int_pow(10, exponent);
         }
         else {
-            result = value * (double)kmp_pow(10, exponent);
+            result = value * (double)int_pow(10, exponent);
         }
     }
     
@@ -416,12 +400,12 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
-	factor = kmp_pow(10, exponent);
+	factor = int_pow(10, exponent);
     if (sign_i) {
         if (sign_e) {
-            result = value / kmp_pow(10, exponent);
+            result = value / int_pow(10, exponent);
             result_int = (int32_t)result;
-			result_frac = value - result_int * kmp_pow(10, exponent);
+			result_frac = value - result_int * int_pow(10, exponent);
             
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
@@ -436,9 +420,9 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
     }
     else {
         if (sign_e) {
-            result = value / kmp_pow(10, exponent);
+            result = value / int_pow(10, exponent);
             result_int = (int32_t)result;
-			result_frac = value - result_int * kmp_pow(10, exponent);
+			result_frac = value - result_int * int_pow(10, exponent);
             
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
@@ -631,16 +615,4 @@ void kmp_byte_unstuff() {
     memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
     kmp_frame_length = j + KMP_DST_IDX;
     kmp_data_length = j;
-}
-
-ICACHE_FLASH_ATTR
-unsigned int decimal_number_length(int n) {
-	int digits;
-	
-	digits = n < 0;	//count "minus"
-	do {
-		digits++;
-	} while (n /= 10);
-	
-	return digits;
 }

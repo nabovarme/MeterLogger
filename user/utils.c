@@ -53,71 +53,89 @@ uint16_t ccit_crc16(uint8_t *data_p, unsigned int length) {
     return crc16;
 }
 
-ICACHE_FLASH_ATTR
-void float_to_string(float value, char *value_string, int8_t max_decimals) {
-	uint32_t value_int;
-	float value_frac;
-	uint32_t pos;
+ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
+	uint32_t result_int, result_frac;
+	uint32_t w_int;
+	unsigned char leading_zeroes[16];
 	uint32_t i;
 	
-	value_int = (int32_t)value;
-	value_frac = value - value_int;
+	w_int = atoi(w);
 	
-	if (value_frac && max_decimals) {
-		sprintf(value_string, "%d.", (int32_t)value);
-		pos = strlen(value_string);
-		i = 0;
-		while (value_frac && (i < max_decimals)) {
-			value_frac *= 10;
-			value_string[pos++] = (uint32_t)value_frac + '0';
-			value_frac = value_frac - (uint32_t)value_frac;
-			i++;
+	// ...divide by 1000 and prepare decimal string in kWh
+	result_int = (int32_t)(w_int / 1000);
+	result_frac = w_int - result_int * 1000;
+	
+	// prepare decimal string
+	strcpy(leading_zeroes, "");
+	for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
+		strcat(leading_zeroes, "0");
+	}
+	sprintf(kw, "%u.%s%u", result_int, leading_zeroes, result_frac);
+}
+
+ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
+	uint32_t result_int, result_frac;
+	uint32_t i;
+	uint32_t len;
+	
+	bool dec_separator;
+	
+	char result_int_str[32 + 1];
+	
+	uint32_t pos_int;
+	uint32_t pos_frac;
+	
+	char leading_zeroes[16];
+	
+	len = strlen(kw);
+	
+	result_frac = 0;
+	pos_int = 0;
+	pos_frac = 0;
+	dec_separator = false;
+	for (i = 0; i < len && pos_frac < 3; i++) {
+		if (kw[i] == '.') {
+			dec_separator = 1;
 		}
-		value_string[pos] = 0;        
+		else if (!dec_separator) {
+			result_int_str[pos_int++] = kw[i];
+		}
+	    else {
+			result_frac += (kw[i] - '0') * int_pow(10, 2 - pos_frac);
+			pos_frac++;
+	    }
 	}
-	else {
-		os_sprintf(value_string, "%d", (int32_t)value);
-	}
+	result_int_str[pos_int] = 0;    // null terminate
+	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
+	
+	result_int += result_frac;
+	os_sprintf(w, "%u", result_int);
 }
 
 ICACHE_FLASH_ATTR
-float string_to_float(unsigned char *value_string, int8_t max_decimals) {
-	float value_int;
-	float value_frac;
-	float f;
-	uint32_t len;
-	uint32_t pos;
-	uint32_t i;
+unsigned int decimal_number_length(int n) {
+	int digits;
 	
-	len = strlen(value_string);
+	digits = n < 0;	//count "minus"
+	do {
+		digits++;
+	} while (n /= 10);
 	
-	//cheking for valid string
-	if (!len) {
-		return 0;
+	return digits;
+}
+
+ICACHE_FLASH_ATTR
+int int_pow(int x, int y) {
+	int i;
+	int result;
+	
+	if (y == 0) {
+		return 1;
 	}
 	
-	// integer part
-	value_int = 0;
-	pos = 0;
-	while(pos < len && value_string[pos] != '.') {
-		value_int = 10 * value_int + (value_string[pos++] - '0');
+	result = x;
+	for (i = 1; i < y; i++) {
+		result *= x;
 	}
-	
-	// checking if only integer
-	if (pos == len) {
-		return value_int;
-	}
-	
-	// fractional part
-	value_frac = 0.0;
-	f = 1.0;
-	i = 0;
-	pos++;
-	while (pos < len && i < max_decimals) {
-		f *= 10;
-		value_frac += (value_string[pos++] - '0') / f;
-		i++;
-	}
-	
-	return value_int + value_frac;
+	return result;
 }

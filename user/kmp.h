@@ -22,9 +22,6 @@ ICACHE_FLASH_ATTR
 uint16_t kmp_crc16();
 
 ICACHE_FLASH_ATTR
-int kmp_pow(int a, int b);
-
-ICACHE_FLASH_ATTR
 unsigned int kmp_get_type(unsigned char *frame);
 
 ICACHE_FLASH_ATTR
@@ -54,7 +51,3 @@ void kmp_byte_stuff();
 
 ICACHE_FLASH_ATTR
 void kmp_byte_unstuff();
-
-ICACHE_FLASH_ATTR
-unsigned int decimal_number_length(int n);
-
