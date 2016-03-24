@@ -16,9 +16,12 @@ char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR
 cfg_save() {
+#ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
+#endif // IMPULSE
 	int i = 0;
 	
+#ifdef IMPULSE
 	do {
 		// try to save until sys_cfg.impulse_meter_count does not change
 		impulse_meter_count_temp = sys_cfg.impulse_meter_count;
@@ -46,6 +49,30 @@ cfg_save() {
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		}
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
+#else
+	// calculate checksum on sys_cfg struct without ccit_crc16
+	sys_cfg.ccit_crc16 = ccit_crc16(&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
+	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+
+	if (saveFlag.flag == 0) {
+		spi_flash_erase_sector(CFG_LOCATION + 1);
+		spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+						(uint32 *)&sys_cfg, sizeof(syscfg_t));
+		saveFlag.flag = 1;
+		spi_flash_erase_sector(CFG_LOCATION + 3);
+		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+	} else {
+		spi_flash_erase_sector(CFG_LOCATION + 0);
+		spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
+						(uint32 *)&sys_cfg, sizeof(syscfg_t));
+		saveFlag.flag = 0;
+		spi_flash_erase_sector(CFG_LOCATION + 3);
+		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
+						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
+	}
+#endif
 }
 
 void ICACHE_FLASH_ATTR
