@@ -25,7 +25,8 @@ FW_2	= 0x40000
 
 FLAVOR ?= release
 
-GIT_VERSION := $(shell git describe --exact-match 2> /dev/null || echo "`git symbolic-ref HEAD 2> /dev/null | cut -b 12-`-`git log --pretty=format:\"%h\" -1`")
+#GIT_VERSION := $(shell git describe --exact-match 2> /dev/null || echo "`git symbolic-ref HEAD 2> /dev/null | cut -b 12-`-`git log --pretty=format:\"%h\" -1`")
+GIT_VERSION := $(shell git describe --abbrev=4 --dirty --always --tags)
 
 #############################################################
 # Select compile
