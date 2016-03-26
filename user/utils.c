@@ -67,7 +67,6 @@ ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
 }
 
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
-	uint32_t result_int;
 	uint32_t i;
 	uint32_t len;
 	
