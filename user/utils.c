@@ -54,23 +54,16 @@ uint16_t ccit_crc16(uint8_t *data_p, unsigned int length) {
 }
 
 ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
-	uint32_t result_int, result_frac;
-	uint32_t w_int;
-	unsigned char leading_zeroes[16];
-	uint32_t i;
-	
-	w_int = atoi(w);
-	
-	// ...divide by 1000 and prepare decimal string in kWh
-	result_int = (int32_t)(w_int / 1000);
-	result_frac = w_int - result_int * 1000;
-	
-	// prepare decimal string
-	strcpy(leading_zeroes, "");
-	for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
-		strcat(leading_zeroes, "0");
-	}
-	sprintf(kw, "%u.%s%u", result_int, leading_zeroes, result_frac);
+    uint32_t result_int, result_frac;
+    uint32_t w_int;
+    
+    w_int = atoi(w);
+    
+    // ...divide by 1000 and prepare decimal string in kWh
+    result_int = (int32_t)(w_int / 1000);
+    result_frac = w_int % 1000;
+    
+    sprintf(kw, "%u.%03u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
