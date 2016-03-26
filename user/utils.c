@@ -54,20 +54,20 @@ uint16_t ccit_crc16(uint8_t *data_p, unsigned int length) {
 }
 
 ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
-    uint32_t result_int, result_frac;
-    uint32_t w_int;
+	uint32_t result_int, result_frac;
+	uint32_t w_int;
     
-    w_int = atoi(w);
+	w_int = atoi(w);
     
-    // ...divide by 1000 and prepare decimal string in kWh
-    result_int = (int32_t)(w_int / 1000);
-    result_frac = w_int % 1000;
+	// ...divide by 1000 and prepare decimal string in kWh
+	result_int = (int32_t)(w_int / 1000);
+	result_frac = w_int % 1000;
     
-    sprintf(kw, "%u.%03u", result_int, result_frac);
+	sprintf(kw, "%u.%03u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
-	uint32_t result_int, result_frac;
+	uint32_t result_int;
 	uint32_t i;
 	uint32_t len;
 	
@@ -78,31 +78,24 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	uint32_t pos_int;
 	uint32_t pos_frac;
 	
-	char leading_zeroes[16];
-	
 	len = strlen(kw);
 	
-	result_frac = 0;
+	memset(result_int_str, 0, sizeof(result_int_str));
 	pos_int = 0;
 	pos_frac = 0;
 	dec_separator = false;
-	for (i = 0; i < len && pos_frac < 3; i++) {
+	for (i = 0; i < len; i++) {
 		if (kw[i] == '.') {
 			dec_separator = 1;
 		}
 		else if (!dec_separator) {
 			result_int_str[pos_int++] = kw[i];
 		}
-	    else {
-			result_frac += (kw[i] - '0') * int_pow(10, 2 - pos_frac);
-			pos_frac++;
-	    }
+		else {
+			result_int_str[pos_int + pos_frac++] = kw[i];
+		}
 	}
-	result_int_str[pos_int] = 0;    // null terminate
-	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
-	
-	result_int += result_frac;
-	os_sprintf(w, "%u", result_int);
+	sprintf(w, "%u", atoi(result_int_str) / int_pow(10, pos_frac - 3));
 }
 
 ICACHE_FLASH_ATTR
