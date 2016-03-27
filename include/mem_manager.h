@@ -1,9 +1,10 @@
 #ifndef __MEM_MANAGER_H__
 #define __MEM_MANAGER_H__
 
+#include <stddef.h>
 #include "c_types.h"
 
-/*------------------------±äÁ¿¶¨Òå------------------------*/
+/*------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½------------------------*/
 
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 #ifndef IOT_SIP_MODE
@@ -61,7 +62,7 @@ typedef struct A_BLOCK_LINK
 //static size_t xFreeBytesRemaining = ( ( size_t ) configADJUSTED_HEAP_SIZE ) & ( ( size_t ) ~portBYTE_ALIGNMENT_MASK );
 
 
-/*------------------------º¯ÊýÉùÃ÷-----------------------------------*/
+/*------------------------ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½-----------------------------------*/
 
 //static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_FLASH_ATTR;
 

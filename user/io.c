@@ -14,7 +14,7 @@
 #define LEDGPIO 2
 #define BTNGPIO 0
 
-static ETSTimer resetBtntimer;
+//static ETSTimer resetBtntimer;
 
 void ICACHE_FLASH_ATTR ioLed(int ena) {
 	//gpio_output_set is overkill. ToDo: use better mactos
@@ -27,8 +27,8 @@ void ICACHE_FLASH_ATTR ioLed(int ena) {
 	*/
 }
 
+/*
 static void ICACHE_FLASH_ATTR resetBtnTimerCb(void *arg) {
-	/*
 	static int resetCnt=0;
 	if (!GPIO_INPUT_GET(BTNGPIO)) {
 		resetCnt++;
@@ -43,8 +43,8 @@ static void ICACHE_FLASH_ATTR resetBtnTimerCb(void *arg) {
 		}
 		resetCnt=0;
 	}
-	*/
 }
+	*/
 
 void ioInit() {
 	/*

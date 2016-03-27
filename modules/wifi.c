@@ -20,7 +20,6 @@ WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
 uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
-static uint8_t last_wifi_status = STATION_IDLE;
 bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;

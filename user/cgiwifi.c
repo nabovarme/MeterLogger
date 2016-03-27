@@ -137,7 +137,7 @@ int ICACHE_FLASH_ATTR cgiWiFiScan(HttpdConnData *connData) {
 }
 
 //Temp store for new ap info.
-static struct station_config stconf;
+//static struct station_config stconf;
 
 
 //This routine is ran some time after a connection attempt to an access point. If
