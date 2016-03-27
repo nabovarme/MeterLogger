@@ -39,7 +39,6 @@ MQTT_Client mqttClient;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
-static os_timer_t en61107_request_send_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 #elif defined IMPULSE
@@ -56,7 +55,7 @@ uint16_t vdd_init;
 #endif // POWER_WD
 #endif
 
-uint16 counter = 0;
+uint16_t counter = 0;
 
 struct rst_info *rtc_info;
 

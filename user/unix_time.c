@@ -8,7 +8,7 @@ uint32_t init_time = 0;
 uint32_t current_unix_time;
 uint32_t ntp_offline_second_counter = 0;
 
-uint64 boot_time;
+uint64_t boot_time;
 
 static os_timer_t ntp_offline_second_counter_timer;
 
