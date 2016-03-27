@@ -15,13 +15,13 @@ ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial();
 
 ICACHE_FLASH_ATTR
-void kmp_get_serial_timer_func();
+void static kmp_get_serial_timer_func();
 
 ICACHE_FLASH_ATTR
-void kmp_get_register_timer_func();
+void static kmp_get_register_timer_func();
 
 ICACHE_FLASH_ATTR
-void kmp_receive_timeout_timer_func();
+void static kmp_receive_timeout_timer_func();
 
 ICACHE_FLASH_ATTR
 void kmp_request_send();

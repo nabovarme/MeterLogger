@@ -85,7 +85,7 @@ void clear_cron_jobs() {
 }
 
 ICACHE_FLASH_ATTR
-void minute_timer_func(void *arg) {
+void static minute_timer_func(void *arg) {
 	struct tm *dt;
 	time_t unix_time;
 	unsigned char i;

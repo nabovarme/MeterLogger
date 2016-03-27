@@ -59,7 +59,7 @@ uint16_t counter = 0;
 
 struct rst_info *rtc_info;
 
-ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[128];
 	int topic_l;
 #ifdef IMPULSE
@@ -100,7 +100,7 @@ ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg) {
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 }
 
-ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	struct softap_config ap_conf;
 	
 	INFO("\r\nAP mode\r\n");
@@ -126,7 +126,7 @@ ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg) {
 	httpd_user_init();
 }
 
-ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
@@ -201,16 +201,16 @@ ICACHE_FLASH_ATTR void sample_timer_func(void *arg) {
 #endif
 }
 
-ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static kmp_request_send_timer_func(void *arg) {
 	kmp_request_send();
 }
 
-ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
 }
 
 #ifdef IMPULSE
-ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
 	uint32_t impulse_meter_count_diff;
 
@@ -235,7 +235,7 @@ ICACHE_FLASH_ATTR void impulse_meter_calculate_timer_func(void *arg) {
 
 #ifdef IMPULSE
 #ifdef POWER_WD
-ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	vdd = system_get_vdd33();
 	if ((vdd < (vdd_init - 100)) && (shutdown == false)) {

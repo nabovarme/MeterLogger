@@ -37,17 +37,17 @@ typedef struct {
 	const void *cgiArg;
 } HttpdBuiltInUrl;
 
-int ICACHE_FLASH_ATTR cgiRedirect(HttpdConnData *connData);
-void ICACHE_FLASH_ATTR httpdRedirect(HttpdConnData *conn, char *newUrl);
+ICACHE_FLASH_ATTR int cgiRedirect(HttpdConnData *connData);
+ICACHE_FLASH_ATTR void httpdRedirect(HttpdConnData *conn, char *newUrl);
 int httpdUrlDecode(char *val, int valLen, char *ret, int retLen);
-int ICACHE_FLASH_ATTR httpdFindArg(char *line, char *arg, char *buff, int buffLen);
-void ICACHE_FLASH_ATTR httpdInit(HttpdBuiltInUrl *fixedUrls, int port);
+ICACHE_FLASH_ATTR int httpdFindArg(char *line, char *arg, char *buff, int buffLen);
+ICACHE_FLASH_ATTR void httpdInit(HttpdBuiltInUrl *fixedUrls, int port);
 const char *httpdGetMimetype(char *url);
-void ICACHE_FLASH_ATTR httpdStartResponse(HttpdConnData *conn, int code);
-void ICACHE_FLASH_ATTR httpdHeader(HttpdConnData *conn, const char *field, const char *val);
-void ICACHE_FLASH_ATTR httpdEndHeaders(HttpdConnData *conn);
-int ICACHE_FLASH_ATTR httpdGetHeader(HttpdConnData *conn, char *header, char *ret, int retLen);
-int ICACHE_FLASH_ATTR httpdSend(HttpdConnData *conn, const char *data, int len);
-void ICACHE_FLASH_ATTR httpdStop();
-void ICACHE_FLASH_ATTR httpdDisconnectTimerFunc(void *arg);
+ICACHE_FLASH_ATTR void httpdStartResponse(HttpdConnData *conn, int code);
+ICACHE_FLASH_ATTR void httpdHeader(HttpdConnData *conn, const char *field, const char *val);
+ICACHE_FLASH_ATTR void httpdEndHeaders(HttpdConnData *conn);
+ICACHE_FLASH_ATTR int httpdGetHeader(HttpdConnData *conn, char *header, char *ret, int retLen);
+ICACHE_FLASH_ATTR int httpdSend(HttpdConnData *conn, const char *data, int len);
+ICACHE_FLASH_ATTR void httpdStop();
+ICACHE_FLASH_ATTR void static httpdDisconnectTimerFunc(void *arg);
 #endif

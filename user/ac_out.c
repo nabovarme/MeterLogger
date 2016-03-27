@@ -21,7 +21,7 @@ void ac_out_init() {
 }
 
 ICACHE_FLASH_ATTR
-void ac_test_timer_func(void *arg) {
+void static ac_test_timer_func(void *arg) {
 	// do blinky stuff
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT14) {
 		//Set GPI14 to LOW
@@ -48,7 +48,7 @@ void ac_test_timer_func(void *arg) {
 	}
 }
 
-ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static ac_out_off_timer_func(void *arg) {
 #ifdef DEBUG
 	os_printf("\n\rac 1 and 2 off\n\r");
 #endif
@@ -65,7 +65,7 @@ ICACHE_FLASH_ATTR void ac_out_off_timer_func(void *arg) {
 #endif
 }
 
-ICACHE_FLASH_ATTR void ac_pwm_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static ac_pwm_timer_func(void *arg) {
 	// do ac 1 pwm
 	if (ac_pwm_state == OFF) {
 		ac_pwm_state = ON;

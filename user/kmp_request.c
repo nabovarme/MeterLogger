@@ -54,7 +54,7 @@ unsigned int kmp_get_received_serial() {
 }
 
 ICACHE_FLASH_ATTR
-void kmp_get_serial_timer_func() {
+void static kmp_get_serial_timer_func() {
 	// get serial
 	// prepare frame
 	frame_length = kmp_get_serial(frame);
@@ -62,7 +62,7 @@ void kmp_get_serial_timer_func() {
 }
 
 ICACHE_FLASH_ATTR
-void kmp_get_register_timer_func() {
+void static kmp_get_register_timer_func() {
     // get registers
     // prepare frame
     register_list[0] = 0x3c;    // heat energy (E1)
@@ -80,7 +80,7 @@ void kmp_get_register_timer_func() {
 }
 
 ICACHE_FLASH_ATTR
-void kmp_receive_timeout_timer_func() {
+void static kmp_receive_timeout_timer_func() {
 	if (kmp_requests_sent > 0) {
 		// if no reply received, retransmit
 		kmp_request_send();

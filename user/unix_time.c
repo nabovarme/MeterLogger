@@ -12,7 +12,7 @@ uint64_t boot_time;
 
 static os_timer_t ntp_offline_second_counter_timer;
 
-ICACHE_FLASH_ATTR void sntp_check_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static sntp_check_timer_func(void *arg) {
 	current_unix_time = sntp_get_current_timestamp();
 	
 	if (current_unix_time == 0) {
@@ -29,7 +29,7 @@ ICACHE_FLASH_ATTR void sntp_check_timer_func(void *arg) {
 	}
 }
 
-ICACHE_FLASH_ATTR void ntp_offline_second_counter_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static ntp_offline_second_counter_timer_func(void *arg) {
 	ntp_offline_second_counter++;
 }
 

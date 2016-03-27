@@ -73,7 +73,8 @@ static const MimeMap mimeTypes[]={
 static os_timer_t httpdDisconnectTimer;
 
 //Returns a static char* to a mime type for a given url to a file.
-const char ICACHE_FLASH_ATTR *httpdGetMimetype(char *url) {
+ICACHE_FLASH_ATTR
+const char *httpdGetMimetype(char *url) {
 	int i=0;
 	//Go find the extension
 	char *ext=url+(strlen(url)-1);
@@ -86,7 +87,8 @@ const char ICACHE_FLASH_ATTR *httpdGetMimetype(char *url) {
 }
 
 //Looks up the connData info for a specific esp connection
-static HttpdConnData ICACHE_FLASH_ATTR *httpdFindConnData(void *arg) {
+ICACHE_FLASH_ATTR
+static HttpdConnData *httpdFindConnData(void *arg) {
 	int i;
 	for (i=0; i<MAX_CONN; i++) {
 		if (connData[i].conn==(struct espconn *)arg) return &connData[i];
@@ -96,7 +98,8 @@ static HttpdConnData ICACHE_FLASH_ATTR *httpdFindConnData(void *arg) {
 }
 
 //Retires a connection for re-use
-static void ICACHE_FLASH_ATTR httpdRetireConn(HttpdConnData *conn) {
+ICACHE_FLASH_ATTR
+static void httpdRetireConn(HttpdConnData *conn) {
 	if (conn->postBuff!=NULL) os_free(conn->postBuff);
 	conn->postBuff=NULL;
 	conn->cgi=NULL;
@@ -144,7 +147,8 @@ int httpdUrlDecode(char *val, int valLen, char *ret, int retLen) {
 //zero-terminated result is written in buff, with at most buffLen bytes used. The
 //function returns the length of the result, or -1 if the value wasn't found. The 
 //returned string will be urldecoded already.
-int ICACHE_FLASH_ATTR httpdFindArg(char *line, char *arg, char *buff, int buffLen) {
+ICACHE_FLASH_ATTR
+int httpdFindArg(char *line, char *arg, char *buff, int buffLen) {
 	char *p, *e;
 	if (line==NULL) return 0;
 	p=line;
@@ -165,7 +169,8 @@ int ICACHE_FLASH_ATTR httpdFindArg(char *line, char *arg, char *buff, int buffLe
 }
 
 //Get the value of a certain header in the HTTP client head
-int ICACHE_FLASH_ATTR httpdGetHeader(HttpdConnData *conn, char *header, char *ret, int retLen) {
+ICACHE_FLASH_ATTR
+int httpdGetHeader(HttpdConnData *conn, char *header, char *ret, int retLen) {
 	char *p=conn->priv->head;
 	p=p+strlen(p)+1; //skip GET/POST part
 	p=p+strlen(p)+1; //skip HTTP part
@@ -194,7 +199,8 @@ int ICACHE_FLASH_ATTR httpdGetHeader(HttpdConnData *conn, char *header, char *re
 }
 
 //Start the response headers.
-void ICACHE_FLASH_ATTR httpdStartResponse(HttpdConnData *conn, int code) {
+ICACHE_FLASH_ATTR
+void httpdStartResponse(HttpdConnData *conn, int code) {
 	char buff[128];
 	int l;
 	l=os_sprintf(buff, "HTTP/1.0 %d OK\r\nServer: esp8266-httpd/"HTTPDVER"\r\n", code);
@@ -202,7 +208,8 @@ void ICACHE_FLASH_ATTR httpdStartResponse(HttpdConnData *conn, int code) {
 }
 
 //Send a http header.
-void ICACHE_FLASH_ATTR httpdHeader(HttpdConnData *conn, const char *field, const char *val) {
+ICACHE_FLASH_ATTR
+void httpdHeader(HttpdConnData *conn, const char *field, const char *val) {
 	char buff[256];
 	int l;
 
@@ -211,13 +218,15 @@ void ICACHE_FLASH_ATTR httpdHeader(HttpdConnData *conn, const char *field, const
 }
 
 //Finish the headers.
-void ICACHE_FLASH_ATTR httpdEndHeaders(HttpdConnData *conn) {
+ICACHE_FLASH_ATTR
+void httpdEndHeaders(HttpdConnData *conn) {
 	httpdSend(conn, "\r\n", -1);
 }
 
 //ToDo: sprintf->snprintf everywhere... esp doesn't have snprintf tho' :/
 //Redirect to the given URL.
-void ICACHE_FLASH_ATTR httpdRedirect(HttpdConnData *conn, char *newUrl) {
+ICACHE_FLASH_ATTR
+void httpdRedirect(HttpdConnData *conn, char *newUrl) {
 	char buff[1024];
 	int l;
 	l=os_sprintf(buff, "HTTP/1.1 302 Found\r\nLocation: %s\r\n\r\nMoved to %s\r\n", newUrl, newUrl);
@@ -225,7 +234,8 @@ void ICACHE_FLASH_ATTR httpdRedirect(HttpdConnData *conn, char *newUrl) {
 }
 
 //Use this as a cgi function to redirect one url to another.
-int ICACHE_FLASH_ATTR cgiRedirect(HttpdConnData *connData) {
+ICACHE_FLASH_ATTR
+int cgiRedirect(HttpdConnData *connData) {
 	if (connData->conn==NULL) {
 		//Connection aborted. Clean up.
 		return HTTPD_CGI_DONE;
@@ -238,7 +248,8 @@ int ICACHE_FLASH_ATTR cgiRedirect(HttpdConnData *connData) {
 //Add data to the send buffer. len is the length of the data. If len is -1
 //the data is seen as a C-string.
 //Returns 1 for success, 0 for out-of-memory.
-int ICACHE_FLASH_ATTR httpdSend(HttpdConnData *conn, const char *data, int len) {
+ICACHE_FLASH_ATTR
+int httpdSend(HttpdConnData *conn, const char *data, int len) {
 	if (len<0) len=strlen(data);
 	if (conn->priv->sendBuffLen+len>MAX_SENDBUFF_LEN) return 0;
 	os_memcpy(conn->priv->sendBuff+conn->priv->sendBuffLen, data, len);
@@ -247,7 +258,8 @@ int ICACHE_FLASH_ATTR httpdSend(HttpdConnData *conn, const char *data, int len) 
 }
 
 //Helper function to send any data in conn->priv->sendBuff
-static void ICACHE_FLASH_ATTR xmitSendBuff(HttpdConnData *conn) {
+ICACHE_FLASH_ATTR
+static void xmitSendBuff(HttpdConnData *conn) {
 	if (conn->priv->sendBuffLen!=0) {
 		espconn_sent(conn->conn, (uint8_t*)conn->priv->sendBuff, conn->priv->sendBuffLen);
 		conn->priv->sendBuffLen=0;
@@ -256,7 +268,8 @@ static void ICACHE_FLASH_ATTR xmitSendBuff(HttpdConnData *conn) {
 
 //Callback called when the data on a socket has been successfully
 //sent.
-static void ICACHE_FLASH_ATTR httpdSentCb(void *arg) {
+ICACHE_FLASH_ATTR
+static void httpdSentCb(void *arg) {
 	int r;
 	HttpdConnData *conn=httpdFindConnData(arg);
 	char sendBuff[MAX_SENDBUFF_LEN];
@@ -284,7 +297,8 @@ static const char *httpNotFoundHeader="HTTP/1.0 404 Not Found\r\nServer: esp8266
 
 //This is called when the headers have been received and the connection is ready to send
 //the result headers and data.
-static void ICACHE_FLASH_ATTR httpdSendResp(HttpdConnData *conn) {
+ICACHE_FLASH_ATTR
+static void httpdSendResp(HttpdConnData *conn) {
 	int i=0;
 	int r;
 	//See if the url is somewhere in our internal url table.
@@ -314,7 +328,8 @@ static void ICACHE_FLASH_ATTR httpdSendResp(HttpdConnData *conn) {
 }
 
 //Parse a line of header data and modify the connection data accordingly.
-static void ICACHE_FLASH_ATTR httpdParseHeader(char *h, HttpdConnData *conn) {
+ICACHE_FLASH_ATTR
+static void httpdParseHeader(char *h, HttpdConnData *conn) {
 	int i;
 //	INFO("Got header %s\n", h);
 	if (os_strncmp(h, "GET ", 4)==0 || os_strncmp(h, "POST ", 5)==0) {
@@ -357,7 +372,8 @@ static void ICACHE_FLASH_ATTR httpdParseHeader(char *h, HttpdConnData *conn) {
 
 
 //Callback called when there's data available on a socket.
-static void ICACHE_FLASH_ATTR httpdRecvCb(void *arg, char *data, unsigned short len) {
+ICACHE_FLASH_ATTR
+static void httpdRecvCb(void *arg, char *data, unsigned short len) {
 	int x;
 	char *p, *e;
 	char sendBuff[MAX_SENDBUFF_LEN];
@@ -408,14 +424,16 @@ static void ICACHE_FLASH_ATTR httpdRecvCb(void *arg, char *data, unsigned short 
 	xmitSendBuff(conn);
 }
 
-static void ICACHE_FLASH_ATTR httpdReconCb(void *arg, sint8 err) {
+ICACHE_FLASH_ATTR
+static void httpdReconCb(void *arg, sint8 err) {
 	HttpdConnData *conn=httpdFindConnData(arg);
 	INFO("ReconCb\n");
 	if (conn==NULL) return;
 	//Yeah... No idea what to do here. ToDo: figure something out.
 }
 
-static void ICACHE_FLASH_ATTR httpdDisconCb(void *arg) {
+ICACHE_FLASH_ATTR
+static void httpdDisconCb(void *arg) {
 #if 0
 	//Stupid esp sdk passes through wrong arg here, namely the one of the *listening* socket.
 	//If it ever gets fixed, be sure to update the code in this snippet; it's probably out-of-date.
@@ -443,7 +461,8 @@ static void ICACHE_FLASH_ATTR httpdDisconCb(void *arg) {
 }
 
 
-static void ICACHE_FLASH_ATTR httpdConnectCb(void *arg) {
+ICACHE_FLASH_ATTR
+static void httpdConnectCb(void *arg) {
 	struct espconn *conn=arg;
 	int i;
 	//Find empty conndata in pool
@@ -468,7 +487,8 @@ static void ICACHE_FLASH_ATTR httpdConnectCb(void *arg) {
 }
 
 
-void ICACHE_FLASH_ATTR httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
+ICACHE_FLASH_ATTR
+void httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 	int i;
 
 	for (i=0; i<MAX_CONN; i++) {
@@ -485,7 +505,8 @@ void ICACHE_FLASH_ATTR httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 	espconn_accept(&httpdConn);
 }
 
-void ICACHE_FLASH_ATTR httpdStop() {
+ICACHE_FLASH_ATTR
+void httpdStop() {
 	INFO("Httpd stopping\n");
 	
 	if (espconn_delete(&httpdConn) == 0) {
@@ -502,6 +523,7 @@ void ICACHE_FLASH_ATTR httpdStop() {
 	}
 }
 
-void ICACHE_FLASH_ATTR httpdDisconnectTimerFunc(void *arg) {
+ICACHE_FLASH_ATTR
+void static httpdDisconnectTimerFunc(void *arg) {
 	httpdStop();
 }

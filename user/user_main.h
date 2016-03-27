@@ -1,15 +1,15 @@
-ICACHE_FLASH_ATTR void sample_mode_timer_func(void *arg);
-ICACHE_FLASH_ATTR void config_mode_timer_func(void *arg);
-ICACHE_FLASH_ATTR void sample_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static sample_timer_func(void *arg);
 #ifndef EN61107
-ICACHE_FLASH_ATTR void kmp_request_send_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static kmp_request_send_timer_func(void *arg);
 #else
-ICACHE_FLASH_ATTR void en61107_request_send_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static en61107_request_send_timer_func(void *arg);
 #endif
 #ifdef IMPULSE
-ICACHE_FLASH_ATTR void impulse_meter_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static impulse_meter_timer_func(void *arg);
 #ifdef POWER_WD
-ICACHE_FLASH_ATTR void power_wd_timer_func(void *arg);
+ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg);
 #endif
 #endif
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status);

@@ -40,7 +40,7 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 	led_off();
 }
 
-ICACHE_FLASH_ATTR void led_blinker_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
 	// do blinky stuff
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
 		led_on();
