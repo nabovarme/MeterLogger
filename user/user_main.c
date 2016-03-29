@@ -201,13 +201,17 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #endif
 }
 
-ICACHE_FLASH_ATTR void static kmp_request_send_timer_func(void *arg) {
-	kmp_request_send();
-}
-
+#ifdef EN61107
 ICACHE_FLASH_ATTR void static en61107_request_send_timer_func(void *arg) {
 	en61107_request_send();
 }
+#elif defined IMPULSE
+	// nothing
+#else
+ICACHE_FLASH_ATTR void static kmp_request_send_timer_func(void *arg) {
+	kmp_request_send();
+}
+#endif
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
