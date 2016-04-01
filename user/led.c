@@ -4,6 +4,16 @@
 
 static os_timer_t led_blinker_timer;
 
+ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
+	// do blinky stuff
+	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
+		led_on();
+	}
+	else {
+		led_off();
+	}
+}
+	
 ICACHE_FLASH_ATTR void led_init(void) {
 	//Set GPIO2 to output mode
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
@@ -39,15 +49,4 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 	os_timer_disarm(&led_blinker_timer);
 	led_off();
 }
-
-ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
-	// do blinky stuff
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
-		led_on();
-	}
-	else {
-		led_off();
-	}
-}
-	
 
