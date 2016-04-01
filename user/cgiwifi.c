@@ -19,6 +19,8 @@ Cgi/template routines for the /wifi url.
 #include "config.h"
 #include "debug.h"
 
+#include "utils.h"
+
 //Enable this to disallow any changes in AP settings
 //#define DEMO_MODE
 

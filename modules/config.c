@@ -5,7 +5,7 @@
 #include "config.h"
 #include "user_config.h"
 #include "debug.h"
-#include <utils.h>
+#include "utils.h"
 
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;

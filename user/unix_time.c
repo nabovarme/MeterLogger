@@ -1,6 +1,7 @@
 #include <esp8266.h>
 #include "debug.h"
 #include "unix_time.h"
+#include <sntp.h>
 
 static os_timer_t sntp_check_timer;
 

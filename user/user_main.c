@@ -4,6 +4,7 @@
 #include "wifi.h"
 #include "config.h"
 #include "debug.h"
+#include "httpd.h"
 #include "httpd_user_init.h"
 #include "user_config.h"
 #include "unix_time.h"
