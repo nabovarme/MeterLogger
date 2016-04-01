@@ -24,9 +24,6 @@ void en61107_receive_timeout_timer_func();
 ICACHE_FLASH_ATTR
 void en61107_request_send();
 
-ICACHE_FLASH_ATTR
-static void en61107_received_task(os_event_t *events);
-
 // fifo
 ICACHE_FLASH_ATTR
 unsigned int en61107_fifo_in_use();

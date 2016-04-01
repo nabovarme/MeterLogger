@@ -36,14 +36,14 @@ bool shutdown = false;
 #endif // POWER_WD
 #endif // ENDIF IMPULSE
 
-MQTT_Client mqttClient;
+MQTT_Client *mqttClient;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 #elif defined IMPULSE
-static os_timer_t kmp_request_send_timer;
+//static os_timer_t kmp_request_send_timer;
 #else
 static os_timer_t kmp_request_send_timer;
 #endif
@@ -81,9 +81,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
 #endif // IMPULSE
 	
-	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
+	MQTT_InitConnection(mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
-	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
+	MQTT_InitClient(mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
 
 	// set MQTT LWP topic
 #ifdef IMPULSE
@@ -91,12 +91,12 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #else
 	topic_l = os_sprintf(topic, "/offline/v1/%07u", kmp_get_received_serial());
 #endif
-	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
+	MQTT_InitLWT(mqttClient, topic, "", 0, 0);
 	
-	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
-	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
-	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
-	MQTT_OnData(&mqttClient, mqttDataCb);
+	MQTT_OnConnected(mqttClient, mqttConnectedCb);
+	MQTT_OnDisconnected(mqttClient, mqttDisconnectedCb);
+	MQTT_OnPublished(mqttClient, mqttPublishedCb);
+	MQTT_OnData(mqttClient, mqttDataCb);
 
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 }
@@ -143,7 +143,6 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	char acc_energy_kwh[32];
 	
     uint32_t result_int, result_frac;
-	int8_t exponent;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 
@@ -175,11 +174,11 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
     	os_sprintf(current_energy_kwh, "%u.%s%u", result_int, leading_zeroes, result_frac);
     	
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
-		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+		mqtt_message_l = os_sprintf(mqtt_message, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 
-		if (&mqttClient != NULL) {
+		if (mqttClient) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+			MQTT_Publish(mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 		}
 
 		// set offset for next calculation
@@ -191,9 +190,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	}
 	else {
 		// send ping to keep mqtt alive
-		if (&mqttClient != NULL) {
+		if (mqttClient) {
 			// if mqtt_client is initialized
-			MQTT_Ping(&mqttClient);
+			MQTT_Ping(mqttClient);
 		}
 	}
 
@@ -246,10 +245,10 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	if ((vdd < (vdd_init - 100)) && (shutdown == false)) {
 		cfg_save();
 //		os_printf("\n\rvdd: %d\n\r", vdd);
-		if (&mqttClient != NULL) {
+		if (mqttClient) {
 			// if mqtt_client is initialized
 			shutdown = true;
-			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);	// DEBUG: needs serial
+			MQTT_Publish(mqttClient, "/shutdown", "", 1, 0, 0);	// DEBUG: needs serial
 		}
 	}
 }
@@ -258,12 +257,12 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
-		MQTT_Connect(&mqttClient);
+		MQTT_Connect(mqttClient);
 	}
 }
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
-	MQTT_Client* client = (MQTT_Client*)args;
+	MQTT_Client *client = (MQTT_Client*)args;
 	unsigned char topic[128];
 	int topic_l;
 
@@ -296,20 +295,20 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
-	MQTT_Client* client = (MQTT_Client*)args;
+	MQTT_Client *client = (MQTT_Client*)args;
 	INFO("MQTT: Disconnected - reconnect\r\n");
 	MQTT_Connect(client);
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
-	//MQTT_Client* client = (MQTT_Client*)args;
+	//MQTT_Client *client = (MQTT_Client*)args;
 	INFO("MQTT: Published\r\n");
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
 	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
 	char *dataBuf = (char*)os_zalloc(data_len + 1);
-	MQTT_Client* client = (MQTT_Client*)args;
+	MQTT_Client *client = (MQTT_Client*)args;
 	
 	char *str;
 	char function_name[FUNCTIONNAME_L];
@@ -440,11 +439,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/mem/v1/%07u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/mem/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
 		reply_topic_l = os_sprintf(reply_topic, "/mem/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-		reply_message_l = os_sprintf(reply_message, "heap=%lu&", system_get_free_heap_size());
+		reply_message_l = os_sprintf(reply_message, "heap=%u&", system_get_free_heap_size());
 #ifdef DEBUG
 		system_print_meminfo();
 #endif
@@ -457,7 +456,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
-		reply_topic_l = os_sprintf(reply_topic, "/reset_reason/v1/%07u/%u", impulse_meter_serial, get_unix_time());
+		reply_topic_l = os_sprintf(reply_topic, "/reset_reason/v1/%s/%u", impulse_meter_serial, get_unix_time());
 #else
 		reply_topic_l = os_sprintf(reply_topic, "/reset_reason/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif

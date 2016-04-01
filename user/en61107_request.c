@@ -32,6 +32,50 @@ static os_timer_t en61107_receive_timeout_timer;
 
 unsigned int en61107_requests_sent;
 
+// define en61107_received_task() first
+ICACHE_FLASH_ATTR
+static void en61107_received_task(os_event_t *events) {
+	unsigned char c;
+	unsigned int i;
+	uint64_t current_unix_time;
+	char current_unix_time_string[64];	// BUGFIX var
+	char key_value[128];
+	unsigned char topic[128];
+	unsigned char message[EN61107_FRAME_L];
+	int key_value_l;
+	int topic_l;
+	int message_l;
+
+	memset(message, 0x00, EN61107_FRAME_L);			// clear message buffer
+	i = 0;
+	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+		message[i++] = c;
+	}
+	message_l = i;
+	
+	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+    if (current_unix_time) {	// only send mqtt if we got current time via ntp
+   		// prepare for mqtt transmission if we got serial number from meter
+        
+   		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
+   		os_sprintf(current_unix_time_string, "%llu", current_unix_time);
+   		topic_l = os_sprintf(topic, "/sample/v1/%u/%s", atoi(DEFAULT_METER_SERIAL), current_unix_time_string);
+
+   		//strcpy(message, "");	// clear it
+		
+		key_value_l = os_sprintf(key_value, "test=%s&", message);
+		strncpy(message, key_value, key_value_l);
+	}
+	
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		if (message_l > 1) {
+			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		}
+	}
+	en61107_requests_sent = 0;	// reset retry counter
+}
+
 ICACHE_FLASH_ATTR
 void en61107_request_init() {
 	fifo_head = 0;
@@ -127,50 +171,6 @@ void en61107_request_send() {
 	en61107_requests_sent = 0;	// reset retry counter
 #endif
 }
-
-ICACHE_FLASH_ATTR
-static void en61107_received_task(os_event_t *events) {
-	unsigned char c;
-	unsigned int i;
-	uint64_t current_unix_time;
-	char current_unix_time_string[64];	// BUGFIX var
-	char key_value[128];
-	unsigned char topic[128];
-	unsigned char message[EN61107_FRAME_L];
-	int key_value_l;
-	int topic_l;
-	int message_l;
-
-	memset(message, 0x00, EN61107_FRAME_L);			// clear message buffer
-	i = 0;
-	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
-		message[i++] = c;
-	}
-	message_l = i;
-	
-	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-    if (current_unix_time) {	// only send mqtt if we got current time via ntp
-   		// prepare for mqtt transmission if we got serial number from meter
-        
-   		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
-   		os_sprintf(current_unix_time_string, "%lu", current_unix_time);
-   		topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", atoi(DEFAULT_METER_SERIAL), current_unix_time_string);
-
-   		//strcpy(message, "");	// clear it
-		
-		key_value_l = os_sprintf(key_value, "test=%s&", message);
-		strncpy(message, key_value, key_value_l);
-	}
-	
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		if (message_l > 1) {
-			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
-		}
-	}
-	en61107_requests_sent = 0;	// reset retry counter
-}
-
 
 // fifo
 ICACHE_FLASH_ATTR

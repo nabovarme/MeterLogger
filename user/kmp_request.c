@@ -73,13 +73,13 @@ static void kmp_received_task(os_event_t *events) {
 			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
 			// BUG here.                        returns 0 -^
 			// this is a fix
-			os_sprintf(current_unix_time_string, "%lu", current_unix_time);
-			topic_l = os_sprintf(topic, "/sample/v1/%lu/%s", kmp_serial, current_unix_time_string);
+			os_sprintf(current_unix_time_string, "%llu", current_unix_time);
+			topic_l = os_sprintf(topic, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
 
 			strcpy(message, "");	// clear it
         	
 			// heap size
-			key_value_l = os_sprintf(key_value, "heap=%lu&", system_get_free_heap_size());
+			key_value_l = os_sprintf(key_value, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
         	
 			// heating meter specific
