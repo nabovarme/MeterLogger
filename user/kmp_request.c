@@ -104,28 +104,16 @@ void kmp_request_send() {
 	
 	kmp_requests_sent++;
 	
-#if defined(DEBUG_NO_METER) || defined(DEBUG_MQTT_PING)
+#ifdef DEBUG_NO_METER
 	unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
 	int topic_l;
 	int message_l;
-#endif
-#ifdef DEBUG_NO_METER
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
 	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
 	message_l = os_sprintf(message, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
-
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
-	}
-	kmp_requests_sent = 0;	// reset retry counter
-#endif
-#ifdef DEBUG_MQTT_PING
-	topic_l = os_sprintf(topic, "/alive/v1/%u/%u", kmp_serial, get_unix_time());
-	message_l = os_sprintf(message, "");
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized

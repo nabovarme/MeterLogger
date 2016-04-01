@@ -109,7 +109,7 @@ LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
 CFLAGS		= -Os -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\"
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref
 
 ifeq ($(FLAVOR),debug)
     CFLAGS += -g -O0
@@ -132,10 +132,6 @@ endif
 
 ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
     CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
-endif
-
-ifeq ($(DEBUG_MQTT_PING), 1)
-    CFLAGS += -DDEBUG_MQTT_PING
 endif
 
 ifeq ($(EN61107), 1)
