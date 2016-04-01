@@ -158,26 +158,6 @@ static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
 //	}
 }
 
-//Actually connect to a station. This routine is timed because I had problems
-//with immediate connections earlier. It probably was something else that caused it,
-//but I can't be arsed to put the code back :P
-//static void ICACHE_FLASH_ATTR reassTimerCb(void *arg) {
-//	int x;
-//	static ETSTimer resetTimer;
-//	INFO("Try to connect to AP....\n");
-//	wifi_station_disconnect();
-//	wifi_station_set_config(&stconf);
-//	wifi_station_connect();
-//	x=wifi_get_opmode();
-//	if (x!=1) {
-//		//Schedule disconnect/connect
-//		os_timer_disarm(&resetTimer);
-//		os_timer_setfn(&resetTimer, resetTimerCb, NULL);
-//		os_timer_arm(&resetTimer, 4000, 0);
-//	}
-//}
-
-
 //This cgi uses the routines above to connect to a specific access point with the
 //given ESSID using the given password.
 int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
@@ -189,7 +169,6 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char impulse_meter_energy[32 + 1];
 	char impulses_per_kwh[8 + 1];
 #endif
-	static ETSTimer reassTimer;
 	
 	if (connData->conn==NULL) {
 		//Connection aborted. Clean up.

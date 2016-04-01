@@ -53,7 +53,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 }
 
 static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
-	struct scan_config config;
+//	struct scan_config config;
 	
 	if (!wifi_scan_runnning) {
 		// scan for fallback network
