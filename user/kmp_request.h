@@ -15,19 +15,7 @@ ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial();
 
 ICACHE_FLASH_ATTR
-void static kmp_get_serial_timer_func();
-
-ICACHE_FLASH_ATTR
-void static kmp_get_register_timer_func();
-
-ICACHE_FLASH_ATTR
-void static kmp_receive_timeout_timer_func();
-
-ICACHE_FLASH_ATTR
 void kmp_request_send();
-
-ICACHE_FLASH_ATTR
-static void kmp_received_task(os_event_t *events);
 
 // fifo
 unsigned int kmp_fifo_in_use();

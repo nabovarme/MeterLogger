@@ -506,6 +506,11 @@ void httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 }
 
 ICACHE_FLASH_ATTR
+void static httpdDisconnectTimerFunc(void *arg) {
+	httpdStop();
+}
+
+ICACHE_FLASH_ATTR
 void httpdStop() {
 	INFO("Httpd stopping\n");
 	
@@ -521,9 +526,4 @@ void httpdStop() {
 	    os_timer_arm(&httpdDisconnectTimer, 1000, 0);
 		INFO("Httpd still running rescheduling httpdStop\n");
 	}
-}
-
-ICACHE_FLASH_ATTR
-void static httpdDisconnectTimerFunc(void *arg) {
-	httpdStop();
 }

@@ -32,98 +32,6 @@ static os_timer_t kmp_receive_timeout_timer;
 unsigned int kmp_requests_sent;
 
 ICACHE_FLASH_ATTR
-void kmp_request_init() {
-	fifo_head = 0;
-	fifo_tail = 0;
-
-	kmp_requests_sent = 0;
-	
-	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
-}
-
-// helper function to pass mqtt client struct from user_main.c to here
-ICACHE_FLASH_ATTR
-void kmp_set_mqtt_client(MQTT_Client* client) {
-	mqtt_client = client;
-}
-
-// helper function to pass received kmp_serial to user_main.c
-ICACHE_FLASH_ATTR
-unsigned int kmp_get_received_serial() {
-	return kmp_serial;
-}
-
-ICACHE_FLASH_ATTR
-void static kmp_get_serial_timer_func() {
-	// get serial
-	// prepare frame
-	frame_length = kmp_get_serial(frame);
-	uart0_tx_buffer(frame, frame_length);     // send kmp request
-}
-
-ICACHE_FLASH_ATTR
-void static kmp_get_register_timer_func() {
-    // get registers
-    // prepare frame
-    register_list[0] = 0x3c;    // heat energy (E1)
-    register_list[1] = 0x44;    // volume register (V1)
-    register_list[2] = 0x3EC;   // operational hour counter (HR)
-    register_list[3] = 0x56;    // current flow temperature (T1)
-    register_list[4] = 0x57;    // current return flow temperature (T2)
-    register_list[5] = 0x59;    // current temperature difference (T1-T2)
-    register_list[6] = 0x4A;    // current flow in flow (FLOW1)
-    register_list[7] = 0x50;    // current power calculated on the basis of V1-T1-T2 (EFFEKT1)
-    frame_length = kmp_get_register(frame, register_list, 8);
-	
-    // send frame
-    uart0_tx_buffer(frame, frame_length);     // send kmp request
-}
-
-ICACHE_FLASH_ATTR
-void static kmp_receive_timeout_timer_func() {
-	if (kmp_requests_sent > 0) {
-		// if no reply received, retransmit
-		kmp_request_send();
-	}
-}
-
-ICACHE_FLASH_ATTR
-void kmp_request_send() {
-    os_timer_disarm(&kmp_get_serial_timer);
-    os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
-    os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
-	
-    os_timer_disarm(&kmp_get_register_timer);
-    os_timer_setfn(&kmp_get_register_timer, (os_timer_func_t *)kmp_get_register_timer_func, NULL);
-    os_timer_arm(&kmp_get_register_timer, 400, 0);		// after 0.4 seconds
-	
-	// start retransmission timeout timer
-    os_timer_disarm(&kmp_receive_timeout_timer);
-    os_timer_setfn(&kmp_receive_timeout_timer, (os_timer_func_t *)kmp_receive_timeout_timer_func, NULL);
-    os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
-	
-	kmp_requests_sent++;
-	
-#ifdef DEBUG_NO_METER
-	unsigned char topic[128];
-	unsigned char message[KMP_FRAME_L];
-	int topic_l;
-	int message_l;
-	// fake serial for testing without meter
-	kmp_serial = atoi(DEFAULT_METER_SERIAL);
-
-	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
-	message_l = os_sprintf(message, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
-
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
-	}
-	kmp_requests_sent = 0;	// reset retry counter
-#endif
-}
-
-ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
 	unsigned char c;
 	unsigned int i;
@@ -241,6 +149,97 @@ static void kmp_received_task(os_event_t *events) {
 	}
 }
 
+ICACHE_FLASH_ATTR
+void kmp_request_init() {
+	fifo_head = 0;
+	fifo_tail = 0;
+
+	kmp_requests_sent = 0;
+	
+	system_os_task(kmp_received_task, kmp_received_task_prio, kmp_received_task_queue, kmp_received_task_queue_length);
+}
+
+// helper function to pass mqtt client struct from user_main.c to here
+ICACHE_FLASH_ATTR
+void kmp_set_mqtt_client(MQTT_Client* client) {
+	mqtt_client = client;
+}
+
+// helper function to pass received kmp_serial to user_main.c
+ICACHE_FLASH_ATTR
+unsigned int kmp_get_received_serial() {
+	return kmp_serial;
+}
+
+ICACHE_FLASH_ATTR
+void static kmp_get_serial_timer_func() {
+	// get serial
+	// prepare frame
+	frame_length = kmp_get_serial(frame);
+	uart0_tx_buffer(frame, frame_length);     // send kmp request
+}
+
+ICACHE_FLASH_ATTR
+void static kmp_get_register_timer_func() {
+    // get registers
+    // prepare frame
+    register_list[0] = 0x3c;    // heat energy (E1)
+    register_list[1] = 0x44;    // volume register (V1)
+    register_list[2] = 0x3EC;   // operational hour counter (HR)
+    register_list[3] = 0x56;    // current flow temperature (T1)
+    register_list[4] = 0x57;    // current return flow temperature (T2)
+    register_list[5] = 0x59;    // current temperature difference (T1-T2)
+    register_list[6] = 0x4A;    // current flow in flow (FLOW1)
+    register_list[7] = 0x50;    // current power calculated on the basis of V1-T1-T2 (EFFEKT1)
+    frame_length = kmp_get_register(frame, register_list, 8);
+	
+    // send frame
+    uart0_tx_buffer(frame, frame_length);     // send kmp request
+}
+
+ICACHE_FLASH_ATTR
+void static kmp_receive_timeout_timer_func() {
+	if (kmp_requests_sent > 0) {
+		// if no reply received, retransmit
+		kmp_request_send();
+	}
+}
+
+ICACHE_FLASH_ATTR
+void kmp_request_send() {
+    os_timer_disarm(&kmp_get_serial_timer);
+    os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
+    os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
+	
+    os_timer_disarm(&kmp_get_register_timer);
+    os_timer_setfn(&kmp_get_register_timer, (os_timer_func_t *)kmp_get_register_timer_func, NULL);
+    os_timer_arm(&kmp_get_register_timer, 400, 0);		// after 0.4 seconds
+	
+	// start retransmission timeout timer
+    os_timer_disarm(&kmp_receive_timeout_timer);
+    os_timer_setfn(&kmp_receive_timeout_timer, (os_timer_func_t *)kmp_receive_timeout_timer_func, NULL);
+    os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
+	
+	kmp_requests_sent++;
+	
+#ifdef DEBUG_NO_METER
+	unsigned char topic[128];
+	unsigned char message[KMP_FRAME_L];
+	int topic_l;
+	int message_l;
+	// fake serial for testing without meter
+	kmp_serial = atoi(DEFAULT_METER_SERIAL);
+
+	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
+	message_l = os_sprintf(message, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+	}
+	kmp_requests_sent = 0;	// reset retry counter
+#endif
+}
 
 // fifo
 unsigned int kmp_fifo_in_use() {

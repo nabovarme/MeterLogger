@@ -28,6 +28,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */
 #include "queue.h"
+#include "proto.h"
 
 #include <esp8266.h>
 void ICACHE_FLASH_ATTR QUEUE_Init(QUEUE *queue, int bufferSize)

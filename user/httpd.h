@@ -49,5 +49,4 @@ ICACHE_FLASH_ATTR void httpdEndHeaders(HttpdConnData *conn);
 ICACHE_FLASH_ATTR int httpdGetHeader(HttpdConnData *conn, char *header, char *ret, int retLen);
 ICACHE_FLASH_ATTR int httpdSend(HttpdConnData *conn, const char *data, int len);
 ICACHE_FLASH_ATTR void httpdStop();
-ICACHE_FLASH_ATTR void static httpdDisconnectTimerFunc(void *arg);
 #endif

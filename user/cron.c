@@ -10,81 +10,6 @@ static os_timer_t minute_timer;
 char sec_drift;
 
 ICACHE_FLASH_ATTR
-void cron_init() {
-	//memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
-
-	// check if there are any cron jobs to run every minute
-	os_timer_disarm(&minute_timer);
-	os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
-	os_timer_arm(&minute_timer, 60000, 1);
-	
-#ifdef DEBUG
-	os_printf("\n\rcron jobs: %d\n\r", sys_cfg.cron_jobs.n);
-#endif
-}
-
-ICACHE_FLASH_ATTR
-unsigned int add_cron_job_from_query(char *query) {
-	char *str;
-	char *key, *value;
-	char key_value[KEY_VALUE_L];
-	char *context_query_string, *context_key_value;
-	
-	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) {		// if there are room for more cron jobs
-		// parse mqtt message for query string
-		memset(&sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n], 0, sizeof(cron_job_t));
-		str = strtok_r(query, "&", &context_query_string);
-		while (str != NULL) {
-			strncpy(key_value, str, KEY_VALUE_L);
-			key = strtok_r(key_value, "=", &context_key_value);
-			value = strtok_r(NULL, "=", &context_key_value);
-			if (strncmp(key, "minute", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].minute, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "hour", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].hour, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "day_of_month", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_month, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "month", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].month, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "day_of_week", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_week, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "command", COMMAND_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command, value, COMMAND_L);
-#ifdef DEBUG
-				os_printf("job #%d added\n\r", sys_cfg.cron_jobs.n);
-#endif
-				sys_cfg.cron_jobs.n++;
-			}
-			
-			str = strtok_r(NULL, "&", &context_query_string);
-		}
-		// save it to flash
-		cfg_save_defered();
-	}
-	
-	return sys_cfg.cron_jobs.n;
-}
-
-ICACHE_FLASH_ATTR
-void clear_cron_jobs() {
-#ifdef DEBUG
-	//debug_cron_jobs();
-#endif
-	memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
-	
-	// save it to flash
-	cfg_save_defered();
-#ifdef DEBUG
-	os_printf("\n\rcleared all jobs\n\r");
-#endif
-}
-
-ICACHE_FLASH_ATTR
 void static minute_timer_func(void *arg) {
 	struct tm *dt;
 	time_t unix_time;
@@ -213,6 +138,81 @@ void static minute_timer_func(void *arg) {
 			}
 		}
 	}
+}
+
+ICACHE_FLASH_ATTR
+void cron_init() {
+	//memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+
+	// check if there are any cron jobs to run every minute
+	os_timer_disarm(&minute_timer);
+	os_timer_setfn(&minute_timer, (os_timer_func_t *)minute_timer_func, NULL);
+	os_timer_arm(&minute_timer, 60000, 1);
+	
+#ifdef DEBUG
+	os_printf("\n\rcron jobs: %d\n\r", sys_cfg.cron_jobs.n);
+#endif
+}
+
+ICACHE_FLASH_ATTR
+unsigned int add_cron_job_from_query(char *query) {
+	char *str;
+	char *key, *value;
+	char key_value[KEY_VALUE_L];
+	char *context_query_string, *context_key_value;
+	
+	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) {		// if there are room for more cron jobs
+		// parse mqtt message for query string
+		memset(&sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n], 0, sizeof(cron_job_t));
+		str = strtok_r(query, "&", &context_query_string);
+		while (str != NULL) {
+			strncpy(key_value, str, KEY_VALUE_L);
+			key = strtok_r(key_value, "=", &context_key_value);
+			value = strtok_r(NULL, "=", &context_key_value);
+			if (strncmp(key, "minute", KEY_VALUE_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].minute, value, CRON_FIELD_L);
+			}
+			else if (strncmp(key, "hour", KEY_VALUE_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].hour, value, CRON_FIELD_L);
+			}
+			else if (strncmp(key, "day_of_month", KEY_VALUE_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_month, value, CRON_FIELD_L);
+			}
+			else if (strncmp(key, "month", KEY_VALUE_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].month, value, CRON_FIELD_L);
+			}
+			else if (strncmp(key, "day_of_week", KEY_VALUE_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_week, value, CRON_FIELD_L);
+			}
+			else if (strncmp(key, "command", COMMAND_L) == 0) {
+				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command, value, COMMAND_L);
+#ifdef DEBUG
+				os_printf("job #%d added\n\r", sys_cfg.cron_jobs.n);
+#endif
+				sys_cfg.cron_jobs.n++;
+			}
+			
+			str = strtok_r(NULL, "&", &context_query_string);
+		}
+		// save it to flash
+		cfg_save_defered();
+	}
+	
+	return sys_cfg.cron_jobs.n;
+}
+
+ICACHE_FLASH_ATTR
+void clear_cron_jobs() {
+#ifdef DEBUG
+	//debug_cron_jobs();
+#endif
+	memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+	
+	// save it to flash
+	cfg_save_defered();
+#ifdef DEBUG
+	os_printf("\n\rcleared all jobs\n\r");
+#endif
 }
 
 /*
