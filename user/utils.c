@@ -78,8 +78,6 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	uint32_t pos_int;
 	uint32_t pos_frac;
 	
-	char leading_zeroes[16];
-	
 	len = strlen(kw);
 	
 	result_frac = 0;

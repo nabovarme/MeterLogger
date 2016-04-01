@@ -177,7 +177,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		mqtt_topic_l = os_sprintf(mqtt_topic, "/sample/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		mqtt_message_l = os_sprintf(mqtt_message, "heap=%lu&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 
-		if (&mqttClient) {
+		if (&mqttClient != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 		}
@@ -191,7 +191,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	}
 	else {
 		// send ping to keep mqtt alive
-		if (&mqttClient) {
+		if (&mqttClient != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Ping(&mqttClient);
 		}
@@ -246,7 +246,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	if ((vdd < (vdd_init - 100)) && (shutdown == false)) {
 		cfg_save();
 //		os_printf("\n\rvdd: %d\n\r", vdd);
-		if (&mqttClient) {
+		if (&mqttClient != NULL) {
 			// if mqtt_client is initialized
 			shutdown = true;
 			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);	// DEBUG: needs serial
@@ -298,11 +298,11 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
 	MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Disconnected - reconnect\r\n");
-	MQTT_Connect(&mqttClient);
+	MQTT_Connect(client);
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
-	MQTT_Client* client = (MQTT_Client*)args;
+	//MQTT_Client* client = (MQTT_Client*)args;
 	INFO("MQTT: Published\r\n");
 }
 
@@ -350,9 +350,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "%d", sys_cfg.cron_jobs.n);
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
@@ -376,9 +376,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
@@ -404,9 +404,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "");
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
@@ -418,9 +418,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "%s-%s", system_get_sdk_version(), VERSION);
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
@@ -432,9 +432,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "%u", uptime());
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
@@ -449,9 +449,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		system_print_meminfo();
 #endif
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
@@ -463,9 +463,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		reply_message_l = os_sprintf(reply_message, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 #ifdef IMPULSE
@@ -476,9 +476,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		reply_topic_l = os_sprintf(reply_topic, "/save/v1/%s/%u", impulse_meter_serial, get_unix_time());
 		reply_message_l = os_sprintf(reply_message, "%u", sys_cfg.impulse_meter_count);
 
-		if (&mqttClient) {
+		if (client != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
+			MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
 	}
 #endif

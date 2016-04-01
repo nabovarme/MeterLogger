@@ -19,7 +19,6 @@ cfg_save() {
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
-	int i = 0;
 	
 #ifdef IMPULSE
 	do {
