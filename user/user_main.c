@@ -8,13 +8,19 @@
 #include "httpd_user_init.h"
 #include "user_config.h"
 #include "unix_time.h"
-#include "user_main.h"
-#include "kmp_request.h"
-#include "en61107_request.h"
 #include "cron.h"
 #include "led.h"
 #include "ac_out.h"
 #include "utils.h"
+#include "user_main.h"
+
+#ifdef EN61107
+#include "en61107_request.h"
+#elif defined IMPULSE
+// nothing
+#else
+#include "kmp_request.h"
+#endif
 
 #define MQTT_TOPIC_L 128
 #define MQTT_MESSAGE_L 128

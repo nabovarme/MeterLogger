@@ -1,5 +1,5 @@
    text	   data	    bss	    dec	    hex	filename
-   1213	      0	      0	   1213	    4bd	uart.o (ex build/app_app.a)
+   1061	      0	      0	   1061	    425	uart.o (ex build/app_app.a)
    3522	      0	      8	   3530	    dca	mqtt.o (ex build/app_app.a)
     188	      0	      0	    188	     bc	ringbuf.o (ex build/app_app.a)
    1982	      0	      0	   1982	    7be	mqtt_msg.o (ex build/app_app.a)
@@ -28,4 +28,4 @@
     419	    512	      0	    931	    3a3	utils.o (ex build/app_app.a)
    1096	      0	     20	   1116	    45c	config.o (ex build/app_app.a)
    1209	      0	     32	   1241	    4d9	wifi.o (ex build/app_app.a)
-  37131	    672	   9145	  46948	   b764	(TOTALS)
+  36979	    672	   9145	  46796	   b6cc	(TOTALS)
