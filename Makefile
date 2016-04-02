@@ -253,7 +253,7 @@ flash107th_bit_0xff:
 	$(ESPTOOL) -p $(ESPPORT) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
 
 size:
-	$(SIZE) -B -t -d $(APP_AR) | tee build/app_app.size
+	$(SIZE) -B -t -d $(APP_AR) | tee app_app.size
 
 screen:
 	screen /dev/ttyUSB0 1200,cstopb
@@ -272,7 +272,7 @@ clean:
 	$(Q) rm -rf $(BUILD_BASE)
 	$(Q) rm -f $(FW_FILE_1)
 	$(Q) rm -f $(FW_FILE_2)
-	$(Q) rm -f build/app_app.size
+	$(Q) rm -f app_app.size
 #	$(Q) rm -rf $(FW_BASE)
 
 foo:
