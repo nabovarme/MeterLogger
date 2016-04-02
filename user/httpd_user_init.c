@@ -13,7 +13,6 @@
 #include <esp8266.h>
 
 #include "httpd.h"
-#include "io.h"
 #include "httpdespfs.h"
 #include "cgi.h"
 #include "cgiwifi.h"
@@ -79,7 +78,6 @@ HttpdBuiltInUrl builtInUrls[]={
 
 //Main routine. Initialize stdout, the I/O and the webserver and we're done.
 void httpd_user_init(void) {
-	ioInit();
 	httpdInit(builtInUrls, 80);
 	INFO("\nReady\n");
 }

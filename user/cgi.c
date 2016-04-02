@@ -16,7 +16,6 @@ flash as a binary. Also handles the hit counter on the main page.
 #include <esp8266.h>
 #include "httpd.h"
 #include "cgi.h"
-#include "io.h"
 #include "debug.h"
 
 
@@ -36,7 +35,7 @@ int ICACHE_FLASH_ATTR cgiLed(HttpdConnData *connData) {
 	len=httpdFindArg(connData->postBuff, "led", buff, sizeof(buff));
 	if (len!=0) {
 		currLedState=atoi(buff);
-		ioLed(currLedState);
+//		ioLed(currLedState);
 	}
 
 	httpdRedirect(connData, "led.tpl");

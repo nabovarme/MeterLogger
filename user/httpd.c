@@ -15,7 +15,6 @@ Esp8266 http server - core routines
 #include <esp8266.h>
 
 #include "httpd.h"
-#include "io.h"
 #include "espfs.h"
 #include "debug.h"
 
