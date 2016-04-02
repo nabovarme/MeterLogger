@@ -16,12 +16,80 @@ void static minute_timer_func(void *arg) {
 	unsigned char i;
 	unsigned char run_command;
 	
-	unix_time = get_unix_time() + (2 * 60 * 60);	// BUG here - time zone support needed
-	dt = localtime(&unix_time);
+	bool dst = false;
+	int previous_sunday;
+	int s;
 	
+	unix_time = get_unix_time() + (1 * 60 * 60);    // UTC + 1
+	dt = gmtime(&unix_time);
+	
+	// compensate for daylight savings in Europe/Copenhagen
+	// thanx to Richard A Burton
+	// https://github.com/raburton/esp8266/blob/master/ntp/timezone.c
+	if (dt->tm_mon < 2 || dt->tm_mon > 9) {
+		// these months are completely out of DST
+	}
+	else if (dt->tm_mon > 2 && dt->tm_mon < 9) {
+		// these months are completely in DST
+		dst = true;
+	}
+	else {
+		// else we must be in one of the change months
+		// work out when the last sunday was (could be today)
+		previous_sunday = dt->tm_mday - dt->tm_wday;
+		if (dt->tm_mon == 2) { // march
+			// was last sunday (which could be today) the last sunday in march
+			if (previous_sunday >= 25) {
+				// are we actually on the last sunday today
+				if (dt->tm_wday == 0) {
+					// if so are we at/past 2am gmt
+					s = (dt->tm_hour * 3600) + (dt->tm_min * 60) + dt->tm_sec;
+					if (s >= 7200) {
+						dst = true;
+					}
+				} else {
+					dst = true;
+				}
+			}
+		}
+		else if (dt->tm_mon == 9) {
+			// was last sunday (which could be today) the last sunday in october
+			if (previous_sunday >= 25) {
+				// we have reached/passed it, so is it today?
+				if (dt->tm_wday == 0) {
+					// change day, so are we before 1am gmt (2am localtime)
+					s = (dt->tm_hour * 3600) + (dt->tm_min * 60) + dt->tm_sec;
+					if (s < 3600) {
+						dst = true;
+					}
+				}
+			}
+			else {
+				// not reached the last sunday yet
+				dst = true;
+			}
+		}
+	}
+	
+	if (dst) {
+		// add the dst hour
+		unix_time += (1 * 60 * 60);
+		// call gmtime on changed value
+		dt = gmtime(&unix_time);
+		// don't rely on isdst returned by mktime, it doesn't know about timezones and tends to reset this to 0
+		dt->tm_isdst = 1;
+#ifdef DEBUG
+	os_printf("UTC+1 DST+1: ");
+#endif
+	}
+	else {
+		dt->tm_isdst = 0;
+#ifdef DEBUG
+	os_printf("UTC+1: ");
+#endif
+	}
 #ifdef DEBUG
 	os_printf("%02d:%02d:%02d %d.%d.%d\r\n", dt->tm_hour, dt->tm_min, dt->tm_sec, dt->tm_mday, dt->tm_mon + 1, dt->tm_year + 1900);
-	//os_printf("rtc: %u\n\r", get_unix_time());
 #endif
 	
 	// sync to ntp time
