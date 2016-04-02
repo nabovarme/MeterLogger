@@ -101,7 +101,7 @@ endif
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt user modules
-EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink
+EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
@@ -137,10 +137,12 @@ endif
 
 ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
-endif
-
-ifeq ($(IMPULSE), 1)
+	MODULES += user/en61107
+else ifeq ($(IMPULSE), 1)
     CFLAGS += -DIMPULSE
+else
+    CFLAGS += -DKMP
+	MODULES += user/kamstrup
 endif
 
 ifeq ($(THERMO_NO), 1)
