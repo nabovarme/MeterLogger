@@ -13,6 +13,7 @@
 #include "ac_out.h"
 #include "utils.h"
 #include "user_main.h"
+#include "captdns.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -133,7 +134,8 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 
 	wifi_softap_set_config_current(&ap_conf);
 
-	httpd_user_init();
+	captdnsInit();		// start captive dns server
+	httpd_user_init();	// start web server
 }
 
 ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
