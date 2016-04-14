@@ -11230,7 +11230,7 @@ Standard 2-pin 5 mm header</description>
 <instance part="SUPPLY1" gate="G$1" x="104.14" y="-7.62"/>
 <instance part="GND1" gate="1" x="104.14" y="-30.48"/>
 <instance part="JP1" gate="G$1" x="177.8" y="-22.86" rot="R180"/>
-<instance part="JP2" gate="G$1" x="53.34" y="12.7"/>
+<instance part="JP2" gate="G$1" x="78.74" y="15.24" rot="R180"/>
 <instance part="C1" gate="G$1" x="111.76" y="-17.78"/>
 <instance part="U$1" gate="G$1" x="58.42" y="73.66" smashed="yes">
 <attribute name="NAME" x="48.26" y="72.898" size="1.524" layer="95"/>
@@ -11282,10 +11282,10 @@ Standard 2-pin 5 mm header</description>
 <wire x1="50.8" y1="66.04" x2="58.42" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP2" gate="G$1" pin="1"/>
 <pinref part="GND2" gate="1" pin="GND"/>
-<wire x1="60.96" y1="12.7" x2="66.04" y2="12.7" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="12.7" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
+<pinref part="JP2" gate="G$1" pin="2"/>
+<wire x1="66.04" y1="12.7" x2="71.12" y2="12.7" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND5" gate="1" pin="GND"/>
@@ -11357,11 +11357,11 @@ Standard 2-pin 5 mm header</description>
 <wire x1="66.04" y1="15.24" x2="66.04" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="33.02" x2="66.04" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="58.42" x2="86.36" y2="58.42" width="0.1524" layer="91"/>
-<pinref part="JP2" gate="G$1" pin="2"/>
-<wire x1="66.04" y1="15.24" x2="60.96" y2="15.24" width="0.1524" layer="91"/>
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="67.31" y1="33.02" x2="66.04" y2="33.02" width="0.1524" layer="91"/>
 <junction x="66.04" y="33.02"/>
+<pinref part="JP2" gate="G$1" pin="1"/>
+<wire x1="71.12" y1="15.24" x2="66.04" y2="15.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">

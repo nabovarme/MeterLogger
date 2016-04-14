@@ -1636,6 +1636,7 @@ design rules under a new name.</description>
 <element name="JP2" library="SparkFun (old)" package="1X02_LONGPADS" value="" x="21.11375" y="6.985" smashed="yes"/>
 <element name="C1" library="rcl" package="PANASONIC_G" value="" x="6.50875" y="41.11625" rot="R270"/>
 <element name="U$1" library="con-pcb-slot" package="CONN_SLOT_MINIMAL" value="CON-PCB-SLOT-0.05MINIMAL" x="31.714440625" y="24.60625" smashed="yes" rot="R90"/>
+<element name="R2" library="rcl" package="R0805" value="10k" x="2.06375" y="-3.01625"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1693,9 +1694,13 @@ design rules under a new name.</description>
 <wire x1="6.35" y1="36.7075" x2="6.35" y2="23.97125" width="0.8128" layer="1"/>
 <wire x1="6.35" y1="23.97125" x2="7.62" y2="22.70125" width="0.8128" layer="1"/>
 <wire x1="7.62" y1="22.70125" x2="31.439440625" y2="22.70125" width="0.8128" layer="1"/>
+<contactref element="R2" pad="1"/>
+<wire x1="13.73" y1="51.4975" x2="16.1497" y2="62.84" width="0" layer="19" extent="1-1"/>
+<wire x1="23.73" y1="51.4975" x2="13.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="6.50875" y1="36.86625" x2="13.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="1.11375" y1="-3.01625" x2="7.62" y2="22.70125" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$11">
-<contactref element="JP2" pad="1"/>
 <contactref element="R1" pad="1"/>
 <contactref element="U$1" pad="6"/>
 <wire x1="31.439440625" y1="23.97125" x2="29.36875" y2="23.97125" width="0.3048" layer="16"/>
@@ -1705,7 +1710,6 @@ design rules under a new name.</description>
 <wire x1="29.5275" y1="20.79625" x2="30.00375" y2="20.79625" width="0.3048" layer="16"/>
 <via x="30.00375" y="20.79625" extent="1-16" drill="0.5"/>
 <wire x1="30.00375" y1="20.79625" x2="30.00375" y2="19.0475" width="0.3048" layer="1"/>
-<wire x1="21.11375" y1="6.985" x2="21.11375" y2="4.445" width="0.3048" layer="1"/>
 <wire x1="21.11375" y1="4.445" x2="22.06625" y2="3.4925" width="0.3048" layer="1"/>
 <wire x1="22.06625" y1="3.4925" x2="29.68625" y2="3.4925" width="0.3048" layer="1"/>
 <wire x1="29.68625" y1="3.4925" x2="31.4325" y2="5.23875" width="0.3048" layer="1"/>
@@ -1764,9 +1768,15 @@ design rules under a new name.</description>
 <wire x1="25.87625" y1="23.97125" x2="24.13" y2="25.7175" width="0.3048" layer="1"/>
 <wire x1="24.13" y1="25.7175" x2="24.13" y2="27.305" width="0.3048" layer="1"/>
 <wire x1="24.13" y1="27.305" x2="25.4" y2="28.575" width="0.3048" layer="1"/>
-<wire x1="26.19375" y1="28.41625" x2="26.19375" y2="29.05125" width="0" layer="19" extent="1-16"/>
-<wire x1="26.19375" y1="29.05125" x2="26.82875" y2="29.05125" width="0" layer="19" extent="1-16"/>
-<wire x1="25.4" y1="28.575" x2="26.19375" y2="28.41625" width="0" layer="19" extent="1-16"/>
+<wire x1="25.4" y1="28.575" x2="26.3525" y2="28.575" width="0.3048" layer="1"/>
+<wire x1="26.3525" y1="28.575" x2="26.82875" y2="29.05125" width="0.3048" layer="1"/>
+</signal>
+<signal name="N$3">
+<contactref element="JP2" pad="1"/>
+<contactref element="R2" pad="2"/>
+<contactref element="ESP8266_ESP-07" pad="GPIO4"/>
+<wire x1="21.11375" y1="6.985" x2="23.73" y2="35.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="3.01375" y1="-3.01625" x2="21.11375" y2="6.985" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <errors>

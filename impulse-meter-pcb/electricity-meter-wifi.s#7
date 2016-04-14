@@ -11200,8 +11200,6 @@ Standard 2-pin 5 mm header</description>
 <sheets>
 <sheet>
 <plain>
-<text x="67.31" y="67.945" size="1.27" layer="95" rot="R180" align="top-right">RxD</text>
-<text x="67.31" y="70.485" size="1.27" layer="95" rot="R180" align="top-right">TxD</text>
 <wire x1="116.84" y1="-38.1" x2="116.84" y2="5.08" width="0.1524" layer="97" style="longdash"/>
 <wire x1="116.84" y1="5.08" x2="157.48" y2="5.08" width="0.1524" layer="97" style="longdash"/>
 <wire x1="157.48" y1="5.08" x2="157.48" y2="-38.1" width="0.1524" layer="97" style="longdash"/>
@@ -11232,22 +11230,10 @@ Standard 2-pin 5 mm header</description>
 <instance part="JP1" gate="G$1" x="177.8" y="-22.86" rot="R180"/>
 <instance part="JP2" gate="G$1" x="78.74" y="15.24" rot="R180"/>
 <instance part="C1" gate="G$1" x="111.76" y="-17.78"/>
-<instance part="U$1" gate="G$1" x="58.42" y="73.66" smashed="yes">
-<attribute name="NAME" x="48.26" y="72.898" size="1.524" layer="95"/>
-<attribute name="VALUE" x="9.398" y="72.517" size="1.778" layer="96"/>
-</instance>
-<instance part="U$1" gate="G$2" x="58.42" y="71.12" smashed="yes">
-<attribute name="NAME" x="48.26" y="70.358" size="1.524" layer="95"/>
-<attribute name="VALUE" x="9.398" y="69.977" size="1.778" layer="96"/>
-</instance>
-<instance part="U$1" gate="G$3" x="58.42" y="68.58" smashed="yes">
-<attribute name="NAME" x="48.26" y="67.818" size="1.524" layer="95"/>
-<attribute name="VALUE" x="9.398" y="67.437" size="1.778" layer="96"/>
-</instance>
-<instance part="U$1" gate="G$4" x="58.42" y="66.04" smashed="yes">
-<attribute name="NAME" x="48.26" y="65.278" size="1.524" layer="95"/>
-<attribute name="VALUE" x="9.398" y="64.897" size="1.778" layer="96"/>
-</instance>
+<instance part="U$1" gate="G$1" x="58.42" y="73.66" smashed="yes"/>
+<instance part="U$1" gate="G$2" x="58.42" y="71.12" smashed="yes"/>
+<instance part="U$1" gate="G$3" x="58.42" y="68.58" smashed="yes"/>
+<instance part="U$1" gate="G$4" x="58.42" y="66.04" smashed="yes"/>
 <instance part="R2" gate="G$1" x="72.39" y="33.02" rot="R180"/>
 <instance part="GND2" gate="1" x="66.04" y="5.08"/>
 <instance part="U$1" gate="G$5" x="160.02" y="63.5"/>

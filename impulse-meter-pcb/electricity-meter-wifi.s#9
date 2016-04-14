@@ -11211,7 +11211,7 @@ Standard 2-pin 5 mm header</description>
 <instances>
 <instance part="GND4" gate="1" x="50.8" y="60.96"/>
 <instance part="SUPPLY4" gate="G$1" x="50.8" y="78.74"/>
-<instance part="GND5" gate="1" x="147.32" y="35.56"/>
+<instance part="GND5" gate="1" x="161.29" y="72.39"/>
 <instance part="R1" gate="G$1" x="142.24" y="58.42" rot="R180"/>
 <instance part="ESP8266_ESP-07" gate="G$1" x="106.68" y="53.34" smashed="yes">
 <attribute name="NAME" x="109.22" y="68.58" size="1.778" layer="94" rot="R270" align="bottom-center"/>
@@ -11250,10 +11250,10 @@ Standard 2-pin 5 mm header</description>
 </instance>
 <instance part="R2" gate="G$1" x="72.39" y="33.02" rot="R180"/>
 <instance part="GND2" gate="1" x="66.04" y="5.08"/>
-<instance part="U$1" gate="G$5" x="160.02" y="60.96"/>
-<instance part="U$1" gate="G$6" x="160.02" y="58.42"/>
-<instance part="U$1" gate="G$7" x="160.02" y="55.88"/>
-<instance part="U$1" gate="G$8" x="160.02" y="53.34"/>
+<instance part="U$1" gate="G$5" x="160.02" y="63.5"/>
+<instance part="U$1" gate="G$6" x="160.02" y="60.96"/>
+<instance part="U$1" gate="G$7" x="160.02" y="58.42"/>
+<instance part="U$1" gate="G$8" x="160.02" y="55.88"/>
 </instances>
 <busses>
 </busses>
@@ -11288,10 +11288,11 @@ Standard 2-pin 5 mm header</description>
 <wire x1="66.04" y1="12.7" x2="66.04" y2="7.62" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$7" pin="S"/>
-<wire x1="147.32" y1="55.88" x2="160.02" y2="55.88" width="0.1524" layer="91"/>
 <pinref part="GND5" gate="1" pin="GND"/>
-<wire x1="147.32" y1="55.88" x2="147.32" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="161.29" y1="74.93" x2="154.94" y2="74.93" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="74.93" x2="154.94" y2="60.96" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$6" pin="S"/>
+<wire x1="154.94" y1="60.96" x2="160.02" y2="60.96" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -11379,18 +11380,18 @@ Standard 2-pin 5 mm header</description>
 <wire x1="162.56" y1="-12.7" x2="157.48" y2="-12.7" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$3" class="0">
-<segment>
-<pinref part="R1" gate="G$1" pin="1"/>
-<pinref part="U$1" gate="G$6" pin="S"/>
-<wire x1="147.32" y1="58.42" x2="160.02" y2="58.42" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$4" class="0">
 <segment>
 <pinref part="R1" gate="G$1" pin="2"/>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO0"/>
 <wire x1="137.16" y1="58.42" x2="132.08" y2="58.42" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="R1" gate="G$1" pin="1"/>
+<pinref part="U$1" gate="G$7" pin="S"/>
+<wire x1="147.32" y1="58.42" x2="160.02" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

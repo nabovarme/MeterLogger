@@ -11195,8 +11195,10 @@ Standard 2-pin 5 mm header</description>
 <part name="C1" library="rcl" deviceset="CPOL-EU" device="G"/>
 <part name="U$1" library="con-pcb-slot" deviceset="CON-PCB-SLOT-0.05" device="MINIMAL"/>
 <part name="GND2" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
-<part name="R2" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
+<part name="R3" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
+<part name="R2" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
+<part name="GND3" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -11208,9 +11210,9 @@ Standard 2-pin 5 mm header</description>
 <text x="109.22" y="10.16" size="2.54" layer="97" align="bottom-center">PSU Module</text>
 </plain>
 <instances>
-<instance part="GND4" gate="1" x="157.48" y="68.58" rot="MR0"/>
-<instance part="SUPPLY4" gate="G$1" x="157.48" y="88.9" rot="MR0"/>
-<instance part="GND5" gate="1" x="157.48" y="44.45"/>
+<instance part="GND4" gate="1" x="167.64" y="68.58" rot="MR0"/>
+<instance part="SUPPLY4" gate="G$1" x="167.64" y="88.9" rot="MR0"/>
+<instance part="GND5" gate="1" x="167.64" y="44.45"/>
 <instance part="R1" gate="G$1" x="142.24" y="58.42" rot="R180"/>
 <instance part="ESP8266_ESP-07" gate="G$1" x="106.68" y="53.34" smashed="yes">
 <attribute name="NAME" x="109.22" y="68.58" size="1.778" layer="94" rot="R270" align="bottom-center"/>
@@ -11229,19 +11231,21 @@ Standard 2-pin 5 mm header</description>
 <instance part="SUPPLY1" gate="G$1" x="76.2" y="2.54"/>
 <instance part="GND1" gate="1" x="76.2" y="-20.32"/>
 <instance part="JP1" gate="G$1" x="149.86" y="-12.7" rot="R180"/>
-<instance part="JP2" gate="G$1" x="170.18" y="12.7" rot="R180"/>
+<instance part="JP2" gate="G$1" x="180.34" y="12.7" rot="R180"/>
 <instance part="C1" gate="G$1" x="83.82" y="-7.62"/>
-<instance part="U$1" gate="G$1" x="165.1" y="76.2" smashed="yes" rot="MR180"/>
-<instance part="U$1" gate="G$2" x="165.1" y="78.74" smashed="yes" rot="MR180"/>
-<instance part="U$1" gate="G$3" x="165.1" y="81.28" smashed="yes" rot="MR180"/>
-<instance part="U$1" gate="G$4" x="165.1" y="83.82" smashed="yes" rot="MR180"/>
-<instance part="GND2" gate="1" x="149.86" y="2.54"/>
-<instance part="U$1" gate="G$5" x="165.1" y="60.96" smashed="yes"/>
-<instance part="U$1" gate="G$6" x="165.1" y="58.42" smashed="yes"/>
-<instance part="U$1" gate="G$7" x="165.1" y="55.88" smashed="yes"/>
-<instance part="U$1" gate="G$8" x="165.1" y="53.34" smashed="yes"/>
-<instance part="R2" gate="G$1" x="157.48" y="20.32" rot="R270"/>
-<instance part="SUPPLY3" gate="G$1" x="157.48" y="27.94" rot="MR0"/>
+<instance part="U$1" gate="G$1" x="175.26" y="76.2" smashed="yes" rot="MR180"/>
+<instance part="U$1" gate="G$2" x="175.26" y="78.74" smashed="yes" rot="MR180"/>
+<instance part="U$1" gate="G$3" x="175.26" y="81.28" smashed="yes" rot="MR180"/>
+<instance part="U$1" gate="G$4" x="175.26" y="83.82" smashed="yes" rot="MR180"/>
+<instance part="GND2" gate="1" x="160.02" y="2.54"/>
+<instance part="U$1" gate="G$5" x="175.26" y="60.96" smashed="yes"/>
+<instance part="U$1" gate="G$6" x="175.26" y="58.42" smashed="yes"/>
+<instance part="U$1" gate="G$7" x="175.26" y="55.88" smashed="yes"/>
+<instance part="U$1" gate="G$8" x="175.26" y="53.34" smashed="yes"/>
+<instance part="R3" gate="G$1" x="167.64" y="20.32" rot="R270"/>
+<instance part="SUPPLY3" gate="G$1" x="167.64" y="27.94" rot="MR0"/>
+<instance part="R2" gate="G$1" x="142.24" y="48.26" rot="R180"/>
+<instance part="GND3" gate="1" x="152.4" y="35.56"/>
 </instances>
 <busses>
 </busses>
@@ -11265,21 +11269,27 @@ Standard 2-pin 5 mm header</description>
 </segment>
 <segment>
 <pinref part="GND2" gate="1" pin="GND"/>
-<wire x1="149.86" y1="10.16" x2="149.86" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="10.16" x2="160.02" y2="5.08" width="0.1524" layer="91"/>
 <pinref part="JP2" gate="G$1" pin="2"/>
-<wire x1="149.86" y1="10.16" x2="162.56" y2="10.16" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="10.16" x2="172.72" y2="10.16" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$7" pin="S"/>
 <pinref part="GND5" gate="1" pin="GND"/>
-<wire x1="165.1" y1="55.88" x2="157.48" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="55.88" x2="157.48" y2="46.99" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="55.88" x2="167.64" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="55.88" x2="167.64" y2="46.99" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="S"/>
-<wire x1="165.1" y1="76.2" x2="157.48" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="175.26" y1="76.2" x2="167.64" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="GND4" gate="1" pin="GND"/>
-<wire x1="157.48" y1="76.2" x2="157.48" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="76.2" x2="167.64" y2="71.12" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND3" gate="1" pin="GND"/>
+<wire x1="152.4" y1="38.1" x2="152.4" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="R2" gate="G$1" pin="1"/>
+<wire x1="152.4" y1="48.26" x2="147.32" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -11307,21 +11317,21 @@ Standard 2-pin 5 mm header</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$4" pin="S"/>
-<wire x1="157.48" y1="83.82" x2="165.1" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="83.82" x2="175.26" y2="83.82" width="0.1524" layer="91"/>
 <pinref part="SUPPLY4" gate="G$1" pin="3.3V"/>
-<wire x1="157.48" y1="83.82" x2="157.48" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="83.82" x2="167.64" y2="88.9" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="R2" gate="G$1" pin="1"/>
+<pinref part="R3" gate="G$1" pin="1"/>
 <pinref part="SUPPLY3" gate="G$1" pin="3.3V"/>
-<wire x1="157.48" y1="25.4" x2="157.48" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="167.64" y1="25.4" x2="167.64" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
 <pinref part="U$1" gate="G$6" pin="S"/>
-<wire x1="147.32" y1="58.42" x2="165.1" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="58.42" x2="175.26" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
@@ -11351,29 +11361,36 @@ Standard 2-pin 5 mm header</description>
 <segment>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="TXD"/>
 <pinref part="U$1" gate="G$2" pin="S"/>
-<wire x1="132.08" y1="78.74" x2="165.1" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="78.74" x2="175.26" y2="78.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$2" class="0">
 <segment>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="RXD"/>
-<wire x1="132.08" y1="73.66" x2="149.86" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="73.66" x2="149.86" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="73.66" x2="160.02" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="73.66" x2="160.02" y2="81.28" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$3" pin="S"/>
-<wire x1="149.86" y1="81.28" x2="165.1" y2="81.28" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="81.28" x2="175.26" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$3" class="0">
 <segment>
 <pinref part="JP2" gate="G$1" pin="1"/>
-<wire x1="162.56" y1="12.7" x2="157.48" y2="12.7" width="0.1524" layer="91"/>
-<pinref part="R2" gate="G$1" pin="2"/>
-<wire x1="157.48" y1="15.24" x2="157.48" y2="12.7" width="0.1524" layer="91"/>
-<junction x="157.48" y="12.7"/>
-<wire x1="157.48" y1="12.7" x2="149.86" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="12.7" x2="167.64" y2="12.7" width="0.1524" layer="91"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="167.64" y1="15.24" x2="167.64" y2="12.7" width="0.1524" layer="91"/>
+<junction x="167.64" y="12.7"/>
+<wire x1="167.64" y1="12.7" x2="160.02" y2="12.7" width="0.1524" layer="91"/>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO4"/>
-<wire x1="132.08" y1="68.58" x2="149.86" y2="68.58" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="68.58" x2="149.86" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="68.58" x2="160.02" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="68.58" x2="160.02" y2="12.7" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$7" class="0">
+<segment>
+<pinref part="R2" gate="G$1" pin="2"/>
+<pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO15"/>
+<wire x1="137.16" y1="48.26" x2="132.08" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
