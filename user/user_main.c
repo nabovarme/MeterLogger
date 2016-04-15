@@ -482,6 +482,15 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 #endif
+#ifdef IMPULSE
+	else if (strncmp(function_name, "vdd", FUNCTIONNAME_L) == 0) {
+		// found vdd - get voltage level
+		reply_topic_l = os_sprintf(reply_topic, "/vdd/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		reply_message_l = os_sprintf(reply_message, "%u", system_get_vdd33());
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
+#endif
 	
 	os_free(topicBuf);
 	os_free(dataBuf);

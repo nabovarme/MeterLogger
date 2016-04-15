@@ -43,6 +43,7 @@ enable power brown out watch dog
 | /config/v1/9999999/version                 |                                                                    |
 | /config/v1/9999999/uptime                  |                                                                    |
 | /config/v1/9999999/save (only pulse meter) |                                                                    |
+| /config/v1/9999999/vdd  (only pulse meter) |                                                                    |
 | /config/v1/9999999/mem                     |                                                                    |
 | /config/v1/9999999/reset_reason            |                                                                    |
   
@@ -57,6 +58,7 @@ enable power brown out watch dog
 | /status/v1/9999999/[unix time]                  | [open|close]                                                                                         |
 | /uptime/v1/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
 | /save/v1/9999999/[unix time] (only pulse meter) | saved                                                                                                |
+| /vdd/v1/9999999/[unix time] (only pulse meter)  | supply voltage level in mV                                                                           |
 | /mem/v1/9999999/[unix time]                     | heap=9672&                                                                                           |
 | /reset_reason/v1/9999999/[unix time]            |                                                                                                      |
 
