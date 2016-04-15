@@ -475,16 +475,14 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);			// Set GPIO4 function
+	GPIO_DIS_OUTPUT(GPIO_ID_PIN(5));								// Set GPIO4 as input
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, FUNC_GPIO0);				// Set GPIO0 function
-	gpio_output_set(0, 0, 0, GPIO_ID_PIN(0));						// Set GPIO0 as input
-	//ETS_GPIO_INTR_ATTACH(gpio_int_handler, 0);					// GPIO0 interrupt handler
-	gpio_intr_handler_register(gpio_int_handler, NULL);
-	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
-	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
-	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
+	ETS_GPIO_INTR_ATTACH(gpio_int_handler, NULL);
+	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO5_U);							// pull - up pin
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(5));				// Clear GPIO4 status
+	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
 	ETS_GPIO_INTR_ENABLE();											// Enable gpio interrupts
-	//wdt_feed();
 }
 #endif
 
@@ -498,7 +496,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	gpio_intr_ack(interrupt_mask);
 
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
-	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
+	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
 	//wdt_feed();
 	
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
@@ -506,7 +504,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 	
 	os_delay_us(1000);	// wait 1 mS to avoid reading on slope
-	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
+	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT5;
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		
@@ -538,7 +536,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	}
 
 	// enable gpio interrupt again
-	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
+	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
 	ETS_GPIO_INTR_ENABLE();
 }
 
