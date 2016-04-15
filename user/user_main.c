@@ -39,10 +39,6 @@ volatile uint32_t last_impulse_meter_count;
 
 uint32_t impulse_falling_edge_time;
 uint32_t impulse_rising_edge_time;
-#ifdef POWER_WD
-// for power wd
-bool shutdown = false;
-#endif // POWER_WD
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqttClient;
@@ -252,15 +248,33 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #ifdef POWER_WD
 ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	uint16_t vdd;
+	unsigned char reply_topic[MQTT_TOPIC_L];
+	unsigned char reply_message[MQTT_MESSAGE_L];
+	int reply_topic_l;
+	int reply_message_l;
+
 	vdd = system_get_vdd33();
-	if ((vdd < (vdd_init - 100)) && (shutdown == false)) {
+	if (vdd < (vdd_init - 50)) {
+		// low voltage
 		cfg_save();
-//		os_printf("\n\rvdd: %d\n\r", vdd);
+#ifdef DEBUG
+		os_printf("vdd: %d\n\r", vdd);
+#endif
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
-			shutdown = true;
-			MQTT_Publish(&mqttClient, "/shutdown", "", 1, 0, 0);	// DEBUG: needs serial
+			reply_topic_l = os_sprintf(reply_topic, "/low_voltage/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+			reply_message_l = os_sprintf(reply_message, "");
+			MQTT_Publish(&mqttClient, reply_topic, reply_message, reply_message_l, 0, 0);
 		}
+		os_timer_disarm(&power_wd_timer);
+		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
+		os_timer_arm(&power_wd_timer, 1000, 0);
+	}
+	else {
+		// normal voltage
+		os_timer_disarm(&power_wd_timer);
+		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
+		os_timer_arm(&power_wd_timer, 50, 0);
 	}
 }
 #endif // POWER_WD
@@ -561,7 +575,7 @@ void impulse_meter_init(void) {
 	
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-	os_timer_arm(&power_wd_timer, 50, 1);
+	os_timer_arm(&power_wd_timer, 50, 0);
 #endif
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
