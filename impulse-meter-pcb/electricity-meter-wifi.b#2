@@ -136,7 +136,7 @@
 <text x="25.55875" y="25.24125" size="1.016" layer="25" rot="R180" align="center-left">RxD</text>
 <text x="11.58875" y="48.26" size="1.27" layer="25" ratio="10" align="bottom-right">ESP8266
 ESP-07</text>
-<text x="1.5875" y="60.96" size="1.016" layer="25" ratio="15">v.1.3.0</text>
+<text x="1.5875" y="60.96" size="1.016" layer="25" ratio="15">v.1.3.1</text>
 <text x="3.4925" y="22.225" size="1.016" layer="25" font="fixed">Part      RS#
 JP1, JP2  821-8701
 R1,R2,R3  721-7820

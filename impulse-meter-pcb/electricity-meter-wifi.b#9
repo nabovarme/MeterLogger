@@ -1865,7 +1865,14 @@ design rules under a new name.</description>
 <signal name="N$8">
 <contactref element="U2" pad="1"/>
 <contactref element="ESP8266_ESP-07" pad="REST"/>
-<wire x1="27.73" y1="51.4975" x2="31.4198" y2="61.0616" width="0" layer="19" extent="1-1"/>
+<wire x1="27.73" y1="51.4975" x2="27.73" y2="55.67" width="0.3048" layer="1"/>
+<wire x1="27.73" y1="55.67" x2="28.2575" y2="56.1975" width="0.3048" layer="1"/>
+<wire x1="28.2575" y1="56.1975" x2="31.75" y2="56.1975" width="0.3048" layer="1"/>
+<wire x1="31.75" y1="56.1975" x2="33.02" y2="57.4675" width="0.3048" layer="1"/>
+<wire x1="33.02" y1="57.4675" x2="33.02" y2="60.48375" width="0.3048" layer="1"/>
+<wire x1="33.02" y1="60.48375" x2="32.385" y2="61.11875" width="0.3048" layer="1"/>
+<wire x1="32.385" y1="61.11875" x2="31.47695" y2="61.11875" width="0.3048" layer="1"/>
+<wire x1="31.47695" y1="61.11875" x2="31.4198" y2="61.0616" width="0.3048" layer="1"/>
 </signal>
 </signals>
 <errors>
