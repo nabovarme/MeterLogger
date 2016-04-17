@@ -1706,8 +1706,8 @@ design rules under a new name.</description>
 <attribute name="MPN" value="MCP1316T-29LE/OT" x="30.48" y="59.69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="SUPPLIER" value="Microchip" x="30.48" y="59.69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="OC_FARNELL" value="1332071" x="30.48" y="59.69" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="30.3403" y="55.7149" size="1.27" layer="25" rot="SR0"/>
-<attribute name="VALUE" x="19.939" y="62.2681" size="1.27" layer="27" rot="SR0"/>
+<attribute name="NAME" x="29.54655" y="55.3974" size="1.27" layer="25" rot="SR0"/>
+<attribute name="VALUE" x="20.8915" y="62.42685" size="1.27" layer="27" rot="SR0"/>
 </element>
 </elements>
 <signals>
@@ -1877,7 +1877,10 @@ design rules under a new name.</description>
 <signal name="N$9">
 <contactref element="ESP8266_ESP-07" pad="GPIO16"/>
 <contactref element="U2" pad="4"/>
-<wire x1="21.73" y1="51.4975" x2="29.5402" y2="58.3184" width="0" layer="19" extent="1-1"/>
+<wire x1="29.5402" y1="58.3184" x2="23.0759" y2="58.3184" width="0.3048" layer="1"/>
+<wire x1="23.0759" y1="58.3184" x2="21.74875" y2="56.99125" width="0.3048" layer="1"/>
+<wire x1="21.74875" y1="56.99125" x2="21.74875" y2="51.51625" width="0.3048" layer="1"/>
+<wire x1="21.74875" y1="51.51625" x2="21.73" y2="51.4975" width="0.3048" layer="1"/>
 </signal>
 </signals>
 <errors>
