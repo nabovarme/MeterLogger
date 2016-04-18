@@ -11298,7 +11298,7 @@ at 30/07/2012 11:22:31</description>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="R2" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
 <part name="GND3" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
-<part name="U2" library="Microchip_By_element14_Batch_1" deviceset="MCP1316T-29LE/OT" device="" value="MCP1316T-29"/>
+<part name="U2" library="Microchip_By_element14_Batch_1" deviceset="MCP1316T-29LE/OT" device="" value="MCP1316MT-29ME/OT"/>
 <part name="SUPPLY5" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="GND6" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
