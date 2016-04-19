@@ -270,7 +270,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		// normal voltage
 		os_timer_disarm(&power_wd_timer);
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-		os_timer_arm(&power_wd_timer, 50, 0);
+		os_timer_arm(&power_wd_timer, 100, 0);
 	}
 }
 #endif // POWER_WD
@@ -584,7 +584,7 @@ void impulse_meter_init(void) {
 	
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-	os_timer_arm(&power_wd_timer, 50, 0);
+	os_timer_arm(&power_wd_timer, 100, 0);
 #endif
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
