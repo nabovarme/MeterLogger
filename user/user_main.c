@@ -56,10 +56,8 @@ static os_timer_t kmp_request_send_timer;
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
-#ifdef POWER_WD
 static os_timer_t power_wd_timer;
 uint16_t vdd_init;
-#endif // POWER_WD
 #endif
 
 uint16_t counter = 0;
@@ -245,7 +243,6 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #endif // IMPULSE
 
 #ifdef IMPULSE
-#ifdef POWER_WD
 ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	unsigned char reply_topic[MQTT_TOPIC_L];
@@ -273,7 +270,6 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		os_timer_arm(&power_wd_timer, 100, 0);
 	}
 }
-#endif // POWER_WD
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
@@ -577,7 +573,6 @@ void impulse_meter_init(void) {
 	
 	last_impulse_meter_count = sys_cfg.impulse_meter_count;
 
-#ifdef POWER_WD
 	// start power watch dog
 	vdd_init = system_get_vdd33();
 	os_printf("\n\rvdd init: %d\n\r", vdd_init);
@@ -585,7 +580,6 @@ void impulse_meter_init(void) {
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 	os_timer_arm(&power_wd_timer, 100, 0);
-#endif
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
 #endif // DEBUG
@@ -613,9 +607,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("\t(THERMO_NO)\n\r");
 #else
 	os_printf("\t(THERMO_NC)\n\r");
-#endif
-#ifdef POWER_WD
-	os_printf("\t(POWER_WD)\n\r");
 #endif
 
 #ifndef DEBUG

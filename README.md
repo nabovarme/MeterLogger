@@ -26,9 +26,6 @@ thermo actuator is normal open
 LED_ON_AC=1  
 use led to indicate ac state  
 
-POWER_WD=1
-enable power brown out watch dog
-  
 **MQTT format for messages sent _to_ meter**  
 
 | Topic                                      | Message                                                            |
