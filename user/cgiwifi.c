@@ -19,6 +19,7 @@ Cgi/template routines for the /wifi url.
 #include "debug.h"
 
 #include "utils.h"
+#include "tinyprintf.h"
 
 //Enable this to disallow any changes in AP settings
 //#define DEMO_MODE
@@ -115,21 +116,25 @@ int ICACHE_FLASH_ATTR cgiWiFiScan(HttpdConnData *connData) {
 
 	if (cgiWifiAps.scanInProgress==1) {
 		//We're still scanning. Tell Javascript code that.
-		len=os_sprintf(buff, "{\n \"result\": { \n\"inProgress\": \"1\"\n }\n}\n");
+		tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"1\"\n }\n}\n");
+		len = strlen(buff);
 		httpdSend(connData, buff, len);
 	} else {
 		//We have a scan result. Pass it on.
-		len=os_sprintf(buff, "{\n \"result\": { \n\"inProgress\": \"0\", \n\"APs\": [\n");
+		tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"0\", \n\"APs\": [\n");
+		len = strlen(buff);
 		httpdSend(connData, buff, len);
 		if (cgiWifiAps.apData==NULL) cgiWifiAps.noAps=0;
 		for (i=0; i<cgiWifiAps.noAps; i++) {
 			//Fill in json code for an access point
-			len=os_sprintf(buff, "{\"essid\": \"%s\", \"rssi\": \"%d\", \"enc\": \"%d\"}%s\n", 
+			tfp_snprintf(buff, 1024, "{\"essid\": \"%s\", \"rssi\": \"%d\", \"enc\": \"%d\"}%s\n", 
 					cgiWifiAps.apData[i]->ssid, cgiWifiAps.apData[i]->rssi, 
 					cgiWifiAps.apData[i]->enc, (i==cgiWifiAps.noAps-1)?"":",");
+			len = strlen(buff);
 			httpdSend(connData, buff, len);
 		}
-		len=os_sprintf(buff, "]\n}\n}\n");
+		tfp_snprintf(buff, 1024, "]\n}\n}\n");
+		len = strlen(buff);
 		httpdSend(connData, buff, len);
 		//Also start a new scan.
 		wifiStartScan();
@@ -278,7 +283,7 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
 	}
 	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
-		os_sprintf(impulse_meter_energy, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)));
+		tfp_snprintf(impulse_meter_energy, 32 + 1, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)));
 		w_to_kw_str(impulse_meter_energy, buff);
 	}
 	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {

@@ -11,6 +11,7 @@
 #include "user_config.h"
 #include "config.h"
 #include "led.h"
+#include "tinyprintf.h"
 
 #define NETWORK_CHECK_TIME 5000
 
@@ -118,8 +119,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
     
-	os_sprintf(stationConf.ssid, "%s", config_ssid);
-	os_sprintf(stationConf.password, "%s", config_pass);
+	tfp_snprintf(stationConf.ssid, 32, "%s", config_ssid);
+	tfp_snprintf(stationConf.password, 64, "%s", config_pass);
     
 	wifi_station_set_config_current(&stationConf);
 	wifi_station_connect();
@@ -137,8 +138,8 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
-	os_sprintf(stationConf.ssid, "%s", STA_FALLBACK_SSID);
-	os_sprintf(stationConf.password, "%s", STA_FALLBACK_PASS);
+	tfp_snprintf(stationConf.ssid, 32, "%s", STA_FALLBACK_SSID);
+	tfp_snprintf(stationConf.password, 64, "%s", STA_FALLBACK_PASS);
 	
 	wifi_station_set_config_current(&stationConf);
 	wifi_station_connect();
@@ -156,8 +157,8 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 
-	os_sprintf(stationConf.ssid, "%s", ssid);
-	os_sprintf(stationConf.password, "%s", pass);
+	tfp_snprintf(stationConf.ssid, 32, "%s", ssid);
+	tfp_snprintf(stationConf.password, 64, "%s", pass);
 
 	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);

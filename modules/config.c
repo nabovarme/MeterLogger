@@ -6,6 +6,7 @@
 #include "user_config.h"
 #include "debug.h"
 #include "utils.h"
+#include "tinyprintf.h"
 
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
@@ -97,15 +98,15 @@ cfg_load() {
 		// if first time config load default conf
 		os_memset(&sys_cfg, 0x00, sizeof(syscfg_t));
 
-		os_sprintf(sys_cfg.sta_ssid, "%s", STA_SSID);
-		os_sprintf(sys_cfg.sta_pwd, "%s", STA_PASS);
+		tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", STA_SSID);
+		tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", STA_PASS);
 		sys_cfg.sta_type = STA_TYPE;
 
-		os_sprintf(sys_cfg.device_id, MQTT_CLIENT_ID, system_get_chip_id());
-		os_sprintf(sys_cfg.mqtt_host, "%s", MQTT_HOST);
+		tfp_snprintf(sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
+		tfp_snprintf(sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
 		sys_cfg.mqtt_port = MQTT_PORT;
-		os_sprintf(sys_cfg.mqtt_user, "%s", MQTT_USER);
-		os_sprintf(sys_cfg.mqtt_pass, "%s", MQTT_PASS);
+		tfp_snprintf(sys_cfg.mqtt_user, 32, "%s", MQTT_USER);
+		tfp_snprintf(sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 
@@ -114,9 +115,9 @@ cfg_load() {
 		sys_cfg.ac_thermo_state = 0;
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
 #ifdef IMPULSE
-		os_sprintf(sys_cfg.impulse_meter_serial, DEFAULT_METER_SERIAL);
-		os_sprintf(sys_cfg.impulse_meter_energy, "0");
-		os_sprintf(sys_cfg.impulses_per_kwh, "100");
+		tfp_snprintf(sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN, DEFAULT_METER_SERIAL);
+		tfp_snprintf(sys_cfg.impulse_meter_energy, 2, "0");
+		tfp_snprintf(sys_cfg.impulses_per_kwh, 4, "100");
 		sys_cfg.impulse_meter_count = 0;
 #endif // IMPULSE
 		INFO(" default configuration\r\n");

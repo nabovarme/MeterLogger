@@ -83,6 +83,7 @@
 #include <esp8266.h>
 #include <utils.h>
 
+#include "tinyprintf.h"
 #include "kmp.h"
 
 #define KMP_START_BYTE_IDX  0
@@ -412,10 +413,10 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 			for (i = 0; i < (exponent - decimal_number_length(result_frac)); i++) {
 				strcat(leading_zeroes, "0");
 			}
-			os_sprintf(value_string, "-%u.%s%u", result_int, leading_zeroes, result_frac);
+			tfp_snprintf(value_string, 23 + i, "-%u.%s%u", result_int, leading_zeroes, result_frac);
         }
         else {
-            os_sprintf(value_string, "-%u", value * factor);
+            tfp_snprintf(value_string, 12, "-%u", value * factor);
         }
     }
     else {
@@ -429,10 +430,10 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 			for (i = 0; i < (exponent - decimal_number_length(result_frac)); i++) {
 				strcat(leading_zeroes, "0");
 			}
-			os_sprintf(value_string, "%u.%s%u", result_int, leading_zeroes, result_frac);
+			tfp_snprintf(value_string, 22 + i, "%u.%s%u", result_int, leading_zeroes, result_frac);
         }
         else {
-            os_sprintf(value_string, "%u", value * factor);
+            tfp_snprintf(value_string, 11, "%u", value * factor);
         }
     }
 }

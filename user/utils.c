@@ -4,6 +4,7 @@
 #include "user_config.h"
 #include "debug.h"
 #include "utils.h"
+#include "tinyprintf.h"
 
 // crc table
 uint16_t ccit_crc16_table[256] = {
@@ -63,7 +64,7 @@ ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
 	result_int = (int32_t)(w_int / 1000);
 	result_frac = w_int % 1000;
     
-	sprintf(kw, "%u.%03u", result_int, result_frac);
+	tfp_snprintf(kw, 15, "%u.%03u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
@@ -101,7 +102,7 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
 	
 	result_int += result_frac;
-	sprintf(w, "%u", result_int);
+	tfp_snprintf(w, 11, "%u", result_int);
 }
 
 ICACHE_FLASH_ATTR

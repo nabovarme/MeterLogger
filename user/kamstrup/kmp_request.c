@@ -2,6 +2,7 @@
 #include "driver/uart.h"
 #include "unix_time.h"
 #include "mqtt.h"
+#include "tinyprintf.h"
 #include "kmp.h"
 #include "kmp_request.h"
 
@@ -40,8 +41,6 @@ static void kmp_received_task(os_event_t *events) {
 	char key_value[128];
 	unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
-	int key_value_l;
-	int topic_l;
 	int message_l;
 		
     // allocate struct for response
@@ -73,62 +72,62 @@ static void kmp_received_task(os_event_t *events) {
 			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
 			// BUG here.                        returns 0 -^
 			// this is a fix
-			os_sprintf(current_unix_time_string, "%lu", current_unix_time);
-			topic_l = os_sprintf(topic, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
+			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
+			tfp_snprintf(topic, 128, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
 
 			strcpy(message, "");	// clear it
         	
 			// heap size
-			key_value_l = os_sprintf(key_value, "heap=%u&", system_get_free_heap_size());
+			tfp_snprintf(key_value, 128, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
         	
 			// heating meter specific
 			// flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[3].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "t1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "t1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// return flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "t2=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "t2=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// temperature difference
 			kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// flow
 			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// current power
 			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// hours
 			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "hr=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "hr=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// volume
 			kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "v1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "v1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// power
 			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
-			key_value_l = os_sprintf(key_value, "e1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, 128, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			message_l = strlen(message);
@@ -225,13 +224,13 @@ void kmp_request_send() {
 #ifdef DEBUG_NO_METER
 	unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
-	int topic_l;
 	int message_l;
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
-	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
-	message_l = os_sprintf(message, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+	tfp_snprintf(topic, 128, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
+	tfp_snprintf(message, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+	message_l = strlen(message);
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized

@@ -17,6 +17,7 @@ flash as a binary. Also handles the hit counter on the main page.
 #include "httpd.h"
 #include "cgi.h"
 #include "debug.h"
+#include "tinyprintf.h"
 
 
 //cause I can't be bothered to write an ioGetLed()
@@ -69,7 +70,7 @@ void ICACHE_FLASH_ATTR tplCounter(HttpdConnData *connData, char *token, void **a
 
 	if (os_strcmp(token, "counter")==0) {
 		hitCounter++;
-		os_sprintf(buff, "%ld", hitCounter);
+		tfp_snprintf(buff, 128, "%ld", hitCounter);
 	}
 	httpdSend(connData, buff, -1);
 }

@@ -17,6 +17,7 @@ Esp8266 http server - core routines
 #include "httpd.h"
 #include "espfs.h"
 #include "debug.h"
+#include "tinyprintf.h"
 
 
 //Max length of request head
@@ -202,7 +203,8 @@ ICACHE_FLASH_ATTR
 void httpdStartResponse(HttpdConnData *conn, int code) {
 	char buff[128];
 	int l;
-	l=os_sprintf(buff, "HTTP/1.0 %d OK\r\nServer: esp8266-httpd/"HTTPDVER"\r\n", code);
+	tfp_snprintf(buff, 128, "HTTP/1.0 %d OK\r\nServer: esp8266-httpd/"HTTPDVER"\r\n", code);
+	l = strlen(buff);
 	httpdSend(conn, buff, l);
 }
 
@@ -212,7 +214,8 @@ void httpdHeader(HttpdConnData *conn, const char *field, const char *val) {
 	char buff[256];
 	int l;
 
-	l=os_sprintf(buff, "%s: %s\r\n", field, val);
+	tfp_snprintf(buff, 256, "%s: %s\r\n", field, val);
+	l = strlen(buff);
 	httpdSend(conn, buff, l);
 }
 
@@ -222,13 +225,13 @@ void httpdEndHeaders(HttpdConnData *conn) {
 	httpdSend(conn, "\r\n", -1);
 }
 
-//ToDo: sprintf->snprintf everywhere... esp doesn't have snprintf tho' :/
 //Redirect to the given URL.
 ICACHE_FLASH_ATTR
 void httpdRedirect(HttpdConnData *conn, char *newUrl) {
 	char buff[1024];
 	int l;
-	l=os_sprintf(buff, "HTTP/1.1 302 Found\r\nLocation: %s\r\n\r\nMoved to %s\r\n", newUrl, newUrl);
+	tfp_snprintf(buff, 1024, "HTTP/1.1 302 Found\r\nLocation: %s\r\n\r\nMoved to %s\r\n", newUrl, newUrl);
+	l = strlen(buff);
 	httpdSend(conn, buff, l);
 }
 
