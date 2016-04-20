@@ -15,6 +15,7 @@
 #include "user_main.h"
 #include "captdns.h"
 #include "tinyprintf.h"
+#include "driver/gpio16.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -60,6 +61,7 @@ static os_timer_t kmp_request_send_timer;
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
 static os_timer_t power_wd_timer;
+static os_timer_t ext_wd_timer;
 uint16_t vdd_init;
 #endif
 
@@ -271,6 +273,17 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		os_timer_disarm(&power_wd_timer);
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
+	}
+}
+#endif // IMPULSE
+
+#ifdef IMPULSE
+ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
+	if (gpio16_input_get()) {
+		gpio16_output_set(0);
+	}
+	else {
+		gpio16_output_set(1);
 	}
 }
 #endif // IMPULSE
@@ -583,6 +596,14 @@ void impulse_meter_init(void) {
 	os_timer_disarm(&power_wd_timer);
 	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 	os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
+
+	// start extern watchdog timer	(MCP1316)
+	os_timer_disarm(&ext_wd_timer);
+	os_timer_setfn(&ext_wd_timer, (os_timer_func_t *)ext_wd_timer_func, NULL);
+	os_timer_arm(&ext_wd_timer, 1000, 1);
+	//Set GPIO16 to output mode
+	gpio16_output_conf();
+	gpio16_output_set(1);
 #ifdef DEBUG
 	os_printf("t: %u\n", impulse_time);
 #endif // DEBUG
