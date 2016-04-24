@@ -255,11 +255,12 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	unsigned char reply_topic[MQTT_TOPIC_L];
 
-	pp_soft_wdt_stop();
+	system_soft_wdt_stop();
 	vdd = system_get_vdd33();
 	if (vdd < (vdd_init - POWER_WDT_THR)) {
 		// low voltage
 		cfg_save();
+		system_soft_wdt_feed();
 #ifdef DEBUG
 		os_printf("vdd: %d\n\r", vdd);
 #endif
@@ -278,7 +279,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
 	}
-	pp_soft_wdt_restart();
+	system_soft_wdt_restart();
 }
 #endif // IMPULSE
 
