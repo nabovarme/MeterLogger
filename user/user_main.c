@@ -442,10 +442,14 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #else
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/version/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-#ifdef THERMO_NO
+#ifdef IMPULSE
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
+#else
+#	ifdef THERMO_NO
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
-#else	// THERMO_NC
+#	else	// THERMO_NC
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
 #endif
 		reply_message_l = strlen(reply_message);
 
