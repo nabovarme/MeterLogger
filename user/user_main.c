@@ -32,6 +32,9 @@
 #define POWER_WDT_INTERVAL 50	// run power wdt every 50 mS
 #define POWER_WDT_THR 30		// save at vdd_init - 30 mV
 
+extern void pp_soft_wdt_stop();
+extern void pp_soft_wdt_restart();
+
 uint32_t impulse_meter_energy;
 //float impulse_meter_energy;
 uint32_t impulses_per_kwh;
@@ -252,6 +255,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	uint16_t vdd;
 	unsigned char reply_topic[MQTT_TOPIC_L];
 
+	pp_soft_wdt_stop();
 	vdd = system_get_vdd33();
 	if (vdd < (vdd_init - POWER_WDT_THR)) {
 		// low voltage
@@ -274,6 +278,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
 	}
+	pp_soft_wdt_restart();
 }
 #endif // IMPULSE
 
