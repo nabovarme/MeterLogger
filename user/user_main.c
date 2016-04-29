@@ -32,9 +32,6 @@
 #define POWER_WDT_INTERVAL 50	// run power wdt every 50 mS
 #define POWER_WDT_THR 30		// save at vdd_init - 30 mV
 
-extern void pp_soft_wdt_stop();
-extern void pp_soft_wdt_restart();
-
 uint32_t impulse_meter_energy;
 //float impulse_meter_energy;
 uint32_t impulses_per_kwh;
