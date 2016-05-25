@@ -29,7 +29,7 @@
 #define MQTT_MESSAGE_L 128
 
 #ifdef IMPULSE
-#define POWER_WDT_INTERVAL 50	// run power wdt every 50 mS
+#define POWER_WDT_INTERVAL 30	// run power wdt every 30 mS
 #define POWER_WDT_THR 30		// save at vdd_init - 30 mV
 
 uint32_t impulse_meter_energy;
