@@ -276,6 +276,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
 	}
+	vdd_init = (vdd_init + vdd) / 2;
 	system_soft_wdt_restart();
 }
 #endif // IMPULSE

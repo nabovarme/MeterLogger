@@ -582,7 +582,7 @@ END GROUP
  *(.jcr)
                 0x000000003ffe8a98                _data_end = ABSOLUTE (.)
 
-.rodata         0x000000003ffe8aa0      0xc7c
+.rodata         0x000000003ffe8aa0      0xc78
                 0x000000003ffe8aa0                _rodata_start = ABSOLUTE (.)
  *(.sdk.version)
  .sdk.version   0x000000003ffe8aa0       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
@@ -617,80 +617,80 @@ END GROUP
                 0x000000003ffe8de0       0x1a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(mem_manager.o)
  *fill*         0x000000003ffe8dfa        0x2 
  .rodata.str1.4
-                0x000000003ffe8dfc      0x247 build/app_app.a(user_main.o)
-                                        0x25f (size before relaxing)
- *fill*         0x000000003ffe9043        0x1 
+                0x000000003ffe8dfc      0x243 build/app_app.a(user_main.o)
+                                        0x25b (size before relaxing)
+ *fill*         0x000000003ffe903f        0x1 
  .rodata.str1.4
-                0x000000003ffe9044       0x11 build/app_app.a(captdns.o)
- *fill*         0x000000003ffe9055        0x3 
+                0x000000003ffe9040       0x11 build/app_app.a(captdns.o)
+ *fill*         0x000000003ffe9051        0x3 
  .rodata.str1.4
-                0x000000003ffe9058      0x17a build/app_app.a(httpd.o)
+                0x000000003ffe9054      0x17a build/app_app.a(httpd.o)
                                         0x186 (size before relaxing)
- *fill*         0x000000003ffe91d2        0x2 
+ *fill*         0x000000003ffe91ce        0x2 
  .rodata.str1.4
-                0x000000003ffe91d4        0x8 build/app_app.a(utils.o)
+                0x000000003ffe91d0        0x8 build/app_app.a(utils.o)
                                           0xb (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe91dc       0xaa build/app_app.a(httpd_user_init.o)
+                0x000000003ffe91d8       0xaa build/app_app.a(httpd_user_init.o)
                                          0xae (size before relaxing)
- *fill*         0x000000003ffe9286        0x2 
+ *fill*         0x000000003ffe9282        0x2 
  .rodata.str1.4
-                0x000000003ffe9288       0x58 build/app_app.a(config.o)
+                0x000000003ffe9284       0x58 build/app_app.a(config.o)
                                          0x60 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe92e0       0x2b build/app_app.a(wifi.o)
+                0x000000003ffe92dc       0x2b build/app_app.a(wifi.o)
                                          0x39 (size before relaxing)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(mqtt.o)
- *fill*         0x000000003ffe930b        0x1 
+ *fill*         0x000000003ffe9307        0x1 
  .rodata.str1.4
-                0x000000003ffe930c        0x7 build/app_app.a(mqtt_msg.o)
+                0x000000003ffe9308        0x7 build/app_app.a(mqtt_msg.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(queue.o)
- *fill*         0x000000003ffe9313        0x1 
+ *fill*         0x000000003ffe930f        0x1 
  .rodata.str1.4
-                0x000000003ffe9314       0x20 build/app_app.a(unix_time.o)
+                0x000000003ffe9310       0x20 build/app_app.a(unix_time.o)
                                          0x24 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9334       0x40 build/app_app.a(cron.o)
+                0x000000003ffe9330       0x40 build/app_app.a(cron.o)
                                          0x68 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9374       0x4c build/app_app.a(cgi.o)
+                0x000000003ffe9370       0x4c build/app_app.a(cgi.o)
                                          0x54 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe93c0       0x32 build/app_app.a(httpdespfs.o)
+                0x000000003ffe93bc       0x32 build/app_app.a(httpdespfs.o)
                                          0x46 (size before relaxing)
- *fill*         0x000000003ffe93f2        0x2 
+ *fill*         0x000000003ffe93ee        0x2 
  .rodata.str1.4
-                0x000000003ffe93f4      0x23b build/app_app.a(cgiwifi.o)
+                0x000000003ffe93f0      0x23b build/app_app.a(cgiwifi.o)
                                         0x263 (size before relaxing)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(espfs.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(heatshrink_decoder.o)
  .rodata.str1.1
-                0x000000003ffe962f        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+                0x000000003ffe962b        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
  .rodata.str1.1
-                0x000000003ffe9631        0x4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
- *fill*         0x000000003ffe9635        0x3 
+                0x000000003ffe962d        0x4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
+ *fill*         0x000000003ffe9631        0x3 
  .rodata.str1.4
-                0x000000003ffe9638        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
+                0x000000003ffe9634        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe963c        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
+                0x000000003ffe9638        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9640        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
+                0x000000003ffe963c        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
                                          0x10 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9648        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
+                0x000000003ffe9644        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe964c        0x3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
+                0x000000003ffe9648        0x3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
                                           0x8 (size before relaxing)
- *fill*         0x000000003ffe964f        0x1 
+ *fill*         0x000000003ffe964b        0x1 
  .rodata.str1.4
-                0x000000003ffe9650        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
+                0x000000003ffe964c        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
  .rodata.str1.4
                 0x0000000000000000        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_sta.o)
  .rodata.str1.4
@@ -699,24 +699,24 @@ END GROUP
                 0x0000000000000000        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ie_vendor.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_tcp.o)
- *fill*         0x000000003ffe9657        0x1 
+ *fill*         0x000000003ffe9653        0x1 
  .rodata.str1.4
-                0x000000003ffe9658       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
+                0x000000003ffe9654       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
  .rodata.str1.4
-                0x000000003ffe9678       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
+                0x000000003ffe9674       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
                                           0xd (size before relaxing)
  *(.gnu.linkonce.r.*)
  *(.rodata1)
-                0x000000003ffe9688                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
+                0x000000003ffe9684                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
  *(.xt_except_table)
  *(.gcc_except_table)
  *(.gnu.linkonce.e.*)
  *(.gnu.version_r)
  *(.eh_frame)
- .eh_frame      0x000000003ffe9688       0x38 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
- .eh_frame      0x000000003ffe96c0       0x2c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
+ .eh_frame      0x000000003ffe9684       0x38 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
+ .eh_frame      0x000000003ffe96bc       0x2c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
                                          0x3c (size before relaxing)
- .eh_frame      0x000000003ffe96ec       0x28 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
+ .eh_frame      0x000000003ffe96e8       0x28 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
                                          0x38 (size before relaxing)
  *crtbegin.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o) .ctors)
@@ -726,23 +726,23 @@ END GROUP
  *(EXCLUDE_FILE(*crtend.o) .dtors)
  *(SORT(.dtors.*))
  *(.dtors)
-                0x000000003ffe9714                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
+                0x000000003ffe9710                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
  *(.xt_except_desc)
  *(.gnu.linkonce.h.*)
-                0x000000003ffe9714                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
+                0x000000003ffe9710                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
  *(.xt_except_desc_end)
  *(.dynamic)
  *(.gnu.version_d)
-                0x000000003ffe9714                . = ALIGN (0x4)
-                0x000000003ffe9714                _bss_table_start = ABSOLUTE (.)
-                0x000000003ffe9714        0x4 LONG 0x3ffe9720 _bss_start
-                0x000000003ffe9718        0x4 LONG 0x3fff2ba0 _bss_end
-                0x000000003ffe971c                _bss_table_end = ABSOLUTE (.)
-                0x000000003ffe971c                _rodata_end = ABSOLUTE (.)
+                0x000000003ffe9710                . = ALIGN (0x4)
+                0x000000003ffe9710                _bss_table_start = ABSOLUTE (.)
+                0x000000003ffe9710        0x4 LONG 0x3ffe9718 _bss_start
+                0x000000003ffe9714        0x4 LONG 0x3fff2ba0 _bss_end
+                0x000000003ffe9718                _bss_table_end = ABSOLUTE (.)
+                0x000000003ffe9718                _rodata_end = ABSOLUTE (.)
 
-.bss            0x000000003ffe9720     0x9480
-                0x000000003ffe9720                . = ALIGN (0x8)
-                0x000000003ffe9720                _bss_start = ABSOLUTE (.)
+.bss            0x000000003ffe9718     0x9488
+                0x000000003ffe9718                . = ALIGN (0x8)
+                0x000000003ffe9718                _bss_start = ABSOLUTE (.)
  *(.dynsbss)
  *(.sbss)
  *(.sbss.*)
@@ -753,9 +753,10 @@ END GROUP
  *(.gnu.linkonce.sb2.*)
  *(.dynbss)
  *(.bss)
- .bss           0x000000003ffe9720        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
- .bss           0x000000003ffe9720        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
- .bss           0x000000003ffe9720        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
+ .bss           0x000000003ffe9718        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
+ .bss           0x000000003ffe9718        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
+ .bss           0x000000003ffe9718        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
+ *fill*         0x000000003ffe9718        0x8 
  .bss           0x000000003ffe9720      0x1c0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(nmi-vector.o)
  .bss           0x000000003ffe98e0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user-vector.o)
  .bss           0x000000003ffe98e0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(vector.o)
@@ -4714,68 +4715,68 @@ OUTPUT(build/app.out elf32-xtensa-le)
  .debug_line    0x000000000000bbb0      0x1d9 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_truncdfsf2.o)
  .debug_line    0x000000000000bd89      0x216 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
 
-.debug_info     0x0000000000000000    0x1788e
+.debug_info     0x0000000000000000    0x1788c
  .debug_info    0x0000000000000000       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivsi3.o)
  .debug_info    0x00000000000000fb       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umodsi3.o)
  .debug_info    0x00000000000001f6      0x174 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_muldi3.o)
  .debug_info    0x000000000000036a       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umulsidi3.o)
- .debug_info    0x0000000000000465     0x2a21 build/app_app.a(user_main.o)
- .debug_info    0x0000000000002e86      0xeef build/app_app.a(captdns.o)
- .debug_info    0x0000000000003d75      0x416 build/app_app.a(led.o)
- .debug_info    0x000000000000418b      0xa3b build/app_app.a(ac_out.o)
- .debug_info    0x0000000000004bc6     0x15b6 build/app_app.a(httpd.o)
- .debug_info    0x000000000000617c      0x3f8 build/app_app.a(utils.o)
- .debug_info    0x0000000000006574      0x507 build/app_app.a(httpd_user_init.o)
- .debug_info    0x0000000000006a7b      0x9d0 build/app_app.a(config.o)
- .debug_info    0x000000000000744b      0xe19 build/app_app.a(wifi.o)
- .debug_info    0x0000000000008264      0x8d0 build/app_app.a(uart.o)
- .debug_info    0x0000000000008b34      0x105 build/app_app.a(gpio16.o)
- .debug_info    0x0000000000008c39     0x212c build/app_app.a(mqtt.o)
- .debug_info    0x000000000000ad65     0x1007 build/app_app.a(mqtt_msg.o)
- .debug_info    0x000000000000bd6c      0x395 build/app_app.a(queue.o)
- .debug_info    0x000000000000c101      0x1e3 build/app_app.a(mqtt_utils.o)
- .debug_info    0x000000000000c2e4      0x4f9 build/app_app.a(proto.o)
- .debug_info    0x000000000000c7dd      0xae7 build/app_app.a(tinyprintf.o)
- .debug_info    0x000000000000d2c4      0x52a build/app_app.a(unix_time.o)
- .debug_info    0x000000000000d7ee      0xc67 build/app_app.a(cron.o)
- .debug_info    0x000000000000e455      0x7f9 build/app_app.a(cgi.o)
- .debug_info    0x000000000000ec4e      0x85d build/app_app.a(httpdespfs.o)
- .debug_info    0x000000000000f4ab     0x14d4 build/app_app.a(cgiwifi.o)
- .debug_info    0x000000000001097f      0x766 build/app_app.a(espfs.o)
- .debug_info    0x00000000000110e5      0xaf1 build/app_app.a(heatshrink_decoder.o)
- .debug_info    0x0000000000011bd6      0x1ba build/app_app.a(ringbuf.o)
- .debug_info    0x0000000000011d90      0x93d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
- .debug_info    0x00000000000126cd      0x94e /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
- .debug_info    0x000000000001301b      0x17a /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
- .debug_info    0x0000000000013195      0x890 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- .debug_info    0x0000000000013a25      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
- .debug_info    0x0000000000013b36      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
- .debug_info    0x0000000000013c47      0x440 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
- .debug_info    0x0000000000014087      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
- .debug_info    0x0000000000014198      0x8e7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
- .debug_info    0x0000000000014a7f      0x180 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
- .debug_info    0x0000000000014bff      0x9a5 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
- .debug_info    0x00000000000155a4       0xa4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
- .debug_info    0x0000000000015648       0xb7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
- .debug_info    0x00000000000156ff       0x6b /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
- .debug_info    0x000000000001576a      0x15c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
- .debug_info    0x00000000000158c6       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divsi3.o)
- .debug_info    0x00000000000159c1       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_modsi3.o)
- .debug_info    0x0000000000015abc      0x5da /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
- .debug_info    0x0000000000016096      0x61d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
- .debug_info    0x00000000000166b3       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_ashrdi3.o)
- .debug_info    0x00000000000167ae       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_addsubsf3.o)
- .debug_info    0x00000000000168aa       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_mulsf3.o)
- .debug_info    0x00000000000169a6       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divsf3.o)
- .debug_info    0x0000000000016aa2       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixsfsi.o)
- .debug_info    0x0000000000016b9e       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixunssfsi.o)
- .debug_info    0x0000000000016c9a       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_floatsisf.o)
- .debug_info    0x0000000000016d96       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_muldf3.o)
- .debug_info    0x0000000000016e92       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdf3.o)
- .debug_info    0x0000000000016f8e       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixdfsi.o)
- .debug_info    0x000000000001708a       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_floatsidf.o)
- .debug_info    0x0000000000017186       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_truncdfsf2.o)
- .debug_info    0x0000000000017282      0x60c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
+ .debug_info    0x0000000000000465     0x2a1f build/app_app.a(user_main.o)
+ .debug_info    0x0000000000002e84      0xeef build/app_app.a(captdns.o)
+ .debug_info    0x0000000000003d73      0x416 build/app_app.a(led.o)
+ .debug_info    0x0000000000004189      0xa3b build/app_app.a(ac_out.o)
+ .debug_info    0x0000000000004bc4     0x15b6 build/app_app.a(httpd.o)
+ .debug_info    0x000000000000617a      0x3f8 build/app_app.a(utils.o)
+ .debug_info    0x0000000000006572      0x507 build/app_app.a(httpd_user_init.o)
+ .debug_info    0x0000000000006a79      0x9d0 build/app_app.a(config.o)
+ .debug_info    0x0000000000007449      0xe19 build/app_app.a(wifi.o)
+ .debug_info    0x0000000000008262      0x8d0 build/app_app.a(uart.o)
+ .debug_info    0x0000000000008b32      0x105 build/app_app.a(gpio16.o)
+ .debug_info    0x0000000000008c37     0x212c build/app_app.a(mqtt.o)
+ .debug_info    0x000000000000ad63     0x1007 build/app_app.a(mqtt_msg.o)
+ .debug_info    0x000000000000bd6a      0x395 build/app_app.a(queue.o)
+ .debug_info    0x000000000000c0ff      0x1e3 build/app_app.a(mqtt_utils.o)
+ .debug_info    0x000000000000c2e2      0x4f9 build/app_app.a(proto.o)
+ .debug_info    0x000000000000c7db      0xae7 build/app_app.a(tinyprintf.o)
+ .debug_info    0x000000000000d2c2      0x52a build/app_app.a(unix_time.o)
+ .debug_info    0x000000000000d7ec      0xc67 build/app_app.a(cron.o)
+ .debug_info    0x000000000000e453      0x7f9 build/app_app.a(cgi.o)
+ .debug_info    0x000000000000ec4c      0x85d build/app_app.a(httpdespfs.o)
+ .debug_info    0x000000000000f4a9     0x14d4 build/app_app.a(cgiwifi.o)
+ .debug_info    0x000000000001097d      0x766 build/app_app.a(espfs.o)
+ .debug_info    0x00000000000110e3      0xaf1 build/app_app.a(heatshrink_decoder.o)
+ .debug_info    0x0000000000011bd4      0x1ba build/app_app.a(ringbuf.o)
+ .debug_info    0x0000000000011d8e      0x93d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
+ .debug_info    0x00000000000126cb      0x94e /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
+ .debug_info    0x0000000000013019      0x17a /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
+ .debug_info    0x0000000000013193      0x890 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ .debug_info    0x0000000000013a23      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
+ .debug_info    0x0000000000013b34      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
+ .debug_info    0x0000000000013c45      0x440 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
+ .debug_info    0x0000000000014085      0x111 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
+ .debug_info    0x0000000000014196      0x8e7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
+ .debug_info    0x0000000000014a7d      0x180 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
+ .debug_info    0x0000000000014bfd      0x9a5 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
+ .debug_info    0x00000000000155a2       0xa4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
+ .debug_info    0x0000000000015646       0xb7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
+ .debug_info    0x00000000000156fd       0x6b /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
+ .debug_info    0x0000000000015768      0x15c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
+ .debug_info    0x00000000000158c4       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divsi3.o)
+ .debug_info    0x00000000000159bf       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_modsi3.o)
+ .debug_info    0x0000000000015aba      0x5da /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
+ .debug_info    0x0000000000016094      0x61d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
+ .debug_info    0x00000000000166b1       0xfb /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_ashrdi3.o)
+ .debug_info    0x00000000000167ac       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_addsubsf3.o)
+ .debug_info    0x00000000000168a8       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_mulsf3.o)
+ .debug_info    0x00000000000169a4       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divsf3.o)
+ .debug_info    0x0000000000016aa0       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixsfsi.o)
+ .debug_info    0x0000000000016b9c       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixunssfsi.o)
+ .debug_info    0x0000000000016c98       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_floatsisf.o)
+ .debug_info    0x0000000000016d94       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_muldf3.o)
+ .debug_info    0x0000000000016e90       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdf3.o)
+ .debug_info    0x0000000000016f8c       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_fixdfsi.o)
+ .debug_info    0x0000000000017088       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_floatsidf.o)
+ .debug_info    0x0000000000017184       0xfc /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_truncdfsf2.o)
+ .debug_info    0x0000000000017280      0x60c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
 
 .debug_abbrev   0x0000000000000000     0x4c1f
  .debug_abbrev  0x0000000000000000       0x14 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivsi3.o)
