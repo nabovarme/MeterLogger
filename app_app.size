@@ -1,5 +1,6 @@
    text	   data	    bss	    dec	    hex	filename
    1061	      0	      0	   1061	    425	uart.o (ex build/app_app.a)
+   1143	      0	      0	   1143	    477	spi.o (ex build/app_app.a)
     193	      0	      0	    193	     c1	gpio16.o (ex build/app_app.a)
    3522	      0	      8	   3530	    dca	mqtt.o (ex build/app_app.a)
     188	      0	      0	    188	     bc	ringbuf.o (ex build/app_app.a)
@@ -26,4 +27,4 @@
     269	    156	      0	    425	    1a9	httpd_user_init.o (ex build/app_app.a)
    1021	      0	     20	   1041	    411	config.o (ex build/app_app.a)
    1161	      0	     32	   1193	    4a9	wifi.o (ex build/app_app.a)
-  34717	    672	   9101	  44490	   adca	(TOTALS)
+  35860	    672	   9101	  45633	   b241	(TOTALS)
