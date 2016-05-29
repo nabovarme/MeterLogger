@@ -1734,12 +1734,14 @@ design rules under a new name.</description>
 <attribute name="NAME" x="28.1178" y="61.1124" size="0.762" layer="25" ratio="12" rot="SR0" align="bottom-right"/>
 <attribute name="VALUE" x="32.3215" y="62.42685" size="0.762" layer="25" ratio="12" rot="SR0" align="bottom-right"/>
 </element>
-<element name="U3" library="Microchip_By_element14_Batch_1" package="SOIC127P600X175-8N" value="FM25L16B" x="6.50875" y="48.895">
+<element name="U3" library="Microchip_By_element14_Batch_1" package="SOIC127P600X175-8N" value="FM25L16B" x="6.50875" y="48.895" smashed="yes">
 <attribute name="PACKAGE" value="SOIC-8" x="6.50875" y="48.895" size="1.778" layer="27" display="off"/>
 <attribute name="OC_NEWARK" value="72J3627" x="6.50875" y="48.895" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="25AA020A-I/SN" x="6.50875" y="48.895" size="1.778" layer="27" display="off"/>
 <attribute name="SUPPLIER" value="MICROCHIP" x="6.50875" y="48.895" size="1.778" layer="27" display="off"/>
 <attribute name="OC_FARNELL" value="1331343" x="6.50875" y="48.895" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="5.79755" y="45.28185" size="0.762" layer="25" ratio="12" rot="SR0"/>
+<attribute name="VALUE" x="4.9149" y="51.77155" size="0.762" layer="27" ratio="12" rot="SR0"/>
 </element>
 </elements>
 <signals>

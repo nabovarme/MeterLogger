@@ -1734,12 +1734,12 @@ design rules under a new name.</description>
 <attribute name="NAME" x="28.1178" y="61.1124" size="0.762" layer="25" ratio="12" rot="SR0" align="bottom-right"/>
 <attribute name="VALUE" x="32.3215" y="62.42685" size="0.762" layer="25" ratio="12" rot="SR0" align="bottom-right"/>
 </element>
-<element name="U3" library="Microchip_By_element14_Batch_1" package="SOIC127P600X175-8N" value="FM25L16B" x="7.14375" y="48.895">
-<attribute name="PACKAGE" value="SOIC-8" x="7.14375" y="48.895" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="72J3627" x="7.14375" y="48.895" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="25AA020A-I/SN" x="7.14375" y="48.895" size="1.778" layer="27" display="off"/>
-<attribute name="SUPPLIER" value="MICROCHIP" x="7.14375" y="48.895" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="1331343" x="7.14375" y="48.895" size="1.778" layer="27" display="off"/>
+<element name="U3" library="Microchip_By_element14_Batch_1" package="SOIC127P600X175-8N" value="FM25L16B" x="5.87375" y="49.05375">
+<attribute name="PACKAGE" value="SOIC-8" x="5.87375" y="49.05375" size="1.778" layer="27" display="off"/>
+<attribute name="OC_NEWARK" value="72J3627" x="5.87375" y="49.05375" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="25AA020A-I/SN" x="5.87375" y="49.05375" size="1.778" layer="27" display="off"/>
+<attribute name="SUPPLIER" value="MICROCHIP" x="5.87375" y="49.05375" size="1.778" layer="27" display="off"/>
+<attribute name="OC_FARNELL" value="1331343" x="5.87375" y="49.05375" size="1.778" layer="27" display="off"/>
 </element>
 </elements>
 <signals>
@@ -1786,7 +1786,7 @@ design rules under a new name.</description>
 <wire x1="12.065" y1="42.38625" x2="13.6525" y2="40.79875" width="0.6096" layer="1"/>
 <wire x1="13.6525" y1="40.79875" x2="13.6525" y2="35.575" width="0.6096" layer="1"/>
 <contactref element="U3" pad="4"/>
-<wire x1="4.78155" y1="46.99" x2="3.33375" y2="6.985" width="0" layer="19" extent="1-1"/>
+<wire x1="3.51155" y1="47.14875" x2="3.33375" y2="6.985" width="0" layer="19" extent="1-1"/>
 <wire x1="12.065" y1="42.38625" x2="11.27125" y2="42.38625" width="0.6096" layer="1"/>
 </signal>
 <signal name="3.3V">
@@ -1804,16 +1804,20 @@ design rules under a new name.</description>
 <contactref element="ESP8266_ESP-07" pad="VCC"/>
 <contactref element="3.3V" pad="1"/>
 <contactref element="U$1" pad="4"/>
-<wire x1="3.33375" y1="22.70125" x2="25.87625" y2="22.70125" width="0" layer="19" extent="1-16"/>
 <contactref element="R3" pad="1"/>
 <wire x1="25.87625" y1="22.70125" x2="31.439440625" y2="22.70125" width="0.8128" layer="1"/>
 <wire x1="25.87625" y1="22.70125" x2="25.87625" y2="20" width="0.3048" layer="1"/>
 <contactref element="U2" pad="5"/>
-<wire x1="3.33375" y1="22.70125" x2="2.2225" y2="23.8125" width="0" layer="19" extent="1-16"/>
-<wire x1="2.2225" y1="23.8125" x2="2.2225" y2="41.43375" width="0" layer="19" extent="1-16"/>
-<wire x1="2.2225" y1="41.43375" x2="2.8575" y2="42.06875" width="0" layer="19" extent="1-16"/>
 <contactref element="U3" pad="8"/>
-<wire x1="3.33375" y1="22.70125" x2="9.50595" y2="50.8" width="0" layer="19" extent="1-1"/>
+<contactref element="U3" pad="3"/>
+<contactref element="U3" pad="7"/>
+<wire x1="23.73" y1="51.4975" x2="31.4198" y2="58.3184" width="0" layer="19" extent="1-1"/>
+<wire x1="13.73" y1="51.4975" x2="23.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="8.23595" y1="50.95875" x2="13.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="8.23595" y1="49.68875" x2="8.23595" y2="50.95875" width="0" layer="19" extent="1-1"/>
+<wire x1="3.51155" y1="48.41875" x2="8.23595" y2="49.68875" width="0" layer="19" extent="1-1"/>
+<wire x1="16.1497" y1="62.84" x2="13.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="25.87625" y1="22.70125" x2="23.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$11">
 <contactref element="R1" pad="1"/>
@@ -1899,7 +1903,7 @@ design rules under a new name.</description>
 <wire x1="15.555" y1="31.90875" x2="15.555" y2="35.3225" width="0.3048" layer="1"/>
 <wire x1="15.555" y1="35.3225" x2="15.73" y2="35.4975" width="0.3048" layer="1"/>
 <contactref element="U3" pad="1"/>
-<wire x1="15.73" y1="35.4975" x2="4.78155" y2="50.8" width="0" layer="19" extent="1-1"/>
+<wire x1="15.73" y1="35.4975" x2="3.51155" y2="50.95875" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="U2" pad="1"/>
@@ -1924,17 +1928,17 @@ design rules under a new name.</description>
 <signal name="N$10">
 <contactref element="U3" pad="2"/>
 <contactref element="ESP8266_ESP-07" pad="GPIO12"/>
-<wire x1="4.78155" y1="49.53" x2="17.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="3.51155" y1="49.68875" x2="17.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$12">
 <contactref element="U3" pad="5"/>
 <contactref element="ESP8266_ESP-07" pad="GPIO13"/>
-<wire x1="9.50595" y1="46.99" x2="15.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="8.23595" y1="47.14875" x2="15.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$13">
 <contactref element="U3" pad="6"/>
 <contactref element="ESP8266_ESP-07" pad="GPIO14"/>
-<wire x1="9.50595" y1="48.26" x2="19.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
+<wire x1="8.23595" y1="48.41875" x2="19.73" y2="51.4975" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <errors>
