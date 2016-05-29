@@ -29,8 +29,8 @@
 #define MQTT_MESSAGE_L 128
 
 #ifdef IMPULSE
-#define POWER_WDT_INTERVAL 30	// run power wdt every 30 mS
-#define POWER_WDT_THR 30		// save at vdd_init - 30 mV
+#define POWER_WDT_INTERVAL 50	// run power wdt every 50 mS
+#define POWER_WDT_THR 130		// save at vdd_init - 130 mV
 
 uint32_t impulse_meter_energy;
 //float impulse_meter_energy;
@@ -259,7 +259,7 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 		cfg_save();
 		system_soft_wdt_feed();
 #ifdef DEBUG
-		os_printf("vdd: %d\n\r", vdd);
+		os_printf("vdd: %d vdd_init: %d\n\r", vdd, vdd_init);
 #endif
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
@@ -272,11 +272,11 @@ ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
 	}
 	else {
 		// normal voltage
+		vdd_init = (vdd_init + vdd) / 2;	// make vdd_init average of last + current vdd
 		os_timer_disarm(&power_wd_timer);
 		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
 		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
 	}
-	vdd_init = (vdd_init + vdd) / 2;
 	system_soft_wdt_restart();
 }
 #endif // IMPULSE
@@ -510,6 +510,16 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found vdd - get voltage level
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/vdd/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", system_get_vdd33());
+		reply_message_l = strlen(reply_message);
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
+#endif
+#ifdef IMPULSE
+	else if (strncmp(function_name, "vdd_init", FUNCTIONNAME_L) == 0) {
+		// found vdd - get voltage level
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/vdd_init/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", vdd_init);
 		reply_message_l = strlen(reply_message);
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
