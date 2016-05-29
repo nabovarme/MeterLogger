@@ -16,6 +16,7 @@
 #include "captdns.h"
 #include "tinyprintf.h"
 #include "driver/gpio16.h"
+#include "driver/spi.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -29,8 +30,6 @@
 #define MQTT_MESSAGE_L 128
 
 #ifdef IMPULSE
-#define POWER_WDT_INTERVAL 50	// run power wdt every 50 mS
-#define POWER_WDT_THR 130		// save at vdd_init - 130 mV
 
 uint32_t impulse_meter_energy;
 //float impulse_meter_energy;
@@ -60,9 +59,7 @@ static os_timer_t kmp_request_send_timer;
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
-static os_timer_t power_wd_timer;
 static os_timer_t ext_wd_timer;
-uint16_t vdd_init;
 #endif
 
 uint16_t counter = 0;
@@ -244,40 +241,6 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #ifdef DEBUG
 	os_printf("current_energy: %u\n", current_energy);
 #endif // DEBUG
-}
-#endif // IMPULSE
-
-#ifdef IMPULSE
-ICACHE_FLASH_ATTR void static power_wd_timer_func(void *arg) {
-	uint16_t vdd;
-	unsigned char reply_topic[MQTT_TOPIC_L];
-
-	system_soft_wdt_stop();
-	vdd = system_get_vdd33();
-	if (vdd < (vdd_init - POWER_WDT_THR)) {
-		// low voltage
-		cfg_save();
-		system_soft_wdt_feed();
-#ifdef DEBUG
-		os_printf("vdd: %d vdd_init: %d\n\r", vdd, vdd_init);
-#endif
-		if (mqttClient.pCon != NULL) {
-			// if mqtt_client is initialized
-			tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/low_voltage/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-			MQTT_Publish(&mqttClient, reply_topic, "", 0, 0, 0);
-		}
-		os_timer_disarm(&power_wd_timer);
-		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-		os_timer_arm(&power_wd_timer, 1000, 0);
-	}
-	else {
-		// normal voltage
-		vdd_init = (vdd_init + vdd) / 2;	// make vdd_init average of last + current vdd
-		os_timer_disarm(&power_wd_timer);
-		os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-		os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
-	}
-	system_soft_wdt_restart();
 }
 #endif // IMPULSE
 
@@ -505,26 +468,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 #endif
-#ifdef IMPULSE
-	else if (strncmp(function_name, "vdd", FUNCTIONNAME_L) == 0) {
-		// found vdd - get voltage level
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/vdd/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", system_get_vdd33());
-		reply_message_l = strlen(reply_message);
-
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
-	}
-#endif
-#ifdef IMPULSE
-	else if (strncmp(function_name, "vdd_init", FUNCTIONNAME_L) == 0) {
-		// found vdd - get voltage level
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/vdd_init/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", vdd_init);
-		reply_message_l = strlen(reply_message);
-
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
-	}
-#endif
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
@@ -611,14 +554,6 @@ void impulse_meter_init(void) {
 	
 	last_impulse_meter_count = sys_cfg.impulse_meter_count;
 
-	// start power watch dog
-	vdd_init = system_get_vdd33();
-	os_printf("\n\rvdd init: %d\n\r", vdd_init);
-	
-	os_timer_disarm(&power_wd_timer);
-	os_timer_setfn(&power_wd_timer, (os_timer_func_t *)power_wd_timer_func, NULL);
-	os_timer_arm(&power_wd_timer, POWER_WDT_INTERVAL, 0);
-
 	// start extern watchdog timer	(MCP1316)
 	os_timer_disarm(&ext_wd_timer);
 	os_timer_setfn(&ext_wd_timer, (os_timer_func_t *)ext_wd_timer_func, NULL);
@@ -661,6 +596,19 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 
 	cfg_load();
+#ifdef IMPULSE
+	// this should go to fm25l16b.c or something...
+	spi_init_gpio(HSPI, SPI_CLK_USE_DIV);
+	spi_clock(HSPI, 4, 2); //10MHz
+	spi_tx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW);
+	spi_rx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW); 
+	
+	SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP|SPI_CS_HOLD);
+	CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_FLASH_MODE);
+	
+	//spi_transaction(HSPI, 16, cmd, 8, ctrl_reg, 16, value, 0, 0);
+	// end
+#endif
 
 	// start kmp_request
 #ifdef EN61107

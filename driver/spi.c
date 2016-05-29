@@ -34,6 +34,7 @@
 //				 
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_init(uint8 spi_no){
 	
 	if(spi_no > 1) return; //Only SPI and HSPI are valid spi modules. 
@@ -62,6 +63,7 @@ void spi_init(uint8 spi_no){
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_mode(uint8 spi_no, uint8 spi_cpha,uint8 spi_cpol){
 	if(spi_cpha) {
 		CLEAR_PERI_REG_MASK(SPI_USER(spi_no), SPI_CK_OUT_EDGE);
@@ -91,6 +93,7 @@ void spi_mode(uint8 spi_no, uint8 spi_cpha,uint8 spi_cpol){
 //				 
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_init_gpio(uint8 spi_no, uint8 sysclk_as_spiclk){
 
 //	if(spi_no > 1) return; //Not required. Valid spi_no is checked with if/elif below.
@@ -129,6 +132,7 @@ void spi_init_gpio(uint8 spi_no, uint8 sysclk_as_spiclk){
 //				 
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_clock(uint8 spi_no, uint16 prediv, uint8 cntdiv){
 	
 	if(spi_no > 1) return;
@@ -168,6 +172,7 @@ void spi_clock(uint8 spi_no, uint16 prediv, uint8 cntdiv){
 //				 
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_tx_byte_order(uint8 spi_no, uint8 byte_order){
 
 	if(spi_no > 1) return;
@@ -198,6 +203,7 @@ void spi_tx_byte_order(uint8 spi_no, uint8 byte_order){
 //				 
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 void spi_rx_byte_order(uint8 spi_no, uint8 byte_order){
 
 	if(spi_no > 1) return;
@@ -231,6 +237,7 @@ void spi_rx_byte_order(uint8 spi_no, uint8 byte_order){
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+ICACHE_FLASH_ATTR
 uint32 spi_transaction(uint8 spi_no, uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data,
 				uint32 din_bits, uint32 dummy_bits){
 

@@ -54,13 +54,13 @@
 
 
 
-void spi_init(uint8 spi_no);
-void spi_mode(uint8 spi_no, uint8 spi_cpha,uint8 spi_cpol);
-void spi_init_gpio(uint8 spi_no, uint8 sysclk_as_spiclk);
-void spi_clock(uint8 spi_no, uint16 prediv, uint8 cntdiv);
-void spi_tx_byte_order(uint8 spi_no, uint8 byte_order);
-void spi_rx_byte_order(uint8 spi_no, uint8 byte_order);
-uint32 spi_transaction(uint8 spi_no, uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data, uint32 din_bits, uint32 dummy_bits);
+ICACHE_FLASH_ATTR void spi_init(uint8 spi_no);
+ICACHE_FLASH_ATTR void spi_mode(uint8 spi_no, uint8 spi_cpha,uint8 spi_cpol);
+ICACHE_FLASH_ATTR void spi_init_gpio(uint8 spi_no, uint8 sysclk_as_spiclk);
+ICACHE_FLASH_ATTR void spi_clock(uint8 spi_no, uint16 prediv, uint8 cntdiv);
+ICACHE_FLASH_ATTR void spi_tx_byte_order(uint8 spi_no, uint8 byte_order);
+ICACHE_FLASH_ATTR void spi_rx_byte_order(uint8 spi_no, uint8 byte_order);
+ICACHE_FLASH_ATTR uint32 spi_transaction(uint8 spi_no, uint8 cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data, uint32 din_bits, uint32 dummy_bits);
 
 //Expansion Macros
 #define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
