@@ -60,6 +60,7 @@ static os_timer_t kmp_request_send_timer;
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
 static os_timer_t ext_wd_timer;
+static os_timer_t spi_test_timer;	// DEBUG
 #endif
 
 uint16_t counter = 0;
@@ -255,6 +256,15 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 }
 #endif // IMPULSE
 
+#ifdef IMPULSE
+ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
+	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0,0, 0);	// send WREN SPI command
+#ifdef DEBUG
+	os_printf("spi_transaction\n");
+#endif // DEBUG
+}
+#endif // IMPULSE
+
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
 		MQTT_Connect(&mqttClient);
@@ -350,6 +360,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
+#ifndef IMPULSE
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
 		//ac_motor_valve_open();
@@ -364,11 +375,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
-#ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		reply_message_l = strlen(reply_message);
 
@@ -388,6 +395,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// found test
 		ac_test();
 	}
+#endif // IMPULSE
 	else if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
 #ifdef IMPULSE
@@ -605,8 +613,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP|SPI_CS_HOLD);
 	CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_FLASH_MODE);
-	
-	//spi_transaction(HSPI, 16, cmd, 8, ctrl_reg, 16, value, 0, 0);
 	// end
 #endif
 
@@ -624,13 +630,14 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// enable gpio interrupt for impulse meters
 #ifdef IMPULSE
 	gpio_int_init();
-#endif // IMPULSE
-	
+#else	
 	ac_out_init();
+#endif // IMPULSE
 
 	led_init();
 	cron_init();
 	
+#ifndef IMPULSE
 	// load thermo motor state from flash(AC OUT 1)
 	if (sys_cfg.ac_thermo_state) {
 		ac_thermo_open();
@@ -638,6 +645,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	else {
 		ac_thermo_close();
 	}
+#endif // IMPULSE
 	
 	// make sure the device is in AP and STA combined mode
     wifi_set_opmode_current(STATIONAP_MODE);
@@ -651,6 +659,11 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef DEBUG
 	os_printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 #endif	// DEBUG
+	
+	os_timer_disarm(&spi_test_timer);
+	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
+	os_timer_arm(&spi_test_timer, 1000, 1);
+	
 	
 	init_unix_time();
 
