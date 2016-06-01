@@ -16,7 +16,7 @@
 #include "captdns.h"
 #include "tinyprintf.h"
 #include "driver/gpio16.h"
-#include "driver/spi.h"
+#include "driver/ext_spi_flash.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -258,10 +258,9 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
-	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0,0, 0);	// send WREN SPI command
-#ifdef DEBUG
-	os_printf("spi_transaction\n");
-#endif // DEBUG
+	uint16_t flash_id;
+	flash_id = ext_spi_flash_id();
+	os_printf("manufacturer ID: 0x%x, device ID: 0x%x\n", (flash_id >> 8), (flash_id & 0xff));
 }
 #endif // IMPULSE
 
@@ -605,15 +604,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 	cfg_load();
 #ifdef IMPULSE
-	// this should go to fm25l16b.c or something...
-	spi_init_gpio(HSPI, SPI_CLK_USE_DIV);
-	spi_clock(HSPI, 4, 2); //10MHz
-	spi_tx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW);
-	spi_rx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW); 
-	
-	SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP|SPI_CS_HOLD);
-	CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_FLASH_MODE);
-	// end
+	ext_spi_init();
 #endif
 
 	// start kmp_request
