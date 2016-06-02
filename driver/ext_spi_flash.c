@@ -2,7 +2,11 @@
 #include "driver/ext_spi_flash.h"
 
 ICACHE_FLASH_ATTR
-uint16_t ext_spi_init() {
+void ext_spi_init() {
+#ifdef DEBUG
+	uint16_t flash_id;
+#endif
+	
 	spi_init_gpio(HSPI, SPI_CLK_USE_DIV);
 	spi_clock(HSPI, 4, 2); //10MHz
 	spi_tx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW);
@@ -10,6 +14,12 @@ uint16_t ext_spi_init() {
 	
 	SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP|SPI_CS_HOLD);
 	CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_FLASH_MODE);
+	
+
+#ifdef DEBUG
+	flash_id = ext_spi_flash_id();
+	os_printf("manufacturer ID: 0x%x, device ID: 0x%x\n", (flash_id >> 8), (flash_id & 0xff));
+#endif
 }
 
 ICACHE_FLASH_ATTR
@@ -17,4 +27,50 @@ uint16_t ext_spi_flash_id() {
 	return spi_transaction(HSPI, 8, 0x90, 24, 0, 0, 0, 16, 0);	// read manufacturer ID / device ID
 }
 
-//	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// send WREN SPI command
+ICACHE_FLASH_ATTR
+int8_t ext_spi_flash_erase_sector(uint16_t sec) {
+	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);		// write enable
+	spi_transaction(HSPI, 8, 0x20, 24, sec, 0, 0, 0, 0);	// sector erase
+	
+	while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
+		// wait while BUSY flag is set
+		// DEBUG: here should be some kind of timeout
+	}
+	
+	return 1;
+}
+
+ICACHE_FLASH_ATTR
+int8_t ext_spi_flash_read(uint32_t src_addr, uint32_t *dst_addr, uint32_t size) {
+	*dst_addr = spi_transaction(HSPI, 8, 0x03, 24, src_addr, 0, 0, size * 8, 0);
+	return *dst_addr;
+}
+
+ICACHE_FLASH_ATTR
+int8_t ext_spi_flash_write(uint32_t dst_addr, uint32_t *src_addr, uint32_t size) {
+	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
+	spi_transaction(HSPI, 8, 0x02, 24, dst_addr, size * 8, *src_addr, 0, 0);	// page program, 8 * size bit data
+	
+	while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
+		// wait while BUSY flag is set
+		// DEBUG: here should be some kind of timeout
+	}
+	
+	return 1;
+}
+
+ICACHE_FLASH_ATTR
+void ext_spi_flash_hexdump(uint32_t addr) {
+	uint32_t flash_data_buf;
+	uint32_t byte_count;
+
+	os_printf("%08x ", addr);
+	for (byte_count = 0; byte_count < 15; byte_count++) {
+		ext_spi_flash_read(addr, &flash_data_buf, 1);
+		os_printf("%02x ", (flash_data_buf & 0xff));
+		addr++;
+	}
+	ext_spi_flash_read(addr, &flash_data_buf, 1);
+	os_printf("%02x\n", (flash_data_buf & 0xff));
+	addr++;
+}
