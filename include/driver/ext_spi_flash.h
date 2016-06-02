@@ -1,5 +1,6 @@
 #ifndef EXT_SPI_FLASH_H_
 #define EXT_SPI_FLASH_H_
+
 #include "driver/ext_spi_flash.h"
 
 ICACHE_FLASH_ATTR void ext_spi_init();

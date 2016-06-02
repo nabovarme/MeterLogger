@@ -1,7 +1,7 @@
 #include "driver/spi.h"
 #include "driver/ext_spi_flash.h"
 
-#define CHAR_BIT	8
+#include <limits.h>
 
 ICACHE_FLASH_ATTR
 void ext_spi_init() {
