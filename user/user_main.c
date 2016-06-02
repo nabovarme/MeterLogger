@@ -344,63 +344,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	
 	// mqtt rpc dispatcher goes here
-	if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
-		// found set_cron
-		add_cron_job_from_query(dataBuf);
-	}
-	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
-		// found clear_cron
-		clear_cron_jobs();
-	}
-	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
-		// found cron
-#ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/cron/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/cron/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
-		reply_message_l = strlen(reply_message);
-
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
-	}
-#ifndef IMPULSE
-	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
-		// found open
-		//ac_motor_valve_open();
-		sys_cfg.ac_thermo_state = 1;
-		ac_thermo_open();
-	}
-	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
-		// found close
-		//ac_motor_valve_close();
-		sys_cfg.ac_thermo_state = 0;
-		ac_thermo_close();
-	}
-	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
-		// found status
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
-		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
-		reply_message_l = strlen(reply_message);
-
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
-	}
-	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
-		// found off
-		// turn ac output off
-		ac_off();
-	}
-	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
-		// found pwm
-		// start ac 1 pwm
-		ac_thermo_pwm(atoi(dataBuf));
-	}
-	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
-		// found test
-		ac_test();
-	}
-#endif // IMPULSE
-	else if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
+	if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
 #ifdef IMPULSE
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/ping/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
@@ -479,7 +423,58 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
-#endif
+#else
+		else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
+		// found set_cron
+		add_cron_job_from_query(dataBuf);
+	}
+	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
+		// found clear_cron
+		clear_cron_jobs();
+	}
+	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
+		// found cron
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/cron/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
+		reply_message_l = strlen(reply_message);
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
+	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
+		// found open
+		//ac_motor_valve_open();
+		sys_cfg.ac_thermo_state = 1;
+		ac_thermo_open();
+	}
+	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
+		// found close
+		//ac_motor_valve_close();
+		sys_cfg.ac_thermo_state = 0;
+		ac_thermo_close();
+	}
+	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
+		// found status
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+		reply_message_l = strlen(reply_message);
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
+	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
+		// found off
+		// turn ac output off
+		ac_off();
+	}
+	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
+		// found pwm
+		// start ac 1 pwm
+		ac_thermo_pwm(atoi(dataBuf));
+	}
+	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
+		// found test
+		ac_test();
+	}
+#endif // IMPULSE
 	
 	os_free(topicBuf);
 	os_free(dataBuf);
@@ -628,10 +623,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	gpio_int_init();
 #else	
 	ac_out_init();
+	cron_init();
 #endif // IMPULSE
 
 	led_init();
-	cron_init();
 	
 #ifndef IMPULSE
 	// load thermo motor state from flash(AC OUT 1)
