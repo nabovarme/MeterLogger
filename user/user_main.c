@@ -259,13 +259,23 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
 	uint32_t data;
+//	char str[14] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x00};
+	char str[14] = "Hello world!\n";
 	
-	ext_spi_flash_hexdump(0x1000);
+//	str[0] += 1;
 	
-	ext_spi_flash_read(0x1000, &data, sizeof(data));
 	ext_spi_flash_erase_sector(0x1000);
-	data++;
-	ext_spi_flash_write(0x1000, &data, sizeof(data));
+	ext_spi_flash_write(0x1000, str, 14);
+	
+	os_memset(str, 0, sizeof(str));
+	ext_spi_flash_read(0x1000, str, 14);
+	ext_spi_flash_hexdump(0x1000);
+	os_printf("%s\n", str);
+	
+//	ext_spi_flash_read(0x1000, &data, sizeof(data));
+//	ext_spi_flash_erase_sector(0x1000);
+//	data++;
+//	ext_spi_flash_write(0x1000, &data, sizeof(data));
 }
 #endif // IMPULSE
 
@@ -651,10 +661,11 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 #endif	// DEBUG
 	
+#ifdef IMPULSE
 	os_timer_disarm(&spi_test_timer);
 	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
-	os_timer_arm(&spi_test_timer, 1000, 1);
-	
+	os_timer_arm(&spi_test_timer, 2000, 1);
+#endif	
 	
 	init_unix_time();
 

@@ -11,8 +11,8 @@ void ext_spi_init() {
 	
 	spi_init_gpio(HSPI, SPI_CLK_USE_DIV);
 	spi_clock(HSPI, 4, 2); //10MHz
-	spi_tx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW);
-	spi_rx_byte_order(HSPI, SPI_BYTE_ORDER_HIGH_TO_LOW); 
+	spi_tx_byte_order(HSPI, SPI_BYTE_ORDER_LOW_TO_HIGH);
+	spi_rx_byte_order(HSPI, SPI_BYTE_ORDER_LOW_TO_HIGH); 
 	
 	SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP|SPI_CS_HOLD);
 	CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_FLASH_MODE);
@@ -45,15 +45,18 @@ ICACHE_FLASH_ATTR
 bool ext_spi_flash_read(uint32_t src_addr, uint32_t *dst_addr, uint32_t size) {
 	uint16_t i;
 	
-	if (size < sizeof(uint32_t)) {
+	if (size <= sizeof(uint32_t)) {
 		*dst_addr = spi_transaction(HSPI, 8, 0x03, 24, src_addr, 0, 0, size * CHAR_BIT, 0);
+		//SWAP_UINT32(*dst_addr);
 	}
 	else {
-		for (i = 0; i < size / sizeof(uint32_t); i++) {
+		for (i = 0; i < (size / sizeof(uint32_t)); i++) {
 			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 24, src_addr + sizeof(uint32_t) * i, 0, 0, sizeof(uint32_t) * CHAR_BIT, 0);
+			//SWAP_UINT32(*dst_addr);
 		}
 		if (size % sizeof(uint32_t)) {
 			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 24, src_addr + sizeof(uint32_t) * i, 0, 0, (size % sizeof(uint32_t)) * CHAR_BIT, 0);
+			//SWAP_UINT32(*dst_addr);
 		}
 	}
 	
@@ -63,8 +66,8 @@ bool ext_spi_flash_read(uint32_t src_addr, uint32_t *dst_addr, uint32_t size) {
 ICACHE_FLASH_ATTR
 bool ext_spi_flash_write(uint32_t dst_addr, uint32_t *src_addr, uint32_t size) {
 	uint16_t i;
-
-	if (size < sizeof(uint32_t)) {
+	
+	if (size <= sizeof(uint32_t)) {
 		spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
 		spi_transaction(HSPI, 8, 0x02, 24, dst_addr, size * CHAR_BIT, *src_addr, 0, 0);	// page program, 8 * size bit data
 		
@@ -73,18 +76,18 @@ bool ext_spi_flash_write(uint32_t dst_addr, uint32_t *src_addr, uint32_t size) {
 		}
 	}
 	else {
-		for (i = 0; i < size / sizeof(uint32_t); i++) {
+		for (i = 0; i < (size / sizeof(uint32_t)); i++) {
 			spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
-			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, size * CHAR_BIT, *(src_addr + i), 0, 0);	// page program, 8 * size bit data
-		
+			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, sizeof(uint32_t) * CHAR_BIT, *(src_addr + i), 0, 0);	// page program, 8 * size bit data
+			
 			while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
 				// wait while BUSY flag is set
 			}
 		}
 		if (size % sizeof(uint32_t)) {
 			spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
-			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, (size % sizeof(uint32_t)) * CHAR_BIT, *(src_addr + i), 0, 0);	// page program, 8 * size bit data
-		
+			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, (size % sizeof(uint32_t)) * CHAR_BIT, *(src_addr + i) & ((1 << (size % sizeof(uint32_t)) * CHAR_BIT) - 1), 0, 0);	// page program, 8 * size bit data
+			
 			while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
 				// wait while BUSY flag is set
 			}
