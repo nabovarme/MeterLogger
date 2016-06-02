@@ -259,7 +259,7 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
 	static int state;
-	uint32_t data = 0xa5;
+	uint32_t data = 0xa5010203;
 	
 	switch (state) {
 		case 0:
@@ -281,7 +281,7 @@ ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
 			break;
 			
 		case 5:
-			ext_spi_flash_write(0x0, &data, 1);	// size has to be aligned 32 bit = 4 * 8 bit
+			ext_spi_flash_write(0x0, &data, sizeof(data));
 			break;
 	}
 	if (state++ > 5) {
