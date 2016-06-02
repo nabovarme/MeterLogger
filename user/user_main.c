@@ -258,35 +258,14 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
-	static int state;
-	uint32_t data = 0xa5010203;
+	uint32_t data;
 	
-	switch (state) {
-		case 0:
-			ext_spi_flash_hexdump(0x0);
-			break;
-		case 1:
-			ext_spi_flash_hexdump(0x1000);
-			break;
-			
-		case 2:
-			ext_spi_flash_erase_sector(0x0);
-			break;
-			
-		case 3:
-			ext_spi_flash_hexdump(0x0);
-			break;
-		case 4:
-			ext_spi_flash_hexdump(0x1000);
-			break;
-			
-		case 5:
-			ext_spi_flash_write(0x0, &data, sizeof(data));
-			break;
-	}
-	if (state++ > 5) {
-		state = 0;
-	}
+	ext_spi_flash_hexdump(0x1000);
+	
+	ext_spi_flash_read(0x1000, &data, sizeof(data));
+	ext_spi_flash_erase_sector(0x1000);
+	data++;
+	ext_spi_flash_write(0x1000, &data, sizeof(data));
 }
 #endif // IMPULSE
 
@@ -679,7 +658,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	
 	os_timer_disarm(&spi_test_timer);
 	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
-	os_timer_arm(&spi_test_timer, 2000, 1);
+	os_timer_arm(&spi_test_timer, 1000, 1);
 	
 	
 	init_unix_time();
