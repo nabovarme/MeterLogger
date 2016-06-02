@@ -1,6 +1,6 @@
    text	   data	    bss	    dec	    hex	filename
    1061	      0	      0	   1061	    425	uart.o (ex build/app_app.a)
-    660	      0	      0	    660	    294	ext_spi_flash.o (ex build/app_app.a)
+   1088	      0	      0	   1088	    440	ext_spi_flash.o (ex build/app_app.a)
    1143	      0	      0	   1143	    477	spi.o (ex build/app_app.a)
     193	      0	      0	    193	     c1	gpio16.o (ex build/app_app.a)
    3522	      0	      8	   3530	    dca	mqtt.o (ex build/app_app.a)
@@ -28,4 +28,4 @@
     269	    156	      0	    425	    1a9	httpd_user_init.o (ex build/app_app.a)
    1112	      0	     20	   1132	    46c	config.o (ex build/app_app.a)
    1221	      0	     32	   1253	    4e5	wifi.o (ex build/app_app.a)
-  36506	    672	   9101	  46279	   b4c7	(TOTALS)
+  36934	    672	   9101	  46707	   b673	(TOTALS)
