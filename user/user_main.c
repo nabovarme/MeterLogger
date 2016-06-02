@@ -258,19 +258,21 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
-	uint32_t data;
+//	uint32_t data;
+	static uint32_t addr;
 //	char str[14] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x00};
-	char str[14] = "Hello world!\n";
+//	char str[14] = "Hello world!\n";
 	
 //	str[0] += 1;
 	
-	ext_spi_flash_erase_sector(0x1000);
-	ext_spi_flash_write(0x1000, str, 14);
+//	ext_spi_flash_erase_sector(0x1000);
+//	ext_spi_flash_write(0x1000, str, 14);
 	
-	os_memset(str, 0, sizeof(str));
-	ext_spi_flash_read(0x1000, str, 14);
-	ext_spi_flash_hexdump(0x1000);
-	os_printf("%s\n", str);
+//	os_memset(str, 0, sizeof(str));
+//	ext_spi_flash_read(0x1000, str, 14);
+	ext_spi_flash_hexdump(addr);
+	addr += 0x10;
+//	os_printf("%s\n", str);
 	
 //	ext_spi_flash_read(0x1000, &data, sizeof(data));
 //	ext_spi_flash_erase_sector(0x1000);
@@ -425,7 +427,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 	else if (strncmp(function_name, "save", FUNCTIONNAME_L) == 0) {
 		// found save - save conf to flash
-		cfg_save();
+		//cfg_save();
+		impulse_meter_count_save();
 		
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/save/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", sys_cfg.impulse_meter_count);
