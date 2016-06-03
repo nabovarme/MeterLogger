@@ -560,7 +560,7 @@ END GROUP
  *(.jcr)
                 0x000000003ffe8a48                _data_end = ABSOLUTE (.)
 
-.rodata         0x000000003ffe8a50      0xcac
+.rodata         0x000000003ffe8a50      0xca8
                 0x000000003ffe8a50                _rodata_start = ABSOLUTE (.)
  *(.sdk.version)
  .sdk.version   0x000000003ffe8a50       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
@@ -594,79 +594,79 @@ END GROUP
                 0x000000003ffe8d20       0x1a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(mem_manager.o)
  *fill*         0x000000003ffe8d3a        0x2 
  .rodata.str1.4
-                0x000000003ffe8d3c      0x27b build/app_app.a(user_main.o)
-                                        0x287 (size before relaxing)
- *fill*         0x000000003ffe8fb7        0x1 
+                0x000000003ffe8d3c      0x277 build/app_app.a(user_main.o)
+                                        0x283 (size before relaxing)
+ *fill*         0x000000003ffe8fb3        0x1 
  .rodata.str1.4
-                0x000000003ffe8fb8       0x20 build/app_app.a(unix_time.o)
+                0x000000003ffe8fb4       0x20 build/app_app.a(unix_time.o)
                                          0x24 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe8fd8       0x11 build/app_app.a(captdns.o)
- *fill*         0x000000003ffe8fe9        0x3 
+                0x000000003ffe8fd4       0x11 build/app_app.a(captdns.o)
+ *fill*         0x000000003ffe8fe5        0x3 
  .rodata.str1.4
-                0x000000003ffe8fec      0x17a build/app_app.a(httpd.o)
+                0x000000003ffe8fe8      0x17a build/app_app.a(httpd.o)
                                         0x186 (size before relaxing)
- *fill*         0x000000003ffe9166        0x2 
+ *fill*         0x000000003ffe9162        0x2 
  .rodata.str1.4
-                0x000000003ffe9168        0x8 build/app_app.a(utils.o)
+                0x000000003ffe9164        0x8 build/app_app.a(utils.o)
                                           0xb (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9170       0xaa build/app_app.a(httpd_user_init.o)
+                0x000000003ffe916c       0xaa build/app_app.a(httpd_user_init.o)
                                          0xae (size before relaxing)
- *fill*         0x000000003ffe921a        0x2 
+ *fill*         0x000000003ffe9216        0x2 
  .rodata.str1.4
-                0x000000003ffe921c       0x8f build/app_app.a(config.o)
+                0x000000003ffe9218       0x8f build/app_app.a(config.o)
                                          0x97 (size before relaxing)
- *fill*         0x000000003ffe92ab        0x1 
+ *fill*         0x000000003ffe92a7        0x1 
  .rodata.str1.4
-                0x000000003ffe92ac       0x4f build/app_app.a(wifi.o)
+                0x000000003ffe92a8       0x4f build/app_app.a(wifi.o)
                                          0x5d (size before relaxing)
- *fill*         0x000000003ffe92fb        0x1 
+ *fill*         0x000000003ffe92f7        0x1 
  .rodata.str1.4
-                0x000000003ffe92fc       0x3e build/app_app.a(ext_spi_flash.o)
+                0x000000003ffe92f8       0x3e build/app_app.a(ext_spi_flash.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(mqtt.o)
- *fill*         0x000000003ffe933a        0x2 
+ *fill*         0x000000003ffe9336        0x2 
  .rodata.str1.4
-                0x000000003ffe933c        0x7 build/app_app.a(mqtt_msg.o)
+                0x000000003ffe9338        0x7 build/app_app.a(mqtt_msg.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(queue.o)
- *fill*         0x000000003ffe9343        0x1 
+ *fill*         0x000000003ffe933f        0x1 
  .rodata.str1.4
-                0x000000003ffe9344       0x50 build/app_app.a(cgi.o)
+                0x000000003ffe9340       0x50 build/app_app.a(cgi.o)
                                          0x54 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9394       0x32 build/app_app.a(httpdespfs.o)
+                0x000000003ffe9390       0x32 build/app_app.a(httpdespfs.o)
                                          0x46 (size before relaxing)
- *fill*         0x000000003ffe93c6        0x2 
+ *fill*         0x000000003ffe93c2        0x2 
  .rodata.str1.4
-                0x000000003ffe93c8      0x24b build/app_app.a(cgiwifi.o)
+                0x000000003ffe93c4      0x24b build/app_app.a(cgiwifi.o)
                                         0x273 (size before relaxing)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(espfs.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 build/app_app.a(heatshrink_decoder.o)
  .rodata.str1.1
-                0x000000003ffe9613        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- *fill*         0x000000003ffe9615        0x3 
+                0x000000003ffe960f        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ *fill*         0x000000003ffe9611        0x3 
  .rodata.str1.4
-                0x000000003ffe9618        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
+                0x000000003ffe9614        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe961c        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
+                0x000000003ffe9618        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9620        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
+                0x000000003ffe961c        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
                                          0x10 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9628        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
+                0x000000003ffe9624        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe962c        0x3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
+                0x000000003ffe9628        0x3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
                                           0x8 (size before relaxing)
- *fill*         0x000000003ffe962f        0x1 
+ *fill*         0x000000003ffe962b        0x1 
  .rodata.str1.4
-                0x000000003ffe9630        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
+                0x000000003ffe962c        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
  .rodata.str1.4
                 0x0000000000000000        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_sta.o)
  .rodata.str1.4
@@ -675,24 +675,24 @@ END GROUP
                 0x0000000000000000        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ie_vendor.o)
  .rodata.str1.4
                 0x0000000000000000        0x1 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_tcp.o)
- *fill*         0x000000003ffe9637        0x1 
+ *fill*         0x000000003ffe9633        0x1 
  .rodata.str1.4
-                0x000000003ffe9638       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
+                0x000000003ffe9634       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
  .rodata.str1.4
-                0x000000003ffe9658       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
+                0x000000003ffe9654       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
                                           0xd (size before relaxing)
  *(.gnu.linkonce.r.*)
  *(.rodata1)
-                0x000000003ffe9668                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
+                0x000000003ffe9664                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
  *(.xt_except_table)
  *(.gcc_except_table)
  *(.gnu.linkonce.e.*)
  *(.gnu.version_r)
  *(.eh_frame)
- .eh_frame      0x000000003ffe9668       0x38 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
- .eh_frame      0x000000003ffe96a0       0x2c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
+ .eh_frame      0x000000003ffe9664       0x38 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_udivdi3.o)
+ .eh_frame      0x000000003ffe969c       0x2c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_umoddi3.o)
                                          0x3c (size before relaxing)
- .eh_frame      0x000000003ffe96cc       0x28 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
+ .eh_frame      0x000000003ffe96c8       0x28 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/libgcc.a(_divdi3.o)
                                          0x38 (size before relaxing)
  *crtbegin.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o) .ctors)
@@ -702,23 +702,23 @@ END GROUP
  *(EXCLUDE_FILE(*crtend.o) .dtors)
  *(SORT(.dtors.*))
  *(.dtors)
-                0x000000003ffe96f4                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
+                0x000000003ffe96f0                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
  *(.xt_except_desc)
  *(.gnu.linkonce.h.*)
-                0x000000003ffe96f4                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
+                0x000000003ffe96f0                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
  *(.xt_except_desc_end)
  *(.dynamic)
  *(.gnu.version_d)
-                0x000000003ffe96f4                . = ALIGN (0x4)
-                0x000000003ffe96f4                _bss_table_start = ABSOLUTE (.)
-                0x000000003ffe96f4        0x4 LONG 0x3ffe9700 _bss_start
-                0x000000003ffe96f8        0x4 LONG 0x3fff2218 _bss_end
-                0x000000003ffe96fc                _bss_table_end = ABSOLUTE (.)
-                0x000000003ffe96fc                _rodata_end = ABSOLUTE (.)
+                0x000000003ffe96f0                . = ALIGN (0x4)
+                0x000000003ffe96f0                _bss_table_start = ABSOLUTE (.)
+                0x000000003ffe96f0        0x4 LONG 0x3ffe96f8 _bss_start
+                0x000000003ffe96f4        0x4 LONG 0x3fff2218 _bss_end
+                0x000000003ffe96f8                _bss_table_end = ABSOLUTE (.)
+                0x000000003ffe96f8                _rodata_end = ABSOLUTE (.)
 
-.bss            0x000000003ffe9700     0x8b18
-                0x000000003ffe9700                . = ALIGN (0x8)
-                0x000000003ffe9700                _bss_start = ABSOLUTE (.)
+.bss            0x000000003ffe96f8     0x8b20
+                0x000000003ffe96f8                . = ALIGN (0x8)
+                0x000000003ffe96f8                _bss_start = ABSOLUTE (.)
  *(.dynsbss)
  *(.sbss)
  *(.sbss.*)
@@ -729,9 +729,10 @@ END GROUP
  *(.gnu.linkonce.sb2.*)
  *(.dynbss)
  *(.bss)
- .bss           0x000000003ffe9700        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
- .bss           0x000000003ffe9700        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
- .bss           0x000000003ffe9700        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
+ .bss           0x000000003ffe96f8        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
+ .bss           0x000000003ffe96f8        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
+ .bss           0x000000003ffe96f8        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
+ *fill*         0x000000003ffe96f8        0x8 
  .bss           0x000000003ffe9700      0x1c0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(nmi-vector.o)
  .bss           0x000000003ffe98c0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user-vector.o)
  .bss           0x000000003ffe98c0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(vector.o)

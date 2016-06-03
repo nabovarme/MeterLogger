@@ -29,24 +29,24 @@ cfg_save() {
 
 		// calculate checksum on sys_cfg struct without ccit_crc16
 		sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
-		ext_spi_flash_read(0x3000,
+		ext_spi_flash_read(0x400,
 		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	
 		if (saveFlag.flag == 0) {
-			ext_spi_flash_erase_sector(0x1000);
-			ext_spi_flash_write(0x1000,
+			ext_spi_flash_erase_sector(0x200);
+			ext_spi_flash_write(0x200,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 1;
-			ext_spi_flash_erase_sector(0x3000);
-			ext_spi_flash_write(0x3000,
+			ext_spi_flash_erase_sector(0x400);
+			ext_spi_flash_write(0x400,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		} else {
 			ext_spi_flash_erase_sector(0x0);
 			ext_spi_flash_write(0x0,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 0;
-			ext_spi_flash_erase_sector(0x3000);
-			ext_spi_flash_write(0x3000,
+			ext_spi_flash_erase_sector(0x400);
+			ext_spi_flash_write(0x400,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		}
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
@@ -82,13 +82,13 @@ cfg_load() {
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
 	
-	ext_spi_flash_read(0x3000,
+	ext_spi_flash_read(0x400,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
 		ext_spi_flash_read(0x0,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	} else {
-		ext_spi_flash_read(0x1000,
+		ext_spi_flash_read(0x200,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
 
@@ -113,10 +113,9 @@ cfg_load() {
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
-#ifndef IMPULSE
+		
 		sys_cfg.ac_thermo_state = 0;
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
-#endif
 		tfp_snprintf(sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN, DEFAULT_METER_SERIAL);
 		tfp_snprintf(sys_cfg.impulse_meter_energy, 2, "0");
 		tfp_snprintf(sys_cfg.impulses_per_kwh, 4, "100");
