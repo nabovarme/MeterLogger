@@ -60,7 +60,7 @@ static os_timer_t kmp_request_send_timer;
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
 static os_timer_t ext_wd_timer;
-static os_timer_t spi_test_timer;	// DEBUG
+//static os_timer_t spi_test_timer;	// DEBUG
 #endif
 
 uint16_t counter = 0;
@@ -226,6 +226,8 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
 	uint32_t impulse_meter_count_diff;
 
+	cfg_save();
+	
 	impulse_time = uptime();
 	impulse_time_diff = impulse_time - last_impulse_time;
 	
@@ -257,6 +259,7 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 #endif // IMPULSE
 
 #ifdef IMPULSE
+/*
 ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
 //	uint32_t data;
 	static uint32_t addr;
@@ -279,6 +282,7 @@ ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
 //	data++;
 //	ext_spi_flash_write(0x1000, &data, sizeof(data));
 }
+*/
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
@@ -427,8 +431,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef IMPULSE
 	else if (strncmp(function_name, "save", FUNCTIONNAME_L) == 0) {
 		// found save - save conf to flash
-		//cfg_save();
-		impulse_meter_count_save();
+		cfg_save();
 		
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/save/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%u", sys_cfg.impulse_meter_count);
@@ -436,6 +439,20 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
+	/*
+	else if (strncmp(function_name, "hspi_erase", FUNCTIONNAME_L) == 0) {
+		// found hspi_erase - erase external flash config
+		ext_spi_flash_erase_sector(0x0);
+		ext_spi_flash_erase_sector(0x1000);
+
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/hspi_erase/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "");
+		reply_message_l = strlen(reply_message);
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		system_restart();
+	}
+	*/
 #else
 		else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
@@ -615,10 +632,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	system_set_os_print(0);
 #endif
 
-	cfg_load();
 #ifdef IMPULSE
 	ext_spi_init();
 #endif
+	cfg_load();
 
 	// start kmp_request
 #ifdef EN61107
@@ -665,9 +682,9 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #endif	// DEBUG
 	
 #ifdef IMPULSE
-	os_timer_disarm(&spi_test_timer);
-	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
-	os_timer_arm(&spi_test_timer, 2000, 1);
+//	os_timer_disarm(&spi_test_timer);
+//	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
+//	os_timer_arm(&spi_test_timer, 2000, 1);
 #endif	
 	
 	init_unix_time();
@@ -704,6 +721,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	else {
 #ifdef DEBUG
 		os_printf("normal boot\n");
+//		ext_spi_flash_erase_sector(0x0);
+//		ext_spi_flash_erase_sector(0x1000);
 #endif
 #ifdef IMPULSE
 		// start config mode at boot - dont wait for impulse based meters        

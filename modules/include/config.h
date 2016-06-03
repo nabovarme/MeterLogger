@@ -74,9 +74,4 @@ ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
 extern syscfg_t sys_cfg;
 
-#ifdef IMPULSE
-void ICACHE_FLASH_ATTR impulse_meter_count_save();
-void ICACHE_FLASH_ATTR impulse_meter_count_load();
-#endif
-
 #endif /* USER_CONFIG_H_ */
