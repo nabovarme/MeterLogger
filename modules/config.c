@@ -12,7 +12,13 @@
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
 
-#define EXT_CFG_LOCATION	0x0
+#define EXT_CFG_LOCATION		0x0
+
+#ifdef EXT_SPI_RAM_IS_NAND
+#define EXT_SPI_RAM_SEC_SIZE	0x1000	// 4 kB block size for FLASH RAM
+#else
+#define EXT_SPI_RAM_SEC_SIZE	0x200	// we only need 512 bytes for config when FeRAM is used
+#endif
 
 #define SAVE_DEFER_TIME 2000
 static os_timer_t config_save_timer;
@@ -31,24 +37,32 @@ cfg_save() {
 
 		// calculate checksum on sys_cfg struct without ccit_crc16
 		sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
-		ext_spi_flash_read((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	
 		if (saveFlag.flag == 0) {
+#ifdef EXT_SPI_RAM_IS_NAND
 			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 1);
-			ext_spi_flash_write((EXT_CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+#endif	// EXT_SPI_RAM_IS_NAND
+			ext_spi_flash_write((EXT_CFG_LOCATION + 1) * EXT_SPI_RAM_SEC_SIZE,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 1;
+#ifdef EXT_SPI_RAM_IS_NAND
 			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 2);
-			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
+#endif	// EXT_SPI_RAM_IS_NAND
+			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		} else {
+#ifdef EXT_SPI_RAM_IS_NAND
 			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 0);
-			ext_spi_flash_write((EXT_CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
+#endif	// EXT_SPI_RAM_IS_NAND
+			ext_spi_flash_write((EXT_CFG_LOCATION + 0) * EXT_SPI_RAM_SEC_SIZE,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 0;
+#ifdef EXT_SPI_RAM_IS_NAND
 			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 2);
-			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
+#endif	// EXT_SPI_RAM_IS_NAND
+			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		}
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
@@ -84,13 +98,13 @@ cfg_load() {
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
 	
-	ext_spi_flash_read((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
+	ext_spi_flash_read((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
-		ext_spi_flash_read((EXT_CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 0) * EXT_SPI_RAM_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	} else {
-		ext_spi_flash_read((EXT_CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 1) * EXT_SPI_RAM_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
 

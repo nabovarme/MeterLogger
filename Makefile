@@ -153,6 +153,10 @@ ifeq ($(LED_ON_AC), 1)
     CFLAGS += -DLED_ON_AC
 endif
 
+ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
+    CFLAGS += -DEXT_SPI_RAM_IS_NAND
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
