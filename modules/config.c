@@ -31,7 +31,7 @@ cfg_save() {
 
 		// calculate checksum on sys_cfg struct without ccit_crc16
 		sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
-		ext_spi_flash_read(0x2000,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
 		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	
 		if (saveFlag.flag == 0) {
