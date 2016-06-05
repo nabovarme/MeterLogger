@@ -31,6 +31,7 @@ uint16_t ext_spi_flash_id() {
 
 ICACHE_FLASH_ATTR
 bool ext_spi_flash_erase_sector(uint16_t sec) {
+	sec = sec << 12;	// 4 kB per sector in NAND FLASH RAM
 	spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);		// write enable
 	spi_transaction(HSPI, 8, 0x20, 24, sec, 0, 0, 0, 0);	// sector erase
 	

@@ -12,6 +12,8 @@
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
 
+#define EXT_CFG_LOCATION	0x0
+
 #define SAVE_DEFER_TIME 2000
 static os_timer_t config_save_timer;
 char config_save_timer_running;
@@ -33,20 +35,20 @@ cfg_save() {
 		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	
 		if (saveFlag.flag == 0) {
-			ext_spi_flash_erase_sector(0x1000);
-			ext_spi_flash_write(0x1000,
+			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 1);
+			ext_spi_flash_write((EXT_CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 1;
-			ext_spi_flash_erase_sector(0x2000);
-			ext_spi_flash_write(0x2000,
+			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 2);
+			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		} else {
-			ext_spi_flash_erase_sector(0x0);
-			ext_spi_flash_write(0x0,
+			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 0);
+			ext_spi_flash_write((EXT_CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
 							(uint32 *)&sys_cfg, sizeof(syscfg_t));
 			saveFlag.flag = 0;
-			ext_spi_flash_erase_sector(0x2000);
-			ext_spi_flash_write(0x2000,
+			ext_spi_flash_erase_sector(EXT_CFG_LOCATION + 2);
+			ext_spi_flash_write((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
 							(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 		}
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
@@ -82,13 +84,13 @@ cfg_load() {
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
 	
-	ext_spi_flash_read(0x2000,
+	ext_spi_flash_read((EXT_CFG_LOCATION + 2) * SPI_FLASH_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
-		ext_spi_flash_read(0x0,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	} else {
-		ext_spi_flash_read(0x1000,
+		ext_spi_flash_read((EXT_CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
 
