@@ -1,6 +1,7 @@
 #include <esp8266.h>
 #include "driver/uart.h"
 #include "mqtt.h"
+#include "aes.h"
 #include "wifi.h"
 #include "config.h"
 #include "debug.h"
@@ -149,37 +150,37 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	char current_energy_kwh[32];
 	char acc_energy_kwh[32];
 	
-    uint32_t result_int, result_frac;
+	uint32_t result_int, result_frac;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
-	    // for acc_energy...
-	    // ...divide by 1000 and prepare decimal string in kWh
-	    result_int = (int32_t)(acc_energy / 1000);
-	    result_frac = acc_energy - result_int * 1000;
-    
-	    // prepare decimal string
-	    strcpy(leading_zeroes, "");
-	    for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
-	        strcat(leading_zeroes, "0");
-	    }
-	    tfp_snprintf(acc_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
+		// for acc_energy...
+		// ...divide by 1000 and prepare decimal string in kWh
+		result_int = (int32_t)(acc_energy / 1000);
+		result_frac = acc_energy - result_int * 1000;
+	
+		// prepare decimal string
+		strcpy(leading_zeroes, "");
+		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
+			strcat(leading_zeroes, "0");
+		}
+		tfp_snprintf(acc_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-    	// for current_energy...
-    	// ...divide by 1000 and prepare decimal string in kWh
-    	result_int = (int32_t)(current_energy / 1000);
-    	result_frac = current_energy - result_int * 1000;
-    	
-    	// prepare decimal string
-    	strcpy(leading_zeroes, "");
-    	for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
-    	    strcat(leading_zeroes, "0");
-    	}
-    	tfp_snprintf(current_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
-    	
+		// for current_energy...
+		// ...divide by 1000 and prepare decimal string in kWh
+		result_int = (int32_t)(current_energy / 1000);
+		result_frac = current_energy - result_int * 1000;
+		
+		// prepare decimal string
+		strcpy(leading_zeroes, "");
+		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
+			strcat(leading_zeroes, "0");
+		}
+		tfp_snprintf(current_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
+		
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 		tfp_snprintf(mqtt_message, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 		mqtt_message_l = strlen(mqtt_message);
@@ -318,9 +319,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	
 	// sample once and start sample timer
 	sample_timer_func(NULL);
-    os_timer_disarm(&sample_timer);
-    os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timer_func, NULL);
-    os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
+	os_timer_disarm(&sample_timer);
+	os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timer_func, NULL);
+	os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
@@ -669,7 +670,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif // IMPULSE
 	
 	// make sure the device is in AP and STA combined mode
-    wifi_set_opmode_current(STATIONAP_MODE);
+	wifi_set_opmode_current(STATIONAP_MODE);
 	
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
@@ -725,7 +726,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 //		ext_spi_flash_erase_sector(0x1000);
 #endif
 #ifdef IMPULSE
-		// start config mode at boot - dont wait for impulse based meters        
+		// start config mode at boot - dont wait for impulse based meters		
 		os_timer_disarm(&config_mode_timer);
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 		os_timer_arm(&config_mode_timer, 100, 0);
@@ -748,5 +749,36 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 		
 	INFO("\r\nSystem started ...\r\n");
+	
+	// ecc stuff
+	// NOTE:   String length must be evenly divisible by 16byte (str_len % 16 == 0)
+	//         You should pad the end of the string with zeros if this is not the case.
+	
+	uint8_t key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
+	uint8_t iv[]  = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+	uint8_t in[]  = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXZÆØÅ";
+	uint8_t buffer[64];
+	uint8_t in_orig[64];
+	uint8_t encrypted[64];
+	
+	memcpy(in_orig, in, sizeof(in_orig));
+	
+	AES128_CBC_encrypt_buffer(encrypted, in, sizeof(in), key, iv);
+	
+	printf("CBC encrypt: ");
+	
+    AES128_CBC_decrypt_buffer(buffer+0, encrypted+0,  16, key, iv);
+    AES128_CBC_decrypt_buffer(buffer+16, encrypted+16, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer+32, encrypted+32, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer+48, encrypted+48, 16, 0, 0);
+	
+	printf("CBC decrypt: ");
+	
+	if (0 == strncmp((char*) in_orig, (char*) buffer, 64)) {
+		printf("SUCCESS!\n");
+	} else {
+		printf("FAILURE!\n");
+	}
+
 }
 

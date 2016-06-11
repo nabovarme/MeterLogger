@@ -100,14 +100,14 @@ endif
 
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= driver mqtt user modules
-EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/kamstrup user/61107
+MODULES		= driver mqtt modules user user/aes
+EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/aes user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\"
+CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref
@@ -255,6 +255,7 @@ flash107th_bit_0xff:
 	$(ESPTOOL) -p $(ESPPORT) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
 
 size:
+	$(SIZE) -A -t -d $(APP_AR) | tee app_app.size
 	$(SIZE) -B -t -d $(APP_AR) | tee app_app.size
 
 screen:
