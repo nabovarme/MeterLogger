@@ -137,12 +137,12 @@ endif
 
 ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
-	MODULES += user/en61107 user/cron
+	MODULES += user/en61107 user/cron user/ac
 else ifeq ($(IMPULSE), 1)
     CFLAGS += -DIMPULSE
 else
     CFLAGS += -DKMP
-	MODULES += user/kamstrup user/cron
+	MODULES += user/kamstrup user/cron user/ac
 endif
 
 ifeq ($(THERMO_NO), 1)
