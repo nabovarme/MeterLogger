@@ -352,8 +352,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	
 	// vars for aes encryption
 	uint8_t aes_iv[16];
-	uint8_t cleartext[16];
-	uint8_t ciphertext[16];
+	uint8_t cleartext[112];
+	uint8_t ciphertext[112];
     char hex_buff_str[2 + 1];
 	uint8_t i;
 
@@ -443,13 +443,22 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 			os_memcpy(reply_message + i * 2, hex_buff_str, 2);
 		}
 		// ... and append encrypted message
-		tfp_snprintf(cleartext, 16, "heap=%u&", system_get_free_heap_size());
-		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 16, aes_key, aes_iv);
-		for (i = 0; i < 16; i++) {
+		os_memset(cleartext, 0, sizeof(cleartext));
+#ifdef IMPULSE
+		tfp_snprintf(cleartext, 112, "%s-%s", system_get_sdk_version(), VERSION);
+#else
+#	ifdef THERMO_NO
+		tfp_snprintf(cleartext, 112, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+		tfp_snprintf(cleartext, 112, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#endif
+		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, aes_key, aes_iv);
+		for (i = 0; i < 112; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
 			os_memcpy(reply_message + (16 * 2) + (i * 2), hex_buff_str, 2);
 		}
-		reply_message_l = 65; //strlen(reply_message);
+		reply_message_l = MQTT_MESSAGE_L; //strlen(reply_message);
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
