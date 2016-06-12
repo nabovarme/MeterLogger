@@ -27,8 +27,8 @@
 #include "kmp_request.h"
 #endif
 
-#define MQTT_TOPIC_L 128
-#define MQTT_MESSAGE_L 256
+#define MQTT_TOPIC_L (128 + 1)
+#define MQTT_MESSAGE_L (256 + 1)
 
 #ifdef IMPULSE
 
@@ -240,7 +240,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 
 #else
 	kmp_request_send();
-#endif
+#endif	// EN61107
 }
 
 #ifdef EN61107
