@@ -68,9 +68,6 @@ uint16_t counter = 0;
 
 struct rst_info *rtc_info;
 
-// aes shared key
-const uint8_t aes_key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
-
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 #ifdef IMPULSE
@@ -207,16 +204,15 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		// ... and append encrypted message
 		os_memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, 112, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, aes_key, aes_iv);
+		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
 		for (i = 0; i < 112; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
 			os_memcpy(mqtt_message + (16 * 2) + (i * 2), hex_buff_str, 2);
 		}
-		mqtt_message_l = MQTT_MESSAGE_L; //strlen(reply_message);
 #else		
 		tfp_snprintf(mqtt_message, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-		mqtt_message_l = strlen(mqtt_message);
 #endif	// AES
+		mqtt_message_l = strlen(mqtt_message);
 		
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
@@ -483,7 +479,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, 112, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
 #	endif
 #endif
-		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, aes_key, aes_iv);
+		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
 		for (i = 0; i < 112; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
 			os_memcpy(reply_message + (16 * 2) + (i * 2), hex_buff_str, 2);
@@ -701,6 +697,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	os_printf("\t(THERMO_NO)\n\r");
 #else
 	os_printf("\t(THERMO_NC)\n\r");
+#endif
+#ifdef AES
+	os_printf("\t(AES)\n\r");
 #endif
 
 #ifndef DEBUG

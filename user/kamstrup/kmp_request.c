@@ -5,6 +5,8 @@
 #include "tinyprintf.h"
 #include "kmp.h"
 #include "kmp_request.h"
+#include "config.h"
+#include "aes.h"
 
 #define QUEUE_SIZE 256
 
@@ -43,6 +45,14 @@ static void kmp_received_task(os_event_t *events) {
 	unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
+#ifdef AES
+	// vars for aes encryption
+	uint8_t aes_iv[16];
+	uint8_t cleartext[112];
+	uint8_t ciphertext[112];
+	char hex_buff_str[2 + 1];
+#endif
+
     // allocate struct for response
     kmp_response_t response;
     unsigned char kmp_unit_string[16];
@@ -130,6 +140,25 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, 128, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
+#ifdef AES
+			// aes
+			tfp_snprintf(cleartext, 112, "%s", message);	// make a copy of message for later use
+			os_memset(message, 0, sizeof(message));			// ...and clear it
+			
+			// get random iv
+			os_get_random(aes_iv, 16);
+			// prepare encrypted message with hex iv string in the first part
+			for (i = 0; i < 16; i++) {
+				tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
+				os_memcpy(message + i * 2, hex_buff_str, 2);
+			}
+			// ... and append encrypted message
+			AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
+			for (i = 0; i < 112; i++) {
+				tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
+				os_memcpy(message + (16 * 2) + (i * 2), hex_buff_str, 2);
+			}
+#endif	// AES
 			message_l = strlen(message);
 	    	
 			if (mqtt_client) {

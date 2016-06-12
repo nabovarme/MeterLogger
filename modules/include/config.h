@@ -51,6 +51,7 @@ typedef struct{
 	uint8_t mqtt_pass[32];
 	uint32_t mqtt_keepalive;
 	uint8_t security;
+	uint8_t aes_key[16];
 #ifndef IMPULSE
 	uint8_t ac_thermo_state;	// thermo actuator state
 	cron_jobs_t cron_jobs;

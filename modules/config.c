@@ -127,7 +127,24 @@ cfg_load() {
 		tfp_snprintf(sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
-
+		
+		sys_cfg.aes_key[0] = 0x2b;
+		sys_cfg.aes_key[1] = 0x7e;
+		sys_cfg.aes_key[2] = 0x15;
+		sys_cfg.aes_key[3] = 0x16;
+		sys_cfg.aes_key[4] = 0x28;
+		sys_cfg.aes_key[5] = 0xae;
+		sys_cfg.aes_key[6] = 0xd2;
+		sys_cfg.aes_key[7] = 0xa6;
+		sys_cfg.aes_key[8] = 0xab;
+		sys_cfg.aes_key[9] = 0xf7;
+		sys_cfg.aes_key[10] = 0x15;
+		sys_cfg.aes_key[11] = 0x88;
+		sys_cfg.aes_key[12] = 0x09;
+		sys_cfg.aes_key[13] = 0xcf;
+		sys_cfg.aes_key[14] = 0x4f;
+		sys_cfg.aes_key[15] = 0x3c;
+		//os_memcpy(sys_cfg.aes_key, 16, { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c });
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifndef IMPULSE
 		sys_cfg.ac_thermo_state = 0;
@@ -179,6 +196,23 @@ cfg_load() {
 		tfp_snprintf(sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
+		
+		sys_cfg.aes_key[0] = 0x2b;
+		sys_cfg.aes_key[1] = 0x7e;
+		sys_cfg.aes_key[2] = 0x15;
+		sys_cfg.aes_key[3] = 0x16;
+		sys_cfg.aes_key[4] = 0x28;
+		sys_cfg.aes_key[5] = 0xae;
+		sys_cfg.aes_key[6] = 0xd2;
+		sys_cfg.aes_key[7] = 0xa6;
+		sys_cfg.aes_key[8] = 0xab;
+		sys_cfg.aes_key[9] = 0xf7;
+		sys_cfg.aes_key[10] = 0x15;
+		sys_cfg.aes_key[11] = 0x88;
+		sys_cfg.aes_key[12] = 0x09;
+		sys_cfg.aes_key[13] = 0xcf;
+		sys_cfg.aes_key[14] = 0x4f;
+		sys_cfg.aes_key[15] = 0x3c;
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 		
