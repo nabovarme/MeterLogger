@@ -542,18 +542,6 @@ void AES128_CBC_encrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t l
     XorWithIv(output);
     state = (state_t*)output;
     Cipher();
-    uint8_t m, n;
-    for (m = 0; m < 4; m++) {
-        for (n = 0; n < 4; n++) {
-            os_printf("%02x ", (*state)[m][n]);
-        }
-    }
-    os_printf("\n");
-    uint8_t p;
-    for (p = 0; p < 16; p++) {
-        os_printf("%02x ", output[p]);
-    }
-    os_printf("\n");
     Iv = output;
     input += KEYLEN;
     output += KEYLEN;

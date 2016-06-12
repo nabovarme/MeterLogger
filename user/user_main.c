@@ -351,11 +351,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	int reply_message_l;
 	
 	// vars for aes encryption
-	//uint8_t aes_iv[16];
-	uint8_t aes_iv[] = {0x40, 0xe0, 0xbe, 0x47, 0x93, 0x3e, 0x87, 0x6e, 0x29, 0xf1, 0x1f, 0x33, 0xad, 0xde, 0x74, 0x2b};
-	const uint8_t plain_text[]  = "abcdefghijklmno";
-	uint8_t buffer[16];
-	uint8_t encrypted[16];
+	uint8_t aes_iv[16];
+	uint8_t cleartext[16];
+	uint8_t ciphertext[16];
     char hex_buff_str[2 + 1];
 	uint8_t i;
 
@@ -438,41 +436,20 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		os_memset(reply_message, 0, sizeof(reply_message));
 		// get random iv
-		//os_get_random(aes_iv, 16);
+		os_get_random(aes_iv, 16);
 		// prepare encrypted message with hex iv string in the first part
 		for (i = 0; i < 16; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
 			os_memcpy(reply_message + i * 2, hex_buff_str, 2);
 		}
 		// ... and append encrypted message
-		AES128_CBC_encrypt_buffer(encrypted, plain_text, 16, aes_key, aes_iv);
+		tfp_snprintf(cleartext, 16, "heap=%u&", system_get_free_heap_size());
+		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 16, aes_key, aes_iv);
 		for (i = 0; i < 16; i++) {
-			os_printf("%02x ", encrypted[i]);
-		}
-		for (i = 0; i < 16; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", encrypted[i]);
+			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
 			os_memcpy(reply_message + (16 * 2) + (i * 2), hex_buff_str, 2);
 		}
 		reply_message_l = 65; //strlen(reply_message);
-
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
-	}
-	else if (strncmp(function_name, "aes_iv", FUNCTIONNAME_L) == 0) {
-		// found aes_iv
-#ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes_iv/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes_iv/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		os_memset(reply_message, 0, sizeof(reply_message));
-		// get random iv
-		//os_get_random(aes_iv, 16);
-		// prepare encrypted message with hex iv string in the first part
-		for (i = 0; i < 16; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
-			os_memcpy(reply_message + i * 2, hex_buff_str, 2);
-		}
-		reply_message_l = 32 + 1; //strlen(reply_message);
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
@@ -808,32 +785,5 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 		
 	INFO("\r\nSystem started ...\r\n");
-	/*
-	// ecc stuff
-	// NOTE:   String length must be evenly divisible by 16byte (str_len % 16 == 0)
-	//         You should pad the end of the string with zeros if this is not the case.	
-	uint8_t aes_iv[16];
-	const uint8_t plain_text[]  = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXZÆØÅ";
-	uint8_t buffer[64];
-	uint8_t encrypted[64];
-		
-	os_get_random(aes_iv, 16);
-	
-	AES128_CBC_encrypt_buffer(encrypted, plain_text, sizeof(plain_text), aes_key, aes_iv);
-		
-    AES128_CBC_decrypt_buffer(buffer + 0, encrypted + 0,  16, aes_key, aes_iv);
-    AES128_CBC_decrypt_buffer(buffer + 16, encrypted + 16, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer + 32, encrypted + 32, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer + 48, encrypted + 48, 16, 0, 0);
-	
-	os_printf("CBC decrypt: ");
-	
-	if (0 == strncmp((char*) plain_text, (char*) buffer, 64)) {
-		os_printf("SUCCESS!\n");
-	} else {
-		os_printf("FAILURE!\n");
-	}
-	*/
-
 }
 
