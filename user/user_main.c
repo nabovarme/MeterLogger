@@ -356,7 +356,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	uint8_t buffer[64];
 	uint8_t encrypted[64];
     uint8_t hex_buff_str[2 + 1];
-    uint8_t hex_encrypted_message_str[16 * 2 + 64 * 2 + 1];
 	uint8_t i;
 
 	os_memcpy(topicBuf, topic, topic_len);
@@ -436,22 +435,21 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #else
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-		os_memset(hex_encrypted_message_str, 0, sizeof(hex_encrypted_message_str));
+		//os_memset(hex_encrypted_message_str, 0, sizeof(hex_encrypted_message_str));
+		os_memset(reply_message, 0, sizeof(reply_message));
 		// get random iv
 		os_get_random(aes_iv, 16);
 		// prepare encrypted message with hex iv string in the first part
 		for (i = 0; i < 16; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%.2x", aes_iv[i]);
-			os_memcpy(hex_encrypted_message_str + i * 2, hex_buff_str, 2);
+			os_memcpy(reply_message + i * 2, hex_buff_str, 2);
 		}
 		// ... and append encrypted message
 		AES128_CBC_encrypt_buffer(encrypted, plain_text, 64, aes_key, aes_iv);
 		for (i = 0; i < 64; i++) {
 			tfp_snprintf(hex_buff_str, 3, "%.2x", encrypted[i]);
-			os_memcpy(hex_encrypted_message_str + (16 * 2) + (i * 2), hex_buff_str, 2);
+			os_memcpy(reply_message + (16 * 2) + (i * 2), hex_buff_str, 2);
 		}
-		
-		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s", hex_encrypted_message_str);
 		reply_message_l = strlen(reply_message);
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
@@ -803,10 +801,10 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	
 	os_printf("CBC encrypt: ");
 	
-    AES128_CBC_decrypt_buffer(buffer+0, encrypted+0,  16, aes_key, aes_iv);
-    AES128_CBC_decrypt_buffer(buffer+16, encrypted+16, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer+32, encrypted+32, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer+48, encrypted+48, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer + 0, encrypted + 0,  16, aes_key, aes_iv);
+    AES128_CBC_decrypt_buffer(buffer + 16, encrypted + 16, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer + 32, encrypted + 32, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer + 48, encrypted + 48, 16, 0, 0);
 	
 	os_printf("CBC decrypt: ");
 	
