@@ -28,7 +28,7 @@
 #endif
 
 #define MQTT_TOPIC_L 128
-#define MQTT_MESSAGE_L 128
+#define MQTT_MESSAGE_L 256
 
 #ifdef IMPULSE
 
@@ -67,6 +67,9 @@ static os_timer_t ext_wd_timer;
 uint16_t counter = 0;
 
 struct rst_info *rtc_info;
+
+// aes shared key
+const uint8_t aes_key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
@@ -346,6 +349,15 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	unsigned char reply_topic[MQTT_TOPIC_L];
 	unsigned char reply_message[MQTT_MESSAGE_L];
 	int reply_message_l;
+	
+	// vars for aes encryption
+	uint8_t aes_iv[16];
+	const uint8_t plain_text[]  = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXZÆØÅ";
+	uint8_t buffer[64];
+	uint8_t encrypted[64];
+    uint8_t hex_buff_str[2 + 1];
+    uint8_t hex_encrypted_message_str[16 * 2 + 64 * 2 + 1];
+	uint8_t i;
 
 	os_memcpy(topicBuf, topic, topic_len);
 	topicBuf[topic_len] = 0;
@@ -414,6 +426,33 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef DEBUG
 		system_print_meminfo();
 #endif
+
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
+	else if (strncmp(function_name, "aes", FUNCTIONNAME_L) == 0) {
+		// found aes
+#ifdef IMPULSE
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+		os_memset(hex_encrypted_message_str, 0, sizeof(hex_encrypted_message_str));
+		// get random iv
+		os_get_random(aes_iv, 16);
+		// prepare encrypted message with hex iv string in the first part
+		for (i = 0; i < 16; i++) {
+			tfp_snprintf(hex_buff_str, 3, "%.2x", aes_iv[i]);
+			os_memcpy(hex_encrypted_message_str + i * 2, hex_buff_str, 2);
+		}
+		// ... and append encrypted message
+		AES128_CBC_encrypt_buffer(encrypted, plain_text, 64, aes_key, aes_iv);
+		for (i = 0; i < 64; i++) {
+			tfp_snprintf(hex_buff_str, 3, "%.2x", encrypted[i]);
+			os_memcpy(hex_encrypted_message_str + (16 * 2) + (i * 2), hex_buff_str, 2);
+		}
+		
+		tfp_snprintf(reply_message, MQTT_MESSAGE_L, "%s", hex_encrypted_message_str);
+		reply_message_l = strlen(reply_message);
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
@@ -753,32 +792,28 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	// ecc stuff
 	// NOTE:   String length must be evenly divisible by 16byte (str_len % 16 == 0)
 	//         You should pad the end of the string with zeros if this is not the case.	
-	uint8_t key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
-	uint8_t iv[16];
-	uint8_t in[]  = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXZÆØÅ";
+	uint8_t aes_iv[16];
+	const uint8_t plain_text[]  = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXZÆØÅ";
 	uint8_t buffer[64];
-	uint8_t in_orig[64];
 	uint8_t encrypted[64];
+		
+	os_get_random(aes_iv, 16);
 	
-	memcpy(in_orig, in, sizeof(in_orig));
+	AES128_CBC_encrypt_buffer(encrypted, plain_text, sizeof(plain_text), aes_key, aes_iv);
 	
-	os_get_random(iv, 16);
+	os_printf("CBC encrypt: ");
 	
-	AES128_CBC_encrypt_buffer(encrypted, in, sizeof(in), key, iv);
-	
-	printf("CBC encrypt: ");
-	
-    AES128_CBC_decrypt_buffer(buffer+0, encrypted+0,  16, key, iv);
+    AES128_CBC_decrypt_buffer(buffer+0, encrypted+0,  16, aes_key, aes_iv);
     AES128_CBC_decrypt_buffer(buffer+16, encrypted+16, 16, 0, 0);
     AES128_CBC_decrypt_buffer(buffer+32, encrypted+32, 16, 0, 0);
     AES128_CBC_decrypt_buffer(buffer+48, encrypted+48, 16, 0, 0);
 	
-	printf("CBC decrypt: ");
+	os_printf("CBC decrypt: ");
 	
-	if (0 == strncmp((char*) in_orig, (char*) buffer, 64)) {
-		printf("SUCCESS!\n");
+	if (0 == strncmp((char*) plain_text, (char*) buffer, 64)) {
+		os_printf("SUCCESS!\n");
 	} else {
-		printf("FAILURE!\n");
+		os_printf("FAILURE!\n");
 	}
 
 }
