@@ -435,7 +435,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #else
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v1/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-		//os_memset(hex_encrypted_message_str, 0, sizeof(hex_encrypted_message_str));
 		os_memset(reply_message, 0, sizeof(reply_message));
 		// get random iv
 		os_get_random(aes_iv, 16);
