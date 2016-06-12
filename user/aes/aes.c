@@ -74,7 +74,7 @@ static const uint8_t* Key;
 
 #if defined(CBC) && CBC
   // Initial Vector used only for CBC mode
-  static uint8_t Iv[KEYLEN];
+  static uint8_t* Iv;
 #endif
 
 // The lookup-tables are marked const so they can be placed in read-only storage instead of RAM
@@ -533,16 +533,28 @@ void AES128_CBC_encrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t l
 
   if(iv != 0)
   {
-    BlockCopy(Iv, (uint8_t *)iv);
+    Iv = (uint8_t*)iv;
   }
 
   for(i = 0; i < length; i += KEYLEN)
   {
-    XorWithIv(output);
     BlockCopy(output, input);
+    XorWithIv(output);
     state = (state_t*)output;
     Cipher();
-    BlockCopy(Iv, output);
+    uint8_t m, n;
+    for (m = 0; m < 4; m++) {
+        for (n = 0; n < 4; n++) {
+            os_printf("%02x ", (*state)[m][n]);
+        }
+    }
+    os_printf("\n");
+    uint8_t p;
+    for (p = 0; p < 16; p++) {
+        os_printf("%02x ", output[p]);
+    }
+    os_printf("\n");
+    Iv = output;
     input += KEYLEN;
     output += KEYLEN;
   }
@@ -575,7 +587,7 @@ void AES128_CBC_decrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t l
   // If iv is passed as 0, we continue to encrypt without re-setting the Iv
   if(iv != 0)
   {
-    BlockCopy(Iv, (uint8_t *)iv);
+    Iv = (uint8_t*)iv;
   }
 
   for(i = 0; i < length; i += KEYLEN)
@@ -584,7 +596,7 @@ void AES128_CBC_decrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t l
     state = (state_t*)output;
     InvCipher();
     XorWithIv(output);
-    BlockCopy(Iv, input);
+    Iv = input;
     input += KEYLEN;
     output += KEYLEN;
   }
