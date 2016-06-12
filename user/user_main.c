@@ -157,6 +157,14 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 
+#ifdef AES
+	// vars for aes encryption
+	uint8_t aes_iv[16];
+	uint8_t cleartext[112];
+	uint8_t ciphertext[112];
+	char hex_buff_str[2 + 1];
+#endif
+
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
@@ -185,9 +193,31 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		tfp_snprintf(current_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 		
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+
+#ifdef AES
+		// aes
+		os_memset(mqtt_message, 0, sizeof(mqtt_message));
+		// get random iv
+		os_get_random(aes_iv, 16);
+		// prepare encrypted message with hex iv string in the first part
+		for (i = 0; i < 16; i++) {
+			tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
+			os_memcpy(mqtt_message + i * 2, hex_buff_str, 2);
+		}
+		// ... and append encrypted message
+		os_memset(cleartext, 0, sizeof(cleartext));
+		tfp_snprintf(cleartext, 112, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, aes_key, aes_iv);
+		for (i = 0; i < 112; i++) {
+			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
+			os_memcpy(mqtt_message + (16 * 2) + (i * 2), hex_buff_str, 2);
+		}
+		mqtt_message_l = MQTT_MESSAGE_L; //strlen(reply_message);
+#else		
 		tfp_snprintf(mqtt_message, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 		mqtt_message_l = strlen(mqtt_message);
-
+#endif	// AES
+		
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
