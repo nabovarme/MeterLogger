@@ -28,7 +28,7 @@
 #endif
 
 #define MQTT_TOPIC_L (128 + 1)
-#define MQTT_MESSAGE_L (256 + 1)
+#define MQTT_MESSAGE_L (128 + 1)
 
 #ifdef IMPULSE
 
@@ -156,10 +156,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 
 #ifdef AES
 	// vars for aes encryption
-	uint8_t aes_iv[16];
-	uint8_t cleartext[112];
-	uint8_t ciphertext[112];
-	char hex_buff_str[2 + 1];
+	uint8_t cleartext[MQTT_MESSAGE_L];
 #endif
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
@@ -196,27 +193,24 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #endif	// AES
 
 #ifdef AES
-		// aes
 		os_memset(mqtt_message, 0, sizeof(mqtt_message));
-		// get random iv
-		os_get_random(aes_iv, 16);
-		// prepare encrypted message with hex iv string in the first part
-		for (i = 0; i < 16; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
-			os_memcpy(mqtt_message + i * 2, hex_buff_str, 2);
+		// get random iv in first 16 bytes of mqtt_message
+		os_get_random(mqtt_message, 16);
+		// encrypt message and append
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+		// calculate blocks of 16 bytes needed to contain message to encrypt
+		if (strlen(cleartext) % 16) {
+			mqtt_message_l = (strlen(cleartext) / 16) * 16 + 16;
 		}
-		// ... and append encrypted message
-		os_memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, 112, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
-		for (i = 0; i < 112; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
-			os_memcpy(mqtt_message + (16 * 2) + (i * 2), hex_buff_str, 2);
+		else {
+			mqtt_message_l = (strlen(cleartext) / 16) * 16;
 		}
-#else		
+		AES128_CBC_encrypt_buffer(mqtt_message + 16, cleartext, mqtt_message_l, sys_cfg.aes_key, mqtt_message);	// firt 16 bytes of mqtt_message contain IV
+		mqtt_message_l += 16;
+#else
 		tfp_snprintf(mqtt_message, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-#endif	// AES
 		mqtt_message_l = strlen(mqtt_message);
+#endif	// AES
 		
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
@@ -381,10 +375,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	int reply_message_l;
 	
 	// vars for aes encryption
-	uint8_t aes_iv[16];
-	uint8_t cleartext[112];
-	uint8_t ciphertext[112];
-    char hex_buff_str[2 + 1];
+	uint8_t cleartext[MQTT_MESSAGE_L];
 	uint8_t i;
 
 	os_memcpy(topicBuf, topic, topic_len);
@@ -459,36 +450,25 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "aes", FUNCTIONNAME_L) == 0) {
 		// found aes
+		// prepare message
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(cleartext, MQTT_TOPIC_L, "/aes/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(cleartext, MQTT_TOPIC_L, "/aes/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		os_memset(reply_message, 0, sizeof(reply_message));
-		// get random iv
-		os_get_random(aes_iv, 16);
-		// prepare encrypted message with hex iv string in the first part
-		for (i = 0; i < 16; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
-			os_memcpy(reply_message + i * 2, hex_buff_str, 2);
+		// get random iv in first 16 bytes of mqtt_message
+		os_get_random(reply_message, 16);
+
+		// calculate blocks of 16 bytes needed to contain message to encrypt
+		if (strlen(cleartext) % 16) {
+			reply_message_l = (strlen(cleartext) / 16) * 16 + 16;
 		}
-		// ... and append encrypted message
-		os_memset(cleartext, 0, sizeof(cleartext));
-#ifdef IMPULSE
-		tfp_snprintf(cleartext, 112, "%s-%s", system_get_sdk_version(), VERSION);
-#else
-#	ifdef THERMO_NO
-		tfp_snprintf(cleartext, 112, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-		tfp_snprintf(cleartext, 112, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#endif
-		AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
-		for (i = 0; i < 112; i++) {
-			tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
-			os_memcpy(reply_message + (16 * 2) + (i * 2), hex_buff_str, 2);
+		else {
+			reply_message_l = (strlen(cleartext) / 16) * 16;
 		}
-		reply_message_l = MQTT_MESSAGE_L; //strlen(reply_message);
+		AES128_CBC_encrypt_buffer(reply_message + 16, cleartext, reply_message_l, sys_cfg.aes_key, reply_message);	// firt 16 bytes of mqtt_message contain IV
+		reply_message_l += 16;
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
