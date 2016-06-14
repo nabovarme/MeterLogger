@@ -197,13 +197,15 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		// get random iv in first 16 bytes of mqtt_message
 		os_get_random(mqtt_message, 16);
 		// encrypt message and append
+		os_memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 		// calculate blocks of 16 bytes needed to contain message to encrypt
-		if (strlen(cleartext) % 16) {
-			mqtt_message_l = (strlen(cleartext) / 16) * 16 + 16;
+		mqtt_message_l = strlen(cleartext) + 1;
+		if (mqtt_message_l % 16) {
+			mqtt_message_l = (mqtt_message_l / 16) * 16 + 16;
 		}
 		else {
-			mqtt_message_l = (strlen(cleartext) / 16) * 16;
+			mqtt_message_l = (mqtt_message_l / 16) * 16;
 		}
 		AES128_CBC_encrypt_buffer(mqtt_message + 16, cleartext, mqtt_message_l, sys_cfg.aes_key, mqtt_message);	// firt 16 bytes of mqtt_message contain IV
 		mqtt_message_l += 16;
@@ -462,6 +464,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// get random iv in first 16 bytes of mqtt_message
 		os_get_random(reply_message, 16);
 		// encrypt message and append
+		os_memset(cleartext, 0, sizeof(cleartext));
 #ifdef IMPULSE
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
 #else
@@ -472,11 +475,12 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// calculate blocks of 16 bytes needed to contain message to encrypt
-		if (strlen(cleartext) % 16) {
-			reply_message_l = (strlen(cleartext) / 16) * 16 + 16;
+	    reply_message_l = strlen(cleartext) + 1;
+		if (reply_message_l % 16) {
+			reply_message_l = (reply_message_l / 16) * 16 + 16;
 		}
 		else {
-			reply_message_l = (strlen(cleartext) / 16) * 16;
+			reply_message_l = (reply_message_l / 16) * 16;
 		}
 		AES128_CBC_encrypt_buffer(reply_message + 16, cleartext, reply_message_l, sys_cfg.aes_key, reply_message);	// firt 16 bytes of mqtt_message contain IV
 		reply_message_l += 16;
