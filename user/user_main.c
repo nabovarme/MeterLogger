@@ -448,18 +448,29 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
+#ifdef AES
 	else if (strncmp(function_name, "aes", FUNCTIONNAME_L) == 0) {
 		// found aes
-		// prepare message
 #ifdef IMPULSE
-		tfp_snprintf(cleartext, MQTT_TOPIC_L, "/aes/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(cleartext, MQTT_TOPIC_L, "/aes/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/aes/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+
+		// prepare message
 		os_memset(reply_message, 0, sizeof(reply_message));
 		// get random iv in first 16 bytes of mqtt_message
 		os_get_random(reply_message, 16);
-
+		// encrypt message and append
+#ifdef IMPULSE
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
+#else
+#	ifdef THERMO_NO
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#endif
 		// calculate blocks of 16 bytes needed to contain message to encrypt
 		if (strlen(cleartext) % 16) {
 			reply_message_l = (strlen(cleartext) / 16) * 16 + 16;
@@ -472,6 +483,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
+#endif	// AES
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
