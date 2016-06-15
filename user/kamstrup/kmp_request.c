@@ -86,7 +86,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(topic, 128, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
 #endif	// AES
 
-			strcpy(message, "");	// clear it
+			os_memset(message, 0, sizeof(message));			// clear it
         	
 			// heap size
 			tfp_snprintf(key_value, 128, "heap=%u&", system_get_free_heap_size());
