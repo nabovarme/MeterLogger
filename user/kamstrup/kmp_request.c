@@ -47,10 +47,7 @@ static void kmp_received_task(os_event_t *events) {
 		
 #ifdef AES
 	// vars for aes encryption
-	uint8_t aes_iv[16];
-	uint8_t cleartext[112];
-	uint8_t ciphertext[112];
-	char hex_buff_str[2 + 1];
+	uint8_t cleartext[KMP_FRAME_L];
 #endif
 
     // allocate struct for response
@@ -146,25 +143,25 @@ static void kmp_received_task(os_event_t *events) {
         	
 #ifdef AES
 			// aes
-			tfp_snprintf(cleartext, 112, "%s", message);	// make a copy of message for later use
+			tfp_snprintf(cleartext, KMP_FRAME_L, "%s", message);	// make a copy of message for later use
 			os_memset(message, 0, sizeof(message));			// ...and clear it
-			
-			// get random iv
-			os_get_random(aes_iv, 16);
-			// prepare encrypted message with hex iv string in the first part
-			for (i = 0; i < 16; i++) {
-				tfp_snprintf(hex_buff_str, 3, "%02x", aes_iv[i]);
-				os_memcpy(message + i * 2, hex_buff_str, 2);
+			// get random iv in first 16 bytes of mqtt_message
+			os_get_random(message, 16);
+			// encrypt message and append
+			// calculate blocks of 16 bytes needed to contain message to encrypt
+			message_l = strlen(cleartext) + 1;
+			if (message_l % 16) {
+				message_l = (message_l / 16) * 16 + 16;
 			}
-			// ... and append encrypted message
-			AES128_CBC_encrypt_buffer(ciphertext, cleartext, 112, sys_cfg.aes_key, aes_iv);
-			for (i = 0; i < 112; i++) {
-				tfp_snprintf(hex_buff_str, 3, "%02x", ciphertext[i]);
-				os_memcpy(message + (16 * 2) + (i * 2), hex_buff_str, 2);
+			else {
+				message_l = (message_l / 16) * 16;
 			}
-#endif	// AES
+			AES128_CBC_encrypt_buffer(message + 16, cleartext, message_l, sys_cfg.aes_key, message);	// firt 16 bytes of mqtt_message contain IV
+			message_l += 16;
+#else
 			message_l = strlen(message);
-	    	
+#endif	// AES
+
 			if (mqtt_client) {
 				// if mqtt_client is initialized
 				if (kmp_serial && (message_l > 1)) {
