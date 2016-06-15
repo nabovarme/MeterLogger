@@ -28,7 +28,7 @@
 #endif
 
 #define MQTT_TOPIC_L (128 + 1)
-#define MQTT_MESSAGE_L (128 + 1)
+#define MQTT_MESSAGE_L (192 + 1)
 
 #ifdef IMPULSE
 

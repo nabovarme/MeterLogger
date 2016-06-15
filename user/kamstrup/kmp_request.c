@@ -86,7 +86,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(topic, 128, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
 #endif	// AES
 
-			os_memset(message, 0, sizeof(message));			// clear it
+			os_memset(message, 0, KMP_FRAME_L);			// clear it
         	
 			// heap size
 			tfp_snprintf(key_value, 128, "heap=%u&", system_get_free_heap_size());
@@ -143,8 +143,9 @@ static void kmp_received_task(os_event_t *events) {
         	
 #ifdef AES
 			// aes
-			tfp_snprintf(cleartext, KMP_FRAME_L, "%s", message);	// make a copy of message for later use
-			os_memset(message, 0, sizeof(message));			// ...and clear it
+			os_memset(cleartext, 0, KMP_FRAME_L);
+			os_strncpy(cleartext, message, KMP_FRAME_L);	// make a copy of message for later use
+			os_memset(message, 0, KMP_FRAME_L);			// ...and clear it
 			// get random iv in first 16 bytes of mqtt_message
 			os_get_random(message, 16);
 			// encrypt message and append
