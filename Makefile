@@ -98,7 +98,6 @@ else
 endif
 #############################################################
 
-
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt modules user user/aes
 EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/aes user/kamstrup user/61107
@@ -107,7 +106,7 @@ EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0
+CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DAES_KEY=$(AES_KEY_LITERAL)
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref
@@ -159,6 +158,7 @@ endif
 
 ifeq ($(AES), 1)
     CFLAGS += -DAES
+	AES_KEY_LITERAL = $(shell perl -MData::Dumper -e 'my $$key = qq[$(AES_KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
 endif
 
 # various paths from the SDK used in this project
@@ -283,6 +283,7 @@ clean:
 #	$(Q) rm -rf $(FW_BASE)
 
 foo:
-	echo $(CFLAGS)
+#	echo $(CFLAGS)
+	@echo $(AES_KEY_LITERAL)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
