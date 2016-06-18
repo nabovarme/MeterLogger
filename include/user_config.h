@@ -51,7 +51,9 @@
 #else
 #define AP_SSID	"KAM_%07u"
 #endif
+#ifndef AP_PASSWORD
 #define AP_PASSWORD	"aabbccddeeff"
+#endif
 #define STA_TYPE AUTH_WPA_WPA2_PSK
 
 #endif
