@@ -6,7 +6,7 @@
 #include "kmp.h"
 #include "kmp_request.h"
 #include "config.h"
-#include "aes.h"
+#include "crypto/aes.h"
 
 #define QUEUE_SIZE 256
 
