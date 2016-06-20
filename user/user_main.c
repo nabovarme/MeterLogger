@@ -108,6 +108,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
 
+	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 }
 
@@ -828,6 +829,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 		
 	INFO("\r\nSystem started ...\r\n");
+	
+	/*
 	hmac_sha256_ctx_t hctx;
     
 	const uint8_t key[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19 };
@@ -835,12 +838,16 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	uint8_t mac[32];
     uint i;
 	
+	
 	hmac_sha256_init(&hctx, key, sizeof(key));
 	hmac_sha256_update(&hctx, msg, sizeof(msg));
 	hmac_sha256_final(&hctx, mac);
+#ifdef DEBUG
 	for (i = 0; i < 32; i++) {
 	    os_printf("%02x", mac[i]);
 	}
 	os_printf("\n");
+#endif
+	*/
 }
 
