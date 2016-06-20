@@ -1,6 +1,7 @@
 #ifndef _AES_H_
 #define _AES_H_
 
+#include <esp8266.h>
 #include <stdint.h>
 
 
