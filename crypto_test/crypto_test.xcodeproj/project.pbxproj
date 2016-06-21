@@ -11,6 +11,8 @@
 		D68D6E271D1780DD00D2E393 /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = D68D6E211D1780DD00D2E393 /* aes.c */; };
 		D68D6E281D1780DD00D2E393 /* hmac-sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = D68D6E231D1780DD00D2E393 /* hmac-sha256.c */; };
 		D68D6E291D1780DD00D2E393 /* sha256.c in Sources */ = {isa = PBXBuildFile; fileRef = D68D6E251D1780DD00D2E393 /* sha256.c */; };
+		D68D6E2D1D1992E200D2E393 /* crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = D68D6E2B1D1992E100D2E393 /* crypto.c */; };
+		D68D6E301D199F4800D2E393 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = D68D6E2E1D199F4800D2E393 /* utils.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +37,10 @@
 		D68D6E251D1780DD00D2E393 /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = ../../user/crypto/sha256.c; sourceTree = "<group>"; };
 		D68D6E261D1780DD00D2E393 /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha256.h; path = ../../user/crypto/sha256.h; sourceTree = "<group>"; };
 		D68D6E2A1D1780ED00D2E393 /* esp8266.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = esp8266.h; sourceTree = "<group>"; };
+		D68D6E2B1D1992E100D2E393 /* crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crypto.c; path = ../../user/crypto/crypto.c; sourceTree = "<group>"; };
+		D68D6E2C1D1992E100D2E393 /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypto.h; path = ../../user/crypto/crypto.h; sourceTree = "<group>"; };
+		D68D6E2E1D199F4800D2E393 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
+		D68D6E2F1D199F4800D2E393 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +81,10 @@
 				D68D6E241D1780DD00D2E393 /* hmac-sha256.h */,
 				D68D6E251D1780DD00D2E393 /* sha256.c */,
 				D68D6E261D1780DD00D2E393 /* sha256.h */,
+				D68D6E2B1D1992E100D2E393 /* crypto.c */,
+				D68D6E2C1D1992E100D2E393 /* crypto.h */,
+				D68D6E2E1D199F4800D2E393 /* utils.c */,
+				D68D6E2F1D199F4800D2E393 /* utils.h */,
 			);
 			path = crypto_test;
 			sourceTree = "<group>";
@@ -138,7 +148,9 @@
 				D68D6E1B1D17809300D2E393 /* main.c in Sources */,
 				D68D6E271D1780DD00D2E393 /* aes.c in Sources */,
 				D68D6E291D1780DD00D2E393 /* sha256.c in Sources */,
+				D68D6E301D199F4800D2E393 /* utils.c in Sources */,
 				D68D6E281D1780DD00D2E393 /* hmac-sha256.c in Sources */,
+				D68D6E2D1D1992E200D2E393 /* crypto.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,7 +194,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "/Users/stoffer/mount/kamstrup-wifi/user";
+				HEADER_SEARCH_PATHS = "/Users/stoffer/src/esp8266/kamstrup-wifi/user";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -221,7 +233,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "/Users/stoffer/mount/kamstrup-wifi/user";
+				HEADER_SEARCH_PATHS = "/Users/stoffer/src/esp8266/kamstrup-wifi/user";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
