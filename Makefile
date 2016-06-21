@@ -106,7 +106,7 @@ EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DAES_KEY=$(CUSTOM_AES_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\"
+CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\"
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref
@@ -158,8 +158,8 @@ endif
 
 ifeq ($(AES), 1)
     CFLAGS += -DAES
-	CUSTOM_AES_KEY = $(shell perl -e 'my $$key = qq[$(AES_KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
-	CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(AES_KEY)], 0, 16)')
+	CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
+	CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
 endif
 
 # various paths from the SDK used in this project
@@ -285,7 +285,7 @@ clean:
 
 foo:
 #	echo $(CFLAGS)
-#	@echo $(CUSTOM_AES_KEY)
+#	@echo $(CUSTOM_KEY)
 	@echo $(CUSTOM_AP_PASSWORD)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))

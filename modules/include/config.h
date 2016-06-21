@@ -38,7 +38,7 @@
 #endif
 
 #ifdef AES
-	static const char aes_key[] = AES_KEY;
+	static const char aes_key[] = KEY;
 #endif
 
 typedef struct{
