@@ -21,13 +21,13 @@ void init_aes_hmac_combined(const uint8_t *key) {
     uint i;
     
 #ifdef DEBUG
-	system_soft_wdt_stop();
+	system_soft_wdt_stop(void);
     printf("master key: ");
     for (i = 0; i < 16; i++) {
         printf("%02x", key[i]);
     }
     printf("\n");
-	system_soft_wdt_restart();
+	system_soft_wdt_restart(void);
 #endif    
     // generate aes_key and hmac_sha256_key from master_key
     memset(sha256_hash, 0, sizeof(sha256_hash));
@@ -48,7 +48,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
     int return_l;
     
 #ifdef DEBUG
-	system_soft_wdt_stop();
+	system_soft_wdt_stop(void);
     // print keys
     printf("aes key: ");
     for (i = 0; i < 16; i++) {
@@ -61,7 +61,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
         printf("%02x", hmac_sha256_key[i]);
     }
     printf("\n");
-	system_soft_wdt_restart();
+	system_soft_wdt_restart(void);
 #endif
     
     // encrypt
@@ -69,7 +69,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
     // get random iv in first 16 bytes of mqtt_message
     os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
 #ifdef DEBUG
-	system_soft_wdt_stop();
+	system_soft_wdt_stop(void);
     printf("iv: ");
     for (i = 0; i < 16; i++) {
         printf("%02x", dst[i + SHA256_DIGEST_LENGTH]);
@@ -77,7 +77,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
     printf("\n");
     
     printf("cleartext: %s\n", src);
-	system_soft_wdt_restart();
+	system_soft_wdt_restart(void);
 #endif
     // calculate blocks needed for encrypted string
     return_l = strlen(src) + 1;
@@ -91,13 +91,13 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
     return_l += SHA256_DIGEST_LENGTH + 16;
     
 #ifdef DEBUG
-	system_soft_wdt_stop();
+	system_soft_wdt_stop(void);
     printf("iv + ciphertext: ");
     for (i = SHA256_DIGEST_LENGTH; i < return_l; i++) {
         printf("%02x", dst[i]);
     }
     printf("\n");
-	system_soft_wdt_restart();
+	system_soft_wdt_restart(void);
 #endif
     
     
@@ -106,7 +106,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
     hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
     hmac_sha256_final(&hctx, dst);
 #ifdef DEBUG
-	system_soft_wdt_stop();
+	system_soft_wdt_stop(void);
     printf("hmac sha256: ");
     for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         printf("%02x", dst[i]);
@@ -118,7 +118,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t*src, size_t len) {
         printf("%02x", dst[i]);
     }
     printf("\n");
-	system_soft_wdt_restart();
+	system_soft_wdt_restart(void);
 #endif
     
     return return_l;

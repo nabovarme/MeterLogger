@@ -20,12 +20,11 @@ uint8_t mqtt_message[MQTT_MESSAGE_L];
 int mqtt_message_l;
 
 int main(int argc, const char * argv[]) {
-
     // init
     init_aes_hmac_combined(master_key);
     
     // encrypt
-    encrypt_aes_hmac_combined(mqtt_message, cleartext, 112);
+    mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, 112);
 
     return 0;
 }
