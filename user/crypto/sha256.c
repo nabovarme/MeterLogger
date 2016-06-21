@@ -96,10 +96,6 @@
 #error Define BYTE_ORDER to be equal to either LITTLE_ENDIAN or BIG_ENDIAN
 #endif
 
-typedef uint8_t  sha2_byte;	/* Exactly 1 byte */
-typedef uint32_t sha2_word32;	/* Exactly 4 bytes */
-typedef uint64_t sha2_word64;	/* Exactly 8 bytes */
-
 /*** SHA-256/384/512 Various Length Definitions ***********************/
 /* NOTE: Most of these are in sha256.h */
 #define SHA256_SHORT_BLOCK_LENGTH	(SHA256_BLOCK_LENGTH - 8)
@@ -108,12 +104,12 @@ typedef uint64_t sha2_word64;	/* Exactly 8 bytes */
 /*** ENDIAN REVERSAL MACROS *******************************************/
 #if BYTE_ORDER == LITTLE_ENDIAN
 #define REVERSE32(w,x)	{ \
-	sha2_word32 tmp = (w); \
+	uint32_t tmp = (w); \
 	tmp = (tmp >> 16) | (tmp << 16); \
 	(x) = ((tmp & 0xff00ff00UL) >> 8) | ((tmp & 0x00ff00ffUL) << 8); \
 }
 #define REVERSE64(w,x)	{ \
-	sha2_word64 tmp = (w); \
+	uint64_t tmp = (w); \
 	tmp = (tmp >> 32) | (tmp << 32); \
 	tmp = ((tmp & 0xff00ff00ff00ff00ULL) >> 8) | \
 	      ((tmp & 0x00ff00ff00ff00ffULL) << 8); \
@@ -128,7 +124,7 @@ typedef uint64_t sha2_word64;	/* Exactly 8 bytes */
  * 64-bit words):
  */
 #define ADDINC128(w,n)	{ \
-	(w)[0] += (sha2_word64)(n); \
+	(w)[0] += (uint64_t)(n); \
 	if ((w)[0] < (n)) { \
 		(w)[1]++; \
 	} \
@@ -171,12 +167,12 @@ typedef uint64_t sha2_word64;	/* Exactly 8 bytes */
  * library -- they are intended for private internal visibility/use
  * only.
  */
-void sha256_transform(sha256_ctx_t*, const sha2_word32*);
+void sha256_transform(sha256_ctx_t*, const uint32_t*);
 
 
 /*** SHA-XYZ INITIAL HASH VALUES AND CONSTANTS ************************/
 /* Hash constant words K for SHA-256: */
-static const sha2_word32 K256[64] = {
+static const uint32_t K256[64] = {
 	0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
 	0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
 	0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
@@ -196,7 +192,7 @@ static const sha2_word32 K256[64] = {
 };
 
 /* Initial hash value H for SHA-256: */
-static const sha2_word32 sha256_initial_hash_value[8] = {
+static const uint32_t sha256_initial_hash_value[8] = {
 	0x6a09e667UL,
 	0xbb67ae85UL,
 	0x3c6ef372UL,
@@ -216,7 +212,7 @@ static const char *sha2_hex_digits = "0123456789abcdef";
 
 /*** SHA-256: *********************************************************/
 ICACHE_FLASH_ATTR
-void sha256_init(sha256_ctx_t* context) {
+void sha256_init(sha256_ctx_t *context) {
 	if (context == (sha256_ctx_t*)0) {
 		return;
 	}
@@ -263,12 +259,12 @@ void sha256_init(sha256_ctx_t* context) {
 	j++
 
 ICACHE_FLASH_ATTR
-void sha256_transform(sha256_ctx_t* context, const sha2_word32* data) {
-	sha2_word32	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word32	T1, *W256;
+void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
+	uint32_t	a, b, c, d, e, f, g, h, s0, s1;
+	uint32_t	T1, *W256;
 	int		j;
 
-	W256 = (sha2_word32*)context->buffer;
+	W256 = (uint32_t*)context->buffer;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = context->state[0];
@@ -322,12 +318,12 @@ void sha256_transform(sha256_ctx_t* context, const sha2_word32* data) {
 #else /* SHA2_UNROLL_TRANSFORM */
 
 ICACHE_FLASH_ATTR
-void sha256_transform(sha256_ctx_t* context, const sha2_word32* data) {
-	sha2_word32	a, b, c, d, e, f, g, h, s0, s1;
-	sha2_word32	T1, T2, *W256;
+void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
+	uint32_t	a, b, c, d, e, f, g, h, s0, s1;
+	uint32_t	T1, T2, *W256;
 	int		j;
 
-	W256 = (sha2_word32*)(void*)context->buffer;
+	W256 = (uint32_t*)(void*)context->buffer;
 
 	/* Initialize registers with the prev. intermediate value */
 	a = context->state[0];
@@ -403,58 +399,58 @@ void sha256_transform(sha256_ctx_t* context, const sha2_word32* data) {
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 ICACHE_FLASH_ATTR
-void sha256_update(sha256_ctx_t* context, const sha2_byte *data, size_t len) {
-	unsigned int	freespace, usedspace;
+void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
+	unsigned int freespace, usedspace;
 
 	if (len == 0) {
-		/* Calling with no data is valid - we do nothing */
+		// Calling with no data is valid - we do nothing
 		return;
 	}
 
 	usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
 	if (usedspace > 0) {
-		/* Calculate how much free space is available in the buffer */
+		// Calculate how much free space is available in the buffer
 		freespace = SHA256_BLOCK_LENGTH - usedspace;
 
 		if (len >= freespace) {
-			/* Fill the buffer completely and process it */
+			// Fill the buffer completely and process it
 			memcpy(&context->buffer[usedspace], data, freespace);
 			context->bitcount += freespace << 3;
 			len -= freespace;
 			data += freespace;
-			sha256_transform(context, (sha2_word32*)(void*)context->buffer);
+			sha256_transform(context, (uint32_t*)(void*)context->buffer);
 		} else {
-			/* The buffer is not yet full */
+			// The buffer is not yet full
 			memcpy(&context->buffer[usedspace], data, len);
 			context->bitcount += len << 3;
-			/* Clean up: */
+			// Clean up:
 			usedspace = freespace = 0;
 			return;
 		}
 	}
 	while (len >= SHA256_BLOCK_LENGTH) {
-		/* Process as many complete blocks as we can */
-		sha256_transform(context, (sha2_word32*)(void*)data);
+		// Process as many complete blocks as we can
+		sha256_transform(context, (uint32_t*)(void*)data);
 		context->bitcount += SHA256_BLOCK_LENGTH << 3;
 		len -= SHA256_BLOCK_LENGTH;
 		data += SHA256_BLOCK_LENGTH;
 	}
 	if (len > 0) {
-		/* There's left-overs, so save 'em */
+		// There's left-overs, so save 'em
 		memcpy(context->buffer, data, len);
 		context->bitcount += len << 3;
 	}
-	/* Clean up: */
+	// Clean up:
 	usedspace = freespace = 0;
 }
 
 ICACHE_FLASH_ATTR
-void sha256_final(sha256_ctx_t* context, sha2_byte digest[]) {
-	sha2_word32	*d = (sha2_word32*)(void*)digest;
-	unsigned int	usedspace;
+void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+	uint32_t *d = (uint32_t*)(void*)digest;
+	unsigned int usedspace;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
-	if (digest != (sha2_byte*)0) {
+	if (digest != (uint8_t*)0) {
 		usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Convert FROM host byte order */
@@ -472,7 +468,7 @@ void sha256_final(sha256_ctx_t* context, sha2_byte digest[]) {
 					memset(&context->buffer[usedspace], 0, SHA256_BLOCK_LENGTH - usedspace);
 				}
 				/* Do second-to-last transform: */
-				sha256_transform(context, (sha2_word32*)(void*)context->buffer);
+				sha256_transform(context, (uint32_t*)(void*)context->buffer);
 
 				/* And set-up for the last transform: */
 				memset(context->buffer, 0, SHA256_SHORT_BLOCK_LENGTH);
@@ -485,11 +481,11 @@ void sha256_final(sha256_ctx_t* context, sha2_byte digest[]) {
 			*context->buffer = 0x80;
 		}
 		/* Set the bit count: */
-		sha2_word64 *t = (sha2_word64 *)(void*)&context->buffer[SHA256_SHORT_BLOCK_LENGTH];
+		uint64_t *t = (uint64_t *)(void*)&context->buffer[SHA256_SHORT_BLOCK_LENGTH];
 		*t = context->bitcount;
 
 		/* Final transform: */
-		sha256_transform(context, (sha2_word32*)(void*)context->buffer);
+		sha256_transform(context, (uint32_t*)(void*)context->buffer);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 		{
@@ -511,9 +507,9 @@ void sha256_final(sha256_ctx_t* context, sha2_byte digest[]) {
 }
 
 ICACHE_FLASH_ATTR
-char *sha256_end(sha256_ctx_t* context, char buffer[]) {
-	sha2_byte	digest[SHA256_DIGEST_LENGTH], *d = digest;
-	int		i;
+char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]) {
+	uint8_t	digest[SHA256_DIGEST_LENGTH], *d = digest;
+	int i;
 
 	if (buffer != (char*)0) {
 		sha256_final(context, digest);
@@ -532,7 +528,7 @@ char *sha256_end(sha256_ctx_t* context, char buffer[]) {
 }
 
 ICACHE_FLASH_ATTR
-void sha256_raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 	sha256_ctx_t	context;
 	sha256_init(&context);
 	sha256_update(&context, data, len);
@@ -540,7 +536,7 @@ void sha256_raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_
 }
 
 ICACHE_FLASH_ATTR
-char* sha256_data(const sha2_byte* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
+char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
 	sha256_ctx_t	context;
 
 	sha256_init(&context);

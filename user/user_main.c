@@ -481,7 +481,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// calculate blocks of 16 bytes needed to contain message to encrypt
-	    reply_message_l = strlen(cleartext) + 1;
+		reply_message_l = strlen(cleartext) + 1;
 		if (reply_message_l % 16) {
 			reply_message_l = (reply_message_l / 16) * 16 + 16;
 		}
@@ -830,24 +830,97 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		
 	INFO("\r\nSystem started ...\r\n");
 	
-	/*
+	uint i;
+
 	hmac_sha256_ctx_t hctx;
-    
-	const uint8_t key[] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19 };
-	const uint8_t msg[] = { 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd, 0xcd };
-	uint8_t mac[32];
-    uint i;
+	__attribute__((aligned(4))) uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
+	__attribute__((aligned(4))) uint8_t aes_key[16];
+	__attribute__((aligned(4))) uint8_t hmac_sha256_key[16];
+
+	uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";
+
+	uint8_t msg[MQTT_MESSAGE_L];
+	int msg_l;
+
+	// generate aes_key and hmac_sha256_key from master_key
+	memset(sha256_hash, 0, sizeof(sha256_hash));
+
+	sha256_raw(sys_cfg.aes_key, sizeof(sys_cfg.aes_key), sha256_hash);
+	memcpy(aes_key, sha256_hash, sizeof(aes_key));
+	memcpy(hmac_sha256_key, sha256_hash + sizeof(aes_key), sizeof(hmac_sha256_key));
 	
-	
-	hmac_sha256_init(&hctx, key, sizeof(key));
-	hmac_sha256_update(&hctx, msg, sizeof(msg));
-	hmac_sha256_final(&hctx, mac);
 #ifdef DEBUG
-	for (i = 0; i < 32; i++) {
-	    os_printf("%02x", mac[i]);
+	// print keys
+	system_soft_wdt_stop();
+	printf("aes key: ");
+	for (i = 0; i < 16; i++) {
+		printf("%02x", sha256_hash[i]);
 	}
-	os_printf("\n");
+	printf("\n");
+	
+	printf("hmac sha256 key: ");
+	for (i = 16; i < 32; i++) {
+		printf("%02x", sha256_hash[i]);
+	}
+	printf("\n");
+	system_soft_wdt_restart();
 #endif
-	*/
+	
+	
+	// encrypt
+	os_memset(msg, 0, sizeof(msg));
+	// get random iv in first 16 bytes of mqtt_message
+	os_get_random(msg + SHA256_DIGEST_LENGTH, 16);
+#ifdef DEBUG
+	system_soft_wdt_stop();
+	printf("iv: ");
+	for (i = 0; i < 16; i++) {
+		printf("%02x", msg[i + SHA256_DIGEST_LENGTH]);
+	}
+	printf("\n");
+
+	printf("cleartext: %s\n", cleartext);
+#endif
+	// calculate blocks needed for encrypted string
+	msg_l = strlen(cleartext) + 1;
+	if (msg_l % 16) {
+		msg_l = (msg_l / 16) * 16 + 16;
+	}
+	else {
+		msg_l = (msg_l / 16) * 16;
+	}
+	AES128_CBC_encrypt_buffer(msg + SHA256_DIGEST_LENGTH + 16, cleartext, msg_l, aes_key, msg + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
+	msg_l += SHA256_DIGEST_LENGTH + 16;
+
+#ifdef DEBUG
+	system_soft_wdt_stop();
+	printf("iv + ciphertext: ");
+	for (i = SHA256_DIGEST_LENGTH; i < msg_l; i++) {
+		printf("%02x", msg[i]);
+	}
+	printf("\n");
+	system_soft_wdt_restart();
+#endif	
+	
+	
+	// hmac sha256
+    hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
+    hmac_sha256_update(&hctx, msg + SHA256_DIGEST_LENGTH, msg_l - SHA256_DIGEST_LENGTH);
+    hmac_sha256_final(&hctx, msg);
+#ifdef DEBUG
+	system_soft_wdt_stop();
+    printf("hmac sha256: ");
+    for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        printf("%02x", msg[i]);
+    }
+    printf("\n");
+
+    printf("mqtt_message: ");
+    for (i = 0; i < msg_l; i++) {
+        printf("%02x", msg[i]);
+    }
+    printf("\n");
+	system_soft_wdt_restart();
+#endif
 }
 

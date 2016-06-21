@@ -44,11 +44,11 @@ typedef struct {
 	uint8_t	buffer[SHA256_BLOCK_LENGTH];
 } sha256_ctx_t;
 
-ICACHE_FLASH_ATTR void sha256_init(sha256_ctx_t *);
-ICACHE_FLASH_ATTR void sha256_update(sha256_ctx_t*, const uint8_t*, size_t);
-ICACHE_FLASH_ATTR void sha256_final(sha256_ctx_t*, uint8_t[SHA256_DIGEST_LENGTH]);
-ICACHE_FLASH_ATTR char* sha256_end(sha256_ctx_t*, char[SHA256_DIGEST_STRING_LENGTH]);
-ICACHE_FLASH_ATTR void sha256_raw(const uint8_t*, size_t, uint8_t[SHA256_DIGEST_LENGTH]);
-ICACHE_FLASH_ATTR char* sha256_data(const uint8_t*, size_t, char[SHA256_DIGEST_STRING_LENGTH]);
+ICACHE_FLASH_ATTR void sha256_init(sha256_ctx_t *context);
+ICACHE_FLASH_ATTR void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len);
+ICACHE_FLASH_ATTR void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]);
+ICACHE_FLASH_ATTR char* sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]);
+ICACHE_FLASH_ATTR void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]);
+ICACHE_FLASH_ATTR char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]);
 
 #endif
