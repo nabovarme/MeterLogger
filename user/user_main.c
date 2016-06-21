@@ -833,6 +833,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	uint i;
 
 	hmac_sha256_ctx_t hctx;
+	// variables passed to crypto library have to be int32_t aligned becouse they are casted and accessed as such
 	__attribute__((aligned(4))) uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 	__attribute__((aligned(4))) uint8_t aes_key[16];
 	__attribute__((aligned(4))) uint8_t hmac_sha256_key[16];
