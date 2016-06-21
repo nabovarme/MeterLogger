@@ -40,10 +40,11 @@ static void test_decrypt_cbc(void)
         0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17, 0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10 };
     uint8_t buffer[64];
     
-    AES128_CBC_decrypt_buffer(buffer+0, in+0,  16, key, iv);
-    AES128_CBC_decrypt_buffer(buffer+16, in+16, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer+32, in+32, 16, 0, 0);
-    AES128_CBC_decrypt_buffer(buffer+48, in+48, 16, 0, 0);
+    AES128_CBC_decrypt_buffer(buffer, in,  sizeof(in), key, iv);
+//    AES128_CBC_decrypt_buffer(buffer+0, in+0,  16, key, iv);
+//    AES128_CBC_decrypt_buffer(buffer+16, in+16, 16, 0, 0);
+//    AES128_CBC_decrypt_buffer(buffer+32, in+32, 16, 0, 0);
+//    AES128_CBC_decrypt_buffer(buffer+48, in+48, 16, 0, 0);
     
     printf("CBC decrypt: ");
     
@@ -62,7 +63,7 @@ int main(int argc, const char * argv[]) {
     init_aes_hmac_combined(master_key);
     
     // encrypt
-//    mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, strlen(cleartext) + 1);
+    mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, strlen(cleartext) + 1);
 
     // decrypt
     memset(buffer, 0, sizeof(buffer));

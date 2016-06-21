@@ -177,15 +177,11 @@ size_t decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
         
         printf("len: %d\n", len - SHA256_DIGEST_LENGTH);
         
-//        AES128_CBC_decrypt_buffer(dst, src + SHA256_DIGEST_LENGTH, len - SHA256_DIGEST_LENGTH, aes_key, src + SHA256_DIGEST_LENGTH);
-        AES128_CBC_decrypt_buffer(dst + 0, src + SHA256_DIGEST_LENGTH + 16 + 0,  16, aes_key, src + SHA256_DIGEST_LENGTH);
-        AES128_CBC_decrypt_buffer(dst + 16, src + SHA256_DIGEST_LENGTH + 16 + 16, 16, 0, 0);
-        AES128_CBC_decrypt_buffer(dst + 32, src + SHA256_DIGEST_LENGTH + 16 + 32, 16, 0, 0);
-        AES128_CBC_decrypt_buffer(dst + 48, src + SHA256_DIGEST_LENGTH + 16 + 48, 16, 0, 0);
+        AES128_CBC_decrypt_buffer(dst + 0, src + SHA256_DIGEST_LENGTH + 16, len, aes_key, src + SHA256_DIGEST_LENGTH);
         
 #ifdef DEBUG
         system_soft_wdt_stop(void);
-        printf("cleartext: %s\n", src);
+        printf("cleartext: %s\n", dst);
         system_soft_wdt_restart(void);
 #endif
         return return_l;
