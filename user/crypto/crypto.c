@@ -68,15 +68,13 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
     memset(dst, 0, sizeof(dst));
     // get random iv in first 16 bytes of mqtt_message
     os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
-#ifdef DEBUG_E
+#ifdef DEBUG
 	system_soft_wdt_stop(void);
     printf("iv: ");
     for (i = 0; i < 16; i++) {
         printf("%02x", dst[i + SHA256_DIGEST_LENGTH]);
     }
     printf("\n");
-    
-    printf("cleartext: %s\n", src);
 	system_soft_wdt_restart(void);
 #endif
     // calculate blocks needed for encrypted string
@@ -90,36 +88,11 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
     AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16, src, return_l, aes_key, dst + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
     return_l += SHA256_DIGEST_LENGTH + 16;
     
-#ifdef DEBUG_E
-	system_soft_wdt_stop(void);
-    printf("iv + ciphertext: ");
-    for (i = SHA256_DIGEST_LENGTH; i < return_l; i++) {
-        printf("%02x", dst[i]);
-    }
-    printf("\n");
-	system_soft_wdt_restart(void);
-#endif
-    
     
     // hmac sha256
     hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
     hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
     hmac_sha256_final(&hctx, dst);
-#ifdef DEBUG_E
-	system_soft_wdt_stop(void);
-    printf("hmac sha256: ");
-    for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", dst[i]);
-    }
-    printf("\n");
-    
-    printf("mqtt_message: ");
-    for (i = 0; i < return_l; i++) {
-        printf("%02x", dst[i]);
-    }
-    printf("\n");
-	system_soft_wdt_restart(void);
-#endif
     
     return return_l;
 }
@@ -136,27 +109,6 @@ size_t decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
     hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
     hmac_sha256_update(&hctx, src + SHA256_DIGEST_LENGTH, len - SHA256_DIGEST_LENGTH);
     hmac_sha256_final(&hctx, calculated_hmac_sha256);
-#ifdef DEBUG
-    system_soft_wdt_stop(void);
-    printf("calculated hmac sha256: ");
-    for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", calculated_hmac_sha256[i]);
-    }
-    printf("\n");
-    
-    printf("hmac sha256: ");
-    for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", src[i]);
-    }
-    printf("\n");
-    
-    printf("mqtt_message: ");
-    for (i = 0; i < len; i++) {
-        printf("%02x", src[i]);
-    }
-    printf("\n");
-    system_soft_wdt_restart(void);
-#endif
     
     if (memcmp(calculated_hmac_sha256, src, SHA256_DIGEST_LENGTH) == 0) {
         // hmac sha256 matches
