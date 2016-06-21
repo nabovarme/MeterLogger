@@ -156,7 +156,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	unsigned int i;
 	
 	// vars for aes encryption
-	__attribute__((aligned(4))) uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 
 	os_memset(mqtt_message, 0, sizeof(mqtt_message));
 
@@ -330,7 +330,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	int reply_message_l;
 	
 	// vars for aes encryption
-	__attribute__((aligned(4))) uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 	uint8_t i;
 
 	os_memcpy(topicBuf, topic, topic_len);
@@ -805,7 +805,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		
 	INFO("\r\nSystem started ...\r\n");
 	
-	__attribute__((aligned(4))) uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";	// is casted in crypto lib
+	_align_32_bit uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";	// is casted in crypto lib
 
 	uint8_t buffer[MQTT_MESSAGE_L];
 	uint8_t msg[MQTT_MESSAGE_L];

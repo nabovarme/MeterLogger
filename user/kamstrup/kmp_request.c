@@ -47,7 +47,7 @@ static void kmp_received_task(os_event_t *events) {
 		
 #ifdef AES
 	// vars for aes encryption
-	__attribute__((aligned(4))) uint8_t cleartext[KMP_FRAME_L];	// is casted in crypto lib
+	_align_32_bit uint8_t cleartext[KMP_FRAME_L];	// is casted in crypto lib
 #endif
 
     // allocate struct for response

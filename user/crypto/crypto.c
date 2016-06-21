@@ -14,9 +14,9 @@
 #include "crypto/hmac-sha256.h"
 
 // variables passed to crypto library have to be int32_t aligned becouse they are casted and accessed as such
-__attribute__((aligned(4))) uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
-__attribute__((aligned(4))) uint8_t aes_key[16];
-__attribute__((aligned(4))) uint8_t hmac_sha256_key[16];
+_align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
+_align_32_bit uint8_t aes_key[16];
+_align_32_bit uint8_t hmac_sha256_key[16];
 
 void init_aes_hmac_combined(const uint8_t *key) {
 	uint i;
