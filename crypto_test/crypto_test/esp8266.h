@@ -16,8 +16,4 @@
 #define MQTT_TOPIC_L (128 + 1)
 #define MQTT_MESSAGE_L (192 + 1)
 
-#define system_soft_wdt_stop    (void)sizeof
-#define system_soft_wdt_restart (void)sizeof
-
-
 #endif /* esp8266_h */

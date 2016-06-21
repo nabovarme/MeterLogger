@@ -20,3 +20,11 @@ void os_get_random(char *s, size_t length) {
     }
 }
 
+void system_soft_wdt_stop() {
+    
+}
+
+void system_soft_wdt_restart() {
+    
+}
+
