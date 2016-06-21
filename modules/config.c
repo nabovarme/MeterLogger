@@ -128,7 +128,7 @@ cfg_load() {
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 		
-		memcpy(sys_cfg.aes_key, aes_key, sizeof(aes_key));
+		memcpy(sys_cfg.key, key, sizeof(key));
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifndef IMPULSE
@@ -182,7 +182,7 @@ cfg_load() {
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 		
-		memcpy(sys_cfg.aes_key, aes_key, sizeof(aes_key));
+		memcpy(sys_cfg.key, key, sizeof(key));
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 		

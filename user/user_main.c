@@ -154,11 +154,11 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	uint32_t result_int, result_frac;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
-
-#ifdef AES
+	
 	// vars for aes encryption
-	uint8_t cleartext[MQTT_MESSAGE_L];
-#endif
+	__attribute__((aligned(4))) uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+
+	os_memset(mqtt_message, 0, sizeof(mqtt_message));
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
@@ -187,34 +187,13 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		}
 		tfp_snprintf(current_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-#ifdef AES
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else		
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v1/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#endif	// AES
 
-#ifdef AES
-		os_memset(mqtt_message, 0, sizeof(mqtt_message));
-		// get random iv in first 16 bytes of mqtt_message
-		os_get_random(mqtt_message, 16);
-		// encrypt message and append
-		os_memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-		// calculate blocks of 16 bytes needed to contain message to encrypt
-		mqtt_message_l = strlen(cleartext) + 1;
-		if (mqtt_message_l % 16) {
-			mqtt_message_l = (mqtt_message_l / 16) * 16 + 16;
-		}
-		else {
-			mqtt_message_l = (mqtt_message_l / 16) * 16;
-		}
-		AES128_CBC_encrypt_buffer(mqtt_message + 16, cleartext, mqtt_message_l, sys_cfg.aes_key, mqtt_message);	// firt 16 bytes of mqtt_message contain IV
-		mqtt_message_l += 16;
-#else
-		tfp_snprintf(mqtt_message, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
-		mqtt_message_l = strlen(mqtt_message);
-#endif	// AES
 		
+		// encrypt and send
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, strlen(cleartext) + 1);
+
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
@@ -289,33 +268,6 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 }
 #endif // IMPULSE
 
-#ifdef IMPULSE
-/*
-ICACHE_FLASH_ATTR void static spi_test_timer_func(void *arg) {	// DEBUG
-//	uint32_t data;
-	static uint32_t addr;
-//	char str[14] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x00};
-//	char str[14] = "Hello world!\n";
-	
-//	str[0] += 1;
-	
-//	ext_spi_flash_erase_sector(0x1000);
-//	ext_spi_flash_write(0x1000, str, 14);
-	
-//	os_memset(str, 0, sizeof(str));
-//	ext_spi_flash_read(0x1000, str, 14);
-	ext_spi_flash_hexdump(addr);
-	addr += 0x10;
-//	os_printf("%s\n", str);
-	
-//	ext_spi_flash_read(0x1000, &data, sizeof(data));
-//	ext_spi_flash_erase_sector(0x1000);
-//	data++;
-//	ext_spi_flash_write(0x1000, &data, sizeof(data));
-}
-*/
-#endif // IMPULSE
-
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
 		MQTT_Connect(&mqttClient);
@@ -378,7 +330,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	int reply_message_l;
 	
 	// vars for aes encryption
-	uint8_t cleartext[MQTT_MESSAGE_L];
+	__attribute__((aligned(4))) uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 	uint8_t i;
 
 	os_memcpy(topicBuf, topic, topic_len);
@@ -387,8 +339,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	os_memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
 	
+	// clear data
+	memset(reply_message, 0, sizeof(reply_message));
+	
 	// check v2 aes decrypted messages is same as topic
-	 
+	
 
 	// parse mqtt topic for function call name
 	str = strtok(topicBuf, "/");
@@ -454,6 +409,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
+	/*
 #ifdef AES
 	else if (strncmp(function_name, "aes", FUNCTIONNAME_L) == 0) {
 		// found aes
@@ -492,6 +448,27 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 #endif	// AES
+	*/
+	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
+		// found aes
+#ifdef IMPULSE
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+#ifdef IMPULSE
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
+#else
+#	ifdef THERMO_NO
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#endif
+		// encrypt and send
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
@@ -702,9 +679,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #else
 	os_printf("\t(THERMO_NC)\n\r");
 #endif
-#ifdef AES
-	os_printf("\t(AES)\n\r");
-#endif
 
 #ifndef DEBUG
 	// disable serial debug
@@ -716,6 +690,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 	cfg_load();
 
+	// init crypto
+	init_aes_hmac_combined(sys_cfg.key);
+	
 	// start kmp_request
 #ifdef EN61107
 	en61107_request_init();
@@ -828,25 +805,17 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		
 	INFO("\r\nSystem started ...\r\n");
 	
-	uint i;
+	__attribute__((aligned(4))) uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";	// is casted in crypto lib
 
-	hmac_sha256_ctx_t hctx;
-	// variables passed to crypto library have to be int32_t aligned becouse they are casted and accessed as such
-	__attribute__((aligned(4))) uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
-	__attribute__((aligned(4))) uint8_t aes_key[16];
-	__attribute__((aligned(4))) uint8_t hmac_sha256_key[16];
-
-	uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";
-
+	uint8_t buffer[MQTT_MESSAGE_L];
 	uint8_t msg[MQTT_MESSAGE_L];
 	int msg_l;
 
+	// encrypt
+	msg_l = encrypt_aes_hmac_combined(msg, cleartext, strlen(cleartext) + 1);
 
-    // init
-    init_aes_hmac_combined(sys_cfg.aes_key);
-    
-    // encrypt
-    msg_l = encrypt_aes_hmac_combined(msg, cleartext, 112);
-	
+	// decrypt
+	memset(buffer, 0, sizeof(buffer));
+	msg_l = decrypt_aes_hmac_combined(buffer, msg, msg_l);
 }
 

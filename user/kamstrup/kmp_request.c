@@ -47,7 +47,7 @@ static void kmp_received_task(os_event_t *events) {
 		
 #ifdef AES
 	// vars for aes encryption
-	uint8_t cleartext[KMP_FRAME_L];
+	__attribute__((aligned(4))) uint8_t cleartext[KMP_FRAME_L];	// is casted in crypto lib
 #endif
 
     // allocate struct for response
@@ -141,28 +141,13 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, 128, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
-#ifdef AES
-			// aes
 			os_memset(cleartext, 0, sizeof(message));
 			os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
 			os_memset(message, 0, sizeof(message));			// ...and clear it
-			// get random iv in first 16 bytes of mqtt_message
-			os_get_random(message, 16);
-			// encrypt message and append
-			// calculate blocks of 16 bytes needed to contain message to encrypt
-			message_l = strlen(cleartext) + 1;
-			if (message_l % 16) {
-				message_l = (message_l / 16) * 16 + 16;
-			}
-			else {
-				message_l = (message_l / 16) * 16;
-			}
-			AES128_CBC_encrypt_buffer(message + 16, cleartext, message_l, sys_cfg.aes_key, message);	// firt 16 bytes of mqtt_message contain IV
-			message_l += 16;
-#else
-			message_l = strlen(message);
-#endif	// AES
-
+						
+			// encrypt and send
+			message_l = encrypt_aes_hmac_combined(message, cleartext, strlen(cleartext) + 1);
+			
 			if (mqtt_client) {
 				// if mqtt_client is initialized
 				if (kmp_serial && (message_l > 1)) {
