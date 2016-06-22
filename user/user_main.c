@@ -434,7 +434,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		// encrypt and send
 		//reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
-		reply_message_l = x_encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic) + 1, cleartext, strlen(cleartext) + 1);
+		reply_message_l = x_encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
@@ -756,11 +756,11 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	int msg_l;
 
 	// encrypt
-	msg_l = x_encrypt_aes_hmac_combined(msg, topic, strlen(topic) + 1, cleartext, strlen(cleartext) + 1);
+	msg_l = x_encrypt_aes_hmac_combined(msg, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 	// decrypt
 	os_memset(buffer, 0, sizeof(buffer));
-	if (x_decrypt_aes_hmac_combined(buffer, topic, strlen(topic) + 1, msg, msg_l)) {
+	if (x_decrypt_aes_hmac_combined(buffer, topic, strlen(topic), msg, msg_l)) {
 		os_printf("crypt test ok\n");
 	}
 	else {
