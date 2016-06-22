@@ -17,9 +17,6 @@ meter type is KMP (Multical 601)
 EN61107=1  
 meter type is en61107 (Multical 66)  
   
-AES=1  
-enable aes encryption of samples  
-  
 THERMO_NO=0  
 thermo actuator is normal closed  
   
