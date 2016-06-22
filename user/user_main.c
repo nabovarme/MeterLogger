@@ -691,7 +691,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	cfg_load();
 
 	// init crypto
-	init_aes_hmac_combined(sys_cfg.key);
+	init_aes_hmac_combined(sys_cfg.key, 16);
 	
 	// start kmp_request
 #ifdef EN61107
