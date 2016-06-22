@@ -18,7 +18,7 @@ _align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 _align_32_bit uint8_t aes_key[16];
 _align_32_bit uint8_t hmac_sha256_key[16];
 
-void init_aes_hmac_combined(const uint8_t *key, size_t len) {
+void init_aes_hmac_combined(const uint8_t *key) {
 	uint i;
 	
 #ifdef DEBUG
@@ -33,7 +33,7 @@ void init_aes_hmac_combined(const uint8_t *key, size_t len) {
 	// generate aes_key and hmac_sha256_key from master_key
 	memset(sha256_hash, 0, sizeof(sha256_hash));
 	
-	sha256_raw(key, len, sha256_hash);
+	sha256_raw(key, sizeof(key), sha256_hash);
 	
 	// first 16 bytes is aes key
 	memcpy(aes_key, sha256_hash, sizeof(aes_key));
@@ -69,15 +69,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
 	memset(dst, 0, sizeof(dst));
 	// get random iv in first 16 bytes of mqtt_message
 	os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
-#ifdef DEBUG
-	system_soft_wdt_stop();
-	printf("iv: ");
-	for (i = 0; i < 16; i++) {
-		printf("%02x", dst[i + SHA256_DIGEST_LENGTH]);
-	}
-	printf("\n");
-	system_soft_wdt_restart();
-#endif
+
 	// calculate blocks needed for encrypted string
 	return_l = strlen(src) + 1;
 	if (return_l % 16) {
@@ -88,7 +80,6 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
 	}
 	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16, src, return_l, aes_key, dst + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
 	return_l += SHA256_DIGEST_LENGTH + 16;
-	
 	
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
