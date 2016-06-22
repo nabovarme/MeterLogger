@@ -158,7 +158,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	// vars for aes encryption
 	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 
+	// clear data
 	os_memset(mqtt_message, 0, sizeof(mqtt_message));
+	os_memset(cleartext, 0, sizeof(cleartext));
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
@@ -340,7 +342,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	dataBuf[data_len] = 0;
 	
 	// clear data
-	memset(reply_message, 0, sizeof(reply_message));
+	os_memset(reply_message, 0, sizeof(reply_message));
+	os_memset(cleartext, 0, sizeof(cleartext));
 	
 	// check v2 aes decrypted messages is same as topic
 	
@@ -815,7 +818,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	msg_l = encrypt_aes_hmac_combined(msg, cleartext, strlen(cleartext) + 1);
 
 	// decrypt
-	memset(buffer, 0, sizeof(buffer));
+	os_memset(buffer, 0, sizeof(buffer));
 	msg_l = decrypt_aes_hmac_combined(buffer, msg, msg_l);
 }
 

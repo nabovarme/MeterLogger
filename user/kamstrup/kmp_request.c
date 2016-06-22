@@ -57,7 +57,7 @@ static void kmp_received_task(os_event_t *events) {
 
 	//ETS_UART_INTR_DISABLE();
 
-	memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
+	os_memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
 	i = 0;
 	while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
 		message[i++] = c;
