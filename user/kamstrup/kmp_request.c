@@ -45,10 +45,8 @@ static void kmp_received_task(os_event_t *events) {
 	unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
-#ifdef AES
 	// vars for aes encryption
 	_align_32_bit uint8_t cleartext[KMP_FRAME_L];	// is casted in crypto lib
-#endif
 
     // allocate struct for response
     kmp_response_t response;
@@ -80,11 +78,7 @@ static void kmp_received_task(os_event_t *events) {
 			// BUG here.                        returns 0 -^
 			// this is a fix
 			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-#ifdef AES
 			tfp_snprintf(topic, 128, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
-#else
-			tfp_snprintf(topic, 128, "/sample/v1/%u/%s", kmp_serial, current_unix_time_string);
-#endif	// AES
 
 			os_memset(message, 0, sizeof(message));			// clear it
         	

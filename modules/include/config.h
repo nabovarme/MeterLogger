@@ -37,9 +37,7 @@
 #define IMPULSE_METER_SERIAL_LEN	13
 #endif
 
-#ifdef AES
-	static const char key[] = KEY;
-#endif
+static const char key[] = KEY;
 
 typedef struct{
 	uint32_t cfg_holder;
