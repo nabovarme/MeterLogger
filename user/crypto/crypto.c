@@ -18,7 +18,7 @@ _align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 _align_32_bit uint8_t aes_key[16];
 _align_32_bit uint8_t hmac_sha256_key[16];
 
-void init_aes_hmac_combined(const uint8_t *key) {
+void init_aes_hmac_combined(const uint8_t *key, size_t key_l) {
 	uint i;
 	
 #ifdef DEBUG
@@ -71,7 +71,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *src, size_t len) {
 	os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
 
 	// calculate blocks needed for encrypted string
-	return_l = strlen(src) + 1;
+	return_l = len;
 	if (return_l % 16) {
 		return_l = (return_l / 16) * 16 + 16;
 	}
