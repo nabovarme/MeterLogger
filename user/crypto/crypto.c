@@ -95,26 +95,17 @@ size_t decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topi
 	hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
 
-	size_t return_l;
-	uint i;
-	
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
 	hmac_sha256_update(&hctx, topic, topic_l);
 	hmac_sha256_update(&hctx, message + SHA256_DIGEST_LENGTH, message_l - SHA256_DIGEST_LENGTH);
 	hmac_sha256_final(&hctx, calculated_hmac_sha256);
-	
+
 	if (memcmp(calculated_hmac_sha256, message, SHA256_DIGEST_LENGTH) == 0) {
 		// hmac sha256 matches
 		
 		AES128_CBC_decrypt_buffer(dst + 0, message + SHA256_DIGEST_LENGTH + 16, message_l, aes_key, message + SHA256_DIGEST_LENGTH);
-		
-#ifdef DEBUG
-		system_soft_wdt_stop();
-		printf("cleartext: %s\n", dst);
-		system_soft_wdt_restart();
-#endif
-		return return_l;
+		return strlen(dst);
 	}
 	else {
 		return 0;

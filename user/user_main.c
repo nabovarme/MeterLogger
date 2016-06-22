@@ -286,9 +286,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 
 	// set MQTT LWP topic and subscribe to /config/v1/serial/#
 #ifdef IMPULSE
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v1/%s/#", sys_cfg.impulse_meter_serial);
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
 #else
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v1/%07u/#", kmp_get_received_serial());
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
 #endif
 	MQTT_Subscribe(client, topic, 0);
 
@@ -320,36 +320,36 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-	char *topicBuf = (char*)os_zalloc(topic_len + 1);	// DEBUG: could we avoid malloc here?
-	char *dataBuf = (char*)os_zalloc(data_len + 1);
 	MQTT_Client *client = (MQTT_Client*)args;
-	
+	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	_align_32_bit char mqtt_topic[MQTT_TOPIC_L];
+	_align_32_bit char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
 	char *str;
 	char function_name[FUNCTIONNAME_L];
-
-	_align_32_bit unsigned char reply_topic[MQTT_TOPIC_L];
-	unsigned char reply_message[MQTT_MESSAGE_L];
-	int reply_message_l;
 	
-	// vars for aes encryption
-	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 	uint8_t i;
-
-	memcpy(topicBuf, topic, topic_len);
-	topicBuf[topic_len] = 0;
-
-	memcpy(dataBuf, data, data_len);
-	dataBuf[data_len] = 0;
+	
+	// copy and null terminate
+	memcpy(mqtt_topic, topic, topic_len);
+	mqtt_topic[topic_len] = 0;
+	memcpy(mqtt_message, data, data_len);
+	mqtt_message[data_len] = 0;
+	
+	if (decrypt_aes_hmac_combined(cleartext, mqtt_topic, topic_len, mqtt_message, data_len) == 0) {
+#ifdef DEBUG
+		printf("hmac error\n");
+#endif
+		return;
+	}
 	
 	// clear data
-	memset(reply_message, 0, sizeof(reply_message));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	
-	// check v2 aes decrypted messages is same as topic
-	
-
+		
 	// parse mqtt topic for function call name
-	str = strtok(topicBuf, "/");
+	str = strtok(mqtt_topic, "/");
 	while (str != NULL) {
 		strncpy(function_name, str, FUNCTIONNAME_L);   // save last parameter as function_name
 		str = strtok(NULL, "/");
@@ -359,22 +359,22 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/ping/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		// empty message
 		strcpy(cleartext, "");
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 #ifdef IMPULSE
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
@@ -386,42 +386,42 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/mem/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&", system_get_free_heap_size());
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 #ifdef DEBUG
 		system_print_meminfo();
 #endif
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 #ifdef IMPULSE
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
@@ -433,25 +433,25 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef IMPULSE
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
-		add_cron_job_from_query(dataBuf);
+		add_cron_job_from_query(data);
 	}
 	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
 		// found clear_cron
@@ -459,11 +459,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
@@ -479,11 +479,11 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
-		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off
@@ -493,16 +493,13 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
 		// found pwm
 		// start ac 1 pwm
-		ac_thermo_pwm(atoi(dataBuf));
+		ac_thermo_pwm(atoi(data));
 	}
 	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
 		// found test
 		ac_test();
 	}
 #endif
-	
-	os_free(topicBuf);
-	os_free(dataBuf);
 }
 
 #ifdef IMPULSE
