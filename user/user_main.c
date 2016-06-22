@@ -746,24 +746,5 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 		
 	INFO("\r\nSystem started ...\r\n");
-	
-	_align_32_bit uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";	// is casted in crypto lib
-	_align_32_bit uint8_t topic[] = "/sample/v2/7210086/1466572820";	// is casted in crypto lib
-
-	uint8_t buffer[MQTT_MESSAGE_L];
-	uint8_t msg[MQTT_MESSAGE_L];
-	int msg_l;
-
-	// encrypt
-	msg_l = encrypt_aes_hmac_combined(msg, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
-
-	// decrypt
-	os_memset(buffer, 0, sizeof(buffer));
-	if (decrypt_aes_hmac_combined(buffer, topic, strlen(topic), msg, msg_l)) {
-		os_printf("crypt test ok\n");
-	}
-	else {
-		os_printf("crypt test error\n");
-	}
 }
 
