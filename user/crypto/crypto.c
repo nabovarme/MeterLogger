@@ -18,7 +18,7 @@ _align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 _align_32_bit uint8_t aes_key[16];
 _align_32_bit uint8_t hmac_sha256_key[16];
 
-void init_aes_hmac_combined(const uint8_t *key) {
+void init_aes_hmac_combined(const uint8_t *key, size_t len) {
 	uint i;
 	
 #ifdef DEBUG
@@ -33,7 +33,7 @@ void init_aes_hmac_combined(const uint8_t *key) {
 	// generate aes_key and hmac_sha256_key from master_key
 	memset(sha256_hash, 0, sizeof(sha256_hash));
 	
-	sha256_raw(key, sizeof(key), sha256_hash);
+	sha256_raw(key, len, sha256_hash);
 	
 	// first 16 bytes is aes key
 	memcpy(aes_key, sha256_hash, sizeof(aes_key));

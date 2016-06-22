@@ -24,7 +24,7 @@ int buffer_l;
 
 int main(int argc, const char * argv[]) {
     // init
-    init_aes_hmac_combined(master_key);
+    init_aes_hmac_combined(master_key, sizeof(master_key));
     
     // encrypt
     mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, strlen(cleartext) + 1);
