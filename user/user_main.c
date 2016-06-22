@@ -194,7 +194,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
 		
 		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, cleartext, strlen(cleartext) + 1);
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
@@ -366,7 +366,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		// empty message
 		strcpy(cleartext, "");
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
@@ -386,7 +386,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
@@ -398,7 +398,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
@@ -410,7 +410,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&", system_get_free_heap_size());
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);		
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 #ifdef DEBUG
 		system_print_meminfo();
 #endif
@@ -433,8 +433,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// encrypt and send
-		//reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
-		reply_message_l = x_encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
@@ -446,7 +445,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 #ifndef IMPULSE
@@ -463,7 +462,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
@@ -483,7 +482,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(reply_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
@@ -756,11 +755,11 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	int msg_l;
 
 	// encrypt
-	msg_l = x_encrypt_aes_hmac_combined(msg, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+	msg_l = encrypt_aes_hmac_combined(msg, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 	// decrypt
 	os_memset(buffer, 0, sizeof(buffer));
-	if (x_decrypt_aes_hmac_combined(buffer, topic, strlen(topic), msg, msg_l)) {
+	if (decrypt_aes_hmac_combined(buffer, topic, strlen(topic), msg, msg_l)) {
 		os_printf("crypt test ok\n");
 	}
 	else {

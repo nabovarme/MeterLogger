@@ -41,7 +41,7 @@ static void kmp_received_task(os_event_t *events) {
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
-	unsigned char topic[128];
+	_align_32_bit unsigned char topic[128];
 	unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
@@ -140,7 +140,7 @@ static void kmp_received_task(os_event_t *events) {
 			os_memset(message, 0, sizeof(message));			// ...and clear it
 						
 			// encrypt and send
-			message_l = encrypt_aes_hmac_combined(message, cleartext, strlen(cleartext) + 1);
+			message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 			
 			if (mqtt_client) {
 				// if mqtt_client is initialized
