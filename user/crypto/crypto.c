@@ -146,8 +146,7 @@ size_t x_encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t to
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
 	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
-//	hmac_sha256_update(&hctx, topic, topic_l);
-	hmac_sha256_update(&hctx, "x", 2);
+	hmac_sha256_update(&hctx, topic, topic_l);
 	hmac_sha256_final(&hctx, dst);
 	
 	return return_l;
@@ -164,8 +163,7 @@ size_t x_decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t to
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
 	hmac_sha256_update(&hctx, message + SHA256_DIGEST_LENGTH, message_l - SHA256_DIGEST_LENGTH);
-//	hmac_sha256_update(&hctx, topic, topic_l);
-	hmac_sha256_update(&hctx, "x", 1);
+	hmac_sha256_update(&hctx, topic, topic_l);
 	hmac_sha256_final(&hctx, calculated_hmac_sha256);
 	
 	if (memcmp(calculated_hmac_sha256, message, SHA256_DIGEST_LENGTH) == 0) {
