@@ -88,7 +88,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
 #endif // IMPULSE
 	
-	os_memset(&mqttClient, 0, sizeof(MQTT_Client));
+	memset(&mqttClient, 0, sizeof(MQTT_Client));
 	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
 	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
@@ -116,8 +116,8 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	INFO("\r\nAP mode\r\n");
 	
 	wifi_softap_get_config(&ap_conf);
-	os_memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	os_memset(ap_conf.password, 0, sizeof(ap_conf.password));
+	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
+	memset(ap_conf.password, 0, sizeof(ap_conf.password));
 #ifdef IMPULSE
 	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
 #else
@@ -159,8 +159,8 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 
 	// clear data
-	os_memset(mqtt_message, 0, sizeof(mqtt_message));
-	os_memset(cleartext, 0, sizeof(cleartext));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
 
 	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
@@ -205,7 +205,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		last_impulse_meter_count = sys_cfg.impulse_meter_count;
 		last_impulse_time = impulse_time;
 #ifdef DEBUG
-		os_printf("current_energy: %u\n", current_energy);
+		printf("current_energy: %u\n", current_energy);
 #endif
 	}
 	else {
@@ -245,8 +245,8 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 	
 	impulse_meter_count_diff = sys_cfg.impulse_meter_count - last_impulse_meter_count;
 #ifdef DEBUG
-	os_printf("count: %u\tl count: %u\timp time: %u\tlast imp time: %u\n", sys_cfg.impulse_meter_count, last_impulse_meter_count, impulse_time, last_impulse_time);
-	os_printf("count diff: %u\timp time diff: %u\n", impulse_meter_count_diff, impulse_time_diff);
+	printf("count: %u\tl count: %u\timp time: %u\tlast imp time: %u\n", sys_cfg.impulse_meter_count, last_impulse_meter_count, impulse_time, last_impulse_time);
+	printf("count diff: %u\timp time diff: %u\n", impulse_meter_count_diff, impulse_time_diff);
 #endif
 
 	if (impulse_time_diff && impulse_meter_count_diff) {	// only calculate if not zero interval or zero meter count diff - should not happen
@@ -254,7 +254,7 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 	}
 
 #ifdef DEBUG
-	os_printf("current_energy: %u\n", current_energy);
+	printf("current_energy: %u\n", current_energy);
 #endif // DEBUG
 }
 #endif // IMPULSE
@@ -281,7 +281,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	unsigned char topic[MQTT_TOPIC_L];
 
 #ifdef DEBUG
-	os_printf("\n\rMQTT: Connected\n\r");
+	printf("\n\rMQTT: Connected\n\r");
 #endif
 
 	// set MQTT LWP topic and subscribe to /config/v1/serial/#
@@ -335,15 +335,15 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
 	uint8_t i;
 
-	os_memcpy(topicBuf, topic, topic_len);
+	memcpy(topicBuf, topic, topic_len);
 	topicBuf[topic_len] = 0;
 
-	os_memcpy(dataBuf, data, data_len);
+	memcpy(dataBuf, data, data_len);
 	dataBuf[data_len] = 0;
 	
 	// clear data
-	os_memset(reply_message, 0, sizeof(reply_message));
-	os_memset(cleartext, 0, sizeof(cleartext));
+	memset(reply_message, 0, sizeof(reply_message));
+	memset(cleartext, 0, sizeof(cleartext));
 	
 	// check v2 aes decrypted messages is same as topic
 	
@@ -546,14 +546,14 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		else {
 			// system time wrapped
 #ifdef DEBUG
-		os_printf("wrapped\n");
+		printf("wrapped\n");
 #endif
 			impulse_edge_to_edge_time = UINT32_MAX - impulse_falling_edge_time + impulse_rising_edge_time;
 		}
 		
 		// check if impulse period is 100 mS...
 #ifdef DEBUG
-		os_printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
+		printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
 #endif	// DEBUG
 		if ((impulse_edge_to_edge_time > 80 * 1000) && (impulse_edge_to_edge_time < 120 * 1000)) {
 			// arm the debounce timer to enable GPIO interrupt again
@@ -594,32 +594,32 @@ void impulse_meter_init(void) {
 	gpio16_output_conf();
 	gpio16_output_set(1);
 #ifdef DEBUG
-	os_printf("t: %u\n", impulse_time);
+	printf("t: %u\n", impulse_time);
 #endif // DEBUG
 }
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-	os_printf("\n\r");
-	os_printf("SDK version: %s\n\r", system_get_sdk_version());
-	os_printf("Software version: %s\n\r", VERSION);
+	printf("\n\r");
+	printf("SDK version: %s\n\r", system_get_sdk_version());
+	printf("Software version: %s\n\r", VERSION);
 #ifdef DEBUG
-	os_printf("\t(DEBUG)\n\r");
+	printf("\t(DEBUG)\n\r");
 #endif
 #ifdef IMPULSE
-	os_printf("\t(IMPULSE)\n\r");
+	printf("\t(IMPULSE)\n\r");
 #endif
 #ifdef DEBUG_NO_METER
-	os_printf("\t(DEBUG_NO_METER)\n\r");
+	printf("\t(DEBUG_NO_METER)\n\r");
 #endif
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
-	os_printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
+	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 #ifdef THERMO_NO
-	os_printf("\t(THERMO_NO)\n\r");
+	printf("\t(THERMO_NO)\n\r");
 #else
-	os_printf("\t(THERMO_NC)\n\r");
+	printf("\t(THERMO_NC)\n\r");
 #endif
 
 #ifndef DEBUG
@@ -676,7 +676,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 ICACHE_FLASH_ATTR void system_init_done(void) {
 	rtc_info = system_get_rst_info();
 #ifdef DEBUG
-	os_printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
+	printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 #endif	// DEBUG
 	
 #ifdef IMPULSE
@@ -704,7 +704,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
 		// fast boot if reset, go in sample/station mode
 #ifdef DEBUG
-		os_printf("fast boot\n");
+		printf("fast boot\n");
 #endif
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
@@ -718,7 +718,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 	else {
 #ifdef DEBUG
-		os_printf("normal boot\n");
+		printf("normal boot\n");
 //		ext_spi_flash_erase_sector(0x0);
 //		ext_spi_flash_erase_sector(0x1000);
 #endif
