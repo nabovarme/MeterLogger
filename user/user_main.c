@@ -327,7 +327,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
-	unsigned char reply_topic[MQTT_TOPIC_L];
+	_align_32_bit unsigned char reply_topic[MQTT_TOPIC_L];
 	unsigned char reply_message[MQTT_MESSAGE_L];
 	int reply_message_l;
 	
@@ -433,7 +433,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #	endif
 #endif
 		// encrypt and send
-		reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		//reply_message_l = encrypt_aes_hmac_combined(reply_message, cleartext, strlen(cleartext) + 1);
+		reply_message_l = x_encrypt_aes_hmac_combined(reply_message, reply_topic, strlen(reply_topic) + 1, cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(client, reply_topic, reply_message, reply_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
@@ -748,16 +749,22 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	INFO("\r\nSystem started ...\r\n");
 	
 	_align_32_bit uint8_t cleartext[] = "heap=21376&t1=23.61 C&t2=22.19 C&tdif=1.42 K&flow1=0 l/h&effect1=0.0 kW&hr=73327 h&v1=1321.27 m3&e1=56.726 MWh&";	// is casted in crypto lib
+	_align_32_bit uint8_t topic[] = "/sample/v2/7210086/1466572820";	// is casted in crypto lib
 
 	uint8_t buffer[MQTT_MESSAGE_L];
 	uint8_t msg[MQTT_MESSAGE_L];
 	int msg_l;
 
 	// encrypt
-	msg_l = encrypt_aes_hmac_combined(msg, cleartext, strlen(cleartext) + 1);
+	msg_l = x_encrypt_aes_hmac_combined(msg, topic, strlen(topic) + 1, cleartext, strlen(cleartext) + 1);
 
 	// decrypt
 	os_memset(buffer, 0, sizeof(buffer));
-	msg_l = decrypt_aes_hmac_combined(buffer, msg, msg_l);
+	if (x_decrypt_aes_hmac_combined(buffer, topic, strlen(topic) + 1, msg, msg_l)) {
+		os_printf("crypt test ok\n");
+	}
+	else {
+		os_printf("crypt test error\n");
+	}
 }
 
