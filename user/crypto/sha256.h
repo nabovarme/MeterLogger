@@ -33,6 +33,7 @@
 
 #include <esp8266.h>
 #include <stdint.h>
+#include "crypto/crypto.h"
 
 #define SHA256_BLOCK_LENGTH		64
 #define SHA256_DIGEST_LENGTH		32
@@ -41,7 +42,7 @@
 typedef struct {
 	uint32_t	state[8];
 	uint64_t	bitcount;
-	uint8_t	buffer[SHA256_BLOCK_LENGTH];
+	_align_32_bit uint8_t	buffer[SHA256_BLOCK_LENGTH];
 } sha256_ctx_t;
 
 ICACHE_FLASH_ATTR void sha256_init(sha256_ctx_t *context);
