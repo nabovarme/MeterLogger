@@ -328,9 +328,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
-	
-	uint8_t i;
-	
+		
 	// copy and null terminate
 	memcpy(mqtt_topic, topic, topic_len);
 	mqtt_topic[topic_len] = 0;

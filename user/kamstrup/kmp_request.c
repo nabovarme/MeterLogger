@@ -43,7 +43,7 @@ static void kmp_received_task(os_event_t *events) {
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
 	_align_32_bit unsigned char topic[128];
-	unsigned char message[KMP_FRAME_L];
+	_align_32_bit unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
 	// vars for aes encryption
@@ -56,7 +56,7 @@ static void kmp_received_task(os_event_t *events) {
 
 	//ETS_UART_INTR_DISABLE();
 
-	os_memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
+	memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
 	i = 0;
 	while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
 		message[i++] = c;
@@ -81,7 +81,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 			tfp_snprintf(topic, 128, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
 
-			os_memset(message, 0, sizeof(message));			// clear it
+			memset(message, 0, sizeof(message));			// clear it
         	
 			// heap size
 			tfp_snprintf(key_value, 128, "heap=%u&", system_get_free_heap_size());
@@ -136,7 +136,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, 128, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
-			os_memset(cleartext, 0, sizeof(message));
+			memset(cleartext, 0, sizeof(message));
 			os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
 			os_memset(message, 0, sizeof(message));			// ...and clear it
 						
@@ -217,6 +217,13 @@ void static kmp_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void kmp_request_send() {
+#ifdef DEBUG_NO_METER
+	_align_32_bit char cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	_align_32_bit char topic[128];
+	_align_32_bit char message[KMP_FRAME_L];
+	int message_l;
+#endif
+
     os_timer_disarm(&kmp_get_serial_timer);
     os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
     os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
@@ -233,15 +240,18 @@ void kmp_request_send() {
 	kmp_requests_sent++;
 	
 #ifdef DEBUG_NO_METER
-	unsigned char topic[128];
-	unsigned char message[KMP_FRAME_L];
-	int message_l;
+	// clear data
+	memset(message, 0, sizeof(message));
+
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
 	tfp_snprintf(topic, 128, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
-	tfp_snprintf(message, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
-	message_l = strlen(message);
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+
+	// encrypt and send
+	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized

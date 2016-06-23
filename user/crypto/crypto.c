@@ -60,9 +60,7 @@ void init_aes_hmac_combined(const uint8_t *key, size_t key_l) {
 
 ICACHE_FLASH_ATTR
 size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topic_l, const uint8_t *message, size_t message_l) {
-	hmac_sha256_ctx_t hctx;
-	uint i;
-	
+	_align_32_bit hmac_sha256_ctx_t hctx;
 	int return_l;
 	
 	// encrypt
@@ -92,7 +90,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topi
 
 ICACHE_FLASH_ATTR
 size_t decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topic_l, const uint8_t *message, size_t message_l) {
-	hmac_sha256_ctx_t hctx;
+	_align_32_bit hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
 
 	// hmac sha256
