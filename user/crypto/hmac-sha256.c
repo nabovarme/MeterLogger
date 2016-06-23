@@ -23,12 +23,13 @@
 
 #include <esp8266.h>
 #include <string.h>
-#include "hmac-sha256.h"
+#include "crypto/crypto.h"
+#include "crypto/hmac-sha256.h"
 
 ICACHE_FLASH_ATTR
 void hmac_sha256_init(hmac_sha256_ctx_t *hctx, const uint8_t *key, const uint32_t keylen) {
     int i;
-	uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
+	_align_32_bit uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
 	memset(i_key_pad, 0, SHA256_BLOCK_LENGTH);
 	if (keylen > SHA256_BLOCK_LENGTH) {
 		sha256_raw(key, keylen, i_key_pad);
@@ -51,7 +52,7 @@ void hmac_sha256_update(hmac_sha256_ctx_t *hctx, const uint8_t *msg, const uint3
 
 ICACHE_FLASH_ATTR
 void hmac_sha256_final(hmac_sha256_ctx_t *hctx, uint8_t *hmac) {
-	uint8_t hash[SHA256_DIGEST_LENGTH];
+	_align_32_bit uint8_t hash[SHA256_DIGEST_LENGTH];
 	sha256_final(&(hctx->ctx), hash);
 	sha256_init(&(hctx->ctx));
 	sha256_update(&(hctx->ctx), hctx->o_key_pad, SHA256_BLOCK_LENGTH);
@@ -63,7 +64,7 @@ void hmac_sha256_final(hmac_sha256_ctx_t *hctx, uint8_t *hmac) {
 
 ICACHE_FLASH_ATTR
 void hmac_sha256(const uint8_t *key, const uint32_t keylen, const uint8_t *msg, const uint32_t msglen, uint8_t *hmac) {
-	hmac_sha256_ctx_t hctx;
+	_align_32_bit hmac_sha256_ctx_t hctx;
 	hmac_sha256_init(&hctx, key, keylen);
 	hmac_sha256_update(&hctx, msg, msglen);
 	hmac_sha256_final(&hctx, hmac);

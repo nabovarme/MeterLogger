@@ -31,7 +31,8 @@
 #include <esp8266.h>
 #include <string.h>
 #include <stdint.h>
-#include "sha256.h"
+#include "crypto/crypto.h"
+#include "crypto/sha256.h"
 
 /*
  * ASSERT NOTE:
@@ -508,7 +509,8 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 
 ICACHE_FLASH_ATTR
 char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]) {
-	uint8_t	digest[SHA256_DIGEST_LENGTH], *d = digest;
+	_align_32_bit uint8_t digest[SHA256_DIGEST_LENGTH];
+	uint8_t *d = digest;
 	int i;
 
 	if (buffer != (char*)0) {
@@ -529,7 +531,8 @@ char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]
 
 ICACHE_FLASH_ATTR
 void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	sha256_ctx_t	context;
+	_align_32_bit sha256_ctx_t context;
+	
 	sha256_init(&context);
 	sha256_update(&context, data, len);
 	sha256_final(&context, digest);
@@ -537,7 +540,7 @@ void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LE
 
 ICACHE_FLASH_ATTR
 char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
-	sha256_ctx_t	context;
+	_align_32_bit sha256_ctx_t context;
 
 	sha256_init(&context);
 	sha256_update(&context, data, len);
