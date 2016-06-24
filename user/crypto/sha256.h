@@ -39,10 +39,10 @@
 #define SHA256_DIGEST_LENGTH		32
 #define SHA256_DIGEST_STRING_LENGTH	(SHA256_DIGEST_LENGTH * 2 + 1)
 
-typedef struct {
+typedef _align_32_bit struct {
 	uint32_t	state[8];
 	uint64_t	bitcount;
-	_align_32_bit uint8_t	buffer[SHA256_BLOCK_LENGTH];
+	uint8_t	buffer[SHA256_BLOCK_LENGTH];
 } sha256_ctx_t;
 
 ICACHE_FLASH_ATTR void sha256_init(sha256_ctx_t *context);

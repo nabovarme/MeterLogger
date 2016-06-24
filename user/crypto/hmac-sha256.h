@@ -29,9 +29,9 @@
 #include "crypto/crypto.h"
 #include "crypto/sha256.h"
 
-typedef struct {
-	_align_32_bit uint8_t o_key_pad[SHA256_BLOCK_LENGTH];
-	_align_32_bit sha256_ctx_t ctx;
+typedef _align_32_bit struct {
+	uint8_t o_key_pad[SHA256_BLOCK_LENGTH];
+	sha256_ctx_t ctx;
 } hmac_sha256_ctx_t;
 
 ICACHE_FLASH_ATTR void hmac_sha256_init(hmac_sha256_ctx_t *hctx, const uint8_t *key, const uint32_t keylen);
