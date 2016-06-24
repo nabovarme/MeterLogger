@@ -29,11 +29,11 @@ int main(int argc, const char * argv[]) {
     init_aes_hmac_combined(master_key, sizeof(master_key));
     
     // encrypt
-    mqtt_message_l = x_encrypt_aes_hmac_combined(mqtt_message, topic, strlen(topic) + 1, cleartext, strlen(cleartext) + 1);
+    mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, topic, strlen(topic) + 1, cleartext, strlen(cleartext) + 1);
 
     // decrypt
     memset(buffer, 0, sizeof(buffer));
-    mqtt_message_l = x_decrypt_aes_hmac_combined(buffer, topic, strlen(topic) + 1, mqtt_message, mqtt_message_l);
+    mqtt_message_l = decrypt_aes_hmac_combined(buffer, topic, strlen(topic) + 1, mqtt_message, mqtt_message_l);
 
     printf("----\n");
     sha256_ctx_t context;
