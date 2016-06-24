@@ -4,6 +4,7 @@ use strict;
 use Data::Dumper;
 use Net::MQTT::Simple;
 use Crypt::Mode::CBC;
+use Math::Random::Secure qw(rand);
 use Digest::SHA qw( sha256 hmac_sha256 );
 
 #use lib qw( /etc/apache2/perl );
@@ -21,7 +22,7 @@ my $hmac_sha256_hash;
 
 my $topic = '/config/v2/' . $meter_serial . '/' . $mtqq_cmd;
 
-my $iv = pack('H*', 'd560acc9e7f41d0980018556678c8b74');
+my $iv = join('', map(chr(int rand(256)), 1..16));
 
 #my $mqtt = Net::MQTT::Simple->new(q[127.0.0.1]);
 my $mqtt = Net::MQTT::Simple->new(q[10.8.0.84]);
