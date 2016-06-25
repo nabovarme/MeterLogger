@@ -330,6 +330,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	char function_name[FUNCTIONNAME_L];
 		
 	// copy and null terminate
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	memcpy(mqtt_topic, topic, topic_len);
 	mqtt_topic[topic_len] = 0;
 	memcpy(mqtt_message, data, data_len);
@@ -343,8 +344,9 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	
 	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	memset(mqtt_message, 0, sizeof(mqtt_message));
-		
+	
 	// parse mqtt topic for function call name
 	str = strtok(mqtt_topic, "/");
 	while (str != NULL) {

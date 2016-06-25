@@ -41,8 +41,8 @@ static void kmp_received_task(os_event_t *events) {
 	unsigned int i;
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
-	char key_value[128];
-	_align_32_bit unsigned char topic[128];
+	char key_value[256];
+	_align_32_bit unsigned char topic[256];
 	_align_32_bit unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
@@ -78,6 +78,7 @@ static void kmp_received_task(os_event_t *events) {
 			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
 			// BUG here.                        returns 0 -^
 			// this is a fix
+			memset(topic, 0, sizeof(topic));			// clear it
 			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 			tfp_snprintf(topic, 128, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
 
@@ -242,11 +243,12 @@ void kmp_request_send() {
 #ifdef DEBUG_NO_METER
 	// clear data
 	memset(message, 0, sizeof(message));
+	memset(topic, 0, sizeof(message));
 
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
-	tfp_snprintf(topic, 128, "/sample/v1/%u/%u", kmp_serial, get_unix_time());
+	tfp_snprintf(topic, 128, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
 

@@ -12,13 +12,14 @@
 #include "crypto/aes.h"
 #include "crypto/sha256.h"
 #include "crypto/hmac-sha256.h"
+#include "user_config.h"
 
 // variables passed to crypto library have to be int32_t aligned becouse they are casted and accessed as such
 _align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 _align_32_bit uint8_t aes_key[16];
 _align_32_bit uint8_t hmac_sha256_key[16];
 
-void init_aes_hmac_combined(const uint8_t *key, size_t key_l) {
+void init_aes_hmac_combined(uint8_t *key, size_t key_l) {
 	uint i;
 	
 #ifdef DEBUG
@@ -59,8 +60,9 @@ void init_aes_hmac_combined(const uint8_t *key, size_t key_l) {
 }
 
 ICACHE_FLASH_ATTR
-size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topic_l, const uint8_t *message, size_t message_l) {
+size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	_align_32_bit hmac_sha256_ctx_t hctx;
+	_align_32_bit uint8_t topic_buf[MQTT_TOPIC_L];
 	int return_l;
 	
 	// encrypt
@@ -76,12 +78,28 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topi
 	else {
 		return_l = (return_l / 16) * 16;
 	}
+	
+	// topic has to be block aligned
+	printf("l: %d\n", topic_l);
+	if (topic_l % SHA256_BLOCK_LENGTH) {
+		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH + SHA256_BLOCK_LENGTH;
+	}
+	else {
+		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH;
+	}
+	printf("l2: %d\n", topic_l);
+	// "wash" topic
+	memset(topic_buf, 0xff, sizeof(topic_buf));
+	strncpy(topic_buf, topic, topic_l);
+	
 	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16, message, return_l, aes_key, dst + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
 	return_l += SHA256_DIGEST_LENGTH + 16;
 	
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
-	hmac_sha256_update(&hctx, topic, topic_l);
+	printf("topic_buf%s\n", (is_aligned(topic_buf, 3)) ? "y" : "n");
+	hmac_sha256_update(&hctx, topic_buf, topic_l);
+	printf("dst%s\n", (is_aligned(dst, 3)) ? "y" : "n");
 	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
 	hmac_sha256_final(&hctx, dst);
 	
@@ -89,15 +107,23 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topi
 }
 
 ICACHE_FLASH_ATTR
-size_t decrypt_aes_hmac_combined(uint8_t *dst, const uint8_t *topic, size_t topic_l, const uint8_t *message, size_t message_l) {
+size_t decrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	_align_32_bit hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
 
+	// topic has to be block aligned
+	if (topic_l % SHA256_BLOCK_LENGTH) {
+		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH + SHA256_BLOCK_LENGTH;
+	}
+	else {
+		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH;
+	}
+	
 	// hmac sha256
-	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
-	hmac_sha256_update(&hctx, topic, topic_l);
-	hmac_sha256_update(&hctx, message + SHA256_DIGEST_LENGTH, message_l - SHA256_DIGEST_LENGTH);
-	hmac_sha256_final(&hctx, calculated_hmac_sha256);
+//	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
+//	hmac_sha256_update(&hctx, topic, topic_l);
+//	hmac_sha256_update(&hctx, message + SHA256_DIGEST_LENGTH, message_l - SHA256_DIGEST_LENGTH);
+//	hmac_sha256_final(&hctx, calculated_hmac_sha256);
 
 	if (memcmp(calculated_hmac_sha256, message, SHA256_DIGEST_LENGTH) == 0) {
 		// hmac sha256 matches

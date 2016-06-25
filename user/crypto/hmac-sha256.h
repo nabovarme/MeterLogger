@@ -34,9 +34,9 @@ typedef _align_32_bit struct {
 	sha256_ctx_t ctx;
 } hmac_sha256_ctx_t;
 
-ICACHE_FLASH_ATTR void hmac_sha256_init(hmac_sha256_ctx_t *hctx, const uint8_t *key, const uint32_t keylen);
-ICACHE_FLASH_ATTR void hmac_sha256_update(hmac_sha256_ctx_t *hctx, const uint8_t *msg, const uint32_t msglen);
+ICACHE_FLASH_ATTR void hmac_sha256_init(hmac_sha256_ctx_t *hctx, uint8_t *key, uint32_t keylen);
+ICACHE_FLASH_ATTR void hmac_sha256_update(hmac_sha256_ctx_t *hctx, uint8_t *msg, uint32_t msglen);
 ICACHE_FLASH_ATTR void hmac_sha256_final(hmac_sha256_ctx_t *hctx, uint8_t *hmac);
-ICACHE_FLASH_ATTR void hmac_sha256(const uint8_t *key, const uint32_t keylen, const uint8_t *msg, const uint32_t msglen, uint8_t *hmac);
+ICACHE_FLASH_ATTR void hmac_sha256(uint8_t *key, uint32_t keylen, uint8_t *msg, uint32_t msglen, uint8_t *hmac);
 
 #endif

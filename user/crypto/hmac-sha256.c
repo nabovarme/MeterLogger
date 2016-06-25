@@ -27,7 +27,7 @@
 #include "crypto/hmac-sha256.h"
 
 ICACHE_FLASH_ATTR
-void hmac_sha256_init(hmac_sha256_ctx_t *hctx, const uint8_t *key, const uint32_t keylen) {
+void hmac_sha256_init(hmac_sha256_ctx_t *hctx, uint8_t *key, uint32_t keylen) {
     int i;
 	_align_32_bit uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
 	memset(i_key_pad, 0, SHA256_BLOCK_LENGTH);
@@ -46,7 +46,7 @@ void hmac_sha256_init(hmac_sha256_ctx_t *hctx, const uint8_t *key, const uint32_
 }
 
 ICACHE_FLASH_ATTR
-void hmac_sha256_update(hmac_sha256_ctx_t *hctx, const uint8_t *msg, const uint32_t msglen) {
+void hmac_sha256_update(hmac_sha256_ctx_t *hctx, uint8_t *msg, uint32_t msglen) {
 	sha256_update(&(hctx->ctx), msg, msglen);
 }
 
@@ -63,8 +63,8 @@ void hmac_sha256_final(hmac_sha256_ctx_t *hctx, uint8_t *hmac) {
 }
 
 ICACHE_FLASH_ATTR
-void hmac_sha256(const uint8_t *key, const uint32_t keylen, const uint8_t *msg, const uint32_t msglen, uint8_t *hmac) {
-	_align_32_bit hmac_sha256_ctx_t hctx;
+void hmac_sha256(uint8_t *key, uint32_t keylen, uint8_t *msg, uint32_t msglen, uint8_t *hmac) {
+	hmac_sha256_ctx_t hctx;
 	hmac_sha256_init(&hctx, key, keylen);
 	hmac_sha256_update(&hctx, msg, msglen);
 	hmac_sha256_final(&hctx, hmac);

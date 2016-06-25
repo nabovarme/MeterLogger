@@ -12,8 +12,8 @@
 #define DEFAULT_METER_SERIAL	"9999999"
 
 // MQTT
-#define MQTT_TOPIC_L (128 + 1)
-#define MQTT_MESSAGE_L (192 + 1)
+#define MQTT_TOPIC_L (128)
+#define MQTT_MESSAGE_L (192)
 
 #define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
 //#define MQTT_HOST			"10.0.1.3"
@@ -42,10 +42,10 @@
 #ifndef KEY
 #define KEY { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c }
 #endif
-#define STA_SSID "Slux"
-#define STA_PASS "w1reless"
-//#define STA_SSID "Loppen Public"
-//#define STA_PASS ""
+//#define STA_SSID "Slux"
+//#define STA_PASS "w1reless"
+#define STA_SSID "Loppen Public"
+#define STA_PASS ""
 #define STA_FALLBACK_SSID "stofferFon"
 #define STA_FALLBACK_PASS "w1reless"
 

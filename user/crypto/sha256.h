@@ -46,10 +46,10 @@ typedef _align_32_bit struct {
 } sha256_ctx_t;
 
 ICACHE_FLASH_ATTR void sha256_init(sha256_ctx_t *context);
-ICACHE_FLASH_ATTR void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len);
+ICACHE_FLASH_ATTR void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len);
 ICACHE_FLASH_ATTR void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]);
 ICACHE_FLASH_ATTR char* sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]);
-ICACHE_FLASH_ATTR void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]);
-ICACHE_FLASH_ATTR char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]);
+ICACHE_FLASH_ATTR void sha256_raw(uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]);
+ICACHE_FLASH_ATTR char* sha256_data(uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]);
 
 #endif

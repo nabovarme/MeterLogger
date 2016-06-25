@@ -168,7 +168,7 @@
  * library -- they are intended for private internal visibility/use
  * only.
  */
-void sha256_transform(sha256_ctx_t*, const uint32_t*);
+void sha256_transform(sha256_ctx_t*, uint32_t*);
 
 
 /*** SHA-XYZ INITIAL HASH VALUES AND CONSTANTS ************************/
@@ -260,7 +260,7 @@ void sha256_init(sha256_ctx_t *context) {
 	j++
 
 ICACHE_FLASH_ATTR
-void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
+void sha256_transform(sha256_ctx_t* context, uint32_t* data) {
 	uint32_t	a, b, c, d, e, f, g, h, s0, s1;
 	uint32_t	T1, *W256;
 	int		j;
@@ -319,7 +319,7 @@ void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
 #else /* SHA2_UNROLL_TRANSFORM */
 
 ICACHE_FLASH_ATTR
-void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
+void sha256_transform(sha256_ctx_t* context, uint32_t *data) {
 	uint32_t	a, b, c, d, e, f, g, h, s0, s1;
 	uint32_t	T1, T2, *W256;
 	int		j;
@@ -340,7 +340,7 @@ void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
 	do {
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Copy data while converting to host byte order */
-		REVERSE32(*data++,W256[j]);
+		REVERSE32(*data++, W256[j]);
 		/* Apply the SHA-256 compression function to update a..h */
 		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + W256[j];
 #else /* BYTE_ORDER == LITTLE_ENDIAN */
@@ -356,7 +356,6 @@ void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
 		c = b;
 		b = a;
 		a = T1 + T2;
-
 		j++;
 	} while (j < 16);
 
@@ -400,9 +399,10 @@ void sha256_transform(sha256_ctx_t* context, const uint32_t* data) {
 #endif /* SHA2_UNROLL_TRANSFORM */
 
 ICACHE_FLASH_ATTR
-void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
+void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 	unsigned int freespace, usedspace;
 
+	printf("c%s\n", (is_aligned(data, 3)) ? "y" : "n");
 	if (len == 0) {
 		// Calling with no data is valid - we do nothing
 		return;
@@ -419,6 +419,7 @@ void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
 			context->bitcount += freespace << 3;
 			len -= freespace;
 			data += freespace;
+//			printf("a%s\n", (is_aligned(data, 3)) ? "y" : "n");
 			sha256_transform(context, (uint32_t*)(void*)context->buffer);
 		} else {
 			// The buffer is not yet full
@@ -431,6 +432,7 @@ void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
 	}
 	while (len >= SHA256_BLOCK_LENGTH) {
 		// Process as many complete blocks as we can
+//		printf("a%s\n", (is_aligned(data, 3)) ? "y" : "n");
 		sha256_transform(context, (uint32_t*)(void*)data);
 		context->bitcount += SHA256_BLOCK_LENGTH << 3;
 		len -= SHA256_BLOCK_LENGTH;
@@ -509,7 +511,7 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 
 ICACHE_FLASH_ATTR
 char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]) {
-	_align_32_bit uint8_t digest[SHA256_DIGEST_LENGTH];
+	uint8_t digest[SHA256_DIGEST_LENGTH];
 	uint8_t *d = digest;
 	int i;
 
@@ -530,8 +532,8 @@ char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]
 }
 
 ICACHE_FLASH_ATTR
-void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	_align_32_bit sha256_ctx_t context;
+void sha256_raw(uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+	sha256_ctx_t context;
 	
 	sha256_init(&context);
 	sha256_update(&context, data, len);
@@ -539,8 +541,8 @@ void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LE
 }
 
 ICACHE_FLASH_ATTR
-char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
-	_align_32_bit sha256_ctx_t context;
+char* sha256_data(uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
+	sha256_ctx_t context;
 
 	sha256_init(&context);
 	sha256_update(&context, data, len);
