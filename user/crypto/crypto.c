@@ -19,8 +19,11 @@ _align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
 _align_32_bit uint8_t aes_key[16];
 _align_32_bit uint8_t hmac_sha256_key[16];
 
-void init_aes_hmac_combined(uint8_t *key, size_t key_l) {
+void init_aes_hmac_combined(uint8_t *key) {
 	uint i;
+	_align_32_bit master_key[16];
+	
+	memcpy(master_key, key, 16);
 	
 #ifdef DEBUG
 	system_soft_wdt_stop();
@@ -34,7 +37,7 @@ void init_aes_hmac_combined(uint8_t *key, size_t key_l) {
 	// generate aes_key and hmac_sha256_key from master_key
 	memset(sha256_hash, 0, sizeof(sha256_hash));
 	
-	sha256_raw(key, key_l, sha256_hash);
+	sha256_raw(master_key, 16, sha256_hash);
 	
 	// first 16 bytes is aes key
 	memcpy(aes_key, sha256_hash, sizeof(aes_key));
@@ -62,9 +65,10 @@ void init_aes_hmac_combined(uint8_t *key, size_t key_l) {
 ICACHE_FLASH_ATTR
 size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	_align_32_bit hmac_sha256_ctx_t hctx;
-	_align_32_bit uint8_t topic_buf[MQTT_TOPIC_L];
 	int return_l;
 	
+//	printf("topic%s\n", (is_aligned(topic, 4)) ? "y" : "n");
+
 	// encrypt
 	memset(dst, 0, sizeof(dst));
 	// get random iv in first 16 bytes of mqtt_message
@@ -79,28 +83,19 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, u
 		return_l = (return_l / 16) * 16;
 	}
 	
-	// topic has to be block aligned
-	printf("l: %d\n", topic_l);
-	if (topic_l % SHA256_BLOCK_LENGTH) {
-		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH + SHA256_BLOCK_LENGTH;
-	}
-	else {
-		topic_l = (topic_l / SHA256_BLOCK_LENGTH) * SHA256_BLOCK_LENGTH;
-	}
-	printf("l2: %d\n", topic_l);
-	// "wash" topic
-	memset(topic_buf, 0xff, sizeof(topic_buf));
-	strncpy(topic_buf, topic, topic_l);
-	
 	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16, message, return_l, aes_key, dst + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
 	return_l += SHA256_DIGEST_LENGTH + 16;
 	
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
-	printf("topic_buf%s\n", (is_aligned(topic_buf, 3)) ? "y" : "n");
-	hmac_sha256_update(&hctx, topic_buf, topic_l);
-	printf("dst%s\n", (is_aligned(dst, 3)) ? "y" : "n");
+	
+//	printf("topic%s\n", (is_aligned(topic, 4)) ? "y" : "n");
+	hmac_sha256_update(&hctx, topic, topic_l + 7);
+	
+//	printf("dst%s\n", (is_aligned(dst, 4)) ? "y" : "n");
+//	printf("hctx%s\n", (is_aligned(&hctx, 4)) ? "y" : "n");
 	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
+	
 	hmac_sha256_final(&hctx, dst);
 	
 	return return_l;

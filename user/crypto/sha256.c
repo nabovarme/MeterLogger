@@ -402,7 +402,8 @@ ICACHE_FLASH_ATTR
 void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 	unsigned int freespace, usedspace;
 
-	printf("c%s\n", (is_aligned(data, 3)) ? "y" : "n");
+	printf("len:%d\n", len);
+	printf("c:%s\n", (is_aligned(data, 4)) ? "y" : "n");
 	if (len == 0) {
 		// Calling with no data is valid - we do nothing
 		return;
@@ -419,7 +420,7 @@ void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 			context->bitcount += freespace << 3;
 			len -= freespace;
 			data += freespace;
-//			printf("a%s\n", (is_aligned(data, 3)) ? "y" : "n");
+			printf("a:%s\n", (is_aligned(data, 4)) ? "y" : "n");
 			sha256_transform(context, (uint32_t*)(void*)context->buffer);
 		} else {
 			// The buffer is not yet full
@@ -432,7 +433,7 @@ void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 	}
 	while (len >= SHA256_BLOCK_LENGTH) {
 		// Process as many complete blocks as we can
-//		printf("a%s\n", (is_aligned(data, 3)) ? "y" : "n");
+		printf("b:%s\n", (is_aligned(data, 4)) ? "y" : "n");
 		sha256_transform(context, (uint32_t*)(void*)data);
 		context->bitcount += SHA256_BLOCK_LENGTH << 3;
 		len -= SHA256_BLOCK_LENGTH;
@@ -452,6 +453,7 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 	uint32_t *d = (uint32_t*)(void*)digest;
 	unsigned int usedspace;
 
+	printf("final context:%s\n", (is_aligned(context, 4)) ? "y" : "n");
 	/* If no digest buffer is passed, we don't bother doing this: */
 	if (digest != (uint8_t*)0) {
 		usedspace = (context->bitcount >> 3) % SHA256_BLOCK_LENGTH;
