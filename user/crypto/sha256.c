@@ -155,7 +155,7 @@
  * library -- they are intended for private internal visibility/use
  * only.
  */
-void sha256_transform(sha256_ctx_t*, uint8_t*);
+ICACHE_FLASH_ATTR void sha256_transform(sha256_ctx_t*, uint8_t*);
 
 
 /*** SHA-XYZ INITIAL HASH VALUES AND CONSTANTS ************************/
