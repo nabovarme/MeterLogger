@@ -26,7 +26,7 @@ int buffer_l;
 int main(int argc, const char * argv[]) {
     
     // init
-    init_aes_hmac_combined(master_key, sizeof(master_key));
+    init_aes_hmac_combined(master_key);
     
     // encrypt
     mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, topic, strlen(topic) + 1, cleartext, strlen(cleartext) + 1);
@@ -34,7 +34,9 @@ int main(int argc, const char * argv[]) {
     // decrypt
     memset(buffer, 0, sizeof(buffer));
     mqtt_message_l = decrypt_aes_hmac_combined(buffer, topic, strlen(topic) + 1, mqtt_message, mqtt_message_l);
+    printf("%s\n", buffer);
 
+    /*
     printf("----\n");
     sha256_ctx_t context;
     
@@ -60,6 +62,7 @@ int main(int argc, const char * argv[]) {
         printf("%02x", buffer[i]);
     }
     printf("\n");
+     */
     
     return 0;
 }
