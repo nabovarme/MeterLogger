@@ -29,7 +29,7 @@
 #include "crypto/crypto.h"
 #include "crypto/sha256.h"
 
-typedef _align_32_bit struct {
+typedef struct {
 	uint8_t o_key_pad[SHA256_BLOCK_LENGTH];
 	sha256_ctx_t ctx;
 } hmac_sha256_ctx_t;

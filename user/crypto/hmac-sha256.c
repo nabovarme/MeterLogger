@@ -29,7 +29,7 @@
 ICACHE_FLASH_ATTR
 void hmac_sha256_init(hmac_sha256_ctx_t *hctx, uint8_t *key, uint32_t keylen) {
     int i;
-	_align_32_bit uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
+	uint8_t i_key_pad[SHA256_BLOCK_LENGTH];
 	memset(i_key_pad, 0, SHA256_BLOCK_LENGTH);
 	if (keylen > SHA256_BLOCK_LENGTH) {
 		sha256_raw(key, keylen, i_key_pad);
@@ -52,7 +52,7 @@ void hmac_sha256_update(hmac_sha256_ctx_t *hctx, uint8_t *msg, uint32_t msglen) 
 
 ICACHE_FLASH_ATTR
 void hmac_sha256_final(hmac_sha256_ctx_t *hctx, uint8_t *hmac) {
-	_align_32_bit uint8_t hash[SHA256_DIGEST_LENGTH];
+	uint8_t hash[SHA256_DIGEST_LENGTH];
 	sha256_final(&(hctx->ctx), hash);
 	sha256_init(&(hctx->ctx));
 	sha256_update(&(hctx->ctx), hctx->o_key_pad, SHA256_BLOCK_LENGTH);

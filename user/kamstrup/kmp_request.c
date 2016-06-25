@@ -224,8 +224,6 @@ void kmp_request_send() {
 	_align_32_bit char message[KMP_FRAME_L];
 	int message_l;
 #endif
-	printf("kmp_r topic:%s\n", (is_aligned(topic, 4)) ? "y" : "n");
-
     os_timer_disarm(&kmp_get_serial_timer);
     os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
     os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
@@ -240,17 +238,16 @@ void kmp_request_send() {
     os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
 	
 	kmp_requests_sent++;
-	
 #ifdef DEBUG_NO_METER
 	// clear data
-	memset(message, 0, sizeof(message));
-	memset(topic, 0, sizeof(message));
+//	memset(message, 0, sizeof(message));
+//	memset(topic, 0, sizeof(message));
 
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
-	memset(cleartext, 0, sizeof(cleartext));
+//	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
 
 	// encrypt and send
@@ -258,10 +255,10 @@ void kmp_request_send() {
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-//		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 	}
-	kmp_requests_sent = 0;	// reset retry counter
 #endif
+	kmp_requests_sent = 0;	// reset retry counter
 }
 
 // fifo

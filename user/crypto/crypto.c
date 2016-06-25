@@ -15,9 +15,9 @@
 #include "user_config.h"
 
 // variables passed to crypto library have to be int32_t aligned becouse they are casted and accessed as such
-_align_32_bit uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
-_align_32_bit uint8_t aes_key[16];
-_align_32_bit uint8_t hmac_sha256_key[16];
+uint8_t sha256_hash[SHA256_DIGEST_LENGTH];
+uint8_t aes_key[16];
+uint8_t hmac_sha256_key[16];
 
 void init_aes_hmac_combined(uint8_t *key) {
 	uint i;
@@ -64,10 +64,8 @@ void init_aes_hmac_combined(uint8_t *key) {
 
 ICACHE_FLASH_ATTR
 size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
-	_align_32_bit hmac_sha256_ctx_t hctx;
+	hmac_sha256_ctx_t hctx;
 	int return_l;
-	
-//	printf("topic%s\n", (is_aligned(topic, 4)) ? "y" : "n");
 
 	// encrypt
 	memset(dst, 0, sizeof(dst));
@@ -88,14 +86,8 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, u
 	
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
-	
-//	printf("topic%s\n", (is_aligned(topic, 4)) ? "y" : "n");
 	hmac_sha256_update(&hctx, topic, topic_l);
-	
-//	printf("dst%s\n", (is_aligned(dst, 4)) ? "y" : "n");
-//	printf("hctx%s\n", (is_aligned(&hctx, 4)) ? "y" : "n");
 	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
-	
 	hmac_sha256_final(&hctx, dst);
 	
 	return return_l;
@@ -103,7 +95,7 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, u
 
 ICACHE_FLASH_ATTR
 size_t decrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
-	_align_32_bit hmac_sha256_ctx_t hctx;
+	hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
 
 	// hmac sha256

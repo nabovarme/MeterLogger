@@ -39,7 +39,7 @@
 #define SHA256_DIGEST_LENGTH		32
 #define SHA256_DIGEST_STRING_LENGTH	(SHA256_DIGEST_LENGTH * 2 + 1)
 
-typedef _align_32_bit struct {
+typedef struct {
 	uint32_t	state[8];
 	uint64_t	bitcount;
 	uint8_t	buffer[SHA256_BLOCK_LENGTH];
