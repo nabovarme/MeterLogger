@@ -85,56 +85,56 @@ static void kmp_received_task(os_event_t *events) {
 			memset(message, 0, sizeof(message));			// clear it
         	
 			// heap size
-			tfp_snprintf(key_value, 128, "heap=%u&", system_get_free_heap_size());
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
         	
 			// heating meter specific
 			// flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[3].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "t1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// return flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "t2=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// temperature difference
 			kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// flow
 			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// current power
 			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// hours
 			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "hr=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// volume
 			kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "v1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			// power
 			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
-			tfp_snprintf(key_value, 128, "e1=%s %s&", kmp_value_string, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
 			memset(cleartext, 0, sizeof(message));
