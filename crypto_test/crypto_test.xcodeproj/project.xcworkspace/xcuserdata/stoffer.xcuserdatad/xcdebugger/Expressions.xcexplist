@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "decrypt_aes_hmac_combined:crypto.c">
+      </ContextState>
+      <ContextState
+         contextName = "main:main.c">
+      </ContextState>
+      <ContextState
+         contextName = "x_encrypt_aes_hmac_combined:crypto.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "message">
+            </PersistentString>
+            <PersistentString
+               value = "dst">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "x_sha256:_sha256.c">
+      </ContextState>
+      <ContextState
+         contextName = "init_aes_hmac_combined:crypto.c">
+      </ContextState>
+      <ContextState
+         contextName = "AES128_CBC_decrypt_buffer:aes.c">
+      </ContextState>
+      <ContextState
+         contextName = "sha256_final:sha256.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "hmac">
+            </PersistentString>
+            <PersistentString
+               value = "mqtt_message">
+            </PersistentString>
+            <PersistentString
+               value = "digest">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "sha256_raw:sha256.c">
+      </ContextState>
+      <ContextState
+         contextName = "hmac_sha256_init:hmac-sha256.c">
+      </ContextState>
+      <ContextState
+         contextName = "sha256_transform:sha256.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "data">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "aes_encrypt_test:main.c">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

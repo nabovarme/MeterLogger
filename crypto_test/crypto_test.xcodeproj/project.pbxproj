@@ -194,7 +194,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "/Users/stoffer/src/esp8266/kamstrup-wifi/user";
+				HEADER_SEARCH_PATHS = (
+					"/Users/stoffer/src/esp8266/kamstrup-wifi/user",
+					"/Users/stoffer/src/esp8266/kamstrup-wifi/crypto_test/crypto_test",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -233,7 +236,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "/Users/stoffer/src/esp8266/kamstrup-wifi/user";
+				HEADER_SEARCH_PATHS = (
+					"/Users/stoffer/src/esp8266/kamstrup-wifi/user",
+					"/Users/stoffer/src/esp8266/kamstrup-wifi/crypto_test/crypto_test",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -273,6 +279,7 @@
 				D68D6E201D17809300D2E393 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
