@@ -42,8 +42,8 @@ static void kmp_received_task(os_event_t *events) {
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[256];
-	_align_32_bit unsigned char topic[MQTT_TOPIC_L];
-	_align_32_bit unsigned char message[KMP_FRAME_L];
+	unsigned char topic[MQTT_TOPIC_L];
+	unsigned char message[KMP_FRAME_L];
 	int message_l;
 		
 	// vars for aes encryption
