@@ -47,7 +47,7 @@ static void kmp_received_task(os_event_t *events) {
 	int message_l;
 		
 	// vars for aes encryption
-	_align_32_bit uint8_t cleartext[KMP_FRAME_L];	// is casted in crypto lib
+	uint8_t cleartext[KMP_FRAME_L];
 
     // allocate struct for response
     kmp_response_t response;
@@ -219,9 +219,9 @@ void static kmp_receive_timeout_timer_func() {
 ICACHE_FLASH_ATTR
 void kmp_request_send() {
 #ifdef DEBUG_NO_METER
-	_align_32_bit char cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
-	_align_32_bit char topic[MQTT_TOPIC_L];
-	_align_32_bit char message[KMP_FRAME_L];
+	char cleartext[MQTT_MESSAGE_L];
+	char topic[MQTT_TOPIC_L];
+	char message[KMP_FRAME_L];
 	int message_l;
 #endif
     os_timer_disarm(&kmp_get_serial_timer);

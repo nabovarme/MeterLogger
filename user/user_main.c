@@ -156,7 +156,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	unsigned int i;
 	
 	// vars for aes encryption
-	_align_32_bit uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	uint8_t cleartext[MQTT_MESSAGE_L];
 
 	// clear data
 	memset(mqtt_message, 0, sizeof(mqtt_message));
@@ -321,7 +321,7 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
 	MQTT_Client *client = (MQTT_Client*)args;
-	uint8_t cleartext[MQTT_MESSAGE_L];	// is casted in crypto lib
+	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
@@ -344,7 +344,6 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	
 	// clear data
-	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	
 	// parse mqtt topic for function call name
@@ -353,6 +352,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		strncpy(function_name, str, FUNCTIONNAME_L);   // save last parameter as function_name
 		str = strtok(NULL, "/");
 	}
+	// ..and clear for further use
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	
 	// mqtt rpc dispatcher goes here
 	if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
