@@ -34,13 +34,6 @@
 #include "crypto/crypto.h"
 #include "crypto/sha256.h"
 
-/*
- * ASSERT NOTE:
- * Some sanity checking code is included using assert().  On my FreeBSD
- * system, this additional code can be removed by compiling with NDEBUG
- * defined.  Check your own systems manpage on assert() to see how to
- * compile WITHOUT the sanity checking code on your system.
- *
 
 /*** SHA-256/384/512 Machine Architecture Definitions *****************/
 /*
@@ -155,7 +148,7 @@
  * library -- they are intended for private internal visibility/use
  * only.
  */
-ICACHE_FLASH_ATTR void sha256_transform(sha256_ctx_t*, uint8_t*);
+void sha256_transform(sha256_ctx_t*, uint8_t*);
 
 
 /*** SHA-XYZ INITIAL HASH VALUES AND CONSTANTS ************************/
@@ -211,87 +204,88 @@ void sha256_init(sha256_ctx_t *context) {
 
 ICACHE_FLASH_ATTR
 void sha256_transform(sha256_ctx_t* context, uint8_t *data) {
-	uint32_t	a, b, c, d, e, f, g, h, s0, s1;
-	uint32_t	T1, T2, *W256;
-	int		j;
-
-	W256 = (uint32_t*)(void*)context->buffer;
-
-	/* Initialize registers with the prev. intermediate value */
-	a = context->state[0];
-	b = context->state[1];
-	c = context->state[2];
-	d = context->state[3];
-	e = context->state[4];
-	f = context->state[5];
-	g = context->state[6];
-	h = context->state[7];
-
-	j = 0;
-	do {
+    uint32_t	a, b, c, d, e, f, g, h, s0, s1;
+    uint32_t	T1, T2, *W256;
+    int		j;
+    
+    W256 = (uint32_t*)(void*)context->buffer;
+    
+    /* Initialize registers with the prev. intermediate value */
+    a = context->state[0];
+    b = context->state[1];
+    c = context->state[2];
+    d = context->state[3];
+    e = context->state[4];
+    f = context->state[5];
+    g = context->state[6];
+    h = context->state[7];
+    
+    j = 0;
+    do {
 #if BYTE_ORDER == LITTLE_ENDIAN
-		/* Copy data while converting to host byte order */
-        uint32_t u32 = (data[1] << 24) | (data[0] << 16) | (data[3] << 8) | data[2];
-		W256[j] = ((u32 & 0xff00ff00UL) >> 8) | ((u32 & 0x00ff00ffUL) << 8);
-		REVERSE32(u32, W256[j]);
-		data += sizeof(uint32_t);
-		/* Apply the SHA-256 compression function to update a..h */
-		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + W256[j];
+        /* Copy data while converting to host byte order */
+        uint32_t u32;
+        u32 = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+        W256[j] = u32;
+        //		REVERSE32(u32, W256[j]);
+        data += sizeof(uint32_t);
+        /* Apply the SHA-256 compression function to update a..h */
+        T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + W256[j];
 #else /* BYTE_ORDER == LITTLE_ENDIAN */
-		/* Apply the SHA-256 compression function to update a..h with copy */
-		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + (W256[j] = *data++);
+        /* Apply the SHA-256 compression function to update a..h with copy */
+        T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + (W256[j] = *data++);
 #endif /* BYTE_ORDER == LITTLE_ENDIAN */
-		T2 = Sigma0_256(a) + Maj(a, b, c);
-		h = g;
-		g = f;
-		f = e;
-		e = d + T1;
-		d = c;
-		c = b;
-		b = a;
-		a = T1 + T2;
-		j++;
-	} while (j < 16);
-
-	do {
-		/* Part of the message block expansion: */
-		s0 = W256[(j+1)&0x0f];
-		s0 = sigma0_256(s0);
-		s1 = W256[(j+14)&0x0f];	
-		s1 = sigma1_256(s1);
-
-		/* Apply the SHA-256 compression function to update a..h */
-		T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] + 
-		     (W256[j&0x0f] += s1 + W256[(j+9)&0x0f] + s0);
-		T2 = Sigma0_256(a) + Maj(a, b, c);
-		h = g;
-		g = f;
-		f = e;
-		e = d + T1;
-		d = c;
-		c = b;
-		b = a;
-		a = T1 + T2;
-
-		j++;
-	} while (j < 64);
-
-	/* Compute the current intermediate hash value */
-	context->state[0] += a;
-	context->state[1] += b;
-	context->state[2] += c;
-	context->state[3] += d;
-	context->state[4] += e;
-	context->state[5] += f;
-	context->state[6] += g;
-	context->state[7] += h;
-
-	/* Clean up */
-	a = b = c = d = e = f = g = h = T1 = T2 = 0;
+        T2 = Sigma0_256(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+        j++;
+    } while (j < 16);
+    
+    do {
+        /* Part of the message block expansion: */
+        s0 = W256[(j+1)&0x0f];
+        s0 = sigma0_256(s0);
+        s1 = W256[(j+14)&0x0f];
+        s1 = sigma1_256(s1);
+        
+        /* Apply the SHA-256 compression function to update a..h */
+        T1 = h + Sigma1_256(e) + Ch(e, f, g) + K256[j] +
+        (W256[j&0x0f] += s1 + W256[(j+9)&0x0f] + s0);
+        T2 = Sigma0_256(a) + Maj(a, b, c);
+        h = g;
+        g = f;
+        f = e;
+        e = d + T1;
+        d = c;
+        c = b;
+        b = a;
+        a = T1 + T2;
+        
+        j++;
+    } while (j < 64);
+    
+    /* Compute the current intermediate hash value */
+    context->state[0] += a;
+    context->state[1] += b;
+    context->state[2] += c;
+    context->state[3] += d;
+    context->state[4] += e;
+    context->state[5] += f;
+    context->state[6] += g;
+    context->state[7] += h;
+    
+    /* Clean up */
+    a = b = c = d = e = f = g = h = T1 = T2 = 0;
 }
 
 ICACHE_FLASH_ATTR
-void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
+void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
 	unsigned int freespace, usedspace;
 
 	if (len == 0) {
@@ -310,7 +304,7 @@ void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 			context->bitcount += freespace << 3;
 			len -= freespace;
 			data += freespace;
-			sha256_transform(context, context->buffer);
+            sha256_transform(context, context->buffer);
 		} else {
 			// The buffer is not yet full
 			memcpy(&context->buffer[usedspace], data, len);
@@ -322,7 +316,7 @@ void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 	}
 	while (len >= SHA256_BLOCK_LENGTH) {
 		// Process as many complete blocks as we can
-		sha256_transform(context, data);
+        sha256_transform(context, data);
 		context->bitcount += SHA256_BLOCK_LENGTH << 3;
 		len -= SHA256_BLOCK_LENGTH;
 		data += SHA256_BLOCK_LENGTH;
@@ -338,6 +332,7 @@ void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 
 ICACHE_FLASH_ATTR
 void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+	uint32_t *d = (uint32_t*)(void*)digest;
 	unsigned int usedspace;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
@@ -359,7 +354,7 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 					memset(&context->buffer[usedspace], 0, SHA256_BLOCK_LENGTH - usedspace);
 				}
 				/* Do second-to-last transform: */
-				sha256_transform(context, context->buffer);
+                sha256_transform(context, context->buffer);
 
 				/* And set-up for the last transform: */
 				memset(context->buffer, 0, SHA256_SHORT_BLOCK_LENGTH);
@@ -384,11 +379,7 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 			int	j;
 			for (j = 0; j < 8; j++) {
 				REVERSE32(context->state[j],context->state[j]);
-				digest[0] = context->state[j];
-				digest[1] = context->state[j + 1];
-				digest[2] = context->state[j + 2];
-				digest[3] = context->state[j + 3];
-				digest += sizeof(uint32_t);
+				*d++ = context->state[j];
 			}
 		}
 #else
@@ -403,7 +394,7 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 
 ICACHE_FLASH_ATTR
 char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]) {
-	uint8_t digest[SHA256_DIGEST_LENGTH];
+    uint8_t digest[SHA256_DIGEST_LENGTH];
 	uint8_t *d = digest;
 	int i;
 
@@ -424,7 +415,7 @@ char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]
 }
 
 ICACHE_FLASH_ATTR
-void sha256_raw(uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 	sha256_ctx_t context;
 	
 	sha256_init(&context);
@@ -433,8 +424,8 @@ void sha256_raw(uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH])
 }
 
 ICACHE_FLASH_ATTR
-char* sha256_data(uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
-	sha256_ctx_t context;
+char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
+    sha256_ctx_t context;
 
 	sha256_init(&context);
 	sha256_update(&context, data, len);
