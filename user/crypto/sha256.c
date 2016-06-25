@@ -231,7 +231,7 @@ void sha256_transform(sha256_ctx_t* context, uint8_t *data) {
 	do {
 #if BYTE_ORDER == LITTLE_ENDIAN
 		/* Copy data while converting to host byte order */
-        uint32_t u32 = (data[1] << 24) | (data[0] << 16) | (data[3] << 8) | data[2];
+        uint32_t u32 = (data[1] << 24) | (data[0] << 16) | (data[3] << 8) | data[2];
 		W256[j] = ((u32 & 0xff00ff00UL) >> 8) | ((u32 & 0x00ff00ffUL) << 8);
 		REVERSE32(u32, W256[j]);
 		data += sizeof(uint32_t);
