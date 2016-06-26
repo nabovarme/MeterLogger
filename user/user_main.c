@@ -278,19 +278,75 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	MQTT_Client *client = (MQTT_Client*)args;
-	unsigned char topic[MQTT_TOPIC_L];
+	unsigned char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	int mqtt_message_l;
 
 #ifdef DEBUG
 	printf("\n\rMQTT: Connected\n\r");
 #endif
 
-	// set MQTT LWP topic and subscribe to /config/v1/serial/#
+	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
 #else
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
 #endif
-	MQTT_Subscribe(client, topic, 0);
+	MQTT_Subscribe(client, mqtt_topic, 0);
+	
+	// send mqtt version
+	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+#ifdef IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+#ifdef IMPULSE
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
+#else
+#	ifdef THERMO_NO
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#endif
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+
+	// send mqtt uptime
+	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+#ifdef IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+
+#ifndef IMPULSE
+	// send mqtt status
+	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+#endif	
 
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
