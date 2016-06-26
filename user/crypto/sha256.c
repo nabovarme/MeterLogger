@@ -378,11 +378,11 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 			int	j;
 			for (j = 0; j < 8; j++) {
 				REVERSE32(context->state[j],context->state[j]);
-                digest[0] = ((context->state[j] >> 0) & 0xff);
-                digest[1] = ((context->state[j] >> 8) & 0xff);
-                digest[2] = ((context->state[j] >> 16) & 0xff);
-                digest[3] = ((context->state[j] >> 24) & 0xff);
-                digest += sizeof(uint32_t);
+				digest[0] = ((context->state[j] >> 0) & 0xff);
+				digest[1] = ((context->state[j] >> 8) & 0xff);
+				digest[2] = ((context->state[j] >> 16) & 0xff);
+				digest[3] = ((context->state[j] >> 24) & 0xff);
+				digest += sizeof(uint32_t);
 			}
 		}
 #else
