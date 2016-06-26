@@ -332,7 +332,6 @@ void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
 
 ICACHE_FLASH_ATTR
 void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
-	uint32_t *d = (uint32_t*)(void*)digest;
 	unsigned int usedspace;
 
 	/* If no digest buffer is passed, we don't bother doing this: */
@@ -379,7 +378,11 @@ void sha256_final(sha256_ctx_t *context, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 			int	j;
 			for (j = 0; j < 8; j++) {
 				REVERSE32(context->state[j],context->state[j]);
-				*d++ = context->state[j];
+                digest[0] = ((context->state[j] >> 0) & 0xff);
+                digest[1] = ((context->state[j] >> 8) & 0xff);
+                digest[2] = ((context->state[j] >> 16) & 0xff);
+                digest[3] = ((context->state[j] >> 24) & 0xff);
+                digest += sizeof(uint32_t);
 			}
 		}
 #else
