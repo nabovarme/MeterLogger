@@ -26,6 +26,11 @@ thermo actuator is normal open
 LED_ON_AC=1  
 use led to indicate ac state  
 
+KEY=ef500c9268cf749016d26d6cbfaaf7bf
+master key for crypto, 16 bytes
+Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
+
+Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
 **MQTT format for messages sent _to_ meter**  
 
 | Topic                                      | Message                                                            |
