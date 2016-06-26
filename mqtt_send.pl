@@ -16,7 +16,7 @@ my $m = Crypt::Mode::CBC->new('AES');
 my $protocol_version;
 my $unix_time;
 my $meter_serial = $ARGV[0] || '9999999';
-my $mtqq_cmd = $ARGV[1] || "version\0\0\0";
+my $mtqq_cmd = $ARGV[1] || "version";
 my $message = $ARGV[2] || '';
 my $hmac_sha256_hash;
 
