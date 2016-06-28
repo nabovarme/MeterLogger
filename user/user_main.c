@@ -47,7 +47,6 @@ uint32_t impulse_rising_edge_time;
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqttClient;
-static os_timer_t mqtt_reconnect_timer;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
@@ -68,13 +67,6 @@ static os_timer_t ext_wd_timer;
 uint16_t counter = 0;
 
 struct rst_info *rtc_info;
-
-ICACHE_FLASH_ATTR void static mqtt_reconnect_timer_func(void *arg) {
-#ifdef DEBUG
-	printf("MQTT: reconnect\n");
-#endif	// DEBUG
-	MQTT_Connect(&mqttClient);
-}
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
@@ -112,6 +104,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
 	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
 	MQTT_OnData(&mqttClient, mqttDataCb);
+	MQTT_OnTimeout(&mqttClient, mqttTimeoutCb);
 
 	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
@@ -206,14 +199,14 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		if (mqttClient.pCon != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+#ifdef DEBUG
+			printf("mqtt published\n");
+#endif	// DEBUG
 		}
 
 		// set offset for next calculation
 		last_impulse_meter_count = sys_cfg.impulse_meter_count;
 		last_impulse_time = impulse_time;
-#ifdef DEBUG
-		printf("current_energy: %u\n", current_energy);
-#endif
 	}
 	else {
 		// send ping to keep mqtt alive
@@ -293,8 +286,6 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Connected\n");
 #endif
-	// stop mqtt_reconnect_timer
-	os_timer_disarm(&mqtt_reconnect_timer);
 
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
@@ -374,19 +365,22 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
-//	INFO("MQTT: Disconnected - reconnect\r\n");
 #ifdef DEBUG
-	printf("MQTT: Disconnected - reconnect\n");
-#endif
-	os_timer_disarm(&mqtt_reconnect_timer);
-	os_timer_setfn(&mqtt_reconnect_timer, (os_timer_func_t *)mqtt_reconnect_timer_func, NULL);
-	os_timer_arm(&mqtt_reconnect_timer, 5000, 1);		// every 5 second
+	printf("MQTT: Disconnected\n");
+#endif	// DEBUG
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 	INFO("MQTT: Published\r\n");
 }
 
+ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
+MQTT_Client *client = (MQTT_Client*)args;
+#ifdef DEBUG
+	printf("MQTT: Timeout\n");
+#endif
+}
+	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
 	MQTT_Client *client = (MQTT_Client*)args;
 	uint8_t cleartext[MQTT_MESSAGE_L];
