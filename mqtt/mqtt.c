@@ -250,9 +250,8 @@ READPACKET:
 			if (msg_type == MQTT_MSG_TYPE_CONNACK) {
 				if (client->mqtt_state.pending_msg_type != MQTT_MSG_TYPE_CONNECT) {
 					INFO("MQTT: Invalid packet\r\n");
-						// espconn_disconnect(client->pCon); dont call this in any espconn callback
-						client->connState = TCP_RECONNECT_DISCONNECTING;
-					}
+					client->connState = TCP_RECONNECT_DISCONNECTING;
+					// espconn_disconnect(client->pCon); dont call this in any espconn callback
 				} else {
 					INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
 					client->connState = MQTT_DATA;
