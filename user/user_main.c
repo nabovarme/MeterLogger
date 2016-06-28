@@ -113,8 +113,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	struct softap_config ap_conf;
 	
-	INFO("\r\nAP mode\r\n");
-	
 	wifi_softap_get_config(&ap_conf);
 	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	memset(ap_conf.password, 0, sizeof(ap_conf.password));
@@ -277,7 +275,7 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 }
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
-	MQTT_Client *client = (MQTT_Client*)args;
+	MQTT_Client *client = (MQTT_Client*)args;	// DEBUG: use global var
 	unsigned char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -365,9 +363,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
-#ifdef DEBUG
-	printf("MQTT: Disconnected\n");
-#endif	// DEBUG
+	INFO("MQTT: Disconnected\r\n");
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
@@ -377,7 +373,7 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 MQTT_Client *client = (MQTT_Client*)args;
 #ifdef DEBUG
-	printf("MQTT: Timeout\n");
+	INFO("MQTT: Timeout\n");
 #endif
 }
 	
@@ -812,7 +808,5 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		os_timer_arm(&sample_mode_timer, 18000, 0);
 #endif
 	}
-		
-	INFO("\r\nSystem started ...\r\n");
 }
 

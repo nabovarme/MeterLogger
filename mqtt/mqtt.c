@@ -258,7 +258,8 @@ READPACKET:
 #endif
 					}
 					else {
-						espconn_disconnect(client->pCon);
+						client->connState = TCP_RECONNECT_DISCONNECTING;
+						// espconn_disconnect(client->pCon); dont call this in any espconn callback
 					}
 				} else {
 					INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
@@ -401,9 +402,6 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 				client->timeoutCb((uint32_t*)client);
 		}
 	}
-	else {
-		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
-	}
 	if (client->sendTimeout > 0)
 		client->sendTimeout --;
 }
@@ -542,7 +540,7 @@ MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos)
 	client->mqtt_state.outbound_message = mqtt_msg_subscribe(&client->mqtt_state.mqtt_connection,
 	                                      topic, qos,
 	                                      &client->mqtt_state.pending_msg_id);
-	INFO("MQTT: queue subscribe, topic\"%s\", id: %d\r\n", topic, client->mqtt_state.pending_msg_id);
+//	INFO("MQTT: queue subscribe, topic\"%s\", id: %d\r\n", topic, client->mqtt_state.pending_msg_id);
 	while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
 		INFO("MQTT: Queue full\r\n");
 		if (QUEUE_Gets(&client->msgQueue, dataBuffer, &dataLen, MQTT_BUF_SIZE) == -1) {
