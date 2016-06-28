@@ -253,7 +253,7 @@ void kmp_request_send() {
 	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
-	if (mqtt_client && mqtt_client->mqttClient.pCon) {
+	if (mqtt_client) {
 		// if mqtt_client is initialized
 		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
 	}
