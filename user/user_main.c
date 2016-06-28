@@ -283,7 +283,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 
 #ifdef DEBUG
 	printf("MQTT: Connected\n");
-#endif
+#endif	// DEBUG
 
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
@@ -363,18 +363,22 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
-	INFO("MQTT: Disconnected\r\n");
+#ifdef DEBUG
+	printf("MQTT: Disconnected\r");
+#endif	// DEBUG
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
-	INFO("MQTT: Published\r\n");
+#ifdef DEBUG
+	printf("MQTT: Published\n");
+#endif	// DEBUG
 }
 
 ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 MQTT_Client *client = (MQTT_Client*)args;
 #ifdef DEBUG
-	INFO("MQTT: Timeout\n");
-#endif
+	printf("MQTT: Timeout\n");
+#endif	// DEBUG
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
