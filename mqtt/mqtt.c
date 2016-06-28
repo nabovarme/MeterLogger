@@ -401,6 +401,9 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 				client->timeoutCb((uint32_t*)client);
 		}
 	}
+	else {
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+	}
 	if (client->sendTimeout > 0)
 		client->sendTimeout --;
 }
