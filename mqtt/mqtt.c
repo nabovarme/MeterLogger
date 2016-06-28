@@ -250,16 +250,8 @@ READPACKET:
 			if (msg_type == MQTT_MSG_TYPE_CONNACK) {
 				if (client->mqtt_state.pending_msg_type != MQTT_MSG_TYPE_CONNECT) {
 					INFO("MQTT: Invalid packet\r\n");
-					if (client->security) {
-#ifdef MQTT_SSL_ENABLE
-						espconn_secure_disconnect(client->pCon);
-#else
-						INFO("TCP: Do not support SSL\r\n");
-#endif
-					}
-					else {
-						client->connState = TCP_RECONNECT_DISCONNECTING;
 						// espconn_disconnect(client->pCon); dont call this in any espconn callback
+						client->connState = TCP_RECONNECT_DISCONNECTING;
 					}
 				} else {
 					INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
