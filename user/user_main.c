@@ -198,7 +198,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 			// if mqtt_client is initialized
 			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 #ifdef DEBUG
-			printf("mqtt published\n");
+			printf("MQTT: Publish'ed\n");
 #endif	// DEBUG
 		}
 
