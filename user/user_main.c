@@ -46,7 +46,7 @@ uint32_t impulse_falling_edge_time;
 uint32_t impulse_rising_edge_time;
 #endif // ENDIF IMPULSE
 
-MQTT_Client mqttClient;
+MQTT_Client mqtt_client;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
@@ -88,9 +88,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
 #endif // IMPULSE
 	
-	MQTT_InitConnection(&mqttClient, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
+	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
-	MQTT_InitClient(&mqttClient, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
+	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
 
 	// set MQTT LWP topic
 #ifdef IMPULSE
@@ -98,13 +98,13 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #else
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/offline/v1/%07u", kmp_get_received_serial());
 #endif
-	MQTT_InitLWT(&mqttClient, topic, "", 0, 0);
+	MQTT_InitLWT(&mqtt_client, topic, "", 0, 0);
 	
-	MQTT_OnConnected(&mqttClient, mqttConnectedCb);
-	MQTT_OnDisconnected(&mqttClient, mqttDisconnectedCb);
-	MQTT_OnPublished(&mqttClient, mqttPublishedCb);
-	MQTT_OnData(&mqttClient, mqttDataCb);
-	MQTT_OnTimeout(&mqttClient, mqttTimeoutCb);
+	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
+	MQTT_OnDisconnected(&mqtt_client, mqttDisconnectedCb);
+	MQTT_OnPublished(&mqtt_client, mqttPublishedCb);
+	MQTT_OnData(&mqtt_client, mqttDataCb);
+	MQTT_OnTimeout(&mqtt_client, mqttTimeoutCb);
 
 	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
@@ -194,9 +194,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 
-		if (mqttClient.pCon != NULL) {
+		if (mqtt_client.pCon != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqttClient, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 #ifdef DEBUG
 			printf("sample_timer_func publish\n");
 #endif	// DEBUG
@@ -208,9 +208,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	}
 	else {
 		// send ping to keep mqtt alive
-		if (mqttClient.pCon != NULL) {
+		if (mqtt_client.pCon != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Ping(&mqttClient);
+			MQTT_Ping(&mqtt_client);
 		}
 	}
 
@@ -270,12 +270,11 @@ ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
-		MQTT_Connect(&mqttClient);
+		MQTT_Connect(&mqtt_client);
 	}
 }
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
-	MQTT_Client *client = (MQTT_Client*)args;	// DEBUG: use global var
 	unsigned char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -291,7 +290,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
 #endif
-	MQTT_Subscribe(client, mqtt_topic, 0);
+	MQTT_Subscribe(&mqtt_client, mqtt_topic, 0);
 	
 	// send mqtt version
 	// clear data
@@ -314,7 +313,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #endif
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 
 	// send mqtt uptime
 	// clear data
@@ -330,7 +329,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 
 #ifndef IMPULSE
 	// send mqtt status
@@ -343,16 +342,16 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 #endif	
 
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
-	en61107_set_mqtt_client(client);
+	en61107_set_mqtt_client(&mqtt_client);
 #elif defined IMPULSE
-	//kmp_set_mqtt_client(client);
+	//kmp_set_mqtt_client(&mqtt_client);
 #else
-	kmp_set_mqtt_client(client);
+	kmp_set_mqtt_client(&mqtt_client);
 #endif
 	
 	// sample once and start sample timer
@@ -375,14 +374,12 @@ ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
-MQTT_Client *client = (MQTT_Client*)args;
 #ifdef DEBUG
 	printf("MQTT: Timeout\n");
 #endif	// DEBUG
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
-	MQTT_Client *client = (MQTT_Client*)args;
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
@@ -428,7 +425,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		memset(cleartext, 0, sizeof(cleartext));
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
@@ -449,7 +446,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
@@ -462,7 +459,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
@@ -478,7 +475,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifdef DEBUG
 		system_print_meminfo();
 #endif
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
@@ -499,7 +496,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
@@ -512,7 +509,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
@@ -530,7 +527,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
@@ -551,7 +548,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off
@@ -687,8 +684,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(THERMO_NC)\n\r");
 #endif
 
-	// clear mqttClient
-	memset(&mqttClient, 0, sizeof(MQTT_Client));
+	// clear mqtt_client
+	memset(&mqtt_client, 0, sizeof(MQTT_Client));
 
 #ifndef DEBUG
 	// disable serial debug
