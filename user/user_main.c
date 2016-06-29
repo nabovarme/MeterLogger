@@ -377,6 +377,7 @@ ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Timeout\n");
 #endif	// DEBUG
+	MQTT_Connect(&mqtt_client);
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
