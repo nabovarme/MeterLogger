@@ -35,7 +35,6 @@
 #include "user_config.h"
 #include "mqtt.h"
 #include "queue.h"
-#include "mqtt_utils.h"
 
 #define MQTT_TASK_PRIO        		USER_TASK_PRIO_1
 #define MQTT_TASK_QUEUE_SIZE    	1
@@ -139,7 +138,7 @@ mqtt_send_keepalive(MQTT_Client *client)
 		client->keepAliveTick = 0;
 		client->connState = MQTT_DATA;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
-	} 
+	}
 	else {
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
@@ -155,7 +154,7 @@ void ICACHE_FLASH_ATTR
 mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 {
 	if (mqttClient->pCon != NULL) {
-		INFO("Free memory\r\n");	
+		INFO("Free memory\r\n");
 		espconn_delete(mqttClient->pCon);
 		if (mqttClient->pCon->proto.tcp)
 			os_free(mqttClient->pCon->proto.tcp);
@@ -237,6 +236,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	struct espconn *pCon = (struct espconn*)arg;
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 
+	client->keepAliveTick = 0;
 READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
 	if (len < MQTT_BUF_SIZE && len > 0) {
@@ -364,6 +364,8 @@ mqtt_tcpclient_sent_cb(void *arg)
 	MQTT_Client* client = (MQTT_Client *)pCon->reverse;
 	INFO("TCP: Sent\r\n");
 	client->sendTimeout = 0;
+	client->keepAliveTick =0;
+
 	if ((client->connState == MQTT_DATA || client->connState == MQTT_KEEPALIVE_SEND)
 				&& client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH) {
 		if (client->publishedCb)
@@ -531,7 +533,33 @@ MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos)
 	client->mqtt_state.outbound_message = mqtt_msg_subscribe(&client->mqtt_state.mqtt_connection,
 	                                      topic, qos,
 	                                      &client->mqtt_state.pending_msg_id);
-//	INFO("MQTT: queue subscribe, topic\"%s\", id: %d\r\n", topic, client->mqtt_state.pending_msg_id);
+	INFO("MQTT: queue subscribe, topic\"%s\", id: %d\r\n", topic, client->mqtt_state.pending_msg_id);
+	while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
+		INFO("MQTT: Queue full\r\n");
+		if (QUEUE_Gets(&client->msgQueue, dataBuffer, &dataLen, MQTT_BUF_SIZE) == -1) {
+			INFO("MQTT: Serious buffer error\r\n");
+			return FALSE;
+		}
+	}
+	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+	return TRUE;
+}
+
+/**
+  * @brief  MQTT un-subscibe function.
+  * @param  client: 	MQTT_Client reference
+  * @param  topic:   String topic will un-subscribe
+  * @retval TRUE if success queue
+  */
+BOOL ICACHE_FLASH_ATTR
+MQTT_UnSubscribe(MQTT_Client *client, char* topic)
+{
+	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint16_t dataLen;
+	client->mqtt_state.outbound_message = mqtt_msg_unsubscribe(&client->mqtt_state.mqtt_connection,
+	                                      topic,
+	                                      &client->mqtt_state.pending_msg_id);
+	INFO("MQTT: queue un-subscribe, topic\"%s\", id: %d\r\n", topic, client->mqtt_state.pending_msg_id);
 	while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
 		INFO("MQTT: Queue full\r\n");
 		if (QUEUE_Gets(&client->msgQueue, dataBuffer, &dataLen, MQTT_BUF_SIZE) == -1) {
@@ -600,14 +628,14 @@ MQTT_Task(os_event_t *e)
 		}
 		else {
 			espconn_disconnect(client->pCon);
-		}		
+		}
 		break;
 	case TCP_DISCONNECTED:
 		INFO("MQTT: Disconnected\r\n");
 		mqtt_tcpclient_delete(client);
 		break;
 	case MQTT_DELETED:
-		INFO("MQTT: Deleted client\r\n");		
+		INFO("MQTT: Deleted client\r\n");
 		mqtt_client_delete(client);
 		break;
 	case MQTT_KEEPALIVE_SEND:
@@ -687,15 +715,21 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 	os_strcpy(mqttClient->connect_info.client_id, client_id);
 	mqttClient->connect_info.client_id[temp] = 0;
 
-	temp = os_strlen(client_user);
-	mqttClient->connect_info.username = (uint8_t*)os_zalloc(temp + 1);
-	os_strcpy(mqttClient->connect_info.username, client_user);
-	mqttClient->connect_info.username[temp] = 0;
+	if (client_user)
+	{
+		temp = os_strlen(client_user);
+		mqttClient->connect_info.username = (uint8_t*)os_zalloc(temp + 1);
+		os_strcpy(mqttClient->connect_info.username, client_user);
+		mqttClient->connect_info.username[temp] = 0;
+	}
 
-	temp = os_strlen(client_pass);
-	mqttClient->connect_info.password = (uint8_t*)os_zalloc(temp + 1);
-	os_strcpy(mqttClient->connect_info.password, client_pass);
-	mqttClient->connect_info.password[temp] = 0;
+	if (client_pass)
+	{
+		temp = os_strlen(client_pass);
+		mqttClient->connect_info.password = (uint8_t*)os_zalloc(temp + 1);
+		os_strcpy(mqttClient->connect_info.password, client_pass);
+		mqttClient->connect_info.password[temp] = 0;
+	}
 
 
 	mqttClient->connect_info.keepalive = keepAliveTime;
@@ -826,7 +860,7 @@ MQTT_OnPublished(MQTT_Client *mqttClient, MqttCallback publishedCb)
 	mqttClient->publishedCb = publishedCb;
 }
 
-void ICACHE_FLASH_ATTR 
+void ICACHE_FLASH_ATTR
 MQTT_OnTimeout(MQTT_Client *mqttClient, MqttCallback timeoutCb)
 {
 	mqttClient->timeoutCb = timeoutCb;
