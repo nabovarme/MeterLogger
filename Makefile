@@ -10,7 +10,7 @@
 BUILD_BASE	= build
 FW_BASE = firmware
 ESPTOOL = esptool.py
-
+BAUDRATE = 1500000
 
 # name for the target project
 TARGET		= app
@@ -234,7 +234,7 @@ firmware:
 	$(Q) mkdir -p $@
 
 flash: $(FW_FILE_1)  $(FW_FILE_2)
-	$(ESPTOOL) -p $(ESPPORT) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
@@ -244,16 +244,16 @@ mkespfsimage/mkespfsimage: mkespfsimage/
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) write_flash 0x12000 webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x12000 webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) 0x12000 webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) 0x12000 webpages.espfs
 
 flashblank:
-	$(ESPTOOL) -p $(ESPPORT) write_flash 0x0 firmware/blank512k.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x0 firmware/blank512k.bin
 
 flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
 
 size:
 	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
