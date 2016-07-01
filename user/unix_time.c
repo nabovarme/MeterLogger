@@ -36,12 +36,10 @@ ICACHE_FLASH_ATTR void static ntp_offline_second_counter_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void init_unix_time(void) {
 	// init sntp
-	ip_addr_t *addr = (ip_addr_t *)os_zalloc(sizeof(ip_addr_t));
 	sntp_setservername(0, "dk.pool.ntp.org"); // set server 0 by domain name
 	sntp_setservername(1, "us.pool.ntp.org"); // set server 1 by domain name
 	sntp_set_timezone(0);	// UTC time
 	sntp_init();
-	os_free(addr);
 	
 	// start timer to make sure we go ntp reply
 	os_timer_disarm(&sntp_check_timer);
