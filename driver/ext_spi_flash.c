@@ -47,17 +47,26 @@ bool ext_spi_flash_read(uint32_t src_addr, uint32_t *dst_addr, uint32_t size) {
 	uint16_t i;
 	
 	if (size <= sizeof(uint32_t)) {
+#ifdef EXT_SPI_RAM_IS_NAND
 		*dst_addr = spi_transaction(HSPI, 8, 0x03, 24, src_addr, 0, 0, size * CHAR_BIT, 0);
-		//SWAP_UINT32(*dst_addr);
+#else
+		*dst_addr = spi_transaction(HSPI, 8, 0x03, 16, src_addr, 0, 0, size * CHAR_BIT, 0);
+#endif
 	}
 	else {
 		for (i = 0; i < (size / sizeof(uint32_t)); i++) {
+#ifdef EXT_SPI_RAM_IS_NAND
 			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 24, src_addr + sizeof(uint32_t) * i, 0, 0, sizeof(uint32_t) * CHAR_BIT, 0);
-			//SWAP_UINT32(*dst_addr);
+#else
+			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 16, src_addr + sizeof(uint32_t) * i, 0, 0, sizeof(uint32_t) * CHAR_BIT, 0);
+#endif
 		}
 		if (size % sizeof(uint32_t)) {
+#ifdef EXT_SPI_RAM_IS_NAND
 			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 24, src_addr + sizeof(uint32_t) * i, 0, 0, (size % sizeof(uint32_t)) * CHAR_BIT, 0);
-			//SWAP_UINT32(*dst_addr);
+#else
+			*(dst_addr + i) = spi_transaction(HSPI, 8, 0x03, 16, src_addr + sizeof(uint32_t) * i, 0, 0, (size % sizeof(uint32_t)) * CHAR_BIT, 0);
+#endif
 		}
 	}
 	
@@ -70,28 +79,46 @@ bool ext_spi_flash_write(uint32_t dst_addr, uint32_t *src_addr, uint32_t size) {
 	
 	if (size <= sizeof(uint32_t)) {
 		spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
+#ifdef EXT_SPI_RAM_IS_NAND
 		spi_transaction(HSPI, 8, 0x02, 24, dst_addr, size * CHAR_BIT, *src_addr, 0, 0);	// page program, 8 * size bit data
+#else
+		spi_transaction(HSPI, 8, 0x02, 16, dst_addr, size * CHAR_BIT, *src_addr, 0, 0);	// page program, 8 * size bit data
+#endif
 		
+#ifdef EXT_SPI_RAM_IS_NAND
 		while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
 			// wait while BUSY flag is set
 		}
+#endif
 	}
 	else {
 		for (i = 0; i < (size / sizeof(uint32_t)); i++) {
 			spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
+#ifdef EXT_SPI_RAM_IS_NAND
 			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, sizeof(uint32_t) * CHAR_BIT, *(src_addr + i), 0, 0);	// page program, 8 * size bit data
+#else
+			spi_transaction(HSPI, 8, 0x02, 16, dst_addr + sizeof(uint32_t) * i, sizeof(uint32_t) * CHAR_BIT, *(src_addr + i), 0, 0);	// page program, 8 * size bit data
+#endif
 			
+#ifdef EXT_SPI_RAM_IS_NAND
 			while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
 				// wait while BUSY flag is set
 			}
+#endif
 		}
 		if (size % sizeof(uint32_t)) {
 			spi_transaction(HSPI, 8, 0x06, 0, 0, 0, 0, 0, 0);	// write enable
+#ifdef EXT_SPI_RAM_IS_NAND
 			spi_transaction(HSPI, 8, 0x02, 24, dst_addr + sizeof(uint32_t) * i, (size % sizeof(uint32_t)) * CHAR_BIT, *(src_addr + i) & ((1 << (size % sizeof(uint32_t)) * CHAR_BIT) - 1), 0, 0);	// page program, 8 * size bit data
+#else
+			spi_transaction(HSPI, 8, 0x02, 16, dst_addr + sizeof(uint32_t) * i, (size % sizeof(uint32_t)) * CHAR_BIT, *(src_addr + i) & ((1 << (size % sizeof(uint32_t)) * CHAR_BIT) - 1), 0, 0);	// page program, 8 * size bit data
+#endif
 			
+#ifdef EXT_SPI_RAM_IS_NAND
 			while (spi_transaction(HSPI, 8, 0x05, 0, 0, 0, 0, 16, 0) & 0x100) {	// read status register
 				// wait while BUSY flag is set
 			}
+#endif
 		}
 	}
 	
