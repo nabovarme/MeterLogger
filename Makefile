@@ -21,7 +21,6 @@ LD_SCRIPT	= eagle.app.v6.ld
 # we create two different files for uploading into the flash
 # these are the names and options to generate them
 FW_1	= 0x00000
-#FW_2	= 0x10000
 FW_2	= 0x40000
 
 FLAVOR ?= release
@@ -70,7 +69,7 @@ else
 # We are under other system, may be Linux. Assume using gcc.
 	# Can we use -fdata-sections?
 	ESPPORT ?= /dev/ttyUSB0
-	SDK_BASE	?= $(HOME)/esp8266/esp-open-sdk_1.5.4/sdk
+	SDK_BASE	?= $(HOME)/esp8266/esp-open-sdk/sdk
 
 	CCFLAGS += -Os -ffunction-sections -fno-jump-tables
 	AR = xtensa-lx106-elf-ar
@@ -103,7 +102,7 @@ endif
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt modules user user/crypto
-EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk_1.5.4/sdk/include lib/heatshrink user/crypto user/kamstrup user/61107
+EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/crypto user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
 LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
