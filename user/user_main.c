@@ -382,9 +382,8 @@ ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 	MQTT_Disconnect(&mqtt_client);
 	wifi_station_disconnect();
 	
-	// and connect to mqtt server
+	// and (re)-connect
 	wifi_station_connect();
-	MQTT_Connect(&mqtt_client);
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
