@@ -377,6 +377,13 @@ ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Timeout\n");
 #endif	// DEBUG
+	// DEBUG: hack to get it to reconnect on weak wifi
+	// force reconnect to wireless
+	MQTT_Disconnect(&mqtt_client);
+	wifi_station_disconnect();
+	
+	// and connect to mqtt server
+	wifi_station_connect();
 	MQTT_Connect(&mqtt_client);
 }
 	
