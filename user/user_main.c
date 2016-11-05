@@ -196,7 +196,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 
 		if (mqtt_client.pCon != NULL) {
 			// if mqtt_client is initialized
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 #ifdef DEBUG
 			printf("sample_timer_func publish\n");
 #endif	// DEBUG

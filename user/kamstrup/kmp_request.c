@@ -148,7 +148,7 @@ static void kmp_received_task(os_event_t *events) {
 				// if mqtt_client is initialized
 				if (kmp_serial && (message_l > 1)) {
 					// if we received both serial and registers send it
-					MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 				}
 			}
 			kmp_requests_sent = 0;	// reset retry counter
@@ -255,7 +255,7 @@ void kmp_request_send() {
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}
 #endif
 	kmp_requests_sent = 0;	// reset retry counter

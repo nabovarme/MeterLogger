@@ -70,7 +70,7 @@ static void en61107_received_task(os_event_t *events) {
 	if (mqtt_client) {
 		// if mqtt_client is initialized
 		if (message_l > 1) {
-			MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 		}
 	}
 	en61107_requests_sent = 0;	// reset retry counter
@@ -166,7 +166,7 @@ void en61107_request_send() {
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0);
+		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}
 	en61107_requests_sent = 0;	// reset retry counter
 #endif
