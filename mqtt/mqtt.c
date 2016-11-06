@@ -774,6 +774,8 @@ MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, ui
 void ICACHE_FLASH_ATTR
 MQTT_Connect(MQTT_Client *mqttClient)
 {
+	uint32_t keeplive; 
+	
 	if (mqttClient->pCon) {
 		// Clean up the old connection forcefully - using MQTT_Disconnect
 		// does not actually release the old connection until the
@@ -787,12 +789,25 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	mqttClient->pCon->proto.tcp->local_port = espconn_port();
 	mqttClient->pCon->proto.tcp->remote_port = mqttClient->port;
 	mqttClient->pCon->reverse = mqttClient;
+	
+	// enable TCP keep alive
+	espconn_set_opt(mqttClient->pCon, ESPCONN_KEEPALIVE);
+	
+	// set keepalive: 75s = 60 + 5*3
+	keeplive = 60;
+	espconn_set_keepalive(mqttClient->pCon, ESPCONN_KEEPIDLE, &keeplive);
+
+	keeplive = 5;
+	espconn_set_keepalive(mqttClient->pCon, ESPCONN_KEEPINTVL, &keeplive);
+	
+	keeplive = 3;	//try times
+	espconn_set_keepalive(mqttClient->pCon, ESPCONN_KEEPCNT, &keeplive);
+	
 	espconn_regist_connectcb(mqttClient->pCon, mqtt_tcpclient_connect_cb);
 	espconn_regist_reconcb(mqttClient->pCon, mqtt_tcpclient_recon_cb);
 
 	mqttClient->keepAliveTick = 0;
 	mqttClient->reconnectTick = 0;
-
 
 	os_timer_disarm(&mqttClient->mqttTimer);
 	os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
