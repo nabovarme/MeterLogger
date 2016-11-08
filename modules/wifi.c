@@ -13,9 +13,9 @@
 #include "led.h"
 #include "tinyprintf.h"
 
-#define NETWORK_CHECK_TIME 5000
+#define WIFI_SCAN_INTERVAL 5000
 
-static os_timer_t network_check_timer;
+static os_timer_t wifi_scan_timer;
 
 WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
@@ -53,7 +53,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	}
 }
 
-static void ICACHE_FLASH_ATTR network_check_timer_func(void *arg) {
+static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 //	struct scan_config config;
 	
 	if (!wifi_scan_runnning) {
@@ -101,10 +101,10 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	wifi_scan_runnning = false;
 //	os_printf("scan done\n");
 
-	// start network watchdog again
-	os_timer_disarm(&network_check_timer);
-	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
+	// start wifi scan timer again
+	os_timer_disarm(&wifi_scan_timer);
+	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
+	os_timer_arm(&wifi_scan_timer, WIFI_SCAN_INTERVAL, 0);
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
@@ -163,10 +163,10 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);
 
-	// start network watchdog
-	os_timer_disarm(&network_check_timer);
-	os_timer_setfn(&network_check_timer, (os_timer_func_t *)network_check_timer_func, NULL);
-	os_timer_arm(&network_check_timer, NETWORK_CHECK_TIME, 0);
+	// start wifi scan timer
+	os_timer_disarm(&wifi_scan_timer);
+	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
+	os_timer_arm(&wifi_scan_timer, 0, 0);	// start scan immediately
 
 	wifi_station_set_auto_connect(TRUE);
 	wifi_reconnect = true;	// let wifi_handle_event_cb() handle reconnect on disconnect
