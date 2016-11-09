@@ -45,6 +45,7 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | /config/v1/9999999/ping                    |                                                                    |
 | /config/v1/9999999/version                 |                                                                    |
 | /config/v1/9999999/uptime                  |                                                                    |
+| /config/v1/9999999/rssi                    |                                                                    |
 | /config/v1/9999999/ssid                    |                                                                    |
 | /config/v1/9999999/save (only pulse meter) |                                                                    |
 | /config/v1/9999999/mem                     |                                                                    |
@@ -60,7 +61,8 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | /version/v1/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
 | /status/v1/9999999/[unix time]                  | [open|close]                                                                                         |
 | /uptime/v1/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
-| /ssid/v1/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                                  |
+| /rssi/v1/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
+| /ssid/v1/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
 | /save/v1/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v1/9999999/[unix time]                     | heap=9672&                                                                                           |
 | /reset_reason/v1/9999999/[unix time]            |                                                                                                      |

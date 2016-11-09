@@ -14,8 +14,10 @@
 #include "tinyprintf.h"
 
 #define WIFI_SCAN_INTERVAL 5000
+#define RSSI_CHECK_INTERVAL 1000
 
 static os_timer_t wifi_scan_timer;
+static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
@@ -25,6 +27,8 @@ bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
 volatile bool wifi_reconnect = false;
+volatile sint8_t rssi = 31;	// set rssi to fail state at init time
+volatile bool get_rssi_running;
 
 void wifi_handle_event_cb(System_Event_t *evt) {
 	struct ip_info ipConfig;
@@ -53,6 +57,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	}
 }
 
+static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
+	get_rssi_running = true;
+	rssi = wifi_station_get_rssi();
+	get_rssi_running = false;
+}
+
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 //	struct scan_config config;
 	
@@ -62,6 +72,9 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 //		config.ssid = STA_FALLBACK_SSID;
 //		wifi_station_scan(&config, wifi_scan_done_cb);	// scanning for specific ssid does not work in SDK 1.5.2
 		wifi_scan_runnning = true;
+#ifdef DEBUG
+		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
+#endif
 		wifi_station_scan(NULL, wifi_scan_done_cb);
 //		os_printf("scan running\n");
 	}
@@ -124,10 +137,18 @@ void ICACHE_FLASH_ATTR wifi_default() {
     
 	wifi_station_set_config_current(&stationConf);
 	wifi_station_connect();
+	
+	// start wifi rssi timer
+	os_timer_disarm(&wifi_get_rssi_timer);
+	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
+	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
 }
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
+
+	// stop wifi rssi timer - not done for fallback network
+	os_timer_disarm(&wifi_get_rssi_timer);
 
 	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
 
@@ -173,5 +194,17 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
+	// start wifi rssi timer
+	os_timer_disarm(&wifi_get_rssi_timer);
+	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
+	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
+
 	led_stop_pattern();
+}
+
+sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
+	while (get_rssi_running) {
+		// wait for lock
+	}
+	return rssi;
 }
