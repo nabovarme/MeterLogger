@@ -15,7 +15,7 @@
 
 #define IP_CHECK_INTERVAL 60000
 #define WIFI_SCAN_INTERVAL 5000
-#define RSSI_CHECK_INTERVAL 1000
+#define RSSI_CHECK_INTERVAL 10000
 
 static os_timer_t wifi_scan_timer;
 static os_timer_t ip_watchdog_timer;
@@ -30,7 +30,7 @@ bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
 volatile bool wifi_reconnect = false;
 volatile sint8_t rssi = 31;	// set rssi to fail state at init time
-volatile bool get_rssi_running;
+volatile bool get_rssi_running = false;
 
 void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_status = wifi_station_get_connect_status();
@@ -229,7 +229,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 }
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
-	while (get_rssi_running) {
+	while (get_rssi_running == true) {
 		// wait for lock
 	}
 	return rssi;
