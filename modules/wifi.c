@@ -111,7 +111,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		wifi_fallback_present = false;
 		
 		while (info != NULL) {
-			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_SSID, sizeof(STA_SSID)) == 0)) {
+			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0)) {
 				wifi_present = true;
 			}
 			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
