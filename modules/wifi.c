@@ -13,10 +13,12 @@
 #include "led.h"
 #include "tinyprintf.h"
 
+#define IP_CHECK_INTERVAL 60000
 #define WIFI_SCAN_INTERVAL 5000
 #define RSSI_CHECK_INTERVAL 1000
 
 static os_timer_t wifi_scan_timer;
+static os_timer_t ip_watchdog_timer;
 static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
@@ -31,9 +33,6 @@ volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running;
 
 void wifi_handle_event_cb(System_Event_t *evt) {
-	struct ip_info ipConfig;
-
-	wifi_get_ip_info(STATION_IF, &ipConfig);
 	wifi_status = wifi_station_get_connect_status();
 
 	switch (evt->event) {
@@ -54,6 +53,22 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 		default:
 			break;
+	}
+}
+
+static void ICACHE_FLASH_ATTR ip_watchdog_timer_func(void *arg) {
+	wifi_status = wifi_station_get_connect_status();
+	
+	if (wifi_status != STATION_GOT_IP) {	// DEBUG: we should put some more checks here
+		// DEBUG: hack to get it to reconnect on weak wifi
+		// force reconnect to wireless
+#ifdef DEBUG
+		os_printf("reconnect hack!\n");
+#endif
+		wifi_station_disconnect();
+	
+		// and (re)-connect
+		wifi_station_connect();
 	}
 }
 
@@ -138,6 +153,11 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	wifi_station_set_config_current(&stationConf);
 	wifi_station_connect();
 	
+	// start ip connectivity watchdog
+	os_timer_disarm(&ip_watchdog_timer);
+	os_timer_setfn(&ip_watchdog_timer, (os_timer_func_t *)ip_watchdog_timer_func, NULL);
+	os_timer_arm(&ip_watchdog_timer, IP_CHECK_INTERVAL, 1);
+
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
@@ -147,7 +167,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
 
-	// stop wifi rssi timer - not done for fallback network
+	// stop ip connectivity watchdog and rssi timer - not done for fallback network
+	os_timer_disarm(&ip_watchdog_timer);
 	os_timer_disarm(&wifi_get_rssi_timer);
 
 	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
@@ -194,6 +215,11 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
+	// start ip connectivity watchdog
+	os_timer_disarm(&ip_watchdog_timer);
+	os_timer_setfn(&ip_watchdog_timer, (os_timer_func_t *)ip_watchdog_timer_func, NULL);
+	os_timer_arm(&ip_watchdog_timer, IP_CHECK_INTERVAL, 1);
+
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
