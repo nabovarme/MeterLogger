@@ -13,18 +13,19 @@
 #include "led.h"
 #include "tinyprintf.h"
 
-#define IP_CHECK_INTERVAL 60000
+#define NETWORK_CHECK_INTERVAL 60000
 #define WIFI_SCAN_INTERVAL 5000
 #define RSSI_CHECK_INTERVAL 10000
 
 static os_timer_t wifi_scan_timer;
-static os_timer_t ip_watchdog_timer;
+static os_timer_t network_watchdog_timer;
 static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
 uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
+bool wifi_present = false;
 bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
@@ -56,19 +57,22 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	}
 }
 
-static void ICACHE_FLASH_ATTR ip_watchdog_timer_func(void *arg) {
+static void ICACHE_FLASH_ATTR network_watchdog_timer_func(void *arg) {
 	wifi_status = wifi_station_get_connect_status();
 	
 #ifdef DEBUG
 		os_printf("ip watchdog status: %u\n", wifi_status);
 #endif
-	if (wifi_status != STATION_GOT_IP) {	// DEBUG: we should put some more checks here
+	if ((wifi_status != STATION_GOT_IP) || (wifi_present == false)) {
 		// DEBUG: hack to get it to reconnect on weak wifi
 		// force reconnect to wireless
 		wifi_station_disconnect();
 	
 		// and (re)-connect
 		wifi_station_connect();
+#ifdef DEBUG
+		os_printf("wifi restarted\n");
+#endif
 	}
 }
 
@@ -98,6 +102,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	
+	wifi_present = false;
 	wifi_fallback_present = false;
 	
 	// check if fallback network is present
@@ -105,7 +110,10 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		info = (struct bss_info *)arg;
 		wifi_fallback_present = false;
 		
-		while ((info != NULL) && (!wifi_fallback_present)) {
+		while (info != NULL) {
+			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_SSID, sizeof(STA_SSID)) == 0)) {
+				wifi_present = true;
+			}
 			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
 			}
@@ -124,6 +132,9 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		}
 		
 		wifi_fallback_last_present = wifi_fallback_present;
+#ifdef DEBUG
+		os_printf("WiFi present: %s\n", (wifi_present ? "yes" : "no"));
+#endif
 	}
 	
 	wifi_scan_runnning = false;
@@ -154,9 +165,9 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	wifi_station_connect();
 	
 	// start ip connectivity watchdog
-	os_timer_disarm(&ip_watchdog_timer);
-	os_timer_setfn(&ip_watchdog_timer, (os_timer_func_t *)ip_watchdog_timer_func, NULL);
-	os_timer_arm(&ip_watchdog_timer, IP_CHECK_INTERVAL, 1);
+	os_timer_disarm(&network_watchdog_timer);
+	os_timer_setfn(&network_watchdog_timer, (os_timer_func_t *)network_watchdog_timer_func, NULL);
+	os_timer_arm(&network_watchdog_timer, NETWORK_CHECK_INTERVAL, 1);
 
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -168,7 +179,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
 
 	// stop ip connectivity watchdog and rssi timer - not done for fallback network
-	os_timer_disarm(&ip_watchdog_timer);
+	os_timer_disarm(&network_watchdog_timer);
 	os_timer_disarm(&wifi_get_rssi_timer);
 
 	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
@@ -216,9 +227,9 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_connect();
 	
 	// start ip connectivity watchdog
-	os_timer_disarm(&ip_watchdog_timer);
-	os_timer_setfn(&ip_watchdog_timer, (os_timer_func_t *)ip_watchdog_timer_func, NULL);
-	os_timer_arm(&ip_watchdog_timer, IP_CHECK_INTERVAL, 1);
+	os_timer_disarm(&network_watchdog_timer);
+	os_timer_setfn(&network_watchdog_timer, (os_timer_func_t *)network_watchdog_timer_func, NULL);
+	os_timer_arm(&network_watchdog_timer, NETWORK_CHECK_INTERVAL, 1);
 
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);

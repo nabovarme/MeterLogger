@@ -44,10 +44,10 @@
 #endif
 //#define STA_SSID "Slux"
 //#define STA_PASS "w1reless"
-#define STA_SSID "Loppen Public"
-#define STA_PASS ""
-#define STA_FALLBACK_SSID "stofferFon"
-#define STA_FALLBACK_PASS "w1reless"
+#define STA_SSID "stofferFon"
+#define STA_PASS "w1reless"
+#define STA_FALLBACK_SSID "Foo"
+#define STA_FALLBACK_PASS "Bar"
 
 #ifdef IMPULSE
 #define AP_SSID	"EL_%s"
