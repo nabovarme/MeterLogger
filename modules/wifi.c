@@ -59,12 +59,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 static void ICACHE_FLASH_ATTR ip_watchdog_timer_func(void *arg) {
 	wifi_status = wifi_station_get_connect_status();
 	
+#ifdef DEBUG
+		os_printf("ip watchdog status: %u\n");
+#endif
 	if (wifi_status != STATION_GOT_IP) {	// DEBUG: we should put some more checks here
 		// DEBUG: hack to get it to reconnect on weak wifi
 		// force reconnect to wireless
-#ifdef DEBUG
-		os_printf("reconnect hack!\n");
-#endif
 		wifi_station_disconnect();
 	
 		// and (re)-connect
