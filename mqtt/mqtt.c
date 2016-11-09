@@ -604,6 +604,9 @@ MQTT_Task(os_event_t *e)
 	MQTT_Client* client = (MQTT_Client*)e->par;
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
+#ifdef DEBUG
+	os_printf("%sS%d\n", ((e->par == 0) ? "-" : ""), client->connState);
+#endif
 	if (e->par == 0)
 		return;
 	switch (client->connState) {

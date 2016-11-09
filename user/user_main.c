@@ -283,6 +283,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Connected\n");
 #endif	// DEBUG
+	network_watchdog_clear();
 
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE

@@ -26,6 +26,7 @@ uint8_t* config_ssid;
 uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
 bool wifi_present = false;
+bool wifi_interrupted = false;
 bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
@@ -36,6 +37,9 @@ volatile bool get_rssi_running = false;
 void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_status = wifi_station_get_connect_status();
 
+#ifdef DEBUG
+	os_printf("W%d\n", evt->event);
+#endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
 			// do nothing
@@ -63,7 +67,7 @@ static void ICACHE_FLASH_ATTR network_watchdog_timer_func(void *arg) {
 #ifdef DEBUG
 		os_printf("ip watchdog status: %u\n", wifi_status);
 #endif
-	if ((wifi_status != STATION_GOT_IP) || (wifi_present == false)) {
+	if ((wifi_status != STATION_GOT_IP) || (wifi_interrupted == true)) {
 		// DEBUG: hack to get it to reconnect on weak wifi
 		// force reconnect to wireless
 		wifi_station_disconnect();
@@ -119,6 +123,9 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			}
 			info = info->next.stqe_next;
 		}
+		if (wifi_present == false) {
+			wifi_interrupted = true;
+		}
 		
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
@@ -134,6 +141,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		wifi_fallback_last_present = wifi_fallback_present;
 #ifdef DEBUG
 		os_printf("WiFi present: %s\n", (wifi_present ? "yes" : "no"));
+		os_printf("int: %s\n", (wifi_interrupted ? "yes" : "no"));
 #endif
 	}
 	
@@ -244,4 +252,8 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 		// wait for lock
 	}
 	return rssi;
+}
+
+void ICACHE_FLASH_ATTR network_watchdog_clear() {
+	wifi_interrupted = false;
 }
