@@ -67,7 +67,7 @@ static void ICACHE_FLASH_ATTR network_watchdog_timer_func(void *arg) {
 	wifi_status = wifi_station_get_connect_status();
 	
 #ifdef DEBUG
-		os_printf("ip watchdog status: %u\n", wifi_status);
+		os_printf("ip watchdog status: %u, event: %u\n", wifi_status, wifi_event);
 #endif
 	if ((wifi_status != STATION_GOT_IP) || (wifi_event =! EVENT_STAMODE_GOT_IP) || (wifi_interrupted == true)) {
 		// DEBUG: hack to get it to reconnect on weak wifi
