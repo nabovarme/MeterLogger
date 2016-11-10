@@ -380,10 +380,10 @@ ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 #endif	// DEBUG
 	// DEBUG: hack to get it to reconnect on weak wifi
 	// force reconnect to wireless
-//	wifi_station_disconnect();
+	wifi_station_disconnect();
 	
 	// and (re)-connect
-//	wifi_station_connect();
+	wifi_station_connect();
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
