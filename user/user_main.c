@@ -394,6 +394,8 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
+
+	uint32_t received_unix_time;
 		
 	// copy and null terminate
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
@@ -547,11 +549,19 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
-		add_cron_job_from_query(cleartext);
+		received_unix_time = atoi(cleartext);
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			add_cron_job_from_query(cleartext);
+		}
 	}
 	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
 		// found clear_cron
-		clear_cron_jobs();
+		received_unix_time = atoi(cleartext);
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			clear_cron_jobs();
+		}
 	}
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
@@ -564,15 +574,22 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
-		//ac_motor_valve_open();
-		sys_cfg.ac_thermo_state = 1;
-		ac_thermo_open();
+		received_unix_time = atoi(cleartext);
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			//ac_motor_valve_open();
+			sys_cfg.ac_thermo_state = 1;
+			ac_thermo_open();
+		}
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
-		//ac_motor_valve_close();
-		sys_cfg.ac_thermo_state = 0;
-		ac_thermo_close();
+		received_unix_time = atoi(cleartext);
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			//ac_motor_valve_close();
+			sys_cfg.ac_thermo_state = 0;
+			ac_thermo_close();
+		}
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
