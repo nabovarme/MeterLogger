@@ -716,7 +716,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #else
 	printf("\t(THERMO_NC)\n\r");
 #endif
-
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));
 

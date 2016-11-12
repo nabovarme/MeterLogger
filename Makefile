@@ -21,7 +21,9 @@ LD_SCRIPT	= eagle.app.v6.ld
 # we create two different files for uploading into the flash
 # these are the names and options to generate them
 FW_1	= 0x00000
-FW_2	= 0x40000
+FW_2	= 0x10000
+
+ESPFS	= 0x80000
 
 FLAVOR ?= release
 
@@ -105,8 +107,7 @@ MODULES		= driver mqtt modules user user/crypto
 EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include lib/heatshrink user/crypto user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
-LIBS		= c gcc hal phy pp net80211 lwip wpa main ssl c gcc
-
+LIBS		= main net80211 wpa lwip pp phy hal ssl gcc c
 # compiler flags using during compilation of source files
 CFLAGS		= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\"
 
@@ -234,7 +235,7 @@ firmware:
 	$(Q) mkdir -p $@
 
 flash: $(FW_FILE_1)  $(FW_FILE_2)
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
@@ -244,16 +245,16 @@ mkespfsimage/mkespfsimage: mkespfsimage/
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x12000 webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash ESPFS webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) 0x12000 webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m 0x7E000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0x7C000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
 
 flashblank:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x0 firmware/blank512k.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m 0x0 firmware/blank512k.bin
 
 flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
 
 size:
 	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size

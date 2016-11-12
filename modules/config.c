@@ -68,27 +68,8 @@ cfg_save() {
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
 #else
 	// calculate checksum on sys_cfg struct without ccit_crc16
-	sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-	                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-
-	if (saveFlag.flag == 0) {
-		spi_flash_erase_sector(CFG_LOCATION + 1);
-		spi_flash_write((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sys_cfg, sizeof(syscfg_t));
-		saveFlag.flag = 1;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	} else {
-		spi_flash_erase_sector(CFG_LOCATION + 0);
-		spi_flash_write((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&sys_cfg, sizeof(syscfg_t));
-		saveFlag.flag = 0;
-		spi_flash_erase_sector(CFG_LOCATION + 3);
-		spi_flash_write((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-						(uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	}
+	sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
+	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
 #endif	// IMPULSE
 }
 
@@ -151,16 +132,7 @@ cfg_load() {
 #else
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
-	
-	spi_flash_read((CFG_LOCATION + 3) * SPI_FLASH_SEC_SIZE,
-				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
-	if (saveFlag.flag == 0) {
-		spi_flash_read((CFG_LOCATION + 0) * SPI_FLASH_SEC_SIZE,
-					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
-	} else {
-		spi_flash_read((CFG_LOCATION + 1) * SPI_FLASH_SEC_SIZE,
-					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
-	}
+	system_param_load(CFG_LOCATION, 0, &sys_cfg, sizeof(syscfg_t));
 
 	// if checksum fails...
 	if (sys_cfg.ccit_crc16 != ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
