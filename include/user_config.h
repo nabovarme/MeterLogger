@@ -7,8 +7,8 @@
 #define CFG_LOCATION	0x76	/* Please don't change or if you know what you doing */
 #define MQTT_CA_FLASH_SECTOR	0x5c
 
-#define MQTT_SSL_ENABLE
-#define CLIENT_SSL_ENABLE
+//#define MQTT_SSL_ENABLE
+//#define CLIENT_SSL_ENABLE
 
 /*DEFAULT CONFIGURATIONS*/
 
@@ -28,8 +28,8 @@
 #define MQTT_USER			"esp8266"
 #define MQTT_PASS			"chah5Kai"
 
-#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
-//#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
+//#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
+#define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
