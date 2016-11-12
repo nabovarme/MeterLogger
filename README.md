@@ -37,12 +37,12 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | Topic                                      | Message                                                            |
 | :----------------------------------------- | :----------------------------------------------------------------- |
 | /config/v1/9999999/ping                    |                                                                    |
-| /config/v1/9999999/open                    |                                                                    |
-| /config/v1/9999999/close                   |                                                                    |
+| /config/v1/9999999/open                    | [unix time]                                                        |
+| /config/v1/9999999/close                   | [unix time]                                                        |
 | /config/v1/9999999/status                  |                                                                    |
 | /config/v1/9999999/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
 | /config/v1/9999999/cron                    |                                                                    |
-| /config/v1/9999999/clear_cron              |                                                                    |
+| /config/v1/9999999/clear_cron              | [unix time]                                                        |
 | /config/v1/9999999/ping                    |                                                                    |
 | /config/v1/9999999/version                 |                                                                    |
 | /config/v1/9999999/uptime                  |                                                                    |
