@@ -4,8 +4,10 @@
 //#define PRINTF_DEBUG
 
 //#define CFG_HOLDER	0x00FF55A4	/* Change this value to load default configurations */
-#define CFG_LOCATION	0x7D	/* Please don't change or if you know what you doing */
-#define CLIENT_SSL_ENABLE
+#define CFG_LOCATION	0x76	/* Please don't change or if you know what you doing */
+//#define MQTT_CA_FLASH_SECTOR	0x5c
+//#define MQTT_SSL_ENABLE
+//#define CLIENT_SSL_ENABLE
 
 /*DEFAULT CONFIGURATIONS*/
 
@@ -25,6 +27,7 @@
 #define MQTT_USER			"esp8266"
 #define MQTT_PASS			"chah5Kai"
 
+//#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
 #define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
@@ -34,6 +37,10 @@
 #else
 #define QUEUE_BUFFER_SIZE		 		10240		// DEBUG: check if we could have larger queue for this as welle after SDK 1.5.2
 #endif // IMPULSE
+
+#ifndef MQTT_SSL_SIZE
+#define MQTT_SSL_SIZE					4096
+#endif
 
 #define PROTOCOL_NAMEv31	/*MQTT version 3.1 compatible with Mosquitto v0.15*/
 //PROTOCOL_NAMEv311			/*MQTT version 3.11 compatible with https://eclipse.org/paho/clients/testing/*/

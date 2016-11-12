@@ -23,7 +23,7 @@ LD_SCRIPT	= eagle.app.v6.ld
 FW_1	= 0x00000
 FW_2	= 0x10000
 
-ESPFS	= 0x80000
+ESPFS	= 0x60000
 
 FLAVOR ?= release
 
@@ -245,7 +245,7 @@ mkespfsimage/mkespfsimage: mkespfsimage/
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash ESPFS webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m $(ESPFS) webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 4m 0x7E000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0x7C000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
