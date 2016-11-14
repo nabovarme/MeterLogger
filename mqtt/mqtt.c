@@ -824,9 +824,6 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		{
 #ifdef MQTT_SSL_ENABLE
 			espconn_secure_connect(mqttClient->pCon);
-#ifdef DEBUG
-			os_printf("SSL!\n");
-#endif
 #else
 			INFO("TCP: Do not support SSL\r\n");
 #endif
