@@ -1,0 +1,9 @@
+<map id="user/cgi.c" name="user/cgi.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="597,80,681,107"/>
+<area shape="rect" id="node20" href="$httpd_8h.html" title="httpd.h" alt="" coords="13,155,75,181"/>
+<area shape="rect" id="node21" href="$cgi_8h.html" title="cgi.h" alt="" coords="164,80,215,107"/>
+<area shape="rect" id="node22" href="$debug_8h.html" title="debug.h" alt="" coords="705,80,775,107"/>
+<area shape="rect" id="node23" href="$tinyprintf_8h.html" title="tinyprintf.h" alt="" coords="1438,80,1522,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="1075,155,1157,181"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="343,155,492,181"/>
+</map>

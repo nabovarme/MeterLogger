@@ -1,0 +1,33 @@
+<map id="user/user_main.c" name="user/user_main.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="777,379,861,405"/>
+<area shape="rect" id="node20" href="$uart_8h.html" title="driver/uart.h" alt="" coords="144,453,237,480"/>
+<area shape="rect" id="node22" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="1628,155,1687,181"/>
+<area shape="rect" id="node28" href="$crypto_8h.html" title="crypto/crypto.h" alt="" coords="396,304,505,331"/>
+<area shape="rect" id="node29" href="$aes_8h.html" title="crypto/aes.h" alt="" coords="50,304,145,331"/>
+<area shape="rect" id="node30" href="$sha256_8h.html" title="crypto/sha256.h" alt="" coords="488,229,605,256"/>
+<area shape="rect" id="node31" href="$hmac-sha256_8h.html" title="crypto/hmac&#45;sha256.h" alt="" coords="451,155,605,181"/>
+<area shape="rect" id="node32" href="$wifi_8h.html" title="wifi.h" alt="" coords="782,80,834,107"/>
+<area shape="rect" id="node33" href="$config_8h.html" title="config.h" alt="" coords="859,80,928,107"/>
+<area shape="rect" id="node34" href="$user__config_8h.html" title="user_config.h" alt="" coords="739,155,842,181"/>
+<area shape="rect" id="node35" href="$cron_8h.html" title="cron/cron.h" alt="" coords="874,155,963,181"/>
+<area shape="rect" id="node36" href="$debug_8h.html" title="debug.h" alt="" coords="1054,80,1125,107"/>
+<area shape="rect" id="node37" href="$httpd_8h.html" title="httpd.h" alt="" coords="1375,379,1438,405"/>
+<area shape="rect" id="node38" href="$httpd__user__init_8h.html" title="httpd_user_init.h" alt="" coords="1284,80,1404,107"/>
+<area shape="rect" id="node39" href="$unix__time_8h.html" title="unix_time.h" alt="" coords="1428,80,1519,107"/>
+<area shape="rect" id="node40" href="$led_8h.html" title="led.h" alt="" coords="1543,80,1593,107"/>
+<area shape="rect" id="node41" href="$ac__out_8h.html" title="ac/ac_out.h" alt="" coords="1617,80,1708,107"/>
+<area shape="rect" id="node42" href="$utils_8h.html" title="utils.h" alt="" coords="1733,80,1790,107"/>
+<area shape="rect" id="node43" href="$user__main_8h.html" title="user_main.h" alt="" coords="1815,80,1911,107"/>
+<area shape="rect" id="node44" href="$captdns_8h.html" title="captdns.h" alt="" coords="1935,80,2015,107"/>
+<area shape="rect" id="node45" href="$tinyprintf_8h.html" title="tinyprintf.h" alt="" coords="2421,80,2505,107"/>
+<area shape="rect" id="node48" href="$gpio16_8h.html" title="driver/gpio16.h" alt="" coords="2090,80,2201,107"/>
+<area shape="rect" id="node49" href="$ext__spi__flash_8h.html" title="driver/ext_spi_flash.h" alt="" coords="2225,80,2373,107"/>
+<area shape="rect" id="node50" href="$kmp__request_8h.html" title="kmp_request.h" alt="" coords="1149,80,1259,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="1157,453,1238,480"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="347,453,496,480"/>
+<area shape="rect" id="node21" href="$uart__register_8h.html" title="uart_register.h" alt="" coords="137,528,245,555"/>
+<area shape="rect" id="node23" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="1726,229,1818,256"/>
+<area shape="rect" id="node24" href="$queue_8h.html" title="queue.h" alt="" coords="1545,229,1615,256"/>
+<area shape="rect" id="node26" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="1442,304,1515,331"/>
+<area shape="rect" id="node27" href="$typedef_8h.html" title="typedef.h" alt="" coords="1463,379,1540,405"/>
+</map>

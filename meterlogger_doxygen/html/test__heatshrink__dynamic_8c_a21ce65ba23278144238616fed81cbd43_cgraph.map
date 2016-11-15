@@ -1,0 +1,6 @@
+<map id="decoder_finish_should_reject_null_input" name="decoder_finish_should_reject_null_input">
+<area shape="rect" id="node2" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aa25b6d55bcbe6a892bad39734cd06a93" title="heatshrink_decoder\l_alloc" alt="" coords="225,5,363,47"/>
+<area shape="rect" id="node4" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aac3da3fb98517f7f6121711b0c995616" title="heatshrink_decoder\l_finish" alt="" coords="225,71,363,112"/>
+<area shape="rect" id="node5" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aeac9e95f74ac548b7c4c937d368958d1" title="heatshrink_decoder_free" alt="" coords="209,137,379,163"/>
+<area shape="rect" id="node3" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a66f048d07fb882fce420541f3efe67d1" title="heatshrink_decoder\l_reset" alt="" coords="427,5,565,47"/>
+</map>

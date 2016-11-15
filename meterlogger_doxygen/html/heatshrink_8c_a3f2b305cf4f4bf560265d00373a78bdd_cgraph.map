@@ -1,0 +1,17 @@
+<map id="decoder_sink_read" name="decoder_sink_read">
+<area shape="rect" id="node2" href="$heatshrink_8c.html#aae61ded03fcf9a4c3adfcd9937810266" title="die" alt="" coords="255,15,295,41"/>
+<area shape="rect" id="node3" href="$heatshrink_8c.html#a1776dd831e9d89b162fd630c27436b5f" title="handle_sink" alt="" coords="228,65,321,92"/>
+<area shape="rect" id="node4" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aac3da3fb98517f7f6121711b0c995616" title="heatshrink_decoder\l_finish" alt="" coords="205,117,344,158"/>
+<area shape="rect" id="node5" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a38406b03b9df8b993c6a3fa144675627" title="heatshrink_decoder_poll" alt="" coords="191,183,358,209"/>
+<area shape="rect" id="node16" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a7c918c86f737484d646de78f0b5116e2" title="heatshrink_decoder_sink" alt="" coords="189,233,360,260"/>
+<area shape="rect" id="node6" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a0858d88346ae241191721e41494dbfa6" title="st_input_available" alt="" coords="421,5,551,32"/>
+<area shape="rect" id="node8" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a1de759afe6bc945fb1fa83b64aae29b2" title="st_yield_literal" alt="" coords="433,259,539,285"/>
+<area shape="rect" id="node10" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#acbbb14ff7fd1dbf3b1dbed247bf75527" title="st_backref_index_msb" alt="" coords="408,56,564,83"/>
+<area shape="rect" id="node11" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a0ea3d84c49c6d5d58ebcbd8a5e58ebb9" title="st_backref_index_lsb" alt="" coords="413,107,559,133"/>
+<area shape="rect" id="node12" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a08294207999dc2384621c16c1bb65067" title="st_backref_count_msb" alt="" coords="408,157,564,184"/>
+<area shape="rect" id="node13" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#add421259899857568ecc328c6ad54a99" title="st_backref_count_lsb" alt="" coords="412,208,560,235"/>
+<area shape="rect" id="node14" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a295f09b8bfcb31ba0310a987da76c58f" title="st_yield_backref" alt="" coords="427,309,545,336"/>
+<area shape="rect" id="node15" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aa81f6e23fbbcab298a99901f6ac96be5" title="st_check_for_input" alt="" coords="419,360,553,387"/>
+<area shape="rect" id="node7" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#a63d6ed11f8d99df2898ad9f8b3ea7234" title="get_bits" alt="" coords="619,132,689,159"/>
+<area shape="rect" id="node9" href="$lib_2heatshrink_2heatshrink__decoder_8c.html#aa3cfafc3c68369e81aa88c97092bc631" title="push_byte" alt="" coords="612,284,696,311"/>
+</map>

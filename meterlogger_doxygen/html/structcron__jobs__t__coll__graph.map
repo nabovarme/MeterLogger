@@ -1,0 +1,3 @@
+<map id="cron_jobs_t" name="cron_jobs_t">
+<area shape="rect" id="node2" href="$structcron__job__t.html" title="{cron_job_t\n|+ minute\l+ hour\l+ day_of_month\l+ month\l+ day_of_week\l+ command\l|}" alt="" coords="5,5,123,156"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="en61107_set_mqtt_client" name="en61107_set_mqtt_client">
+<area shape="rect" id="node2" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="224,5,353,32"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="401,5,577,32"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="625,5,751,32"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="799,5,871,32"/>
+</map>

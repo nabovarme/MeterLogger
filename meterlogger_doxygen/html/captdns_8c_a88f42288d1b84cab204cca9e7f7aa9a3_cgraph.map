@@ -1,0 +1,8 @@
+<map id="captdnsInit" name="captdnsInit">
+<area shape="rect" id="node2" href="$captdns_8c.html#a59c9a28ea1f015cff27b9d0c252d15f3" title="captdnsRecv" alt="" coords="140,81,239,108"/>
+<area shape="rect" id="node3" href="$captdns_8c.html#a2b9dc30f1b5c34d34788f966f8baf579" title="my_ntohs" alt="" coords="420,5,500,32"/>
+<area shape="rect" id="node4" href="$captdns_8c.html#a1cda566d8dc5035086e911607e45820b" title="labelToStr" alt="" coords="288,31,371,57"/>
+<area shape="rect" id="node5" href="$captdns_8c.html#ab65a5932a7432c62e039b6366cedb733" title="strToLabel" alt="" coords="287,81,372,108"/>
+<area shape="rect" id="node6" href="$captdns_8c.html#a3b65a462da5bbfc4c310605b66952949" title="setn16" alt="" coords="298,132,361,159"/>
+<area shape="rect" id="node7" href="$captdns_8c.html#aad0e85473ca50e7bc9726c0e0314310f" title="setn32" alt="" coords="298,183,361,209"/>
+</map>

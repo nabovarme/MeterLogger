@@ -1,0 +1,11 @@
+<map id="user/utils.c" name="user/utils.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="710,80,794,107"/>
+<area shape="rect" id="node20" href="$config_8h.html" title="config.h" alt="" coords="1511,80,1580,107"/>
+<area shape="rect" id="node21" href="$user__config_8h.html" title="user_config.h" alt="" coords="1458,155,1561,181"/>
+<area shape="rect" id="node23" href="$debug_8h.html" title="debug.h" alt="" coords="1605,80,1675,107"/>
+<area shape="rect" id="node24" href="$utils_8h.html" title="utils.h" alt="" coords="1699,80,1757,107"/>
+<area shape="rect" id="node25" href="$tinyprintf_8h.html" title="tinyprintf.h" alt="" coords="1781,80,1865,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="254,155,335,181"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="815,155,964,181"/>
+<area shape="rect" id="node22" href="$cron_8h.html" title="cron/cron.h" alt="" coords="1585,155,1674,181"/>
+</map>

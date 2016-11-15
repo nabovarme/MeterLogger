@@ -1,0 +1,4 @@
+<map id="HttpdBuiltInUrl" name="HttpdBuiltInUrl">
+<area shape="rect" id="node2" href="$struct_httpd_conn_data.html" title="{HttpdConnData\n|+ conn\l+ url\l+ getArgs\l+ cgiArg\l+ cgiData\l+ postLen\l+ postBuff\l|}" alt="" coords="5,204,119,369"/>
+<area shape="rect" id="node3" href="$struct_httpd_priv.html" title="{HttpdPriv\n|+ head\l+ headPos\l+ postPos\l+ sendBuff\l+ sendBuffLen\l|}" alt="" coords="8,5,116,141"/>
+</map>

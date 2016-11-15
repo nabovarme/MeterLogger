@@ -1,0 +1,12 @@
+<map id="user/tinyprintf.h" name="user/tinyprintf.h">
+<area shape="rect" id="node2" href="$config_8c.html" title="modules/config.c" alt="" coords="5,80,128,107"/>
+<area shape="rect" id="node3" href="$wifi_8c.html" title="modules/wifi.c" alt="" coords="153,80,258,107"/>
+<area shape="rect" id="node4" href="$cgi_8c.html" title="user/cgi.c" alt="" coords="282,80,361,107"/>
+<area shape="rect" id="node5" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="385,80,484,107"/>
+<area shape="rect" id="node6" href="$httpd_8c.html" title="user/httpd.c" alt="" coords="509,80,601,107"/>
+<area shape="rect" id="node7" href="$kmp_8c.html" title="user/kamstrup/kmp.c" alt="" coords="625,80,770,107"/>
+<area shape="rect" id="node8" href="$kmp__request_8c.html" title="user/kamstrup/kmp_request.c" alt="" coords="795,80,992,107"/>
+<area shape="rect" id="node9" href="$tinyprintf_8c.html" title="user/tinyprintf.c" alt="" coords="1016,80,1128,107"/>
+<area shape="rect" id="node10" href="$user__main_8c.html" title="user/user_main.c" alt="" coords="1153,80,1277,107"/>
+<area shape="rect" id="node11" href="$utils_8c.html" title="user/utils.c" alt="" coords="1301,80,1387,107"/>
+</map>

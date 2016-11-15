@@ -1,0 +1,13 @@
+<map id="user/cgiwifi.c" name="user/cgiwifi.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="625,80,709,107"/>
+<area shape="rect" id="node20" href="$httpd_8h.html" title="httpd.h" alt="" coords="1350,155,1413,181"/>
+<area shape="rect" id="node21" href="$cgi_8h.html" title="cgi.h" alt="" coords="1379,80,1429,107"/>
+<area shape="rect" id="node22" href="$config_8h.html" title="config.h" alt="" coords="1453,80,1523,107"/>
+<area shape="rect" id="node25" href="$debug_8h.html" title="debug.h" alt="" coords="1547,80,1618,107"/>
+<area shape="rect" id="node26" href="$utils_8h.html" title="utils.h" alt="" coords="1642,80,1699,107"/>
+<area shape="rect" id="node27" href="$tinyprintf_8h.html" title="tinyprintf.h" alt="" coords="1723,80,1807,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="1155,155,1237,181"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="320,155,469,181"/>
+<area shape="rect" id="node23" href="$user__config_8h.html" title="user_config.h" alt="" coords="1437,155,1539,181"/>
+<area shape="rect" id="node24" href="$cron_8h.html" title="cron/cron.h" alt="" coords="1563,155,1653,181"/>
+</map>

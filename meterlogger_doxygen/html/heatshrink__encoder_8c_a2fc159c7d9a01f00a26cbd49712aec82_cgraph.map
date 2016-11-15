@@ -1,0 +1,8 @@
+<map id="st_yield_literal" name="st_yield_literal">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#ad075b2bdf7d816dbf4eb8b1e16d1586a" title="can_take_byte" alt="" coords="167,5,276,32"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a3609038125fab3c5b7a5914490d82fa2" title="on_final_literal" alt="" coords="167,56,275,83"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#aa6b6e74207f47dbfc49a8d7c640ef9cd" title="push_literal_byte" alt="" coords="160,107,283,133"/>
+<area shape="rect" id="node5" href="$heatshrink__encoder_8c.html#ae3f741c7a40be525778c6c92c4720518" title="get_input_offset" alt="" coords="331,81,448,108"/>
+<area shape="rect" id="node7" href="$heatshrink__encoder_8c.html#a5219dc6b7b93fcd90ee72f9948c58f54" title="push_bits" alt="" coords="350,132,429,159"/>
+<area shape="rect" id="node6" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="496,81,645,108"/>
+</map>

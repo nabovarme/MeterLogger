@@ -1,0 +1,4 @@
+<map id="UartDevice" name="UartDevice">
+<area shape="rect" id="node2" href="$struct_rcv_msg_buff.html" title="{RcvMsgBuff\n|+ RcvBuffSize\l+ pRcvMsgBuff\l+ pWritePos\l+ pReadPos\l+ TrigLvl\l+ BuffState\l|}" alt="" coords="5,5,119,156"/>
+<area shape="rect" id="node3" href="$struct_trx_msg_buff.html" title="{TrxMsgBuff\n|+ TrxBuffSize\l+ pTrxBuff\l|}" alt="" coords="143,35,245,127"/>
+</map>

@@ -1,0 +1,37 @@
+<map id="tfp_snprintf" name="tfp_snprintf">
+<area shape="rect" id="node2" href="$config_8h.html#a92adb6c5103eed30e16185a9cd233e51" title="cfg_load" alt="" coords="178,199,250,225"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="957,855,1133,881"/>
+<area shape="rect" id="node6" href="$cgiwifi_8h.html#ace460e5ac8fd74afa8616bfc82561b26" title="tplSetup" alt="" coords="374,97,445,124"/>
+<area shape="rect" id="node7" href="$cgiwifi_8h.html#aa1b2a25d59b9eecb6f57b7d698686064" title="cgiWiFiScan" alt="" coords="361,300,457,327"/>
+<area shape="rect" id="node8" href="$user__main_8c.html#aca4c3403260c8a02d8a445795842f53e" title="config_mode_timer_func" alt="" coords="961,1036,1129,1063"/>
+<area shape="rect" id="node9" href="$httpd_8h.html#a4e03006e004d17ca91cc75f684cfe74d" title="httpdHeader" alt="" coords="166,452,262,479"/>
+<area shape="rect" id="node14" href="$httpd_8h.html#ab27493bff23508040d0c672a95ecd3b6" title="httpdRedirect" alt="" coords="163,620,265,647"/>
+<area shape="rect" id="node19" href="$httpd_8h.html#ae029382c3db1b881163c89ac8cea96aa" title="httpdStartResponse" alt="" coords="144,401,284,428"/>
+<area shape="rect" id="node20" href="$kmp__request_8c.html#a3f6b790a06b933b78f40ade5e9a16131" title="kmp_received_task" alt="" coords="341,47,478,73"/>
+<area shape="rect" id="node22" href="$kmp__request_8h.html#a3b022dcdc832786eb06126b5e6879604" title="kmp_request_send" alt="" coords="146,772,282,799"/>
+<area shape="rect" id="node25" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="342,756,477,783"/>
+<area shape="rect" id="node26" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="570,756,699,783"/>
+<area shape="rect" id="node27" href="$kmp_8h.html#aa1bdc213acbcb756d20dcf63d5cd387d" title="kmp_value_to_string" alt="" coords="141,47,287,73"/>
+<area shape="rect" id="node28" href="$utils_8h.html#a84a001f12bbadea0d207701a1dfd63fa" title="kw_to_w_str" alt="" coords="166,671,262,697"/>
+<area shape="rect" id="node29" href="$user__main_8h.html#a53fca5688835df983e3ff1a91d387618" title="mqttDataCb" alt="" coords="801,895,894,921"/>
+<area shape="rect" id="node30" href="$cgi_8h.html#a9b819389900e32ba95be37c2bb8d3854" title="tplCounter" alt="" coords="172,924,256,951"/>
+<area shape="rect" id="node31" href="$utils_8h.html#a39c867e4c89519352139d2a416f80046" title="w_to_kw_str" alt="" coords="166,148,262,175"/>
+<area shape="rect" id="node32" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="799,975,895,1001"/>
+<area shape="rect" id="node33" href="$wifi_8c.html#a0be23fd8148c6a3abf21c739359bed52" title="wifi_default" alt="" coords="169,873,259,900"/>
+<area shape="rect" id="node36" href="$wifi_8c.html#ac4389ba687a71cbb616f05b02427eb2a" title="wifi_fallback" alt="" coords="167,975,261,1001"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1355,148,1427,175"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1181,507,1307,533"/>
+<area shape="rect" id="node10" href="$auth_8h.html#ac81ed03345875f282828a190baba0987" title="authBasic" alt="" coords="369,401,449,428"/>
+<area shape="rect" id="node11" href="$httpdespfs_8h.html#aa502116e50052d973b6eef02a6282dd3" title="cgiEspFsHook" alt="" coords="355,452,463,479"/>
+<area shape="rect" id="node12" href="$httpdespfs_8h.html#abc9eb26f247094e9fc41db897f6ec030" title="cgiEspFsTemplate" alt="" coords="343,503,475,529"/>
+<area shape="rect" id="node13" href="$cgi_8h.html#a9e2e6fb536baf86996622cc52b446f66" title="cgiReadFlash" alt="" coords="357,351,461,377"/>
+<area shape="rect" id="node15" href="$cgi_8h.html#a11febcd4d2ccd5bcab0a9332e78274fd" title="cgiLed" alt="" coords="379,655,440,681"/>
+<area shape="rect" id="node16" href="$httpd_8h.html#ae7e718f51fe24926567ca743bce46246" title="cgiRedirect" alt="" coords="365,553,454,580"/>
+<area shape="rect" id="node17" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="373,705,446,732"/>
+<area shape="rect" id="node18" href="$cgiwifi_8h.html#a4ba43d83032eea6839857ed163af5fc9" title="cgiWifiSetMode" alt="" coords="352,604,467,631"/>
+<area shape="rect" id="node21" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="785,79,909,105"/>
+<area shape="rect" id="node23" href="$kmp__request_8c.html#a0977a4640a97d389ac3b0fef0ba7a9b6" title="kmp_receive_timeout\l_timer_func" alt="" coords="335,858,484,899"/>
+<area shape="rect" id="node24" href="$user__main_8c.html#a3648c609e8dd286eb90285b08b150362" title="kmp_request_send_timer_func" alt="" coords="532,807,737,833"/>
+<area shape="rect" id="node34" href="$wifi_8c.html#a1ef15ecd9e69811f6db10215c7196281" title="wifi_scan_done_cb" alt="" coords="341,975,477,1001"/>
+<area shape="rect" id="node35" href="$wifi_8c.html#ae7011f25db54676b86fefe2caa450a4a" title="wifi_scan_timer_func" alt="" coords="561,975,708,1001"/>
+</map>

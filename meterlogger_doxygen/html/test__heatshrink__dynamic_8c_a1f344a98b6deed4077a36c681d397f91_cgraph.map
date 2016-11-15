@@ -1,0 +1,5 @@
+<map id="encoder_alloc_should_reject_invalid_arguments" name="encoder_alloc_should_reject_invalid_arguments">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a2e8cab0e929cb612c25e434a16b6f6c0" title="heatshrink_encoder\l_alloc" alt="" coords="231,27,369,69"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="417,5,567,32"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#a6083507c44c02daee20030e81e015987" title="heatshrink_encoder\l_reset" alt="" coords="423,57,561,98"/>
+</map>

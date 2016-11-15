@@ -1,0 +1,7 @@
+<map id="mqtt/include/proto.h" name="mqtt/include/proto.h">
+<area shape="rect" id="node3" href="$typedef_8h.html" title="typedef.h" alt="" coords="717,155,795,181"/>
+<area shape="rect" id="node4" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="622,80,695,107"/>
+<area shape="rect" id="node5" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="609,155,693,181"/>
+<area shape="rect" id="node18" href="$platform_8h.html" title="platform.h" alt="" coords="1087,229,1169,256"/>
+<area shape="rect" id="node19" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="195,229,344,256"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="MQTT_Client" name="MQTT_Client">
+<area shape="rect" id="node2" href="$structmqtt__state__t.html" title="{mqtt_state_t\n|+ port\l+ auto_reconnect\l+ in_buffer\l+ out_buffer\l+ in_buffer_length\l+ out_buffer_length\l+ message_length\l+ message_length_read\l+ pending_msg_id\l+ pending_msg_type\l+ pending_publish_qos\l|}" alt="" coords="160,417,325,641"/>
+<area shape="rect" id="node3" href="$structmqtt__message.html" title="{mqtt_message\n|+ data\l+ length\l|}" alt="" coords="25,5,134,97"/>
+<area shape="rect" id="node5" href="$structmqtt__connection.html" title="{mqtt_connection\n|+ message_id\l+ buffer\l+ buffer_length\l|}" alt="" coords="169,204,289,311"/>
+<area shape="rect" id="node4" href="$structmqtt__connect__info.html" title="{mqtt_connect_info\n|+ client_id\l+ username\l+ password\l+ will_topic\l+ will_message\l+ keepalive\l+ will_qos\l+ will_retain\l+ clean_session\l|}" alt="" coords="362,160,493,355"/>
+<area shape="rect" id="node6" href="$struct_q_u_e_u_e.html" title="{QUEUE\n|+ buf\l|}" alt="" coords="564,491,633,568"/>
+<area shape="rect" id="node7" href="$struct_r_i_n_g_b_u_f.html" title="{RINGBUF\n|+ p_o\l+ p_r\l+ p_w\l+ fill_cnt\l+ size\l|}" alt="" coords="558,189,639,325"/>
+</map>

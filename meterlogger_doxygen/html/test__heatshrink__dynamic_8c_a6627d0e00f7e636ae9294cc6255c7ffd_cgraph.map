@@ -1,0 +1,31 @@
+<map id="gen" name="gen">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a2e8cab0e929cb612c25e434a16b6f6c0" title="heatshrink_encoder\l_alloc" alt="" coords="113,64,251,105"/>
+<area shape="rect" id="node5" href="$heatshrink__encoder_8c.html#a28c572200aa461a1c7ab1d80e07feeff" title="heatshrink_encoder\l_finish" alt="" coords="113,183,251,224"/>
+<area shape="rect" id="node6" href="$heatshrink__encoder_8c.html#a7dab314bbd6854a56c2f54187b12b687" title="heatshrink_encoder_free" alt="" coords="97,249,267,275"/>
+<area shape="rect" id="node7" href="$heatshrink__encoder_8c.html#a7de708b2cb0d016d9183b0addf6126f3" title="heatshrink_encoder_poll" alt="" coords="99,299,265,326"/>
+<area shape="rect" id="node30" href="$heatshrink__encoder_8c.html#aa1a92f13d1ef65546bb40ece94b2066e" title="heatshrink_encoder_sink" alt="" coords="501,426,672,453"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="908,375,1057,402"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#a6083507c44c02daee20030e81e015987" title="heatshrink_encoder\l_reset" alt="" coords="315,5,453,47"/>
+<area shape="rect" id="node8" href="$heatshrink__encoder_8c.html#a4d5eb19aee4b08addab0bdd80e1f62d8" title="do_indexing" alt="" coords="337,375,431,402"/>
+<area shape="rect" id="node10" href="$heatshrink__encoder_8c.html#af02bd14a139872e09672fbadb61da8a1" title="st_flush_bit_buffer" alt="" coords="319,274,449,301"/>
+<area shape="rect" id="node12" href="$heatshrink__encoder_8c.html#ac2fd6f71c2f249ebc292fd45fbd83b65" title="st_save_backlog" alt="" coords="526,477,647,503"/>
+<area shape="rect" id="node17" href="$heatshrink__encoder_8c.html#a8e16d6d715ab36d730a793591afe2324" title="st_step_search" alt="" coords="531,603,643,630"/>
+<area shape="rect" id="node21" href="$heatshrink__encoder_8c.html#aa61e20c524c12e2672fd275b136d9848" title="st_yield_br_index" alt="" coords="321,173,447,199"/>
+<area shape="rect" id="node24" href="$heatshrink__encoder_8c.html#a00a38065f94d12a3ba3a04c9472b4216" title="st_yield_br_length" alt="" coords="319,223,449,250"/>
+<area shape="rect" id="node25" href="$heatshrink__encoder_8c.html#a2fc159c7d9a01f00a26cbd49712aec82" title="st_yield_literal" alt="" coords="331,325,437,351"/>
+<area shape="rect" id="node28" href="$heatshrink__encoder_8c.html#a0d4c5f8a5ea97aa1fbe657dd8a5109ba" title="st_yield_tag_bit" alt="" coords="327,122,441,149"/>
+<area shape="rect" id="node9" href="$heatshrink__encoder_8c.html#ae3f741c7a40be525778c6c92c4720518" title="get_input_offset" alt="" coords="731,325,849,351"/>
+<area shape="rect" id="node11" href="$heatshrink__encoder_8c.html#ad075b2bdf7d816dbf4eb8b1e16d1586a" title="can_take_byte" alt="" coords="532,223,641,250"/>
+<area shape="rect" id="node13" href="$heatshrink__encoder_8c.html#a5016697d0c014235c56cfc3c7131a604" title="has_literal" alt="" coords="749,426,831,453"/>
+<area shape="rect" id="node14" href="$heatshrink__encoder_8c.html#a323caf30937d6e75e99789f797957f0c" title="is_finishing" alt="" coords="746,477,834,503"/>
+<area shape="rect" id="node15" href="$heatshrink__encoder_8c.html#a20f6276833bfa75c34ca574dc4fac9b8" title="save_backlog" alt="" coords="738,527,842,554"/>
+<area shape="rect" id="node16" href="$heatshrink__encoder_8c.html#a52bfbd33b20249a9f61813fc28c64e57" title="backlog_is_partial" alt="" coords="918,654,1047,681"/>
+<area shape="rect" id="node18" href="$heatshrink__encoder_8c.html#afb59e31aab4a22a8b9640824e9da7426" title="backlog_is_filled" alt="" coords="730,629,850,655"/>
+<area shape="rect" id="node19" href="$heatshrink__encoder_8c.html#a48adb993f0964026473c63b9667f8191" title="find_longest_match" alt="" coords="721,679,859,706"/>
+<area shape="rect" id="node20" href="$heatshrink__encoder_8c.html#a69da5fdbae8296d5c7190ab953de134d" title="get_lookahead_size" alt="" coords="720,730,860,757"/>
+<area shape="rect" id="node22" href="$heatshrink__encoder_8c.html#ac7c4eed81d350c335b605fa016466f82" title="push_outgoing_bits" alt="" coords="518,173,655,199"/>
+<area shape="rect" id="node23" href="$heatshrink__encoder_8c.html#a5219dc6b7b93fcd90ee72f9948c58f54" title="push_bits" alt="" coords="751,173,829,199"/>
+<area shape="rect" id="node26" href="$heatshrink__encoder_8c.html#a3609038125fab3c5b7a5914490d82fa2" title="on_final_literal" alt="" coords="533,274,641,301"/>
+<area shape="rect" id="node27" href="$heatshrink__encoder_8c.html#aa6b6e74207f47dbfc49a8d7c640ef9cd" title="push_literal_byte" alt="" coords="525,325,648,351"/>
+<area shape="rect" id="node29" href="$heatshrink__encoder_8c.html#a5d06eacaa1ca17bfe5537537dffa9d6e" title="add_tag_bit" alt="" coords="541,122,633,149"/>
+</map>

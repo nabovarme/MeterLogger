@@ -1,0 +1,6 @@
+<map id="httpdRedirect" name="httpdRedirect">
+<area shape="rect" id="node2" href="$cgi_8h.html#a11febcd4d2ccd5bcab0a9332e78274fd" title="cgiLed" alt="" coords="181,5,243,32"/>
+<area shape="rect" id="node3" href="$httpd_8h.html#ae7e718f51fe24926567ca743bce46246" title="cgiRedirect" alt="" coords="167,56,257,83"/>
+<area shape="rect" id="node4" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="175,107,249,133"/>
+<area shape="rect" id="node5" href="$cgiwifi_8h.html#a4ba43d83032eea6839857ed163af5fc9" title="cgiWifiSetMode" alt="" coords="155,157,269,184"/>
+</map>

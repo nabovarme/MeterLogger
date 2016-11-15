@@ -1,0 +1,10 @@
+<map id="compress_and_expand_and_check" name="compress_and_expand_and_check">
+<area shape="rect" id="node2" href="$test__heatshrink__dynamic_8c.html#ae9d1425d6c89a652b9df2b4ddc7ac2a2" title="data_with_simple_repetition\l_should_compress_and_decompress\l_properly" alt="" coords="213,5,457,61"/>
+<area shape="rect" id="node4" href="$test__heatshrink__dynamic_8c.html#a9d63746ee6a963338d09b8a19da82529" title="data_without_duplication\l_should_match" alt="" coords="251,86,420,127"/>
+<area shape="rect" id="node5" href="$test__heatshrink__dynamic_8c.html#a60c0e0c5bbb9715c7932ee82e706752d" title="pseudorandom_data_should\l_match" alt="" coords="240,151,431,193"/>
+<area shape="rect" id="node6" href="$test__heatshrink__dynamic_8c.html#a462faeb904a3de1b1e009a04f7d171d8" title="regression_backreference\l_counters_should_not_roll_over" alt="" coords="229,217,441,258"/>
+<area shape="rect" id="node7" href="$test__heatshrink__dynamic_8c.html#a2ed8ea21768d114fa96b07eb58475663" title="regression_index_fail" alt="" coords="261,283,409,309"/>
+<area shape="rect" id="node8" href="$test__heatshrink__dynamic_8c.html#a1bfe72da903d55a8610433a4f2a60d43" title="sixty_four_k" alt="" coords="289,333,382,360"/>
+<area shape="rect" id="node9" href="$test__heatshrink__dynamic_8c.html#a20e1a72bba941f0c602b93b53d32d5db" title="small_input_buffer\l_should_not_impact_decoder\l_correctness" alt="" coords="237,384,434,440"/>
+<area shape="rect" id="node3" href="$test__heatshrink__dynamic_8c.html#a2f157eb23cb17a496326c14e12933b3b" title="SUITE" alt="" coords="505,224,567,251"/>
+</map>

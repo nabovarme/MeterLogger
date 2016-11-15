@@ -1,0 +1,8 @@
+<map id="kmp_get_register_timer_func" name="kmp_get_register_timer_func">
+<area shape="rect" id="node2" href="$kmp_8c.html#aff9c217307fb9210d301ba14bc2b5707" title="kmp_get_register" alt="" coords="248,56,373,83"/>
+<area shape="rect" id="node6" href="$uart_8c.html#a87f1c1c2a25d4336eb804da28ed99f7e" title="uart0_tx_buffer" alt="" coords="255,107,367,133"/>
+<area shape="rect" id="node3" href="$kmp_8c.html#a799f8c5be2e9dd312ca86e43206634b9" title="kmp_byte_stuff" alt="" coords="428,5,540,32"/>
+<area shape="rect" id="node4" href="$kmp_8c.html#a5245dd3f5d04db2e46786675e7ae97f8" title="kmp_crc16" alt="" coords="441,56,527,83"/>
+<area shape="rect" id="node5" href="$utils_8c.html#a3343daa80a622a02e6a039a58cb89c35" title="ccit_crc16" alt="" coords="595,56,677,83"/>
+<area shape="rect" id="node7" href="$uart_8c.html#a40bca7ca9b269f93bc9f17924a38fbe0" title="uart_tx_one_char" alt="" coords="421,107,547,133"/>
+</map>

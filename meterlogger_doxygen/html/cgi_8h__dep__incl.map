@@ -1,0 +1,6 @@
+<map id="user/cgi.h" name="user/cgi.h">
+<area shape="rect" id="node2" href="$auth_8c.html" title="user/auth.c" alt="" coords="5,80,93,107"/>
+<area shape="rect" id="node3" href="$cgi_8c.html" title="user/cgi.c" alt="" coords="118,80,197,107"/>
+<area shape="rect" id="node4" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="221,80,320,107"/>
+<area shape="rect" id="node5" href="$httpd__user__init_8c.html" title="user/httpd_user_init.c" alt="" coords="344,80,493,107"/>
+</map>

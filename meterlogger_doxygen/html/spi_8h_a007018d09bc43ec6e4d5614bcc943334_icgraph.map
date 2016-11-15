@@ -1,0 +1,5 @@
+<map id="spi_init_gpio" name="spi_init_gpio">
+<area shape="rect" id="node2" href="$ext__spi__flash_8h.html#a292607e88dd8cb8213d0bad78679210d" title="ext_spi_init" alt="" coords="149,5,239,32"/>
+<area shape="rect" id="node4" href="$spi_8h.html#ab1b1ee052705fb788f5f312bb5dff9b3" title="spi_init" alt="" coords="162,56,226,83"/>
+<area shape="rect" id="node3" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="287,5,359,32"/>
+</map>

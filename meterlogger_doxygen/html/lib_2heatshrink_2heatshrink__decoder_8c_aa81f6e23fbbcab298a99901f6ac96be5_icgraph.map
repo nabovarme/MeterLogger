@@ -1,0 +1,33 @@
+<map id="st_check_for_input" name="st_check_for_input">
+<area shape="rect" id="node2" href="$heatshrink__decoder_8h.html#a38406b03b9df8b993c6a3fa144675627" title="heatshrink_decoder_poll" alt="" coords="187,597,353,624"/>
+<area shape="rect" id="node3" href="$heatshrink_8c.html#a3f2b305cf4f4bf560265d00373a78bdd" title="decoder_sink_read" alt="" coords="441,5,577,32"/>
+<area shape="rect" id="node6" href="$test__heatshrink__dynamic_8c.html#a89837d79f51959fccccd28df0356fe37" title="decoder_poll_should\l_return_empty_if_empty" alt="" coords="426,57,591,98"/>
+<area shape="rect" id="node8" href="$test__heatshrink__dynamic_8c.html#a289dd3f831fdabb987c0d206e5cf13d5" title="decoder_poll_should\l_reject_null_hsd" alt="" coords="436,122,581,163"/>
+<area shape="rect" id="node9" href="$test__heatshrink__dynamic_8c.html#af707dda355411d96de31c8bdaa687108" title="decoder_poll_should\l_reject_null_output\l_buffer" alt="" coords="436,188,581,244"/>
+<area shape="rect" id="node10" href="$test__heatshrink__dynamic_8c.html#a0e70f90b221a1bee860235c1ad79f7f8" title="decoder_poll_should\l_reject_null_output\l_size_pointer" alt="" coords="436,268,581,324"/>
+<area shape="rect" id="node11" href="$test__heatshrink__dynamic_8c.html#afb5cdb53efe5dca1a7a785f344a03655" title="decoder_poll_should\l_expand_short_literal" alt="" coords="434,349,583,390"/>
+<area shape="rect" id="node12" href="$test__heatshrink__dynamic_8c.html#a5f3328adb18355964bab2a3f026f4707" title="decoder_poll_should\l_expand_short_literal\l_and_backref" alt="" coords="434,415,583,471"/>
+<area shape="rect" id="node13" href="$test__heatshrink__dynamic_8c.html#a5f04d534aa5ff2bc1fb218feea741774" title="decoder_poll_should\l_expand_short_self_overlapping\l_backref" alt="" coords="401,495,616,551"/>
+<area shape="rect" id="node14" href="$test__heatshrink__dynamic_8c.html#aed41c11f7d13fb37749ce644efea3b76" title="decoder_poll_should\l_suspend_if_out_of_space\l_in_output_buffer_during\l_literal_expansion" alt="" coords="418,575,599,646"/>
+<area shape="rect" id="node15" href="$test__heatshrink__dynamic_8c.html#a4c76ed65aa09f4c123ed378507c3ddbb" title="decoder_poll_should\l_suspend_if_out_of_space\l_in_output_buffer_during\l_backref_expansion" alt="" coords="418,670,599,741"/>
+<area shape="rect" id="node16" href="$test__heatshrink__dynamic_8c.html#aaf61f9d548405f6ea0b9cc6d4dd86589" title="decoder_poll_should\l_expand_short_literal\l_and_backref_when_fed\l_input_byte_by_byte" alt="" coords="425,765,593,835"/>
+<area shape="rect" id="node17" href="$test__heatshrink__dynamic_8c.html#a1f5bd6590b5a6d8ae285c99739e59839" title="decoder_finish_should\l_note_when_done" alt="" coords="431,859,587,901"/>
+<area shape="rect" id="node18" href="$test__heatshrink__dynamic_8c.html#aeefae364c6a09c82a0228b02adf67236" title="decoder_should_not\l_get_stuck_with_finish\l_yielding_MORE_but_0_bytes\l_output_from_poll" alt="" coords="407,925,610,995"/>
+<area shape="rect" id="node19" href="$test__heatshrink__dynamic_8c.html#ab9096be17a9dc8f301673949558e5bd6" title="compress_and_expand\l_and_check" alt="" coords="429,1019,589,1061"/>
+<area shape="rect" id="node28" href="$test__heatshrink__dynamic_8c.html#a9a102029b8375d4050406a2814f390ac" title="data_without_duplication\l_should_match_with_absurdly\l_tiny_buffers" alt="" coords="685,1157,887,1213"/>
+<area shape="rect" id="node29" href="$test__heatshrink__dynamic_8c.html#acd64db79d79999a7c5436d35b74a7f40" title="data_with_simple_repetition\l_should_match_with_absurdly\l_tiny_buffers" alt="" coords="685,1237,887,1293"/>
+<area shape="rect" id="node30" href="$espfs_8h.html#adb43e859351bc07f175ccc5e29ee6950" title="espFsRead" alt="" coords="463,1317,554,1344"/>
+<area shape="rect" id="node4" href="$heatshrink_8c.html#a92d9515cb2f33eea4832becaa17c11bb" title="decode" alt="" coords="753,5,819,32"/>
+<area shape="rect" id="node5" href="$heatshrink_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="961,5,1012,32"/>
+<area shape="rect" id="node7" href="$test__heatshrink__dynamic_8c.html#adc66afa12a5eaae0cd12d5cc497f0f67" title="SUITE" alt="" coords="755,469,817,496"/>
+<area shape="rect" id="node20" href="$test__heatshrink__dynamic_8c.html#a9d63746ee6a963338d09b8a19da82529" title="data_without_duplication\l_should_match" alt="" coords="701,697,871,738"/>
+<area shape="rect" id="node22" href="$test__heatshrink__dynamic_8c.html#ae9d1425d6c89a652b9df2b4ddc7ac2a2" title="data_with_simple_repetition\l_should_compress_and_decompress\l_properly" alt="" coords="664,763,908,819"/>
+<area shape="rect" id="node23" href="$test__heatshrink__dynamic_8c.html#a60c0e0c5bbb9715c7932ee82e706752d" title="pseudorandom_data_should\l_match" alt="" coords="691,843,881,885"/>
+<area shape="rect" id="node24" href="$test__heatshrink__dynamic_8c.html#a20e1a72bba941f0c602b93b53d32d5db" title="small_input_buffer\l_should_not_impact_decoder\l_correctness" alt="" coords="687,909,885,965"/>
+<area shape="rect" id="node25" href="$test__heatshrink__dynamic_8c.html#a462faeb904a3de1b1e009a04f7d171d8" title="regression_backreference\l_counters_should_not_roll_over" alt="" coords="680,990,892,1031"/>
+<area shape="rect" id="node26" href="$test__heatshrink__dynamic_8c.html#a2ed8ea21768d114fa96b07eb58475663" title="regression_index_fail" alt="" coords="712,1056,860,1083"/>
+<area shape="rect" id="node27" href="$test__heatshrink__dynamic_8c.html#a1bfe72da903d55a8610433a4f2a60d43" title="sixty_four_k" alt="" coords="739,1107,833,1133"/>
+<area shape="rect" id="node21" href="$test__heatshrink__dynamic_8c.html#a2f157eb23cb17a496326c14e12933b3b" title="SUITE" alt="" coords="956,997,1017,1024"/>
+<area shape="rect" id="node31" href="$httpdespfs_8h.html#aa502116e50052d973b6eef02a6282dd3" title="cgiEspFsHook" alt="" coords="732,1317,840,1344"/>
+<area shape="rect" id="node32" href="$httpdespfs_8h.html#abc9eb26f247094e9fc41db897f6ec030" title="cgiEspFsTemplate" alt="" coords="720,1368,852,1395"/>
+</map>

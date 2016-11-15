@@ -1,0 +1,13 @@
+<map id="modules/wifi.c" name="modules/wifi.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="721,80,805,107"/>
+<area shape="rect" id="node20" href="$wifi_8h.html" title="wifi.h" alt="" coords="1305,80,1357,107"/>
+<area shape="rect" id="node21" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="1381,80,1473,107"/>
+<area shape="rect" id="node22" href="$debug_8h.html" title="debug.h" alt="" coords="1497,80,1567,107"/>
+<area shape="rect" id="node23" href="$user__config_8h.html" title="user_config.h" alt="" coords="1554,155,1657,181"/>
+<area shape="rect" id="node24" href="$config_8h.html" title="config.h" alt="" coords="1643,80,1712,107"/>
+<area shape="rect" id="node26" href="$led_8h.html" title="led.h" alt="" coords="1736,80,1787,107"/>
+<area shape="rect" id="node27" href="$tinyprintf_8h.html" title="tinyprintf.h" alt="" coords="1811,80,1895,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="775,155,857,181"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="971,155,1120,181"/>
+<area shape="rect" id="node25" href="$cron_8h.html" title="cron/cron.h" alt="" coords="1681,155,1770,181"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="tfp_printf" name="tfp_printf">
+<area shape="rect" id="node2" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="127,183,209,209"/>
+<area shape="rect" id="node3" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="267,5,311,32"/>
+<area shape="rect" id="node5" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="269,56,309,83"/>
+<area shape="rect" id="node6" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="373,81,419,108"/>
+<area shape="rect" id="node7" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="268,157,311,184"/>
+<area shape="rect" id="node8" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="371,196,421,223"/>
+<area shape="rect" id="node9" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="267,259,312,285"/>
+<area shape="rect" id="node10" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="369,272,423,299"/>
+<area shape="rect" id="node11" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="257,360,321,387"/>
+<area shape="rect" id="node4" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="374,5,418,32"/>
+</map>

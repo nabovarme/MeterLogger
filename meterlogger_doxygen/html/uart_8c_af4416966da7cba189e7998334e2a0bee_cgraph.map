@@ -1,0 +1,11 @@
+<map id="uart_init" name="uart_init">
+<area shape="rect" id="node2" href="$uart_8c.html#a6d11dbbb730e8898c2a8922f4217ab5c" title="uart0_write_char" alt="" coords="123,5,244,32"/>
+<area shape="rect" id="node4" href="$uart_8c.html#a489b77b74dfee22fd4f0c5323ab44da6" title="uart_config" alt="" coords="139,56,227,83"/>
+<area shape="rect" id="node3" href="$uart_8c.html#a40bca7ca9b269f93bc9f17924a38fbe0" title="uart_tx_one_char" alt="" coords="304,5,429,32"/>
+<area shape="rect" id="node5" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="292,56,441,83"/>
+<area shape="rect" id="node10" href="$espmissingincludes_8h.html#a1bea1725066e012f8f618d08ed7fee45" title="uart_div_modify" alt="" coords="309,107,425,133"/>
+<area shape="rect" id="node6" href="$en61107__request_8c.html#ae20bf12760f56ac48afdd0c7952d168b" title="en61107_fifo_put" alt="" coords="489,31,615,57"/>
+<area shape="rect" id="node8" href="$kmp__request_8c.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="503,81,601,108"/>
+<area shape="rect" id="node7" href="$en61107__request_8c.html#a9984f86f367d70ca77edce2accd01c64" title="en61107_fifo_in_use" alt="" coords="663,31,808,57"/>
+<area shape="rect" id="node9" href="$kmp__request_8c.html#a50794131d44d1f5c42484104202be6df" title="kmp_fifo_in_use" alt="" coords="676,81,795,108"/>
+</map>

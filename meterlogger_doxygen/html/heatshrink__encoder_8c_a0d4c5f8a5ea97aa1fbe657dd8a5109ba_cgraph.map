@@ -1,0 +1,5 @@
+<map id="st_yield_tag_bit" name="st_yield_tag_bit">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a5d06eacaa1ca17bfe5537537dffa9d6e" title="add_tag_bit" alt="" coords="177,5,269,32"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#ad075b2bdf7d816dbf4eb8b1e16d1586a" title="can_take_byte" alt="" coords="168,56,277,83"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a5219dc6b7b93fcd90ee72f9948c58f54" title="push_bits" alt="" coords="325,5,404,32"/>
+</map>

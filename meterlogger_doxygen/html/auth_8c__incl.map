@@ -1,0 +1,10 @@
+<map id="user/auth.c" name="user/auth.c">
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="601,80,685,107"/>
+<area shape="rect" id="node20" href="$httpd_8h.html" title="httpd.h" alt="" coords="5,155,68,181"/>
+<area shape="rect" id="node21" href="$cgi_8h.html" title="cgi.h" alt="" coords="153,80,203,107"/>
+<area shape="rect" id="node22" href="$auth_8h.html" title="auth.h" alt="" coords="710,80,769,107"/>
+<area shape="rect" id="node24" href="$base64_8h.html" title="base64.h" alt="" coords="793,80,870,107"/>
+<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="1156,155,1237,181"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="423,155,573,181"/>
+<area shape="rect" id="node23" href="$httpdconfig_8h.html" title="httpdconfig.h" alt="" coords="1437,155,1535,181"/>
+</map>

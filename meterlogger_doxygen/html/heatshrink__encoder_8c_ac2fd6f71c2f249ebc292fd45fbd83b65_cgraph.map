@@ -1,0 +1,7 @@
+<map id="st_save_backlog" name="st_save_backlog">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a5016697d0c014235c56cfc3c7131a604" title="has_literal" alt="" coords="185,5,268,32"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a323caf30937d6e75e99789f797957f0c" title="is_finishing" alt="" coords="183,56,271,83"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#a20f6276833bfa75c34ca574dc4fac9b8" title="save_backlog" alt="" coords="175,107,279,133"/>
+<area shape="rect" id="node5" href="$heatshrink__encoder_8c.html#a52bfbd33b20249a9f61813fc28c64e57" title="backlog_is_partial" alt="" coords="337,81,466,108"/>
+<area shape="rect" id="node6" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="327,132,476,159"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="heatshrink_encoder_sink" name="heatshrink_encoder_sink">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="389,5,539,32"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#ae3f741c7a40be525778c6c92c4720518" title="get_input_offset" alt="" coords="224,31,341,57"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#a323caf30937d6e75e99789f797957f0c" title="is_finishing" alt="" coords="239,81,327,108"/>
+</map>

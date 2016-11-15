@@ -1,0 +1,27 @@
+<map id="tplSetup" name="tplSetup">
+<area shape="rect" id="node2" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="317,300,361,327"/>
+<area shape="rect" id="node3" href="$config_8c.html#a92adb6c5103eed30e16185a9cd233e51" title="cfg_load" alt="" coords="149,123,221,149"/>
+<area shape="rect" id="node11" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="295,224,383,251"/>
+<area shape="rect" id="node24" href="$httpd_8c.html#a1a143f6c427d66e2561895cf193fc535" title="httpdSend" alt="" coords="144,275,227,301"/>
+<area shape="rect" id="node25" href="$utils_8c.html#a39c867e4c89519352139d2a416f80046" title="w_to_kw_str" alt="" coords="137,224,233,251"/>
+<area shape="rect" id="node26" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="124,376,247,403"/>
+<area shape="rect" id="node4" href="$utils_8c.html#a3343daa80a622a02e6a039a58cb89c35" title="ccit_crc16" alt="" coords="459,5,542,32"/>
+<area shape="rect" id="node5" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="301,123,377,149"/>
+<area shape="rect" id="node8" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="434,173,567,200"/>
+<area shape="rect" id="node10" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="302,72,375,99"/>
+<area shape="rect" id="node6" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="431,57,571,98"/>
+<area shape="rect" id="node9" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="433,123,569,149"/>
+<area shape="rect" id="node7" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="621,123,733,149"/>
+<area shape="rect" id="node12" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="453,224,548,251"/>
+<area shape="rect" id="node13" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="635,249,718,276"/>
+<area shape="rect" id="node23" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="619,199,735,225"/>
+<area shape="rect" id="node14" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="793,72,837,99"/>
+<area shape="rect" id="node16" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="895,148,948,175"/>
+<area shape="rect" id="node17" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="896,313,947,340"/>
+<area shape="rect" id="node18" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="898,389,945,416"/>
+<area shape="rect" id="node19" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="783,275,847,301"/>
+<area shape="rect" id="node20" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="792,173,837,200"/>
+<area shape="rect" id="node21" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="793,224,836,251"/>
+<area shape="rect" id="node22" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="795,427,835,453"/>
+<area shape="rect" id="node15" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="899,72,943,99"/>
+</map>

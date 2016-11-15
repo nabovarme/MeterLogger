@@ -1,0 +1,8 @@
+<map id="kmp_get_received_serial" name="kmp_get_received_serial">
+<area shape="rect" id="node2" href="$user__main_8c.html#aca4c3403260c8a02d8a445795842f53e" title="config_mode_timer_func" alt="" coords="405,5,573,32"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="224,43,353,69"/>
+<area shape="rect" id="node6" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="401,81,577,108"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a53fca5688835df983e3ff1a91d387618" title="mqttDataCb" alt="" coords="242,144,335,171"/>
+<area shape="rect" id="node3" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="625,44,751,71"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="799,44,871,71"/>
+</map>

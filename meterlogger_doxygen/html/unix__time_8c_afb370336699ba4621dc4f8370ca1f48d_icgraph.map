@@ -1,0 +1,8 @@
+<map id="uptime" name="uptime">
+<area shape="rect" id="node2" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="299,24,428,50"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a53fca5688835df983e3ff1a91d387618" title="mqttDataCb" alt="" coords="317,74,410,101"/>
+<area shape="rect" id="node7" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="116,24,251,50"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="476,49,652,76"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="700,49,825,76"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="873,49,945,76"/>
+</map>

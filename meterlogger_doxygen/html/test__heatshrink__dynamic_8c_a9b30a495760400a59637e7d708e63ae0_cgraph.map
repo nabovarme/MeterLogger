@@ -1,0 +1,9 @@
+<map id="encoder_sink_should_reject_nulls" name="encoder_sink_should_reject_nulls">
+<area shape="rect" id="node2" href="$heatshrink__encoder_8c.html#a2e8cab0e929cb612c25e434a16b6f6c0" title="heatshrink_encoder\l_alloc" alt="" coords="217,30,356,71"/>
+<area shape="rect" id="node5" href="$heatshrink__encoder_8c.html#a7dab314bbd6854a56c2f54187b12b687" title="heatshrink_encoder_free" alt="" coords="202,96,371,123"/>
+<area shape="rect" id="node6" href="$heatshrink__encoder_8c.html#aa1a92f13d1ef65546bb40ece94b2066e" title="heatshrink_encoder_sink" alt="" coords="201,147,372,173"/>
+<area shape="rect" id="node3" href="$heatshrink__encoder_8c.html#a9b311bf2b76215ba61eb648d970a5f11" title="get_input_buffer_size" alt="" coords="607,96,756,123"/>
+<area shape="rect" id="node4" href="$heatshrink__encoder_8c.html#a6083507c44c02daee20030e81e015987" title="heatshrink_encoder\l_reset" alt="" coords="420,30,559,71"/>
+<area shape="rect" id="node7" href="$heatshrink__encoder_8c.html#ae3f741c7a40be525778c6c92c4720518" title="get_input_offset" alt="" coords="431,147,548,173"/>
+<area shape="rect" id="node8" href="$heatshrink__encoder_8c.html#a323caf30937d6e75e99789f797957f0c" title="is_finishing" alt="" coords="445,197,533,224"/>
+</map>
