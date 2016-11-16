@@ -19,8 +19,8 @@
 #include "user_main.h"
 #include "captdns.h"
 #include "tinyprintf.h"
-#include "driver/gpio16.h"
 #include "driver/ext_spi_flash.h"
+#include "watchdog.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -60,7 +60,6 @@ static os_timer_t kmp_request_send_timer;
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
-static os_timer_t ext_wd_timer;
 //static os_timer_t spi_test_timer;	// DEBUG
 #endif
 
@@ -108,6 +107,8 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
+
+	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
 }
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
@@ -211,6 +212,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		if (mqtt_client.pCon != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Ping(&mqtt_client);
+			reset_watchdog(MQTT_WATCHDOG_ID);
 		}
 	}
 
@@ -257,17 +259,6 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 }
 #endif // IMPULSE
 
-#ifdef IMPULSE
-ICACHE_FLASH_ATTR void static ext_wd_timer_func(void *arg) {
-	if (gpio16_input_get()) {
-		gpio16_output_set(0);
-	}
-	else {
-		gpio16_output_set(1);
-	}
-}
-#endif // IMPULSE
-
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
 		MQTT_Connect(&mqtt_client);
@@ -283,7 +274,6 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Connected\n");
 #endif	// DEBUG
-	network_watchdog_clear();
 
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
@@ -369,6 +359,7 @@ ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
+	reset_watchdog(MQTT_WATCHDOG_ID);
 #ifdef DEBUG
 	printf("MQTT: Published\n");
 #endif	// DEBUG
@@ -378,12 +369,6 @@ ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
 #ifdef DEBUG
 	printf("MQTT: Timeout\n");
 #endif	// DEBUG
-	// DEBUG: hack to get it to reconnect on weak wifi
-	// force reconnect to wireless
-	wifi_station_disconnect();
-	
-	// and (re)-connect
-	wifi_station_connect();
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
@@ -697,14 +682,6 @@ void impulse_meter_init(void) {
 	last_impulse_time = 0;
 	
 	last_impulse_meter_count = sys_cfg.impulse_meter_count;
-
-	// start extern watchdog timer	(MCP1316)
-	os_timer_disarm(&ext_wd_timer);
-	os_timer_setfn(&ext_wd_timer, (os_timer_func_t *)ext_wd_timer_func, NULL);
-	os_timer_arm(&ext_wd_timer, 1000, 1);
-	//Set GPIO16 to output mode
-	gpio16_output_conf();
-	gpio16_output_set(1);
 #ifdef DEBUG
 	printf("t: %u\n", impulse_time);
 #endif // DEBUG
@@ -740,6 +717,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// disable serial debug
 	system_set_os_print(0);
 #endif
+	// start watchdog
+	init_watchdog();
+	start_watchdog();
 
 #ifdef IMPULSE
 	ext_spi_init();

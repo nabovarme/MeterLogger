@@ -18,7 +18,6 @@
 #define RSSI_CHECK_INTERVAL 10000
 
 static os_timer_t wifi_scan_timer;
-static os_timer_t network_watchdog_timer;
 static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
@@ -27,7 +26,6 @@ uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
 static uint8_t wifi_event = EVENT_STAMODE_DISCONNECTED;
 bool wifi_present = false;
-bool wifi_interrupted = false;
 bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
@@ -60,25 +58,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 		default:
 			break;
-	}
-}
-
-static void ICACHE_FLASH_ATTR network_watchdog_timer_func(void *arg) {
-	wifi_status = wifi_station_get_connect_status();
-	
-#ifdef DEBUG
-		os_printf("ip watchdog status: %u, event: %u\n", wifi_status, wifi_event);
-#endif
-	if ((wifi_status != STATION_GOT_IP) || (wifi_event =! EVENT_STAMODE_GOT_IP) || (wifi_interrupted == true)) {
-		// DEBUG: hack to get it to reconnect on weak wifi
-		// force reconnect to wireless
-		wifi_station_disconnect();
-	
-		// and (re)-connect
-		wifi_station_connect();
-#ifdef DEBUG
-		os_printf("WiFi restarted\n");
-#endif
 	}
 }
 
@@ -125,9 +104,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			}
 			info = info->next.stqe_next;
 		}
-		if (wifi_present == false) {
-			wifi_interrupted = true;
-		}
 		
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
@@ -143,7 +119,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		wifi_fallback_last_present = wifi_fallback_present;
 #ifdef DEBUG
 		os_printf("WiFi present: %s\n", (wifi_present ? "yes" : "no"));
-		os_printf("int: %s\n", (wifi_interrupted ? "yes" : "no"));
 #endif
 	}
 	
@@ -174,11 +149,6 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	wifi_station_set_config_current(&stationConf);
 	wifi_station_connect();
 	
-	// start ip connectivity watchdog
-	os_timer_disarm(&network_watchdog_timer);
-	os_timer_setfn(&network_watchdog_timer, (os_timer_func_t *)network_watchdog_timer_func, NULL);
-	os_timer_arm(&network_watchdog_timer, NETWORK_CHECK_INTERVAL, 1);
-
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
@@ -187,12 +157,6 @@ void ICACHE_FLASH_ATTR wifi_default() {
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
-
-	// stop ip connectivity watchdog and rssi timer - not done for fallback network
-	os_timer_disarm(&network_watchdog_timer);
-	os_timer_disarm(&wifi_get_rssi_timer);
-
-//	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
 
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
@@ -236,11 +200,6 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
-	// start ip connectivity watchdog
-	os_timer_disarm(&network_watchdog_timer);
-	os_timer_setfn(&network_watchdog_timer, (os_timer_func_t *)network_watchdog_timer_func, NULL);
-	os_timer_arm(&network_watchdog_timer, NETWORK_CHECK_INTERVAL, 1);
-
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
@@ -254,8 +213,4 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 		// wait for lock
 	}
 	return rssi;
-}
-
-void ICACHE_FLASH_ATTR network_watchdog_clear() {
-	wifi_interrupted = false;
 }
