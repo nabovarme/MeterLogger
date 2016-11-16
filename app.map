@@ -575,7 +575,7 @@ END GROUP
  *(.jcr)
                 0x000000003ffe88a4                _data_end = ABSOLUTE (.)
 
-.rodata         0x000000003ffe88b0     0x1fac
+.rodata         0x000000003ffe88b0     0x1fb8
                 0x000000003ffe88b0                _rodata_start = ABSOLUTE (.)
  *(.sdk.version)
  .sdk.version   0x000000003ffe88b0        0xf /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
@@ -653,89 +653,89 @@ END GROUP
                 0x000000003ffe93dc        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
                                           0xc (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe93e0      0x29f build/app_app.a(user_main.o)
-                                        0x2b3 (size before relaxing)
- *fill*         0x000000003ffe967f        0x1 
+                0x000000003ffe93e0      0x27b build/app_app.a(user_main.o)
+                                        0x28f (size before relaxing)
+ *fill*         0x000000003ffe965b        0x1 
  .rodata.str1.4
-                0x000000003ffe9680       0x11 build/app_app.a(captdns.o)
- *fill*         0x000000003ffe9691        0x3 
+                0x000000003ffe965c       0x11 build/app_app.a(captdns.o)
+ *fill*         0x000000003ffe966d        0x3 
  .rodata.str1.4
-                0x000000003ffe9694       0xaa build/app_app.a(httpd_user_init.o)
+                0x000000003ffe9670       0xaa build/app_app.a(httpd_user_init.o)
                                          0xae (size before relaxing)
- *fill*         0x000000003ffe973e        0x2 
+ *fill*         0x000000003ffe971a        0x2 
  .rodata.str1.4
-                0x000000003ffe9740      0x33e build/app_app.a(httpd.o)
+                0x000000003ffe971c      0x33e build/app_app.a(httpd.o)
                                         0x34e (size before relaxing)
- *fill*         0x000000003ffe9a7e        0x2 
+ *fill*         0x000000003ffe9a5a        0x2 
  .rodata.str1.4
-                0x000000003ffe9a80       0x2e build/app_app.a(crypto.o)
+                0x000000003ffe9a5c       0x2e build/app_app.a(crypto.o)
                                          0x3a (size before relaxing)
- *fill*         0x000000003ffe9aae        0x2 
+ *fill*         0x000000003ffe9a8a        0x2 
  .rodata.str1.4
-                0x000000003ffe9ab0       0x11 build/app_app.a(sha256.o)
- *fill*         0x000000003ffe9ac1        0x3 
+                0x000000003ffe9a8c       0x11 build/app_app.a(sha256.o)
+ *fill*         0x000000003ffe9a9d        0x3 
  .rodata.str1.4
-                0x000000003ffe9ac4       0xfb build/app_app.a(kmp_request.o)
+                0x000000003ffe9aa0       0xfb build/app_app.a(kmp_request.o)
                                         0x10b (size before relaxing)
- *fill*         0x000000003ffe9bbf        0x1 
+ *fill*         0x000000003ffe9b9b        0x1 
  .rodata.str1.4
-                0x000000003ffe9bc0       0x8c build/app_app.a(kmp.o)
+                0x000000003ffe9b9c       0x8c build/app_app.a(kmp.o)
                                          0x9c (size before relaxing)
  .rodata.str1.4
-                0x000000003ffe9c4c       0xb9 build/app_app.a(cron.o)
+                0x000000003ffe9c28       0xb9 build/app_app.a(cron.o)
                                          0xe1 (size before relaxing)
- *fill*         0x000000003ffe9d05        0x3 
+ *fill*         0x000000003ffe9ce1        0x3 
  .rodata.str1.4
-                0x000000003ffe9d08       0x6c build/app_app.a(ac_out.o)
+                0x000000003ffe9ce4       0x6c build/app_app.a(ac_out.o)
  .rodata.str1.4
-                0x000000003ffe9d74      0x45b build/app_app.a(mqtt.o)
+                0x000000003ffe9d50      0x45b build/app_app.a(mqtt.o)
                                         0x45f (size before relaxing)
- *fill*         0x000000003ffea1cf        0x1 
+ *fill*         0x000000003ffea1ab        0x1 
  .rodata.str1.4
-                0x000000003ffea1d0        0x7 build/app_app.a(mqtt_msg.o)
+                0x000000003ffea1ac        0x7 build/app_app.a(mqtt_msg.o)
  .rodata.str1.4
-                0x000000003ffea1d7        0x1 build/app_app.a(queue.o)
- *fill*         0x000000003ffea1d7        0x1 
+                0x000000003ffea1b3        0x1 build/app_app.a(queue.o)
+ *fill*         0x000000003ffea1b3        0x1 
  .rodata.str1.4
-                0x000000003ffea1d8       0xab build/app_app.a(config.o)
+                0x000000003ffea1b4       0xab build/app_app.a(config.o)
                                          0xb3 (size before relaxing)
- *fill*         0x000000003ffea283        0x1 
+ *fill*         0x000000003ffea25f        0x1 
  .rodata.str1.4
-                0x000000003ffea284       0x98 build/app_app.a(wifi.o)
+                0x000000003ffea260       0x98 build/app_app.a(wifi.o)
                                          0x9c (size before relaxing)
  .rodata.str1.4
-                0x000000003ffea31c      0x168 build/app_app.a(watchdog.o)
+                0x000000003ffea2f8      0x198 build/app_app.a(watchdog.o)
  .rodata.str1.4
-                0x000000003ffea484      0x279 build/app_app.a(cgiwifi.o)
+                0x000000003ffea490      0x279 build/app_app.a(cgiwifi.o)
                                         0x285 (size before relaxing)
- *fill*         0x000000003ffea6fd        0x3 
+ *fill*         0x000000003ffea709        0x3 
  .rodata.str1.4
-                0x000000003ffea700       0x20 build/app_app.a(unix_time.o)
+                0x000000003ffea70c       0x20 build/app_app.a(unix_time.o)
  .rodata.str1.4
-                0x000000003ffea720       0x4c build/app_app.a(cgi.o)
+                0x000000003ffea72c       0x4c build/app_app.a(cgi.o)
                                          0x6c (size before relaxing)
  .rodata.str1.4
-                0x000000003ffea76c       0x32 build/app_app.a(httpdespfs.o)
+                0x000000003ffea778       0x32 build/app_app.a(httpdespfs.o)
                                          0x46 (size before relaxing)
- *fill*         0x000000003ffea79e        0x2 
+ *fill*         0x000000003ffea7aa        0x2 
  .rodata.str1.4
-                0x000000003ffea7a0       0x81 build/app_app.a(espfs.o)
+                0x000000003ffea7ac       0x81 build/app_app.a(espfs.o)
                                          0x85 (size before relaxing)
  .rodata.str1.4
-                0x000000003ffea821        0x1 build/app_app.a(heatshrink_decoder.o)
- *fill*         0x000000003ffea821        0x3 
+                0x000000003ffea82d        0x1 build/app_app.a(heatshrink_decoder.o)
+ *fill*         0x000000003ffea82d        0x3 
  .rodata.str1.4
-                0x000000003ffea824        0x8 build/app_app.a(utils.o)
+                0x000000003ffea830        0x8 build/app_app.a(utils.o)
                                           0xb (size before relaxing)
  .rodata.str1.4
-                0x000000003ffea82c       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
+                0x000000003ffea838       0x20 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
  .rodata.str1.1
-                0x000000003ffea84c        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+                0x000000003ffea858        0x2 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
  .rodata.str1.1
-                0x000000003ffea84e        0x4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
+                0x000000003ffea85a        0x4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
  *(.gnu.linkonce.r.*)
  *(.rodata1)
-                0x000000003ffea852                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
+                0x000000003ffea85e                __XT_EXCEPTION_TABLE__ = ABSOLUTE (.)
  *(.xt_except_table)
  *(.gcc_except_table)
  *(.gnu.linkonce.e.*)
@@ -749,24 +749,24 @@ END GROUP
  *(EXCLUDE_FILE(*crtend.o) .dtors)
  *(SORT(.dtors.*))
  *(.dtors)
-                0x000000003ffea852                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
+                0x000000003ffea85e                __XT_EXCEPTION_DESCS__ = ABSOLUTE (.)
  *(.xt_except_desc)
  *(.gnu.linkonce.h.*)
-                0x000000003ffea852                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
+                0x000000003ffea85e                __XT_EXCEPTION_DESCS_END__ = ABSOLUTE (.)
  *(.xt_except_desc_end)
  *(.dynamic)
  *(.gnu.version_d)
-                0x000000003ffea854                . = ALIGN (0x4)
- *fill*         0x000000003ffea852        0x2 
-                0x000000003ffea854                _bss_table_start = ABSOLUTE (.)
-                0x000000003ffea854        0x4 LONG 0x3ffea860 _bss_start
-                0x000000003ffea858        0x4 LONG 0x3fff4430 _bss_end
-                0x000000003ffea85c                _bss_table_end = ABSOLUTE (.)
-                0x000000003ffea85c                _rodata_end = ABSOLUTE (.)
+                0x000000003ffea860                . = ALIGN (0x4)
+ *fill*         0x000000003ffea85e        0x2 
+                0x000000003ffea860                _bss_table_start = ABSOLUTE (.)
+                0x000000003ffea860        0x4 LONG 0x3ffea868 _bss_start
+                0x000000003ffea864        0x4 LONG 0x3fff4440 _bss_end
+                0x000000003ffea868                _bss_table_end = ABSOLUTE (.)
+                0x000000003ffea868                _rodata_end = ABSOLUTE (.)
 
-.bss            0x000000003ffea860     0x9bd0
-                0x000000003ffea860                . = ALIGN (0x8)
-                0x000000003ffea860                _bss_start = ABSOLUTE (.)
+.bss            0x000000003ffea868     0x9bd8
+                0x000000003ffea868                . = ALIGN (0x8)
+                0x000000003ffea868                _bss_start = ABSOLUTE (.)
  *(.dynsbss)
  *(.sbss)
  *(.sbss.*)
@@ -777,364 +777,365 @@ END GROUP
  *(.gnu.linkonce.sb2.*)
  *(.dynbss)
  *(.bss)
- .bss           0x000000003ffea860        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
- .bss           0x000000003ffea860        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
- .bss           0x000000003ffea860        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
- .bss           0x000000003ffea860      0x1c0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(nmi-vector.o)
- .bss           0x000000003ffeaa20        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user-vector.o)
- .bss           0x000000003ffeaa20        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(vector.o)
- .bss           0x000000003ffeaa20       0x45 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
-                0x000000003ffeaa24                info
-                0x000000003ffeaa48                freq_trace_enable
-                0x000000003ffeaa4a                lwip_timer_interval
-                0x000000003ffeaa4c                check_timeouts_timer
-                0x000000003ffeaa60                rf_cal_sec
-                0x000000003ffeaa64                user_init_flag
- *fill*         0x000000003ffeaa65        0xb 
- .bss           0x000000003ffeaa70       0x30 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(ets_timer.o)
-                0x000000003ffeaa70                dbg_timer_flag
-                0x000000003ffeaa74                timer_list
-                0x000000003ffeaa78                debug_timer
-                0x000000003ffeaa7c                debug_timerfn
- .bss           0x000000003ffeaaa0       0x3c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(mem_manager.o)
- .bss           0x000000003ffeaadc        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(spi_flash.o)
-                0x000000003ffeaadc                flash_read
- .bss           0x000000003ffeaae0      0x242 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user_interface.o)
-                0x000000003ffeabd7                deep_sleep_flag
-                0x000000003ffeabd8                cpu_overclock
-                0x000000003ffeabdc                event_cb
-                0x000000003ffeabe0                status_led_output_level
-                0x000000003ffeabe4                done_cb
-                0x000000003ffeabe8                rst_if
-                0x000000003ffeac04                default_interface
-                0x000000003ffeac05                OpmodChgIsOnGoing
-                0x000000003ffeac08                promiscuous_cb
-                0x000000003ffeac20                event_TaskQueue
- .bss           0x000000003ffead22        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user_rf_cal_sector_set.o)
- .bss           0x000000003ffead22        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(eagle_lib.o)
- *fill*         0x000000003ffead22        0x2 
- .bss           0x000000003ffead24        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(eagle_lwip_if.o)
-                0x000000003ffead24                hostname
- .bss           0x000000003ffead30      0x6a8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211.o)
-                0x000000003ffead30                g_ic
- .bss           0x000000003ffeb3d8        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto.o)
- .bss           0x000000003ffeb3d8       0x54 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
-                0x000000003ffeb3d8                BcnEb_update
-                0x000000003ffeb3e5                BcnWithMcastSendStart
-                0x000000003ffeb3e6                BcnWithMcastSendCnt
-                0x000000003ffeb400                PendFreeBcnEb
-                0x000000003ffeb404                ApFreqCalTimer
-                0x000000003ffeb418                APRecvBcnStartTick
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ht.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_input.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_output.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_phy.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_power.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_proto.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_regdomain.o)
- .bss           0x000000003ffeb42c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_rfid.o)
- .bss           0x000000003ffeb42c       0xc8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_scan.o)
-                0x000000003ffeb42c                gScanStruct
-                0x000000003ffeb4d8                connect_scan_flag
-                0x000000003ffeb4d9                FreqCalCntForScan
-                0x000000003ffeb4da                TestStaFreqCalValInput
-                0x000000003ffeb4dc                auth_type
-                0x000000003ffeb4de                scannum
- *fill*         0x000000003ffeb4f4        0x4 
- .bss           0x000000003ffeb4f8       0x28 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_sta.o)
- .bss           0x000000003ffeb520       0x3c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(wl_chm.o)
- *fill*         0x000000003ffeb55c        0x4 
- .bss           0x000000003ffeb560      0x394 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(wl_cnx.o)
-                0x000000003ffeb8c0                sta_con_timer
-                0x000000003ffeb8d4                backup_ni_connect_status
-                0x000000003ffeb8d8                g_cnx_probe_rc_list_cb
-                0x000000003ffeb8dc                reconnect_flag
-                0x000000003ffeb8dd                no_ap_found_index
- .bss           0x000000003ffeb8f4        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_action.o)
- *fill*         0x000000003ffeb8f4        0x4 
- .bss           0x000000003ffeb8f8       0x18 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_action_vendor.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_ccmp.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ets.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ie_vendor.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(ap_config.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(common.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(os_xtensa.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_auth.o)
- .bss           0x000000003ffeb910        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_auth_ie.o)
- .bss           0x000000003ffeb910      0x26a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_common.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_ie.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_main.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpas_glue.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-wrap.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-internal-enc.o)
- .bss           0x000000003ffebb7a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-internal.o)
- *fill*         0x000000003ffebb7a        0x6 
- .bss           0x000000003ffebb80       0x38 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dhcp.o)
-                0x000000003ffebb80                dhcp_rx_options_given
-                0x000000003ffebb90                dhcp_rx_options_val
- .bss           0x000000003ffebbb8       0x24 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dhcpserver.o)
- *fill*         0x000000003ffebbdc        0x4 
- .bss           0x000000003ffebbe0      0x480 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dns.o)
- .bss           0x000000003ffec060       0x78 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_tcp.o)
-                0x000000003ffec060                espconn_TaskQueue
- *fill*         0x000000003ffec0d8        0x8 
- .bss           0x000000003ffec0e0      0x100 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(etharp.o)
-                0x000000003ffec0e4                ethzero
- .bss           0x000000003ffec1e0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(init.o)
- .bss           0x000000003ffec1e0       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(ip_addr.o)
- .bss           0x000000003ffec1f0       0x12 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(ip.o)
-                0x000000003ffec1f0                current_iphdr_dest
-                0x000000003ffec1f4                current_iphdr_src
-                0x000000003ffec1f8                current_netif
-                0x000000003ffec1fc                current_header
- .bss           0x000000003ffec202        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(memp.o)
- *fill*         0x000000003ffec202        0x2 
- .bss           0x000000003ffec204        0x9 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(netif.o)
-                0x000000003ffec204                netif_list
-                0x000000003ffec208                netif_default
- .bss           0x000000003ffec20d        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(pbuf.o)
- *fill*         0x000000003ffec20d        0x3 
- .bss           0x000000003ffec210        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(raw.o)
- .bss           0x000000003ffec214       0x34 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp_in.o)
-                0x000000003ffec244                tcp_input_pcb
- .bss           0x000000003ffec248       0x1c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp.o)
-                0x000000003ffec24c                tcp_active_pcbs
-                0x000000003ffec250                tcp_tmp_pcb
-                0x000000003ffec254                tcp_tw_pcbs
-                0x000000003ffec258                tcp_bound_pcbs
-                0x000000003ffec25c                tcp_listen_pcbs
-                0x000000003ffec260                tcp_ticks
- .bss           0x000000003ffec264        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp_out.o)
- .bss           0x000000003ffec264        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(timers.o)
- .bss           0x000000003ffec270        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(udp.o)
-                0x000000003ffec270                udp_pcbs
- .bss           0x000000003ffec274        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_buf.o)
- *fill*         0x000000003ffec274        0xc 
- .bss           0x000000003ffec280      0x104 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn.o)
-                0x000000003ffec280                plink_active
-                0x000000003ffec284                pserver_list
-                0x000000003ffec290                premot
-                0x000000003ffec350                pktinfo
- .bss           0x000000003ffec384        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_udp.o)
- .bss           0x000000003ffec384        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(icmp.o)
- .bss           0x000000003ffec384        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(igmp.o)
- .bss           0x000000003ffec390        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(inet_chksum.o)
- .bss           0x000000003ffec390      0xaa4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(esf_buf.o)
- *fill*         0x000000003ffece34        0xc 
- .bss           0x000000003ffece40       0x40 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(if_hwctrl.o)
-                0x000000003ffece40                interface_mask
-                0x000000003ffece60                if_ctrl
- .bss           0x000000003ffece80      0x150 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
-                0x000000003ffece84                lmacConfMib
-                0x000000003ffecea8                our_tx_eb
- .bss           0x000000003ffecfd0      0x12a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm.o)
-                0x000000003ffecfd0                pmc
- *fill*         0x000000003ffed0fa        0x2 
- .bss           0x000000003ffed0fc       0x38 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
- *fill*         0x000000003ffed134        0xc 
- .bss           0x000000003ffed140      0x322 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
-                0x000000003ffed158                pend_flag_noise_check
-                0x000000003ffed160                pend_flag_periodic_cal
-                0x000000003ffed178                idle_timer_reopen_flag
-                0x000000003ffed17a                dbg_stop_sw_wdt
-                0x000000003ffed17b                dbg_stop_hw_wdt
-                0x000000003ffed17d                total_buffed_eb_num
-                0x000000003ffed180                HighestFreqOffsetInOneChk
-                0x000000003ffed182                LowestFreqOffsetInOneChk
-                0x000000003ffed184                DefFreqCalTimer
-                0x000000003ffed198                PktNumInOneChk
-                0x000000003ffed320                buffed_eb_arr
- *fill*         0x000000003ffed462        0xe 
- .bss           0x000000003ffed470      0x100 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(rate_control.o)
- .bss           0x000000003ffed570      0x46c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(trc.o)
- *fill*         0x000000003ffed9dc        0x4 
- .bss           0x000000003ffed9e0     0x2f88 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
-                0x000000003ffed9e0                wDevCtrl
-                0x000000003ffedb88                WdevTimOffSet
- .bss           0x000000003fff0968        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy.o)
- .bss           0x000000003fff096c        0x2 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_ana.o)
-                0x000000003fff096c                tout_dis_txpwr_track
-                0x000000003fff096d                sleep_mode_flag
- *fill*         0x000000003fff096e        0x2 
- .bss           0x000000003fff0970      0x153 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6.o)
-                0x000000003fff0970                g_phyFuns
-                0x000000003fff0974                rxiq_compute_num
-                0x000000003fff0978                rx_table_renew_en
-                0x000000003fff097c                check_result
-                0x000000003fff0980                chip6_sleep_params
-                0x000000003fff0a14                chip6_phy_init_ctrl
-                0x000000003fff0a88                phy_freq_offset
-                0x000000003fff0a8a                do_pwctrl_flag
-                0x000000003fff0a8b                txbk_dpdby_flag
-                0x000000003fff0a8d                sw_scan_mode
-                0x000000003fff0a8e                rxmax_ext_level
-                0x000000003fff0a90                phy_rx_gain_dc_table
-                0x000000003fff0aa4                periodic_cal_flag
-                0x000000003fff0aa5                bbpll_cal_flag
-                0x000000003fff0aa6                phy_in_most_power
-                0x000000003fff0aa7                init_rf_no_cal
-                0x000000003fff0aa8                test_print_time
-                0x000000003fff0aac                phy_in_vdd33_offset
-                0x000000003fff0aad                phy_set_most_tpw_disbg
-                0x000000003fff0aae                phy_set_most_tpw_index
-                0x000000003fff0ab0                adc_rand_noise
-                0x000000003fff0ab4                phy_rx_gain_dc_flag
-                0x000000003fff0ab5                dpd_bypass_original
-                0x000000003fff0ab6                phy_txpwr_diff_flash
-                0x000000003fff0ab8                noise_array
- *fill*         0x000000003fff0ac3        0x1 
- .bss           0x000000003fff0ac4        0x9 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_cal.o)
-                0x000000003fff0ac4                phy_tx_power_out
-                0x000000003fff0ac6                phy_tx_pwr_error
-                0x000000003fff0ac8                tx_pwctrl_track_num
-                0x000000003fff0ac9                rxiq_cover_fail_num
-                0x000000003fff0aca                phy_meas_freq_offset
-                0x000000003fff0acc                tx_pwctrl_pk_num
- .bss           0x000000003fff0acd        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_unused.o)
- *fill*         0x000000003fff0acd        0x3 
- .bss           0x000000003fff0ad0        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_sleep.o)
-                0x000000003fff0ad0                periodic_cal_sat
-                0x000000003fff0ad2                lslp_mem_opt_8266
-                0x000000003fff0ad4                software_slp_reject
-                0x000000003fff0ad5                SDIO_slp_reject
-                0x000000003fff0ad6                hardware_reject
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/usr/lib/libhal.a(int_asm--set_intclear.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_modsi3.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_ashrdi3.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_mulsf3.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_divsf3.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_fixsfsi.o)
- .bss           0x000000003fff0ad7        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
- *fill*         0x000000003fff0ad7        0x1 
- .bss           0x000000003fff0ad8       0x54 build/app_app.a(user_main.o)
-                0x000000003fff0ad8                counter
- .bss           0x000000003fff0b2c       0x2c build/app_app.a(captdns.o)
- .bss           0x000000003fff0b58       0x14 build/app_app.a(led.o)
- .bss           0x000000003fff0b6c        0x0 build/app_app.a(httpd_user_init.o)
- .bss           0x000000003fff0b6c     0x21f4 build/app_app.a(httpd.o)
- .bss           0x000000003fff2d60        0x0 build/app_app.a(crypto.o)
- .bss           0x000000003fff2d60        0x0 build/app_app.a(sha256.o)
- .bss           0x000000003fff2d60       0xbc build/app_app.a(aes.o)
- .bss           0x000000003fff2e1c       0x44 build/app_app.a(kmp_request.o)
-                0x000000003fff2e1c                kmp_serial
- .bss           0x000000003fff2e60        0x0 build/app_app.a(kmp.o)
- .bss           0x000000003fff2e60       0x14 build/app_app.a(cron.o)
- .bss           0x000000003fff2e74       0x3c build/app_app.a(ac_out.o)
- .bss           0x000000003fff2eb0        0x0 build/app_app.a(uart.o)
- .bss           0x000000003fff2eb0        0x8 build/app_app.a(mqtt.o)
-                0x000000003fff2eb0                default_private_key_len
-                0x000000003fff2eb4                default_certificate_len
- .bss           0x000000003fff2eb8        0x0 build/app_app.a(mqtt_msg.o)
- .bss           0x000000003fff2eb8        0x0 build/app_app.a(queue.o)
- .bss           0x000000003fff2eb8        0x0 build/app_app.a(mqtt_utils.o)
- .bss           0x000000003fff2eb8        0x0 build/app_app.a(proto.o)
- .bss           0x000000003fff2eb8       0x14 build/app_app.a(config.o)
- .bss           0x000000003fff2ecc       0x38 build/app_app.a(wifi.o)
-                0x000000003fff2ecc                get_rssi_running
-                0x000000003fff2ecd                wifi_scan_runnning
-                0x000000003fff2ece                wifi_fallback_last_present
-                0x000000003fff2ecf                wifi_fallback_present
-                0x000000003fff2ed0                wifi_present
-                0x000000003fff2ed4                wifi_cb
- .bss           0x000000003fff2f04       0x3c build/app_app.a(watchdog.o)
- .bss           0x000000003fff2f40       0x14 build/app_app.a(cgiwifi.o)
- .bss           0x000000003fff2f54        0x8 build/app_app.a(tinyprintf.o)
- .bss           0x000000003fff2f5c       0x30 build/app_app.a(unix_time.o)
-                0x000000003fff2f5c                ntp_offline_second_counter
-                0x000000003fff2f60                init_time
- .bss           0x000000003fff2f8c        0x5 build/app_app.a(cgi.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(httpdespfs.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(espfs.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(heatshrink_decoder.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(utils.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(hmac-sha256.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(gpio16.o)
- .bss           0x000000003fff2f91        0x0 build/app_app.a(ringbuf.o)
- *fill*         0x000000003fff2f91        0x7 
- .bss           0x000000003fff2f98        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_tkip.o)
- .bss           0x000000003fff2fa0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_wep.o)
- .bss           0x000000003fff2fa0      0x128 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
-                0x000000003fff2fa0                res_buf
-                0x000000003fff2fc4                __tzyear
-                0x000000003fff2fc8                __tznorth
-                0x000000003fff3000                sntp__tzrule
-                0x000000003fff3040                reult
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strcat.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
- .bss           0x000000003fff30c8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
- .bss           0x000000003fff30c8        0x8 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
-                0x000000003fff30c8                _timezone
-                0x000000003fff30cc                _daylight
- .bss           0x000000003fff30d0        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
- .bss           0x000000003fff30d0        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
- .bss           0x000000003fff30d0       0x1c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(time.o)
- .bss           0x000000003fff30ec        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sysgettod.o)
+ .bss           0x000000003ffea868        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(debug-vector.o)
+ .bss           0x000000003ffea868        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(double-vector.o)
+ .bss           0x000000003ffea868        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(kernel-vector.o)
+ *fill*         0x000000003ffea868        0x8 
+ .bss           0x000000003ffea870      0x1c0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(nmi-vector.o)
+ .bss           0x000000003ffeaa30        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user-vector.o)
+ .bss           0x000000003ffeaa30        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(vector.o)
+ .bss           0x000000003ffeaa30       0x45 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
+                0x000000003ffeaa34                info
+                0x000000003ffeaa58                freq_trace_enable
+                0x000000003ffeaa5a                lwip_timer_interval
+                0x000000003ffeaa5c                check_timeouts_timer
+                0x000000003ffeaa70                rf_cal_sec
+                0x000000003ffeaa74                user_init_flag
+ *fill*         0x000000003ffeaa75        0xb 
+ .bss           0x000000003ffeaa80       0x30 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(ets_timer.o)
+                0x000000003ffeaa80                dbg_timer_flag
+                0x000000003ffeaa84                timer_list
+                0x000000003ffeaa88                debug_timer
+                0x000000003ffeaa8c                debug_timerfn
+ .bss           0x000000003ffeaab0       0x3c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(mem_manager.o)
+ .bss           0x000000003ffeaaec        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(spi_flash.o)
+                0x000000003ffeaaec                flash_read
+ .bss           0x000000003ffeaaf0      0x242 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user_interface.o)
+                0x000000003ffeabe7                deep_sleep_flag
+                0x000000003ffeabe8                cpu_overclock
+                0x000000003ffeabec                event_cb
+                0x000000003ffeabf0                status_led_output_level
+                0x000000003ffeabf4                done_cb
+                0x000000003ffeabf8                rst_if
+                0x000000003ffeac14                default_interface
+                0x000000003ffeac15                OpmodChgIsOnGoing
+                0x000000003ffeac18                promiscuous_cb
+                0x000000003ffeac30                event_TaskQueue
+ .bss           0x000000003ffead32        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(user_rf_cal_sector_set.o)
+ .bss           0x000000003ffead32        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(eagle_lib.o)
+ *fill*         0x000000003ffead32        0x2 
+ .bss           0x000000003ffead34        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(eagle_lwip_if.o)
+                0x000000003ffead34                hostname
+ .bss           0x000000003ffead40      0x6a8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211.o)
+                0x000000003ffead40                g_ic
+ .bss           0x000000003ffeb3e8        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto.o)
+ .bss           0x000000003ffeb3e8       0x54 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_hostap.o)
+                0x000000003ffeb3e8                BcnEb_update
+                0x000000003ffeb3f5                BcnWithMcastSendStart
+                0x000000003ffeb3f6                BcnWithMcastSendCnt
+                0x000000003ffeb410                PendFreeBcnEb
+                0x000000003ffeb414                ApFreqCalTimer
+                0x000000003ffeb428                APRecvBcnStartTick
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ht.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_input.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_mesh_quick.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_output.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_phy.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_power.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_proto.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_regdomain.o)
+ .bss           0x000000003ffeb43c        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_rfid.o)
+ .bss           0x000000003ffeb43c       0xc8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_scan.o)
+                0x000000003ffeb43c                gScanStruct
+                0x000000003ffeb4e8                connect_scan_flag
+                0x000000003ffeb4e9                FreqCalCntForScan
+                0x000000003ffeb4ea                TestStaFreqCalValInput
+                0x000000003ffeb4ec                auth_type
+                0x000000003ffeb4ee                scannum
+ *fill*         0x000000003ffeb504        0x4 
+ .bss           0x000000003ffeb508       0x28 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_sta.o)
+ .bss           0x000000003ffeb530       0x3c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(wl_chm.o)
+ *fill*         0x000000003ffeb56c        0x4 
+ .bss           0x000000003ffeb570      0x394 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(wl_cnx.o)
+                0x000000003ffeb8d0                sta_con_timer
+                0x000000003ffeb8e4                backup_ni_connect_status
+                0x000000003ffeb8e8                g_cnx_probe_rc_list_cb
+                0x000000003ffeb8ec                reconnect_flag
+                0x000000003ffeb8ed                no_ap_found_index
+ .bss           0x000000003ffeb904        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_action.o)
+ *fill*         0x000000003ffeb904        0x4 
+ .bss           0x000000003ffeb908       0x18 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_action_vendor.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_ccmp.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ets.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_ie_vendor.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(ap_config.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(common.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(os_xtensa.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_auth.o)
+ .bss           0x000000003ffeb920        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_auth_ie.o)
+ .bss           0x000000003ffeb920      0x26a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_common.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_debug.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_ie.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpa_main.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(wpas_glue.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-wrap.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-internal-enc.o)
+ .bss           0x000000003ffebb8a        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libwpa.a(aes-internal.o)
+ *fill*         0x000000003ffebb8a        0x6 
+ .bss           0x000000003ffebb90       0x38 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dhcp.o)
+                0x000000003ffebb90                dhcp_rx_options_given
+                0x000000003ffebba0                dhcp_rx_options_val
+ .bss           0x000000003ffebbc8       0x24 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dhcpserver.o)
+ *fill*         0x000000003ffebbec        0x4 
+ .bss           0x000000003ffebbf0      0x480 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(dns.o)
+ .bss           0x000000003ffec070       0x78 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_tcp.o)
+                0x000000003ffec070                espconn_TaskQueue
+ *fill*         0x000000003ffec0e8        0x8 
+ .bss           0x000000003ffec0f0      0x100 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(etharp.o)
+                0x000000003ffec0f4                ethzero
+ .bss           0x000000003ffec1f0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(init.o)
+ .bss           0x000000003ffec1f0       0x10 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(ip_addr.o)
+ .bss           0x000000003ffec200       0x12 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(ip.o)
+                0x000000003ffec200                current_iphdr_dest
+                0x000000003ffec204                current_iphdr_src
+                0x000000003ffec208                current_netif
+                0x000000003ffec20c                current_header
+ .bss           0x000000003ffec212        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(memp.o)
+ *fill*         0x000000003ffec212        0x2 
+ .bss           0x000000003ffec214        0x9 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(netif.o)
+                0x000000003ffec214                netif_list
+                0x000000003ffec218                netif_default
+ .bss           0x000000003ffec21d        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(pbuf.o)
+ *fill*         0x000000003ffec21d        0x3 
+ .bss           0x000000003ffec220        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(raw.o)
+ .bss           0x000000003ffec224       0x34 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp_in.o)
+                0x000000003ffec254                tcp_input_pcb
+ .bss           0x000000003ffec258       0x1c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp.o)
+                0x000000003ffec25c                tcp_active_pcbs
+                0x000000003ffec260                tcp_tmp_pcb
+                0x000000003ffec264                tcp_tw_pcbs
+                0x000000003ffec268                tcp_bound_pcbs
+                0x000000003ffec26c                tcp_listen_pcbs
+                0x000000003ffec270                tcp_ticks
+ .bss           0x000000003ffec274        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(tcp_out.o)
+ .bss           0x000000003ffec274        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(timers.o)
+ .bss           0x000000003ffec280        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(udp.o)
+                0x000000003ffec280                udp_pcbs
+ .bss           0x000000003ffec284        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_buf.o)
+ *fill*         0x000000003ffec284        0xc 
+ .bss           0x000000003ffec290      0x104 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn.o)
+                0x000000003ffec290                plink_active
+                0x000000003ffec294                pserver_list
+                0x000000003ffec2a0                premot
+                0x000000003ffec360                pktinfo
+ .bss           0x000000003ffec394        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(espconn_udp.o)
+ .bss           0x000000003ffec394        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(icmp.o)
+ .bss           0x000000003ffec394        0xc /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(igmp.o)
+ .bss           0x000000003ffec3a0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(inet_chksum.o)
+ .bss           0x000000003ffec3a0      0xaa4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(esf_buf.o)
+ *fill*         0x000000003ffece44        0xc 
+ .bss           0x000000003ffece50       0x40 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(if_hwctrl.o)
+                0x000000003ffece50                interface_mask
+                0x000000003ffece70                if_ctrl
+ .bss           0x000000003ffece90      0x150 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(lmac.o)
+                0x000000003ffece94                lmacConfMib
+                0x000000003ffeceb8                our_tx_eb
+ .bss           0x000000003ffecfe0      0x12a /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm.o)
+                0x000000003ffecfe0                pmc
+ *fill*         0x000000003ffed10a        0x2 
+ .bss           0x000000003ffed10c       0x38 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pm_for_bcn_only_mode.o)
+ *fill*         0x000000003ffed144        0xc 
+ .bss           0x000000003ffed150      0x322 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(pp.o)
+                0x000000003ffed168                pend_flag_noise_check
+                0x000000003ffed170                pend_flag_periodic_cal
+                0x000000003ffed188                idle_timer_reopen_flag
+                0x000000003ffed18a                dbg_stop_sw_wdt
+                0x000000003ffed18b                dbg_stop_hw_wdt
+                0x000000003ffed18d                total_buffed_eb_num
+                0x000000003ffed190                HighestFreqOffsetInOneChk
+                0x000000003ffed192                LowestFreqOffsetInOneChk
+                0x000000003ffed194                DefFreqCalTimer
+                0x000000003ffed1a8                PktNumInOneChk
+                0x000000003ffed330                buffed_eb_arr
+ *fill*         0x000000003ffed472        0xe 
+ .bss           0x000000003ffed480      0x100 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(rate_control.o)
+ .bss           0x000000003ffed580      0x46c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(trc.o)
+ *fill*         0x000000003ffed9ec        0x4 
+ .bss           0x000000003ffed9f0     0x2f88 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libpp.a(wdev.o)
+                0x000000003ffed9f0                wDevCtrl
+                0x000000003ffedb98                WdevTimOffSet
+ .bss           0x000000003fff0978        0x4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy.o)
+ .bss           0x000000003fff097c        0x2 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_ana.o)
+                0x000000003fff097c                tout_dis_txpwr_track
+                0x000000003fff097d                sleep_mode_flag
+ *fill*         0x000000003fff097e        0x2 
+ .bss           0x000000003fff0980      0x153 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6.o)
+                0x000000003fff0980                g_phyFuns
+                0x000000003fff0984                rxiq_compute_num
+                0x000000003fff0988                rx_table_renew_en
+                0x000000003fff098c                check_result
+                0x000000003fff0990                chip6_sleep_params
+                0x000000003fff0a24                chip6_phy_init_ctrl
+                0x000000003fff0a98                phy_freq_offset
+                0x000000003fff0a9a                do_pwctrl_flag
+                0x000000003fff0a9b                txbk_dpdby_flag
+                0x000000003fff0a9d                sw_scan_mode
+                0x000000003fff0a9e                rxmax_ext_level
+                0x000000003fff0aa0                phy_rx_gain_dc_table
+                0x000000003fff0ab4                periodic_cal_flag
+                0x000000003fff0ab5                bbpll_cal_flag
+                0x000000003fff0ab6                phy_in_most_power
+                0x000000003fff0ab7                init_rf_no_cal
+                0x000000003fff0ab8                test_print_time
+                0x000000003fff0abc                phy_in_vdd33_offset
+                0x000000003fff0abd                phy_set_most_tpw_disbg
+                0x000000003fff0abe                phy_set_most_tpw_index
+                0x000000003fff0ac0                adc_rand_noise
+                0x000000003fff0ac4                phy_rx_gain_dc_flag
+                0x000000003fff0ac5                dpd_bypass_original
+                0x000000003fff0ac6                phy_txpwr_diff_flash
+                0x000000003fff0ac8                noise_array
+ *fill*         0x000000003fff0ad3        0x1 
+ .bss           0x000000003fff0ad4        0x9 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_cal.o)
+                0x000000003fff0ad4                phy_tx_power_out
+                0x000000003fff0ad6                phy_tx_pwr_error
+                0x000000003fff0ad8                tx_pwctrl_track_num
+                0x000000003fff0ad9                rxiq_cover_fail_num
+                0x000000003fff0ada                phy_meas_freq_offset
+                0x000000003fff0adc                tx_pwctrl_pk_num
+ .bss           0x000000003fff0add        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_chip_v6_unused.o)
+ *fill*         0x000000003fff0add        0x3 
+ .bss           0x000000003fff0ae0        0x7 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libphy.a(phy_sleep.o)
+                0x000000003fff0ae0                periodic_cal_sat
+                0x000000003fff0ae2                lslp_mem_opt_8266
+                0x000000003fff0ae4                software_slp_reject
+                0x000000003fff0ae5                SDIO_slp_reject
+                0x000000003fff0ae6                hardware_reject
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/usr/lib/libhal.a(int_asm--set_intclear.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_modsi3.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_ashrdi3.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_mulsf3.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_divsf3.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_fixsfsi.o)
+ .bss           0x000000003fff0ae7        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
+ *fill*         0x000000003fff0ae7        0x1 
+ .bss           0x000000003fff0ae8       0x54 build/app_app.a(user_main.o)
+                0x000000003fff0ae8                counter
+ .bss           0x000000003fff0b3c       0x2c build/app_app.a(captdns.o)
+ .bss           0x000000003fff0b68       0x14 build/app_app.a(led.o)
+ .bss           0x000000003fff0b7c        0x0 build/app_app.a(httpd_user_init.o)
+ .bss           0x000000003fff0b7c     0x21f4 build/app_app.a(httpd.o)
+ .bss           0x000000003fff2d70        0x0 build/app_app.a(crypto.o)
+ .bss           0x000000003fff2d70        0x0 build/app_app.a(sha256.o)
+ .bss           0x000000003fff2d70       0xbc build/app_app.a(aes.o)
+ .bss           0x000000003fff2e2c       0x44 build/app_app.a(kmp_request.o)
+                0x000000003fff2e2c                kmp_serial
+ .bss           0x000000003fff2e70        0x0 build/app_app.a(kmp.o)
+ .bss           0x000000003fff2e70       0x14 build/app_app.a(cron.o)
+ .bss           0x000000003fff2e84       0x3c build/app_app.a(ac_out.o)
+ .bss           0x000000003fff2ec0        0x0 build/app_app.a(uart.o)
+ .bss           0x000000003fff2ec0        0x8 build/app_app.a(mqtt.o)
+                0x000000003fff2ec0                default_private_key_len
+                0x000000003fff2ec4                default_certificate_len
+ .bss           0x000000003fff2ec8        0x0 build/app_app.a(mqtt_msg.o)
+ .bss           0x000000003fff2ec8        0x0 build/app_app.a(queue.o)
+ .bss           0x000000003fff2ec8        0x0 build/app_app.a(mqtt_utils.o)
+ .bss           0x000000003fff2ec8        0x0 build/app_app.a(proto.o)
+ .bss           0x000000003fff2ec8       0x14 build/app_app.a(config.o)
+ .bss           0x000000003fff2edc       0x38 build/app_app.a(wifi.o)
+                0x000000003fff2edc                get_rssi_running
+                0x000000003fff2edd                wifi_scan_runnning
+                0x000000003fff2ede                wifi_fallback_last_present
+                0x000000003fff2edf                wifi_fallback_present
+                0x000000003fff2ee0                wifi_present
+                0x000000003fff2ee4                wifi_cb
+ .bss           0x000000003fff2f14       0x3c build/app_app.a(watchdog.o)
+ .bss           0x000000003fff2f50       0x14 build/app_app.a(cgiwifi.o)
+ .bss           0x000000003fff2f64        0x8 build/app_app.a(tinyprintf.o)
+ .bss           0x000000003fff2f6c       0x30 build/app_app.a(unix_time.o)
+                0x000000003fff2f6c                ntp_offline_second_counter
+                0x000000003fff2f70                init_time
+ .bss           0x000000003fff2f9c        0x5 build/app_app.a(cgi.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(httpdespfs.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(espfs.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(heatshrink_decoder.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(utils.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(hmac-sha256.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(gpio16.o)
+ .bss           0x000000003fff2fa1        0x0 build/app_app.a(ringbuf.o)
+ *fill*         0x000000003fff2fa1        0x7 
+ .bss           0x000000003fff2fa8        0x8 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_tkip.o)
+ .bss           0x000000003fff2fb0        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_wep.o)
+ .bss           0x000000003fff2fb0      0x128 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
+                0x000000003fff2fb0                res_buf
+                0x000000003fff2fd4                __tzyear
+                0x000000003fff2fd8                __tznorth
+                0x000000003fff3010                sntp__tzrule
+                0x000000003fff3050                reult
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strcat.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
+ .bss           0x000000003fff30d8        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
+ .bss           0x000000003fff30d8        0x8 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
+                0x000000003fff30d8                _timezone
+                0x000000003fff30dc                _daylight
+ .bss           0x000000003fff30e0        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
+ .bss           0x000000003fff30e0        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
+ .bss           0x000000003fff30e0       0x1c /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(time.o)
+ .bss           0x000000003fff30fc        0x0 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sysgettod.o)
  *(.bss.*)
  *(.gnu.linkonce.b.*)
  *(COMMON)
- COMMON         0x000000003fff30ec      0x2d4 build/app_app.a(user_main.o)
-                0x000000003fff30ec                mqtt_client
-                0x000000003fff31bc                rtc_info
-                0x000000003fff31c0                kmp_received_task_queue
- COMMON         0x000000003fff33c0       0x40 build/app_app.a(crypto.o)
-                0x000000003fff33c0                hmac_sha256_key
-                0x000000003fff33d0                aes_key
-                0x000000003fff33e0                sha256_hash
- COMMON         0x000000003fff3400      0x58c build/app_app.a(kmp_request.o)
-                0x000000003fff3400                response
-                0x000000003fff346c                fifo_buffer
-                0x000000003fff356c                frame_length
-                0x000000003fff3570                fifo_head
-                0x000000003fff3574                kmp_requests_sent
-                0x000000003fff3578                fifo_tail
-                0x000000003fff357c                register_list
-                0x000000003fff358c                frame
- COMMON         0x000000003fff398c       0x10 build/app_app.a(kmp.o)
-                0x000000003fff398c                kmp_response
-                0x000000003fff3990                kmp_data_length
-                0x000000003fff3994                kmp_frame_length
-                0x000000003fff3998                kmp_frame
- COMMON         0x000000003fff399c        0x1 build/app_app.a(cron.o)
-                0x000000003fff399c                sec_drift
- *fill*         0x000000003fff399d        0x3 
- COMMON         0x000000003fff39a0        0x4 build/app_app.a(ac_out.o)
-                0x000000003fff39a0                ac_pwm_duty_cycle
- COMMON         0x000000003fff39a4       0x10 build/app_app.a(mqtt.o)
-                0x000000003fff39a4                default_private_key
-                0x000000003fff39a8                default_certificate
-                0x000000003fff39ac                mqtt_procTaskQueue
- COMMON         0x000000003fff39b4      0xa40 build/app_app.a(config.o)
-                0x000000003fff39b4                sys_cfg
-                0x000000003fff43ec                config_save_timer_running
-                0x000000003fff43f0                saveFlag
- COMMON         0x000000003fff43f4        0x8 build/app_app.a(wifi.o)
-                0x000000003fff43f4                config_ssid
-                0x000000003fff43f8                config_pass
- COMMON         0x000000003fff43fc       0x14 build/app_app.a(watchdog.o)
-                0x000000003fff43fc                watchdog_list_len
-                0x000000003fff4400                watchdog_list
- COMMON         0x000000003fff4410        0xc build/app_app.a(cgiwifi.o)
-                0x000000003fff4410                cgiWifiAps
- *fill*         0x000000003fff441c        0x4 
- COMMON         0x000000003fff4420       0x10 build/app_app.a(unix_time.o)
-                0x000000003fff4420                current_unix_time
-                0x000000003fff4428                boot_time
-                0x000000003fff4430                . = ALIGN (0x8)
-                0x000000003fff4430                _bss_end = ABSOLUTE (.)
-                0x000000003fff4430                _heap_start = ABSOLUTE (.)
+ COMMON         0x000000003fff30fc      0x2d4 build/app_app.a(user_main.o)
+                0x000000003fff30fc                mqtt_client
+                0x000000003fff31cc                rtc_info
+                0x000000003fff31d0                kmp_received_task_queue
+ COMMON         0x000000003fff33d0       0x40 build/app_app.a(crypto.o)
+                0x000000003fff33d0                hmac_sha256_key
+                0x000000003fff33e0                aes_key
+                0x000000003fff33f0                sha256_hash
+ COMMON         0x000000003fff3410      0x58c build/app_app.a(kmp_request.o)
+                0x000000003fff3410                response
+                0x000000003fff347c                fifo_buffer
+                0x000000003fff357c                frame_length
+                0x000000003fff3580                fifo_head
+                0x000000003fff3584                kmp_requests_sent
+                0x000000003fff3588                fifo_tail
+                0x000000003fff358c                register_list
+                0x000000003fff359c                frame
+ COMMON         0x000000003fff399c       0x10 build/app_app.a(kmp.o)
+                0x000000003fff399c                kmp_response
+                0x000000003fff39a0                kmp_data_length
+                0x000000003fff39a4                kmp_frame_length
+                0x000000003fff39a8                kmp_frame
+ COMMON         0x000000003fff39ac        0x1 build/app_app.a(cron.o)
+                0x000000003fff39ac                sec_drift
+ *fill*         0x000000003fff39ad        0x3 
+ COMMON         0x000000003fff39b0        0x4 build/app_app.a(ac_out.o)
+                0x000000003fff39b0                ac_pwm_duty_cycle
+ COMMON         0x000000003fff39b4       0x10 build/app_app.a(mqtt.o)
+                0x000000003fff39b4                default_private_key
+                0x000000003fff39b8                default_certificate
+                0x000000003fff39bc                mqtt_procTaskQueue
+ COMMON         0x000000003fff39c4      0xa40 build/app_app.a(config.o)
+                0x000000003fff39c4                sys_cfg
+                0x000000003fff43fc                config_save_timer_running
+                0x000000003fff4400                saveFlag
+ COMMON         0x000000003fff4404        0x8 build/app_app.a(wifi.o)
+                0x000000003fff4404                config_ssid
+                0x000000003fff4408                config_pass
+ COMMON         0x000000003fff440c       0x14 build/app_app.a(watchdog.o)
+                0x000000003fff440c                watchdog_list_len
+                0x000000003fff4410                watchdog_list
+ COMMON         0x000000003fff4420        0xc build/app_app.a(cgiwifi.o)
+                0x000000003fff4420                cgiWifiAps
+ *fill*         0x000000003fff442c        0x4 
+ COMMON         0x000000003fff4430       0x10 build/app_app.a(unix_time.o)
+                0x000000003fff4430                current_unix_time
+                0x000000003fff4438                boot_time
+                0x000000003fff4440                . = ALIGN (0x8)
+                0x000000003fff4440                _bss_end = ABSOLUTE (.)
+                0x000000003fff4440                _heap_start = ABSOLUTE (.)
 
 .irom0.text     0x0000000040210000    0x38b0c
                 0x0000000040210000                _irom0_text_start = ABSOLUTE (.)
@@ -2314,301 +2315,300 @@ END GROUP
                 0x000000004023d1d4                sleep_opt_bb_on_8266
                 0x000000004023d20c                sleep_reset_analog_rtcreg_8266
  *fill*         0x000000004023d30e        0x2 
- .irom0.text    0x000000004023d310      0xc96 build/app_app.a(user_main.o)
-                                       0x11f2 (size before relaxing)
+ .irom0.text    0x000000004023d310      0xc84 build/app_app.a(user_main.o)
+                                       0x11e0 (size before relaxing)
                 0x000000004023d310                mqttDisconnectedCb
                 0x000000004023d314                mqttTimeoutCb
                 0x000000004023d360                mqttConnectedCb
                 0x000000004023d578                mqttPublishedCb
                 0x000000004023d604                mqttDataCb
-                0x000000004023dc38                system_init_done
-                0x000000004023de98                wifi_changed_cb
-                0x000000004023def8                user_init
- *fill*         0x000000004023dfa6        0x2 
- .irom0.text    0x000000004023dfa8      0x4a3 build/app_app.a(captdns.o)
+                0x000000004023dc34                system_init_done
+                0x000000004023de94                wifi_changed_cb
+                0x000000004023def0                user_init
+ .irom0.text    0x000000004023df94      0x4a3 build/app_app.a(captdns.o)
                                         0x4d3 (size before relaxing)
-                0x000000004023e41c                captdnsInit
- *fill*         0x000000004023e44b        0x1 
- .irom0.text    0x000000004023e44c      0x14b build/app_app.a(led.o)
+                0x000000004023e408                captdnsInit
+ *fill*         0x000000004023e437        0x1 
+ .irom0.text    0x000000004023e438      0x14b build/app_app.a(led.o)
                                         0x18b (size before relaxing)
-                0x000000004023e48c                led_init
-                0x000000004023e4bc                led_on
-                0x000000004023e4d8                led_off
-                0x000000004023e4fc                led_pattern_a
-                0x000000004023e538                led_pattern_b
-                0x000000004023e574                led_stop_pattern
- *fill*         0x000000004023e597        0x1 
- .irom0.text    0x000000004023e598      0xa9b build/app_app.a(httpd.o)
+                0x000000004023e478                led_init
+                0x000000004023e4a8                led_on
+                0x000000004023e4c4                led_off
+                0x000000004023e4e8                led_pattern_a
+                0x000000004023e524                led_pattern_b
+                0x000000004023e560                led_stop_pattern
+ *fill*         0x000000004023e583        0x1 
+ .irom0.text    0x000000004023e584      0xa9b build/app_app.a(httpd.o)
                                         0xbfb (size before relaxing)
-                0x000000004023e7d0                httpdGetMimetype
-                0x000000004023e860                httpdFindArg
-                0x000000004023e94c                httpdGetHeader
-                0x000000004023ea50                httpdSend
-                0x000000004023eaa8                httpdStartResponse
-                0x000000004023eae8                httpdHeader
-                0x000000004023eb2c                httpdEndHeaders
-                0x000000004023eb44                httpdRedirect
-                0x000000004023eb84                cgiRedirect
-                0x000000004023ef38                httpdInit
-                0x000000004023efa8                httpdStop
- *fill*         0x000000004023f033        0x1 
- .irom0.text    0x000000004023f034      0x250 build/app_app.a(crypto.o)
+                0x000000004023e7bc                httpdGetMimetype
+                0x000000004023e84c                httpdFindArg
+                0x000000004023e938                httpdGetHeader
+                0x000000004023ea3c                httpdSend
+                0x000000004023ea94                httpdStartResponse
+                0x000000004023ead4                httpdHeader
+                0x000000004023eb18                httpdEndHeaders
+                0x000000004023eb30                httpdRedirect
+                0x000000004023eb70                cgiRedirect
+                0x000000004023ef24                httpdInit
+                0x000000004023ef94                httpdStop
+ *fill*         0x000000004023f01f        0x1 
+ .irom0.text    0x000000004023f020      0x250 build/app_app.a(crypto.o)
                                         0x314 (size before relaxing)
-                0x000000004023f058                init_aes_hmac_combined
-                0x000000004023f14c                encrypt_aes_hmac_combined
-                0x000000004023f1f0                decrypt_aes_hmac_combined
- .irom0.text    0x000000004023f284      0x5a7 build/app_app.a(sha256.o)
+                0x000000004023f044                init_aes_hmac_combined
+                0x000000004023f138                encrypt_aes_hmac_combined
+                0x000000004023f1dc                decrypt_aes_hmac_combined
+ .irom0.text    0x000000004023f270      0x5a7 build/app_app.a(sha256.o)
                                         0x5db (size before relaxing)
-                0x000000004023f28c                sha256_init
-                0x000000004023f2cc                sha256_transform
-                0x000000004023f5c8                sha256_update
-                0x000000004023f5e4                sha256_final
-                0x000000004023f73c                sha256_end
-                0x000000004023f7ac                sha256_raw
-                0x000000004023f7ec                sha256_data
- *fill*         0x000000004023f82b        0x1 
- .irom0.text    0x000000004023f82c      0x7bf build/app_app.a(aes.o)
+                0x000000004023f278                sha256_init
+                0x000000004023f2b8                sha256_transform
+                0x000000004023f5b4                sha256_update
+                0x000000004023f5d0                sha256_final
+                0x000000004023f728                sha256_end
+                0x000000004023f798                sha256_raw
+                0x000000004023f7d8                sha256_data
+ *fill*         0x000000004023f817        0x1 
+ .irom0.text    0x000000004023f818      0x7bf build/app_app.a(aes.o)
                                         0x7f3 (size before relaxing)
-                0x000000004023fe20                AES128_CBC_encrypt_buffer
-                0x000000004023ff08                AES128_CBC_decrypt_buffer
- *fill*         0x000000004023ffeb        0x1 
- .irom0.text    0x000000004023ffec      0x5fb build/app_app.a(kmp_request.o)
+                0x000000004023fe0c                AES128_CBC_encrypt_buffer
+                0x000000004023fef4                AES128_CBC_decrypt_buffer
+ *fill*         0x000000004023ffd7        0x1 
+ .irom0.text    0x000000004023ffd8      0x5fb build/app_app.a(kmp_request.o)
                                         0x7cf (size before relaxing)
-                0x000000004024045c                kmp_request_init
-                0x0000000040240490                kmp_set_mqtt_client
-                0x0000000040240498                kmp_get_received_serial
-                0x00000000402404c4                kmp_request_send
- *fill*         0x00000000402405e7        0x1 
- .irom0.text    0x00000000402405e8      0x89e build/app_app.a(kmp.o)
+                0x0000000040240448                kmp_request_init
+                0x000000004024047c                kmp_set_mqtt_client
+                0x0000000040240484                kmp_get_received_serial
+                0x00000000402404b0                kmp_request_send
+ *fill*         0x00000000402405d3        0x1 
+ .irom0.text    0x00000000402405d4      0x89e build/app_app.a(kmp.o)
                                         0xa12 (size before relaxing)
-                0x00000000402405e8                kmp_set_clock
-                0x00000000402405f4                kmp_crc16
-                0x0000000040240610                kmp_value_to_double
-                0x00000000402406e8                kmp_value_to_string
-                0x0000000040240884                kmp_unit_to_string
-                0x00000000402409b4                kmp_byte_stuff
-                0x0000000040240aa0                kmp_get_type
-                0x0000000040240b30                kmp_get_serial
-                0x0000000040240bc0                kmp_get_register
-                0x0000000040240ca4                kmp_byte_unstuff
-                0x0000000040240d30                kmp_decode_frame
- *fill*         0x0000000040240e86        0x2 
- .irom0.text    0x0000000040240e88      0x67f build/app_app.a(cron.o)
+                0x00000000402405d4                kmp_set_clock
+                0x00000000402405e0                kmp_crc16
+                0x00000000402405fc                kmp_value_to_double
+                0x00000000402406d4                kmp_value_to_string
+                0x0000000040240870                kmp_unit_to_string
+                0x00000000402409a0                kmp_byte_stuff
+                0x0000000040240a8c                kmp_get_type
+                0x0000000040240b1c                kmp_get_serial
+                0x0000000040240bac                kmp_get_register
+                0x0000000040240c90                kmp_byte_unstuff
+                0x0000000040240d1c                kmp_decode_frame
+ *fill*         0x0000000040240e72        0x2 
+ .irom0.text    0x0000000040240e74      0x67f build/app_app.a(cron.o)
                                         0x79f (size before relaxing)
-                0x000000004024128c                cron_init
-                0x0000000040241300                add_cron_job_from_query
-                0x00000000402414e0                clear_cron_jobs
- *fill*         0x0000000040241507        0x1 
- .irom0.text    0x0000000040241508      0x3e5 build/app_app.a(ac_out.o)
+                0x0000000040241278                cron_init
+                0x00000000402412ec                add_cron_job_from_query
+                0x00000000402414cc                clear_cron_jobs
+ *fill*         0x00000000402414f3        0x1 
+ .irom0.text    0x00000000402414f4      0x3e5 build/app_app.a(ac_out.o)
                                         0x50d (size before relaxing)
-                0x0000000040241684                ac_out_init
-                0x00000000402416c0                ac_test
-                0x0000000040241728                ac_thermo_open
-                0x0000000040241764                ac_thermo_close
-                0x00000000402417a0                ac_thermo_pwm
-                0x00000000402417f4                ac_off
-                0x000000004024183c                ac_motor_valve_open
-                0x0000000040241898                ac_motor_valve_close
- *fill*         0x00000000402418ed        0x3 
- .irom0.text    0x00000000402418f0      0x314 build/app_app.a(uart.o)
+                0x0000000040241670                ac_out_init
+                0x00000000402416ac                ac_test
+                0x0000000040241714                ac_thermo_open
+                0x0000000040241750                ac_thermo_close
+                0x000000004024178c                ac_thermo_pwm
+                0x00000000402417e0                ac_off
+                0x0000000040241828                ac_motor_valve_open
+                0x0000000040241884                ac_motor_valve_close
+ *fill*         0x00000000402418d9        0x3 
+ .irom0.text    0x00000000402418dc      0x314 build/app_app.a(uart.o)
                                         0x348 (size before relaxing)
-                0x0000000040241a74                uart0_write_char
-                0x0000000040241ad0                uart1_write_char
-                0x0000000040241b2c                uart0_tx_buffer
-                0x0000000040241b60                uart0_sendStr
-                0x0000000040241b90                uart_init
-                0x0000000040241bf0                uart_reattach
- .irom0.text    0x0000000040241c04      0xf6d build/app_app.a(mqtt.o)
+                0x0000000040241a60                uart0_write_char
+                0x0000000040241abc                uart1_write_char
+                0x0000000040241b18                uart0_tx_buffer
+                0x0000000040241b4c                uart0_sendStr
+                0x0000000040241b7c                uart_init
+                0x0000000040241bdc                uart_reattach
+ .irom0.text    0x0000000040241bf0      0xf6d build/app_app.a(mqtt.o)
                                        0x12c1 (size before relaxing)
-                0x0000000040241c0c                mqtt_tcpclient_sent_cb
-                0x0000000040241c58                mqtt_timer
-                0x0000000040241cd4                mqtt_tcpclient_discon_cb
-                0x0000000040241d30                mqtt_tcpclient_recon_cb
-                0x0000000040241d94                mqtt_tcpclient_recv
-                0x0000000040242030                mqtt_tcpclient_connect_cb
-                0x0000000040242180                mqtt_send_keepalive
-                0x0000000040242238                mqtt_tcpclient_delete
-                0x0000000040242288                mqtt_client_delete
-                0x0000000040242368                MQTT_Publish
-                0x0000000040242424                MQTT_Subscribe
-                0x00000000402424c0                MQTT_UnSubscribe
-                0x0000000040242558                MQTT_Ping
-                0x0000000040242608                MQTT_InitConnection
-                0x0000000040242684                MQTT_InitClient
-                0x00000000402427c0                MQTT_InitLWT
-                0x000000004024286c                MQTT_Connect
-                0x00000000402429b0                MQTT_Task
-                0x0000000040242ae4                MQTT_Disconnect
-                0x0000000040242b18                MQTT_DeleteClient
-                0x0000000040242b4c                MQTT_OnConnected
-                0x0000000040242b54                MQTT_OnDisconnected
-                0x0000000040242b5c                MQTT_OnData
-                0x0000000040242b64                MQTT_OnPublished
-                0x0000000040242b6c                MQTT_OnTimeout
- *fill*         0x0000000040242b71        0x3 
- .irom0.text    0x0000000040242b74      0x78b build/app_app.a(mqtt_msg.o)
+                0x0000000040241bf8                mqtt_tcpclient_sent_cb
+                0x0000000040241c44                mqtt_timer
+                0x0000000040241cc0                mqtt_tcpclient_discon_cb
+                0x0000000040241d1c                mqtt_tcpclient_recon_cb
+                0x0000000040241d80                mqtt_tcpclient_recv
+                0x000000004024201c                mqtt_tcpclient_connect_cb
+                0x000000004024216c                mqtt_send_keepalive
+                0x0000000040242224                mqtt_tcpclient_delete
+                0x0000000040242274                mqtt_client_delete
+                0x0000000040242354                MQTT_Publish
+                0x0000000040242410                MQTT_Subscribe
+                0x00000000402424ac                MQTT_UnSubscribe
+                0x0000000040242544                MQTT_Ping
+                0x00000000402425f4                MQTT_InitConnection
+                0x0000000040242670                MQTT_InitClient
+                0x00000000402427ac                MQTT_InitLWT
+                0x0000000040242858                MQTT_Connect
+                0x000000004024299c                MQTT_Task
+                0x0000000040242ad0                MQTT_Disconnect
+                0x0000000040242b04                MQTT_DeleteClient
+                0x0000000040242b38                MQTT_OnConnected
+                0x0000000040242b40                MQTT_OnDisconnected
+                0x0000000040242b48                MQTT_OnData
+                0x0000000040242b50                MQTT_OnPublished
+                0x0000000040242b58                MQTT_OnTimeout
+ *fill*         0x0000000040242b5d        0x3 
+ .irom0.text    0x0000000040242b60      0x78b build/app_app.a(mqtt_msg.o)
                                         0x7b3 (size before relaxing)
-                0x0000000040242c84                mqtt_msg_init
-                0x0000000040242cb4                mqtt_get_total_length
-                0x0000000040242d00                mqtt_get_publish_topic
-                0x0000000040242d58                mqtt_get_publish_data
-                0x0000000040242df0                mqtt_get_id
-                0x0000000040242eac                mqtt_msg_connect
-                0x000000004024300c                mqtt_msg_publish
-                0x00000000402430c0                mqtt_msg_puback
-                0x00000000402430fc                mqtt_msg_pubrec
-                0x0000000040243138                mqtt_msg_pubrel
-                0x0000000040243174                mqtt_msg_pubcomp
-                0x00000000402431b0                mqtt_msg_subscribe
-                0x000000004024323c                mqtt_msg_unsubscribe
-                0x00000000402432ac                mqtt_msg_pingreq
-                0x00000000402432c8                mqtt_msg_pingresp
-                0x00000000402432e4                mqtt_msg_disconnect
- *fill*         0x00000000402432ff        0x1 
- .irom0.text    0x0000000040243300       0x77 build/app_app.a(queue.o)
+                0x0000000040242c70                mqtt_msg_init
+                0x0000000040242ca0                mqtt_get_total_length
+                0x0000000040242cec                mqtt_get_publish_topic
+                0x0000000040242d44                mqtt_get_publish_data
+                0x0000000040242ddc                mqtt_get_id
+                0x0000000040242e98                mqtt_msg_connect
+                0x0000000040242ff8                mqtt_msg_publish
+                0x00000000402430ac                mqtt_msg_puback
+                0x00000000402430e8                mqtt_msg_pubrec
+                0x0000000040243124                mqtt_msg_pubrel
+                0x0000000040243160                mqtt_msg_pubcomp
+                0x000000004024319c                mqtt_msg_subscribe
+                0x0000000040243228                mqtt_msg_unsubscribe
+                0x0000000040243298                mqtt_msg_pingreq
+                0x00000000402432b4                mqtt_msg_pingresp
+                0x00000000402432d0                mqtt_msg_disconnect
+ *fill*         0x00000000402432eb        0x1 
+ .irom0.text    0x00000000402432ec       0x77 build/app_app.a(queue.o)
                                          0x8b (size before relaxing)
-                0x0000000040243304                QUEUE_Init
-                0x0000000040243338                QUEUE_Puts
-                0x0000000040243350                QUEUE_Gets
-                0x0000000040243368                QUEUE_IsEmpty
- *fill*         0x0000000040243377        0x1 
- .irom0.text    0x0000000040243378      0x26d build/app_app.a(proto.o)
+                0x00000000402432f0                QUEUE_Init
+                0x0000000040243324                QUEUE_Puts
+                0x000000004024333c                QUEUE_Gets
+                0x0000000040243354                QUEUE_IsEmpty
+ *fill*         0x0000000040243363        0x1 
+ .irom0.text    0x0000000040243364      0x26d build/app_app.a(proto.o)
                                         0x289 (size before relaxing)
-                0x0000000040243378                PROTO_Init
-                0x000000004024338c                PROTO_ParseByte
-                0x0000000040243410                PROTO_Parse
-                0x000000004024344c                PROTO_ParseRb
-                0x000000004024349c                PROTO_Add
-                0x000000004024353c                PROTO_AddRb
- *fill*         0x00000000402435e5        0x3 
- .irom0.text    0x00000000402435e8      0x209 build/app_app.a(config.o)
+                0x0000000040243364                PROTO_Init
+                0x0000000040243378                PROTO_ParseByte
+                0x00000000402433fc                PROTO_Parse
+                0x0000000040243438                PROTO_ParseRb
+                0x0000000040243488                PROTO_Add
+                0x0000000040243528                PROTO_AddRb
+ *fill*         0x00000000402435d1        0x3 
+ .irom0.text    0x00000000402435d4      0x209 build/app_app.a(config.o)
                                         0x2c9 (size before relaxing)
-                0x00000000402435f0                cfg_save
-                0x000000004024362c                config_save_timer_func
-                0x00000000402436b4                cfg_load
-                0x00000000402437b8                cfg_save_defered
- *fill*         0x00000000402437f1        0x3 
- .irom0.text    0x00000000402437f4      0x3eb build/app_app.a(wifi.o)
+                0x00000000402435dc                cfg_save
+                0x0000000040243618                config_save_timer_func
+                0x00000000402436a0                cfg_load
+                0x00000000402437a4                cfg_save_defered
+ *fill*         0x00000000402437dd        0x3 
+ .irom0.text    0x00000000402437e0      0x3eb build/app_app.a(wifi.o)
                                         0x53f (size before relaxing)
-                0x00000000402438a8                wifi_default
-                0x0000000040243940                wifi_fallback
-                0x00000000402439a0                wifi_get_rssi
-                0x00000000402439c0                wifi_start_scan
-                0x0000000040243a14                wifi_scan_done_cb
-                0x0000000040243b04                wifi_connect
-                0x0000000040243bbc                wifi_stop_scan
-                0x0000000040243bd4                wifi_scan_is_running
- *fill*         0x0000000040243bdf        0x1 
- .irom0.text    0x0000000040243be0      0x327 build/app_app.a(watchdog.o)
-                                        0x42f (size before relaxing)
-                0x0000000040243d44                init_watchdog
-                0x0000000040243d78                start_watchdog
-                0x0000000040243dec                stop_watchdog
-                0x0000000040243e14                add_watchdog
-                0x0000000040243e84                remove_watchdog
-                0x0000000040243ed8                reset_watchdog
- *fill*         0x0000000040243f07        0x1 
- .irom0.text    0x0000000040243f08      0x4f4 build/app_app.a(cgiwifi.o)
+                0x0000000040243894                wifi_default
+                0x000000004024392c                wifi_fallback
+                0x000000004024398c                wifi_get_rssi
+                0x00000000402439ac                wifi_start_scan
+                0x0000000040243a00                wifi_scan_done_cb
+                0x0000000040243af0                wifi_connect
+                0x0000000040243ba8                wifi_stop_scan
+                0x0000000040243bc0                wifi_scan_is_running
+ *fill*         0x0000000040243bcb        0x1 
+ .irom0.text    0x0000000040243bcc      0x333 build/app_app.a(watchdog.o)
+                                        0x43f (size before relaxing)
+                0x0000000040243d3c                init_watchdog
+                0x0000000040243d70                start_watchdog
+                0x0000000040243de4                stop_watchdog
+                0x0000000040243e0c                add_watchdog
+                0x0000000040243e7c                remove_watchdog
+                0x0000000040243ed0                reset_watchdog
+ *fill*         0x0000000040243eff        0x1 
+ .irom0.text    0x0000000040243f00      0x4f4 build/app_app.a(cgiwifi.o)
                                         0x654 (size before relaxing)
-                0x0000000040243f3c                wifiScanDoneCb
-                0x0000000040244080                cgiWiFiScan
-                0x00000000402441b8                cgiSetup
-                0x0000000040244290                cgiWifiSetMode
-                0x0000000040244310                tplSetup
- .irom0.text    0x00000000402443fc      0xa63 build/app_app.a(tinyprintf.o)
+                0x0000000040243f34                wifiScanDoneCb
+                0x0000000040244078                cgiWiFiScan
+                0x00000000402441b0                cgiSetup
+                0x0000000040244288                cgiWifiSetMode
+                0x0000000040244308                tplSetup
+ .irom0.text    0x00000000402443f4      0xa63 build/app_app.a(tinyprintf.o)
                                         0xa9b (size before relaxing)
-                0x0000000040244818                tfp_format
-                0x0000000040244d34                init_printf
-                0x0000000040244d40                tfp_printf
-                0x0000000040244d80                tfp_vsnprintf
-                0x0000000040244dcc                tfp_snprintf
-                0x0000000040244dfc                tfp_vsprintf
-                0x0000000040244e34                tfp_sprintf
- *fill*         0x0000000040244e5f        0x1 
- .irom0.text    0x0000000040244e60      0x165 build/app_app.a(unix_time.o)
+                0x0000000040244810                tfp_format
+                0x0000000040244d2c                init_printf
+                0x0000000040244d38                tfp_printf
+                0x0000000040244d78                tfp_vsnprintf
+                0x0000000040244dc4                tfp_snprintf
+                0x0000000040244df4                tfp_vsprintf
+                0x0000000040244e2c                tfp_sprintf
+ *fill*         0x0000000040244e57        0x1 
+ .irom0.text    0x0000000040244e58      0x165 build/app_app.a(unix_time.o)
                                         0x1cd (size before relaxing)
-                0x0000000040244ef4                init_unix_time
-                0x0000000040244f78                get_unix_time
-                0x0000000040244f94                uptime
- *fill*         0x0000000040244fc5        0x3 
- .irom0.text    0x0000000040244fc8      0x1b1 build/app_app.a(cgi.o)
+                0x0000000040244eec                init_unix_time
+                0x0000000040244f70                get_unix_time
+                0x0000000040244f8c                uptime
+ *fill*         0x0000000040244fbd        0x3 
+ .irom0.text    0x0000000040244fc0      0x1b1 build/app_app.a(cgi.o)
                                         0x209 (size before relaxing)
-                0x0000000040244fd4                cgiLed
-                0x0000000040245030                tplLed
-                0x00000000402450a8                tplCounter
-                0x000000004024510c                cgiReadFlash
- *fill*         0x0000000040245179        0x3 
- .irom0.text    0x000000004024517c      0x314 build/app_app.a(httpdespfs.o)
+                0x0000000040244fcc                cgiLed
+                0x0000000040245028                tplLed
+                0x00000000402450a0                tplCounter
+                0x0000000040245104                cgiReadFlash
+ *fill*         0x0000000040245171        0x3 
+ .irom0.text    0x0000000040245174      0x314 build/app_app.a(httpdespfs.o)
                                         0x3a0 (size before relaxing)
-                0x0000000040245188                cgiEspFsHook
-                0x000000004024522c                cgiEspFsTemplate
- .irom0.text    0x0000000040245490      0x2d7 build/app_app.a(espfs.o)
+                0x0000000040245180                cgiEspFsHook
+                0x0000000040245224                cgiEspFsTemplate
+ .irom0.text    0x0000000040245488      0x2d7 build/app_app.a(espfs.o)
                                         0x2ff (size before relaxing)
-                0x0000000040245490                memcpyAligned
-                0x00000000402454ec                espFsOpen
-                0x0000000040245634                espFsRead
-                0x0000000040245738                espFsClose
- *fill*         0x0000000040245767        0x1 
- .irom0.text    0x0000000040245768      0x178 build/app_app.a(utils.o)
+                0x0000000040245488                memcpyAligned
+                0x00000000402454e4                espFsOpen
+                0x000000004024562c                espFsRead
+                0x0000000040245730                espFsClose
+ *fill*         0x000000004024575f        0x1 
+ .irom0.text    0x0000000040245760      0x178 build/app_app.a(utils.o)
                                         0x19c (size before relaxing)
-                0x000000004024576c                ccit_crc16
-                0x00000000402457a0                w_to_kw_str
-                0x00000000402457ec                kw_to_w_str
-                0x000000004024589c                decimal_number_length
-                0x00000000402458c0                int_pow
- .irom0.text    0x00000000402458e0      0x158 build/app_app.a(hmac-sha256.o)
+                0x0000000040245764                ccit_crc16
+                0x0000000040245798                w_to_kw_str
+                0x00000000402457e4                kw_to_w_str
+                0x0000000040245894                decimal_number_length
+                0x00000000402458b8                int_pow
+ .irom0.text    0x00000000402458d8      0x158 build/app_app.a(hmac-sha256.o)
                                         0x1ac (size before relaxing)
-                0x00000000402458e0                hmac_sha256_init
-                0x0000000040245974                hmac_sha256_update
-                0x000000004024598c                hmac_sha256_final
-                0x00000000402459ec                hmac_sha256
- .irom0.text    0x0000000040245a38       0xb5 build/app_app.a(gpio16.o)
+                0x00000000402458d8                hmac_sha256_init
+                0x000000004024596c                hmac_sha256_update
+                0x0000000040245984                hmac_sha256_final
+                0x00000000402459e4                hmac_sha256
+ .irom0.text    0x0000000040245a30       0xb5 build/app_app.a(gpio16.o)
                                          0xc1 (size before relaxing)
-                0x0000000040245a44                gpio16_output_conf
-                0x0000000040245a84                gpio16_output_set
-                0x0000000040245aa0                gpio16_input_conf
-                0x0000000040245ae0                gpio16_input_get
- *fill*         0x0000000040245aed        0x3 
- .irom0.text    0x0000000040245af0      0x187 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_tkip.o)
+                0x0000000040245a3c                gpio16_output_conf
+                0x0000000040245a7c                gpio16_output_set
+                0x0000000040245a98                gpio16_input_conf
+                0x0000000040245ad8                gpio16_input_get
+ *fill*         0x0000000040245ae5        0x3 
+ .irom0.text    0x0000000040245ae8      0x187 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_tkip.o)
                                         0x197 (size before relaxing)
- *fill*         0x0000000040245c77        0x1 
- .irom0.text    0x0000000040245c78       0x78 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_wep.o)
+ *fill*         0x0000000040245c6f        0x1 
+ .irom0.text    0x0000000040245c70       0x78 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libnet80211.a(ieee80211_crypto_wep.o)
                                          0x7c (size before relaxing)
- .irom0.text    0x0000000040245cf0      0x97f /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
+ .irom0.text    0x0000000040245ce8      0x97f /home/stoffer/esp8266/esp-open-sdk/sdk/lib/liblwip.a(sntp.o)
                                         0xb7f (size before relaxing)
-                0x0000000040245d04                sntp_mktm_r
-                0x0000000040245fb0                sntp_localtime_r
-                0x0000000040245fc4                sntp_localtime
-                0x0000000040245fe0                sntp__tzcalc_limits
-                0x000000004024618c                sntp_asctime_r
-                0x00000000402461d8                sntp_asctime
-                0x00000000402461f0                sntp_get_timezone
-                0x0000000040246204                sntp_set_timezone
-                0x000000004024624c                sntp_set_daylight
-                0x0000000040246280                sntp_time_inc
-                0x000000004024656c                sntp_init
-                0x00000000402465a4                sntp_stop
-                0x00000000402465e4                sntp_setserver
-                0x0000000040246600                sntp_getserver
-                0x0000000040246614                sntp_setservername
-                0x0000000040246624                sntp_getservername
-                0x0000000040246638                sntp_set_update_delay
-                0x0000000040246648                sntp_set_timetype
-                0x0000000040246650                sntp_set_receive_time_size
- *fill*         0x000000004024666f        0x1 
- .irom0.text    0x0000000040246670      0x1ee /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(time.o)
+                0x0000000040245cfc                sntp_mktm_r
+                0x0000000040245fa8                sntp_localtime_r
+                0x0000000040245fbc                sntp_localtime
+                0x0000000040245fd8                sntp__tzcalc_limits
+                0x0000000040246184                sntp_asctime_r
+                0x00000000402461d0                sntp_asctime
+                0x00000000402461e8                sntp_get_timezone
+                0x00000000402461fc                sntp_set_timezone
+                0x0000000040246244                sntp_set_daylight
+                0x0000000040246278                sntp_time_inc
+                0x0000000040246564                sntp_init
+                0x000000004024659c                sntp_stop
+                0x00000000402465dc                sntp_setserver
+                0x00000000402465f8                sntp_getserver
+                0x000000004024660c                sntp_setservername
+                0x000000004024661c                sntp_getservername
+                0x0000000040246630                sntp_set_update_delay
+                0x0000000040246640                sntp_set_timetype
+                0x0000000040246648                sntp_set_receive_time_size
+ *fill*         0x0000000040246667        0x1 
+ .irom0.text    0x0000000040246668      0x1ee /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(time.o)
                                         0x262 (size before relaxing)
-                0x00000000402466d8                millis
-                0x0000000040246710                micros
-                0x0000000040246724                updateTime
-                0x000000004024674c                configTime
-                0x00000000402467dc                time
-                0x0000000040246804                _gettimeofday_r
-                0x0000000040246840                getrealtimeofday
- *fill*         0x000000004024685e        0x2 
+                0x00000000402466d0                millis
+                0x0000000040246708                micros
+                0x000000004024671c                updateTime
+                0x0000000040246744                configTime
+                0x00000000402467d4                time
+                0x00000000402467fc                _gettimeofday_r
+                0x0000000040246838                getrealtimeofday
+ *fill*         0x0000000040246856        0x2 
  .irom0.literal
-                0x0000000040246860        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
- *fill*         0x0000000040246860        0x0 
+                0x0000000040246858        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
+ *fill*         0x0000000040246858        0x8 
  .irom.text     0x0000000040246860      0x510 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(app_main.o)
  .irom0.literal
                 0x0000000040246d70        0x0 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libmain.a(ets_timer.o)
@@ -2955,7 +2955,6 @@ END GROUP
  *fill*         0x00000000402488f0        0x0 
  .irom0.literal
                 0x00000000402488f0        0x0 build/app_app.a(user_main.o)
- *fill*         0x00000000402488f0        0x0 
  .irom0.literal
                 0x00000000402488f0        0x0 build/app_app.a(captdns.o)
  *fill*         0x00000000402488f0        0x0 
@@ -4843,27 +4842,27 @@ OUTPUT(build/app.out elf32-xtensa-le)
  .debug_line    0x0000000000000553      0x319 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_divsf3.o)
  .debug_line    0x000000000000086c      0x115 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_fixsfsi.o)
  .debug_line    0x0000000000000981      0x1b1 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
- .debug_line    0x0000000000000b32      0x8c8 build/app_app.a(user_main.o)
- .debug_line    0x00000000000013fa      0x5a1 build/app_app.a(captdns.o)
- .debug_line    0x000000000000199b      0x231 build/app_app.a(led.o)
- .debug_line    0x0000000000001bcc      0x10f build/app_app.a(httpd_user_init.o)
- .debug_line    0x0000000000001cdb      0xb87 build/app_app.a(httpd.o)
- .debug_line    0x0000000000002862      0x2e4 build/app_app.a(crypto.o)
- .debug_line    0x0000000000002b46      0x727 build/app_app.a(sha256.o)
- .debug_line    0x000000000000326d      0x9ba build/app_app.a(aes.o)
- .debug_line    0x0000000000003c27      0x6c4 build/app_app.a(kmp_request.o)
- .debug_line    0x00000000000042eb      0x904 build/app_app.a(kmp.o)
- .debug_line    0x0000000000004bef      0x4c8 build/app_app.a(cron.o)
- .debug_line    0x00000000000050b7      0x406 build/app_app.a(ac_out.o)
- .debug_line    0x00000000000054bd      0x511 build/app_app.a(uart.o)
- .debug_line    0x00000000000059ce      0xf3c build/app_app.a(mqtt.o)
- .debug_line    0x000000000000690a      0x8c2 build/app_app.a(mqtt_msg.o)
- .debug_line    0x00000000000071cc      0x183 build/app_app.a(queue.o)
- .debug_line    0x000000000000734f      0x249 build/app_app.a(mqtt_utils.o)
- .debug_line    0x0000000000007598      0x32f build/app_app.a(proto.o)
- .debug_line    0x00000000000078c7      0x2d7 build/app_app.a(config.o)
- .debug_line    0x0000000000007b9e      0x527 build/app_app.a(wifi.o)
- .debug_line    0x00000000000080c5      0x3f1 build/app_app.a(watchdog.o)
+ .debug_line    0x0000000000000b32      0x8c2 build/app_app.a(user_main.o)
+ .debug_line    0x00000000000013f4      0x5a1 build/app_app.a(captdns.o)
+ .debug_line    0x0000000000001995      0x231 build/app_app.a(led.o)
+ .debug_line    0x0000000000001bc6      0x10f build/app_app.a(httpd_user_init.o)
+ .debug_line    0x0000000000001cd5      0xb87 build/app_app.a(httpd.o)
+ .debug_line    0x000000000000285c      0x2e4 build/app_app.a(crypto.o)
+ .debug_line    0x0000000000002b40      0x727 build/app_app.a(sha256.o)
+ .debug_line    0x0000000000003267      0x9ba build/app_app.a(aes.o)
+ .debug_line    0x0000000000003c21      0x6c4 build/app_app.a(kmp_request.o)
+ .debug_line    0x00000000000042e5      0x904 build/app_app.a(kmp.o)
+ .debug_line    0x0000000000004be9      0x4c8 build/app_app.a(cron.o)
+ .debug_line    0x00000000000050b1      0x406 build/app_app.a(ac_out.o)
+ .debug_line    0x00000000000054b7      0x511 build/app_app.a(uart.o)
+ .debug_line    0x00000000000059c8      0xf3c build/app_app.a(mqtt.o)
+ .debug_line    0x0000000000006904      0x8c2 build/app_app.a(mqtt_msg.o)
+ .debug_line    0x00000000000071c6      0x183 build/app_app.a(queue.o)
+ .debug_line    0x0000000000007349      0x249 build/app_app.a(mqtt_utils.o)
+ .debug_line    0x0000000000007592      0x32f build/app_app.a(proto.o)
+ .debug_line    0x00000000000078c1      0x2d7 build/app_app.a(config.o)
+ .debug_line    0x0000000000007b98      0x527 build/app_app.a(wifi.o)
+ .debug_line    0x00000000000080bf      0x3f7 build/app_app.a(watchdog.o)
  .debug_line    0x00000000000084b6      0x4ad build/app_app.a(cgiwifi.o)
  .debug_line    0x0000000000008963      0xae5 build/app_app.a(tinyprintf.o)
  .debug_line    0x0000000000009448      0x22d build/app_app.a(unix_time.o)
@@ -4893,62 +4892,62 @@ OUTPUT(build/app.out elf32-xtensa-le)
  .debug_line    0x000000000000cb57      0x16c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
  .debug_line    0x000000000000ccc3      0x24c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sysgettod.o)
 
-.debug_info     0x0000000000000000    0x1bf43
+.debug_info     0x0000000000000000    0x1bf45
  .debug_info    0x0000000000000000       0xf3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_modsi3.o)
  .debug_info    0x00000000000000f3       0xf3 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_ashrdi3.o)
  .debug_info    0x00000000000001e6       0xf4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_mulsf3.o)
  .debug_info    0x00000000000002da       0xf4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_divsf3.o)
  .debug_info    0x00000000000003ce       0xf4 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_fixsfsi.o)
  .debug_info    0x00000000000004c2       0xf4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memchr.o)
- .debug_info    0x00000000000005b6     0x2ac6 build/app_app.a(user_main.o)
- .debug_info    0x000000000000307c      0xef0 build/app_app.a(captdns.o)
- .debug_info    0x0000000000003f6c      0x416 build/app_app.a(led.o)
- .debug_info    0x0000000000004382      0x530 build/app_app.a(httpd_user_init.o)
- .debug_info    0x00000000000048b2     0x17fc build/app_app.a(httpd.o)
- .debug_info    0x00000000000060ae      0x7b4 build/app_app.a(crypto.o)
- .debug_info    0x0000000000006862      0x850 build/app_app.a(sha256.o)
- .debug_info    0x00000000000070b2      0xbdc build/app_app.a(aes.o)
- .debug_info    0x0000000000007c8e     0x1875 build/app_app.a(kmp_request.o)
- .debug_info    0x0000000000009503      0xc44 build/app_app.a(kmp.o)
- .debug_info    0x000000000000a147      0xcd4 build/app_app.a(cron.o)
- .debug_info    0x000000000000ae1b      0xad1 build/app_app.a(ac_out.o)
- .debug_info    0x000000000000b8ec      0x945 build/app_app.a(uart.o)
- .debug_info    0x000000000000c231     0x2884 build/app_app.a(mqtt.o)
- .debug_info    0x000000000000eab5     0x1016 build/app_app.a(mqtt_msg.o)
- .debug_info    0x000000000000facb      0x395 build/app_app.a(queue.o)
- .debug_info    0x000000000000fe60      0x1e3 build/app_app.a(mqtt_utils.o)
- .debug_info    0x0000000000010043      0x4f9 build/app_app.a(proto.o)
- .debug_info    0x000000000001053c      0x8d2 build/app_app.a(config.o)
- .debug_info    0x0000000000010e0e     0x1191 build/app_app.a(wifi.o)
- .debug_info    0x0000000000011f9f      0x82c build/app_app.a(watchdog.o)
- .debug_info    0x00000000000127cb     0x1364 build/app_app.a(cgiwifi.o)
- .debug_info    0x0000000000013b2f      0xae7 build/app_app.a(tinyprintf.o)
- .debug_info    0x0000000000014616      0x46f build/app_app.a(unix_time.o)
- .debug_info    0x0000000000014a85      0x826 build/app_app.a(cgi.o)
- .debug_info    0x00000000000152ab      0x85d build/app_app.a(httpdespfs.o)
- .debug_info    0x0000000000015b08      0x7bf build/app_app.a(espfs.o)
- .debug_info    0x00000000000162c7      0xaf1 build/app_app.a(heatshrink_decoder.o)
- .debug_info    0x0000000000016db8      0x41d build/app_app.a(utils.o)
- .debug_info    0x00000000000171d5      0x586 build/app_app.a(hmac-sha256.o)
- .debug_info    0x000000000001775b      0x105 build/app_app.a(gpio16.o)
- .debug_info    0x0000000000017860      0x1ba build/app_app.a(ringbuf.o)
- .debug_info    0x0000000000017a1a      0x93d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
- .debug_info    0x0000000000018357      0x94e /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
- .debug_info    0x0000000000018ca5      0x17a /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
- .debug_info    0x0000000000018e1f      0x890 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
- .debug_info    0x00000000000196af      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
- .debug_info    0x00000000000197c8      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
- .debug_info    0x00000000000198e1      0x440 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
- .debug_info    0x0000000000019d21       0xc4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strcat.o)
- .debug_info    0x0000000000019de5      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
- .debug_info    0x0000000000019efe      0x8e7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
- .debug_info    0x000000000001a7e5      0x180 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
- .debug_info    0x000000000001a965      0x9a5 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
- .debug_info    0x000000000001b30a       0xa4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
- .debug_info    0x000000000001b3ae       0xb7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
- .debug_info    0x000000000001b465       0x6b /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
- .debug_info    0x000000000001b4d0      0x15c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
- .debug_info    0x000000000001b62c      0x917 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sysgettod.o)
+ .debug_info    0x00000000000005b6     0x2ab1 build/app_app.a(user_main.o)
+ .debug_info    0x0000000000003067      0xef0 build/app_app.a(captdns.o)
+ .debug_info    0x0000000000003f57      0x416 build/app_app.a(led.o)
+ .debug_info    0x000000000000436d      0x530 build/app_app.a(httpd_user_init.o)
+ .debug_info    0x000000000000489d     0x17fc build/app_app.a(httpd.o)
+ .debug_info    0x0000000000006099      0x7b4 build/app_app.a(crypto.o)
+ .debug_info    0x000000000000684d      0x850 build/app_app.a(sha256.o)
+ .debug_info    0x000000000000709d      0xbdc build/app_app.a(aes.o)
+ .debug_info    0x0000000000007c79     0x1875 build/app_app.a(kmp_request.o)
+ .debug_info    0x00000000000094ee      0xc44 build/app_app.a(kmp.o)
+ .debug_info    0x000000000000a132      0xcd4 build/app_app.a(cron.o)
+ .debug_info    0x000000000000ae06      0xad1 build/app_app.a(ac_out.o)
+ .debug_info    0x000000000000b8d7      0x945 build/app_app.a(uart.o)
+ .debug_info    0x000000000000c21c     0x2884 build/app_app.a(mqtt.o)
+ .debug_info    0x000000000000eaa0     0x1016 build/app_app.a(mqtt_msg.o)
+ .debug_info    0x000000000000fab6      0x395 build/app_app.a(queue.o)
+ .debug_info    0x000000000000fe4b      0x1e3 build/app_app.a(mqtt_utils.o)
+ .debug_info    0x000000000001002e      0x4f9 build/app_app.a(proto.o)
+ .debug_info    0x0000000000010527      0x8d2 build/app_app.a(config.o)
+ .debug_info    0x0000000000010df9     0x1191 build/app_app.a(wifi.o)
+ .debug_info    0x0000000000011f8a      0x843 build/app_app.a(watchdog.o)
+ .debug_info    0x00000000000127cd     0x1364 build/app_app.a(cgiwifi.o)
+ .debug_info    0x0000000000013b31      0xae7 build/app_app.a(tinyprintf.o)
+ .debug_info    0x0000000000014618      0x46f build/app_app.a(unix_time.o)
+ .debug_info    0x0000000000014a87      0x826 build/app_app.a(cgi.o)
+ .debug_info    0x00000000000152ad      0x85d build/app_app.a(httpdespfs.o)
+ .debug_info    0x0000000000015b0a      0x7bf build/app_app.a(espfs.o)
+ .debug_info    0x00000000000162c9      0xaf1 build/app_app.a(heatshrink_decoder.o)
+ .debug_info    0x0000000000016dba      0x41d build/app_app.a(utils.o)
+ .debug_info    0x00000000000171d7      0x586 build/app_app.a(hmac-sha256.o)
+ .debug_info    0x000000000001775d      0x105 build/app_app.a(gpio16.o)
+ .debug_info    0x0000000000017862      0x1ba build/app_app.a(ringbuf.o)
+ .debug_info    0x0000000000017a1c      0x93d /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-atoi.o)
+ .debug_info    0x0000000000018359      0x94e /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime.o)
+ .debug_info    0x0000000000018ca7      0x17a /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gmtime_r.o)
+ .debug_info    0x0000000000018e21      0x890 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-impure.o)
+ .debug_info    0x00000000000196b1      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memcpy.o)
+ .debug_info    0x00000000000197ca      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-memset.o)
+ .debug_info    0x00000000000198e3      0x440 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-mktm_r.o)
+ .debug_info    0x0000000000019d23       0xc4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strcat.o)
+ .debug_info    0x0000000000019de7      0x119 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strlen.o)
+ .debug_info    0x0000000000019f00      0x8e7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok.o)
+ .debug_info    0x000000000001a7e7      0x180 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtok_r.o)
+ .debug_info    0x000000000001a967      0x9a5 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-strtol.o)
+ .debug_info    0x000000000001b30c       0xa4 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzlock.o)
+ .debug_info    0x000000000001b3b0       0xb7 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-tzvars.o)
+ .debug_info    0x000000000001b467       0x6b /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-ctype_.o)
+ .debug_info    0x000000000001b4d2      0x15c /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-gettzinfo.o)
+ .debug_info    0x000000000001b62e      0x917 /home/stoffer/esp8266/esp-open-sdk/xtensa-lx106-elf/lib/gcc/xtensa-lx106-elf/4.8.5/../../../../xtensa-lx106-elf/lib/libc.a(lib_a-sysgettod.o)
 
 .debug_abbrev   0x0000000000000000     0x595b
  .debug_abbrev  0x0000000000000000       0x14 /home/stoffer/esp8266/esp-open-sdk/sdk/lib/libgcc.a(_modsi3.o)
