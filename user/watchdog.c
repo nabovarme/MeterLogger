@@ -8,6 +8,7 @@
 
 static os_timer_t watchdog_timer;
 static os_timer_t ext_watchdog_timer;
+static os_timer_t wifi_reconnect_timer;
 
 typedef struct{
 	uint32_t id;
@@ -18,6 +19,35 @@ typedef struct{
 
 watchdog_t watchdog_list[WATCHDOG_MAX];
 uint8_t watchdog_list_len;
+
+ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
+	if (gpio16_input_get()) {
+		gpio16_output_set(0);
+	}
+	else {
+		gpio16_output_set(1);
+	}
+}
+
+ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
+	if (wifi_scan_is_running()) {
+		// reschedule if wifi scan is running
+		os_timer_disarm(&wifi_reconnect_timer);
+		os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
+		os_timer_arm(&wifi_reconnect_timer, 1000, 0);		
+#ifdef DEBUG
+		os_printf("scanner still running - rescheduling reccont\n");
+#endif	
+	}
+	else {
+		os_timer_disarm(&wifi_reconnect_timer);
+		wifi_station_connect();
+		wifi_start_scan();
+#ifdef DEBUG
+		os_printf("watchdog restarted wifi and started wifi scanner\n");
+#endif	
+	}
+}
 
 ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 	uint32_t i;
@@ -43,12 +73,16 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 						// force reconnect to wireless
 						wifi_stop_scan();
 						wifi_station_disconnect();
-			
-						// and (re)-connect
-						wifi_station_connect();
-						wifi_start_scan();
 #ifdef DEBUG
-						os_printf("watchdog restarted wifi\n");
+						os_printf("stopped wifi and wifi scanner\n");
+#endif	
+			
+						// and (re)-connect when last wifi scan is done - wait 1 second before testing
+						os_timer_disarm(&wifi_reconnect_timer);
+						os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
+						os_timer_arm(&wifi_reconnect_timer, 1000, 0);
+#ifdef DEBUG
+						os_printf("scheduled wifi for restart...\n");
 #endif	
 						break;
 					
@@ -64,16 +98,6 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 		}
 	}
 }
-
-ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
-	if (gpio16_input_get()) {
-		gpio16_output_set(0);
-	}
-	else {
-		gpio16_output_set(1);
-	}
-}
-
 
 ICACHE_FLASH_ATTR void init_watchdog() {
 	memset(watchdog_list, 0x00, sizeof(watchdog_list));

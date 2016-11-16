@@ -13,7 +13,6 @@
 #include "led.h"
 #include "tinyprintf.h"
 
-#define NETWORK_CHECK_INTERVAL 60000
 #define WIFI_SCAN_INTERVAL 5000
 #define RSSI_CHECK_INTERVAL 10000
 
@@ -215,10 +214,14 @@ void ICACHE_FLASH_ATTR wifi_start_scan() {
 	// start wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
-	os_timer_arm(&wifi_scan_timer, 0, 0);	// start scan immediately
+	os_timer_arm(&wifi_scan_timer, WIFI_SCAN_INTERVAL, 0);
 }
 
 void ICACHE_FLASH_ATTR wifi_stop_scan() {
 	// stop wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
+}
+
+bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
+	return wifi_scan_runnning;
 }
