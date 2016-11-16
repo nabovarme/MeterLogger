@@ -261,6 +261,9 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
+#ifdef DEBUG
+		os_printf("MQTT_Connect()\n");
+#endif
 		MQTT_Connect(&mqtt_client);
 	}
 }
