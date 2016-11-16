@@ -261,10 +261,10 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
-#ifdef DEBUG
-		os_printf("MQTT_Connect()\n");
-#endif
 		MQTT_Connect(&mqtt_client);
+#ifdef DEBUG
+		os_printf("queue size(%d/%d)\n", mqtt_client.msgQueue.rb.fill_cnt, mqtt_client.msgQueue.rb.size);
+#endif
 	}
 }
 
@@ -273,10 +273,6 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
-
-#ifdef DEBUG
-	printf("MQTT: Connected\n");
-#endif	// DEBUG
 
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
@@ -356,22 +352,13 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
-#ifdef DEBUG
-	printf("MQTT: Disconnected\r");
-#endif	// DEBUG
 }
 
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
-#ifdef DEBUG
-	printf("MQTT: Published\n");
-#endif	// DEBUG
 }
 
 ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
-#ifdef DEBUG
-	printf("MQTT: Timeout\n");
-#endif	// DEBUG
 }
 	
 ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
@@ -692,7 +679,11 @@ void impulse_meter_init(void) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
+#ifdef DEBUG
+	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+#else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
+#endif
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);

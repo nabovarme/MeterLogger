@@ -126,9 +126,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 //	os_printf("scan done\n");
 
 	// start wifi scan timer again
-	os_timer_disarm(&wifi_scan_timer);
-	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
-	os_timer_arm(&wifi_scan_timer, WIFI_SCAN_INTERVAL, 0);
+	wifi_start_scan();
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
@@ -191,9 +189,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_set_config(&stationConf);
 
 	// start wifi scan timer
-	os_timer_disarm(&wifi_scan_timer);
-	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
-	os_timer_arm(&wifi_scan_timer, 0, 0);	// start scan immediately
+	wifi_start_scan();
 
 	wifi_station_set_auto_connect(true);
 //	wifi_reconnect = true;	// let wifi_handle_event_cb() handle reconnect on disconnect
@@ -213,4 +209,16 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 		// wait for lock
 	}
 	return rssi;
+}
+
+void ICACHE_FLASH_ATTR wifi_start_scan() {
+	// start wifi scan timer
+	os_timer_disarm(&wifi_scan_timer);
+	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
+	os_timer_arm(&wifi_scan_timer, 0, 0);	// start scan immediately
+}
+
+void ICACHE_FLASH_ATTR wifi_stop_scan() {
+	// stop wifi scan timer
+	os_timer_disarm(&wifi_scan_timer);
 }

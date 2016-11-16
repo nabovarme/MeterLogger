@@ -11,6 +11,7 @@ BUILD_BASE	= build
 FW_BASE = firmware
 ESPTOOL = esptool.py
 BAUDRATE = 1500000
+DEBUG_SPEED = 1200
 
 # name for the target project
 TARGET		= app
@@ -126,7 +127,8 @@ endif
 
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG
-#    CFLAGS += -DDEBUG -DPRINTF_DEBUG
+    CFLAGS += -DDEBUG -DPRINTF_DEBUG
+	DEBUG_SPEED = 115200
 endif
 
 ifeq ($(DEBUG_NO_METER), 1)
@@ -261,7 +263,7 @@ size:
 	$(SIZE) -B -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
 
 screen:
-	screen /dev/ttyUSB0 1200,cstopb
+	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
 minicom:
 	minicom -D /dev/ttyUSB0 -b 300 -7
 
