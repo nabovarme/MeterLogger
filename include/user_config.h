@@ -36,7 +36,7 @@
 #ifdef IMPULSE
 #define QUEUE_BUFFER_SIZE		 		20480		// larger queue for impulse meters
 #else
-#define QUEUE_BUFFER_SIZE		 		16384		// DEBUG: check if we could have larger queue for this as welle after SDK 1.5.2
+#define QUEUE_BUFFER_SIZE		 		20480		// larger queue
 #endif // IMPULSE
 
 //#ifndef MQTT_SSL_SIZE
