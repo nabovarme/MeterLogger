@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "main:main.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "mqtt_client">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "PROTO_ParseRb:proto.c">
+      </ContextState>
+      <ContextState
+         contextName = "MQTT_Publish:mqtt.c">
+      </ContextState>
+      <ContextState
+         contextName = "QUEUE_Puts:queue.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "last_rb_p_r">
+            </PersistentString>
+            <PersistentString
+               value = "last_rb_p_w">
+            </PersistentString>
+            <PersistentString
+               value = "last_fill_cnt">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RINGBUF_Get:ringbuf.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "r">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "QUEUE_Init:queue.c">
+      </ContextState>
+      <ContextState
+         contextName = "RINGBUF_Put:ringbuf.c">
+      </ContextState>
+      <ContextState
+         contextName = "PROTO_AddRb:proto.c">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
