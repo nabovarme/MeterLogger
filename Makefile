@@ -250,7 +250,8 @@ htmlflash: webpages.espfs
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 32m $(ESPFS) webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 32m 0x7E000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0x7C000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 32m 0x3FE000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0x3FC000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
+#	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 32m 0x3FE000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0x3FC000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
 
 flashblank:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 32m 0x0 firmware/blank4M.bin
