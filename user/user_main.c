@@ -687,6 +687,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
+	printf("Flash size: %d\n\r", system_get_flash_size_map());
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
 #endif
