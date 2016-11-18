@@ -69,7 +69,7 @@ cfg_save() {
 #else
 	// calculate checksum on sys_cfg struct without ccit_crc16
 	sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
-//	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
+	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
 #endif	// IMPULSE
 }
 
