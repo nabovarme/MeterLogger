@@ -267,6 +267,30 @@ unsigned int kmp_fifo_in_use() {
 }
 
 unsigned char kmp_fifo_put(unsigned char c) {
+#ifdef DEBUG_NO_METER
+	char cleartext[MQTT_MESSAGE_L];
+	char topic[MQTT_TOPIC_L];
+	char message[KMP_FRAME_L];
+	int message_l;
+
+	if (c == 'm') {
+		// fake serial for testing without meter
+		kmp_serial = atoi(DEFAULT_METER_SERIAL);
+
+		tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
+//		memset(cleartext, 0, sizeof(cleartext));
+		tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+
+		// encrypt and send
+		message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+
+		if (mqtt_client) {
+			// if mqtt_client is initialized
+			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+		}
+	}
+#endif
+
 	if (kmp_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap

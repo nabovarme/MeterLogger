@@ -31,6 +31,11 @@
 #include "proto.h"
 
 #include <esp8266.h>
+
+uint8_t *last_rb_p_r;
+uint8_t *last_rb_p_w;
+uint32_t last_fill_cnt;
+
 void ICACHE_FLASH_ATTR QUEUE_Init(QUEUE *queue, int bufferSize)
 {
 	queue->buf = (uint8_t*)os_zalloc(bufferSize);
@@ -38,12 +43,38 @@ void ICACHE_FLASH_ATTR QUEUE_Init(QUEUE *queue, int bufferSize)
 }
 int32_t ICACHE_FLASH_ATTR QUEUE_Puts(QUEUE *queue, uint8_t* buffer, uint16_t len)
 {
-	return PROTO_AddRb(&queue->rb, buffer, len);
+	uint32_t ret;
+
+	last_rb_p_r = queue->rb.p_r;
+	last_rb_p_w = queue->rb.p_w;
+	last_fill_cnt = queue->rb.fill_cnt;
+	
+	ret = PROTO_AddRb(&queue->rb, buffer, len);
+	if (ret == -1) {
+		queue->rb.p_r = last_rb_p_r;
+		queue->rb.p_w = last_rb_p_w;
+		queue->rb.fill_cnt = last_fill_cnt;
+		os_printf("QUEUE_Puts: failed to add %d to queue, rolling back\n", len);
+	}
+	else {
+		os_printf("QUEUE_Puts: added %d to queue\n", len);
+	}
+	os_printf("QUEUE_Puts: queue size(%d/%d)\n", queue->rb.fill_cnt, queue->rb.size);
+	return ret;
 }
 int32_t ICACHE_FLASH_ATTR QUEUE_Gets(QUEUE *queue, uint8_t* buffer, uint16_t* len, uint16_t maxLen)
 {
-
-	return PROTO_ParseRb(&queue->rb, buffer, len, maxLen);
+	uint32_t ret;
+	
+	ret = PROTO_ParseRb(&queue->rb, buffer, len, maxLen);
+	if (ret == -1) {
+		os_printf("QUEUE_Gets: failed to remove %d from queue\n", *len);
+	}
+	else {
+		os_printf("QUEUE_Gets: removed %d from queue\n", *len);
+	}
+	os_printf("QUEUE_Puts: queue size(%d/%d)\n", queue->rb.fill_cnt, queue->rb.size);
+	return ret;
 }
 
 BOOL ICACHE_FLASH_ATTR QUEUE_IsEmpty(QUEUE *queue)
