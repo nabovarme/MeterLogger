@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.2.0">
+<eagle version="7.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -4963,6 +4963,8 @@ at 30/07/2012 11:22:31</description>
 <part name="U3" library="Microchip_By_element14_Batch_1" deviceset="25AA020A-I/SN" device="" value="FM25L16B"/>
 <part name="GND7" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY6" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
+<part name="SUPPLY8" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
+<part name="R4" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -5020,6 +5022,8 @@ at 30/07/2012 11:22:31</description>
 <instance part="U3" gate="A" x="30.48" y="27.94" rot="MR0"/>
 <instance part="GND7" gate="1" x="53.34" y="7.62"/>
 <instance part="SUPPLY6" gate="G$1" x="53.34" y="40.64"/>
+<instance part="SUPPLY8" gate="G$1" x="157.48" y="53.34" rot="MR0"/>
+<instance part="R4" gate="G$1" x="142.24" y="53.34" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -5123,6 +5127,11 @@ at 30/07/2012 11:22:31</description>
 <wire x1="48.26" y1="20.32" x2="53.34" y2="20.32" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="20.32" x2="53.34" y2="27.94" width="0.1524" layer="91"/>
 <junction x="53.34" y="27.94"/>
+</segment>
+<segment>
+<pinref part="R4" gate="G$1" pin="1"/>
+<pinref part="SUPPLY8" gate="G$1" pin="3.3V"/>
+<wire x1="147.32" y1="53.34" x2="157.48" y2="53.34" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
@@ -5240,6 +5249,13 @@ at 30/07/2012 11:22:31</description>
 <wire x1="63.5" y1="22.86" x2="63.5" y2="58.42" width="0.1524" layer="91"/>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO14"/>
 <wire x1="63.5" y1="58.42" x2="86.36" y2="58.42" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$14" class="0">
+<segment>
+<pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO2"/>
+<pinref part="R4" gate="G$1" pin="2"/>
+<wire x1="132.08" y1="53.34" x2="137.16" y2="53.34" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
