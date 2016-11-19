@@ -687,33 +687,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
-	printf("Flash size: ");
-	switch (system_get_flash_size_map()) {
-		case FLASH_SIZE_4M_MAP_256_256:
-			printf("FLASH_SIZE_4M_MAP_256_256\n\r");
-			break;
-		case FLASH_SIZE_2M:
-			printf("FLASH_SIZE_2M\n\r");
-			break;
-		case FLASH_SIZE_8M_MAP_512_512:
-			printf("FLASH_SIZE_8M_MAP_512_512\n\r");
-			break;
-		case FLASH_SIZE_16M_MAP_512_512:
-			printf("FLASH_SIZE_16M_MAP_512_512\n\r");
-			break;
-		case FLASH_SIZE_32M_MAP_512_512:
-			printf("FLASH_SIZE_32M_MAP_512_512\n\r");
-			break;
-		case FLASH_SIZE_16M_MAP_1024_1024:
-			printf("FLASH_SIZE_16M_MAP_1024_1024\n\r");
-			break;
-		case FLASH_SIZE_32M_MAP_1024_1024:
-			printf("FLASH_SIZE_32M_MAP_1024_1024\n\r");
-			break;
-		default:
-			printf("FLASH_UNKNOWN_SIZE\n\r");
-			break;
-	}
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
 #endif
