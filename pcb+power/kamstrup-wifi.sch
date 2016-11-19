@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.2.0">
+<eagle version="7.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -8202,6 +8202,8 @@ at 30/07/2012 11:22:31</description>
 <part name="GND3" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="GND7" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
+<part name="SUPPLY5" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
+<part name="R11" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -8252,6 +8254,8 @@ at 30/07/2012 11:22:31</description>
 <instance part="GND3" gate="1" x="147.32" y="27.94"/>
 <instance part="SUPPLY3" gate="G$1" x="60.96" y="40.64"/>
 <instance part="GND7" gate="1" x="60.96" y="20.32"/>
+<instance part="SUPPLY5" gate="G$1" x="154.94" y="53.34"/>
+<instance part="R11" gate="G$1" x="146.05" y="53.34" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -8332,6 +8336,11 @@ at 30/07/2012 11:22:31</description>
 <pinref part="SUPPLY3" gate="G$1" pin="3.3V"/>
 <wire x1="58.42" y1="38.1" x2="60.96" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="38.1" x2="60.96" y2="40.64" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R11" gate="G$1" pin="1"/>
+<pinref part="SUPPLY5" gate="G$1" pin="3.3V"/>
+<wire x1="151.13" y1="53.34" x2="154.94" y2="53.34" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -8560,6 +8569,13 @@ at 30/07/2012 11:22:31</description>
 <wire x1="71.12" y1="30.48" x2="71.12" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="U1" gate="G$1" pin="GPIO16"/>
 <wire x1="71.12" y1="63.5" x2="86.36" y2="63.5" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$21" class="0">
+<segment>
+<pinref part="R11" gate="G$1" pin="2"/>
+<pinref part="U1" gate="G$1" pin="GPIO2"/>
+<wire x1="140.97" y1="53.34" x2="132.08" y2="53.34" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

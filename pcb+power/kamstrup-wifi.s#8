@@ -7188,10 +7188,10 @@ Source: AVX .. aphvc.pdf</description>
 <packages>
 <package name="SOT428">
 <description>&lt;b&gt;SOT-428&lt;/b&gt;</description>
-<wire x1="3.2766" y1="1.651" x2="3.2766" y2="-1.651" width="0.2032" layer="21"/>
+<wire x1="3.2766" y1="5.461" x2="3.2766" y2="-1.651" width="0.2032" layer="21"/>
 <wire x1="3.2766" y1="-1.651" x2="-3.2766" y2="-1.651" width="0.2032" layer="21"/>
-<wire x1="-3.2766" y1="-1.651" x2="-3.2766" y2="1.651" width="0.2032" layer="21"/>
-<wire x1="-3.2766" y1="1.651" x2="3.2766" y2="1.651" width="0.2032" layer="21"/>
+<wire x1="-3.2766" y1="-1.651" x2="-3.2766" y2="5.461" width="0.2032" layer="21"/>
+<wire x1="-3.2766" y1="5.461" x2="3.2766" y2="5.461" width="0.2032" layer="21"/>
 <smd name="1" x="-2.3" y="-3.0988" dx="1.6" dy="3" layer="1"/>
 <smd name="2" x="0" y="-3.0988" dx="1.6" dy="3" layer="1"/>
 <smd name="3" x="2.3" y="-3.0988" dx="1.6" dy="3" layer="1"/>

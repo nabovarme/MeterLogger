@@ -4972,6 +4972,11 @@ at 30/07/2012 11:22:31</description>
 <wire x1="129.54" y1="15.24" x2="129.54" y2="-27.94" width="0.1524" layer="97" style="longdash"/>
 <wire x1="129.54" y1="-27.94" x2="88.9" y2="-27.94" width="0.1524" layer="97" style="longdash"/>
 <text x="109.22" y="10.16" size="2.54" layer="97" align="bottom-center">PSU Module</text>
+<wire x1="172.72" y1="45.72" x2="172.72" y2="88.9" width="0.1524" layer="97" style="longdash"/>
+<wire x1="172.72" y1="88.9" x2="182.88" y2="88.9" width="0.1524" layer="97" style="longdash"/>
+<wire x1="182.88" y1="88.9" x2="182.88" y2="45.72" width="0.1524" layer="97" style="longdash"/>
+<wire x1="182.88" y1="45.72" x2="172.72" y2="45.72" width="0.1524" layer="97" style="longdash"/>
+<text x="187.96" y="68.58" size="2.54" layer="97" rot="R90" align="bottom-center">PCB Edge connector</text>
 </plain>
 <instances>
 <instance part="GND4" gate="1" x="167.64" y="68.58" rot="MR0"/>
@@ -5110,6 +5115,14 @@ at 30/07/2012 11:22:31</description>
 <pinref part="SUPPLY6" gate="G$1" pin="3.3V"/>
 <wire x1="48.26" y1="35.56" x2="53.34" y2="35.56" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="35.56" x2="53.34" y2="40.64" width="0.1524" layer="91"/>
+<pinref part="U3" gate="A" pin="~WP"/>
+<wire x1="48.26" y1="27.94" x2="53.34" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="27.94" x2="53.34" y2="35.56" width="0.1524" layer="91"/>
+<junction x="53.34" y="35.56"/>
+<pinref part="U3" gate="A" pin="~HOLD"/>
+<wire x1="48.26" y1="20.32" x2="53.34" y2="20.32" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="20.32" x2="53.34" y2="27.94" width="0.1524" layer="91"/>
+<junction x="53.34" y="27.94"/>
 </segment>
 </net>
 <net name="N$11" class="0">

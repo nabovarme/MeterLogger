@@ -4977,7 +4977,7 @@ at 30/07/2012 11:22:31</description>
 <instance part="GND4" gate="1" x="167.64" y="68.58" rot="MR0"/>
 <instance part="SUPPLY4" gate="G$1" x="167.64" y="88.9" rot="MR0"/>
 <instance part="GND5" gate="1" x="167.64" y="44.45"/>
-<instance part="R1" gate="G$1" x="142.24" y="58.42" rot="R180"/>
+<instance part="R1" gate="G$1" x="149.86" y="58.42" rot="R180"/>
 <instance part="ESP8266_ESP-07" gate="G$1" x="106.68" y="53.34" smashed="yes">
 <attribute name="NAME" x="109.22" y="68.58" size="1.778" layer="94" rot="R270" align="bottom-center"/>
 </instance>
@@ -5007,8 +5007,8 @@ at 30/07/2012 11:22:31</description>
 <instance part="U$1" gate="G$8" x="175.26" y="53.34" smashed="yes"/>
 <instance part="R3" gate="G$1" x="167.64" y="20.32" rot="R270"/>
 <instance part="SUPPLY3" gate="G$1" x="167.64" y="27.94" rot="MR0"/>
-<instance part="R2" gate="G$1" x="142.24" y="48.26" rot="R180"/>
-<instance part="GND3" gate="1" x="152.4" y="35.56"/>
+<instance part="R2" gate="G$1" x="149.86" y="48.26" rot="R180"/>
+<instance part="GND3" gate="1" x="157.48" y="35.56"/>
 <instance part="U2" gate="A" x="30.48" y="76.2" rot="MR0"/>
 <instance part="SUPPLY5" gate="G$1" x="53.34" y="83.82"/>
 <instance part="GND6" gate="1" x="53.34" y="58.42"/>
@@ -5052,9 +5052,9 @@ at 30/07/2012 11:22:31</description>
 </segment>
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="152.4" y1="38.1" x2="152.4" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="38.1" x2="157.48" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="R2" gate="G$1" pin="1"/>
-<wire x1="152.4" y1="48.26" x2="147.32" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="48.26" x2="154.94" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="VSS"/>
@@ -5116,7 +5116,7 @@ at 30/07/2012 11:22:31</description>
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
 <pinref part="U$1" gate="G$6" pin="S"/>
-<wire x1="147.32" y1="58.42" x2="175.26" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="58.42" x2="175.26" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
@@ -5139,7 +5139,7 @@ at 30/07/2012 11:22:31</description>
 <segment>
 <pinref part="R1" gate="G$1" pin="2"/>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO0"/>
-<wire x1="137.16" y1="58.42" x2="132.08" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="58.42" x2="132.08" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -5175,7 +5175,11 @@ at 30/07/2012 11:22:31</description>
 <segment>
 <pinref part="R2" gate="G$1" pin="2"/>
 <pinref part="ESP8266_ESP-07" gate="G$1" pin="GPIO15"/>
-<wire x1="137.16" y1="48.26" x2="132.08" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="48.26" x2="132.08" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="U3" gate="A" pin="~CS"/>
+<wire x1="48.26" y1="30.48" x2="144.78" y2="30.48" width="0.1524" layer="91"/>
+<wire x1="144.78" y1="30.48" x2="144.78" y2="48.26" width="0.1524" layer="91"/>
+<junction x="144.78" y="48.26"/>
 </segment>
 </net>
 <net name="N$8" class="0">
