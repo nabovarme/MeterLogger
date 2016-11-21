@@ -18,5 +18,6 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
 void ICACHE_FLASH_ATTR wifi_start_scan();
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
+bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 
 #endif /* USER_WIFI_H_ */

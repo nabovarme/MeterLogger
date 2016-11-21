@@ -274,6 +274,11 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
+	// show led status when mqtt is connected via fallback wifi
+	if (wifi_fallback_is_present()) {
+		led_pattern_b();
+	}
+	
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);

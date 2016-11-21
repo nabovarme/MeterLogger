@@ -107,7 +107,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
 			wifi_fallback();
-			led_pattern_b();
+			led_pattern_a();
 		}
 		// if fallback network disappeared connect to default network
 		else if ((!wifi_fallback_present) && (wifi_fallback_last_present)) {
@@ -224,4 +224,8 @@ void ICACHE_FLASH_ATTR wifi_stop_scan() {
 
 bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
 	return wifi_scan_runnning;
+}
+
+bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
+	return wifi_fallback_present;
 }
