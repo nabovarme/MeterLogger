@@ -63,8 +63,6 @@ static os_timer_t impulse_meter_calculate_timer;
 //static os_timer_t spi_test_timer;	// DEBUG
 #endif
 
-uint16_t counter = 0;
-
 struct rst_info *rtc_info;
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
