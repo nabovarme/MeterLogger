@@ -264,10 +264,16 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 
 ICACHE_FLASH_ATTR void mqtt_clean_state_connected_cb(uint32_t *args) {
 	MQTT_Disconnect(&mqtt_client);
+#ifdef DEBUG
+	os_printf("connected clean state, disconnecting...\n");
+#endif
 	// we start the statefull connection in mqtt_clean_state_disconnected_cb()
 }
 
 ICACHE_FLASH_ATTR void mqtt_clean_state_disconnected_cb(uint32_t *args) {
+#ifdef DEBUG
+	os_printf("disconnecting, and reconnect with save state...\n");
+#endif
 	// configure statefull connection
 	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// save state
 	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
@@ -275,6 +281,7 @@ ICACHE_FLASH_ATTR void mqtt_clean_state_disconnected_cb(uint32_t *args) {
 	MQTT_OnPublished(&mqtt_client, mqttPublishedCb);
 	MQTT_OnData(&mqtt_client, mqttDataCb);
 	MQTT_OnTimeout(&mqtt_client, mqttTimeoutCb);
+	MQTT_Connect(&mqtt_client);
 }
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
@@ -283,6 +290,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
+#ifdef DEBUG
+	os_printf("connected with save state.\n");
+#endif
 	// show led status when mqtt is connected via fallback wifi
 	if (wifi_fallback_is_present()) {
 		led_pattern_b();
