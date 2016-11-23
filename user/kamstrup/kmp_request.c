@@ -308,6 +308,10 @@ unsigned char kmp_fifo_put(unsigned char c) {
 	else if (c == 'r') {
 		force_reset_wifi();
 	}
+	else if (c == 'q') {
+		// print queue
+		debug_print_mqtt_queue(mqtt_client);
+	}
 #endif	// DEBUG
 
 #endif

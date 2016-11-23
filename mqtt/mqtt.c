@@ -894,3 +894,13 @@ MQTT_OnTimeout(MQTT_Client *mqttClient, MqttCallback timeoutCb)
 {
 	mqttClient->timeoutCb = timeoutCb;
 }
+
+void ICACHE_FLASH_ATTR
+debug_print_mqtt_queue(MQTT_Client *client) {
+	uint32_t i;
+	printf("size: %u, queue:\n", client->msgQueue.rb.size);
+	for (i = 0; i < client->msgQueue.rb.size; i++) {
+		printf("%02x", *client->msgQueue.rb.p_o);
+		printf(" ");
+	}
+}
