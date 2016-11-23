@@ -86,9 +86,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #endif // IMPULSE
 	
 	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
-
-	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// keep state
-
+	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);	// clean state
 	// set MQTT LWP topic
 #ifdef IMPULSE
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/offline/v1/%s", sys_cfg.impulse_meter_serial);
@@ -97,11 +95,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #endif
 	MQTT_InitLWT(&mqtt_client, topic, "", 0, 0);
 	
-	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
-	MQTT_OnDisconnected(&mqtt_client, mqttDisconnectedCb);
-	MQTT_OnPublished(&mqtt_client, mqttPublishedCb);
-	MQTT_OnData(&mqtt_client, mqttDataCb);
-	MQTT_OnTimeout(&mqtt_client, mqttTimeoutCb);
+	// set up callbacks for temporary connection to clean state data
+	MQTT_OnConnected(&mqtt_client, mqtt_clean_state_connected_cb);
+	MQTT_OnDisconnected(&mqtt_client, mqtt_clean_state_disconnected_cb);
 
 	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
@@ -264,6 +260,21 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 		os_printf("queue size(%d/%d)\n", mqtt_client.msgQueue.rb.fill_cnt, mqtt_client.msgQueue.rb.size);
 #endif
 	}
+}
+
+ICACHE_FLASH_ATTR void mqtt_clean_state_connected_cb(uint32_t *args) {
+	MQTT_Disconnect(&mqtt_client);
+	// we start the statefull connection in mqtt_clean_state_disconnected_cb()
+}
+
+ICACHE_FLASH_ATTR void mqtt_clean_state_disconnected_cb(uint32_t *args) {
+	// configure statefull connection
+	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// save state
+	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
+	MQTT_OnDisconnected(&mqtt_client, mqttDisconnectedCb);
+	MQTT_OnPublished(&mqtt_client, mqttPublishedCb);
+	MQTT_OnData(&mqtt_client, mqttDataCb);
+	MQTT_OnTimeout(&mqtt_client, mqttTimeoutCb);
 }
 
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {

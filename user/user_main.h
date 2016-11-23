@@ -1,4 +1,6 @@
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status);
+ICACHE_FLASH_ATTR void mqtt_clean_state_connected_cb(uint32_t *args);
+ICACHE_FLASH_ATTR void mqtt_clean_state_disconnected_cb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args);
