@@ -8,6 +8,7 @@
 #include "config.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
+#include "watchdog.h"
 
 #define QUEUE_SIZE 256
 
@@ -304,7 +305,11 @@ unsigned char kmp_fifo_put(unsigned char c) {
 	else if (c == 'k') {
 		os_printf("free heap: %u\n", system_get_free_heap_size());
 	}
+	else if (c == 'r') {
+		force_reset_wifi();
+	}
 #endif	// DEBUG
+
 #endif
 
 	if (kmp_fifo_in_use() != QUEUE_SIZE) {

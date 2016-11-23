@@ -87,7 +87,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	
 	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 
-	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 1);
+	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// keep state
 
 	// set MQTT LWP topic
 #ifdef IMPULSE
@@ -276,7 +276,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	if (wifi_fallback_is_present()) {
 		led_pattern_b();
 	}
-	
+/*	
 	// subscribe to /config/v2/[serial]/#
 #ifdef IMPULSE
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
@@ -306,7 +306,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #endif
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 
 	// send mqtt uptime
 	// clear data
@@ -322,7 +322,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 
 #ifndef IMPULSE
 	// send mqtt status
@@ -335,8 +335,9 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
-#endif	
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+#endif
+*/
 
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
@@ -412,7 +413,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		memset(cleartext, 0, sizeof(cleartext));
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
@@ -433,7 +434,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
@@ -446,7 +447,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "rssi", FUNCTIONNAME_L) == 0) {
 		// found rssi
@@ -459,7 +460,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", wifi_get_rssi());
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "ssid", FUNCTIONNAME_L) == 0) {
 		// found uptime
@@ -472,7 +473,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
@@ -509,7 +510,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 #endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
@@ -522,7 +523,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
@@ -548,7 +549,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
@@ -576,7 +577,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 0, 0);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
 		// found off

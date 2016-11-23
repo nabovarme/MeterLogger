@@ -16,3 +16,5 @@ ICACHE_FLASH_ATTR void stop_watchdog();
 ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout);
 ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id);
 ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id);
+ICACHE_FLASH_ATTR void force_reset_wifi();
+
