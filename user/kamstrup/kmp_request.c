@@ -287,7 +287,10 @@ unsigned char kmp_fifo_put(unsigned char c) {
 
 		tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
 //		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size());
+#ifdef DEBUG
+		os_printf("counter: %u\n", counter);
+#endif
+		tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%lu&t1=%u C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&", system_get_free_heap_size(), counter++);
 
 		// encrypt and send
 		message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
