@@ -263,10 +263,10 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 }
 
 ICACHE_FLASH_ATTR void mqtt_clean_state_connected_cb(uint32_t *args) {
-	MQTT_Disconnect(&mqtt_client);
 #ifdef DEBUG
 	os_printf("connected clean state, disconnecting...\n");
 #endif
+	MQTT_Disconnect(&mqtt_client);
 	// we start the statefull connection in mqtt_clean_state_disconnected_cb()
 }
 
@@ -275,6 +275,7 @@ ICACHE_FLASH_ATTR void mqtt_clean_state_disconnected_cb(uint32_t *args) {
 	os_printf("disconnecting, and reconnect with save state...\n");
 #endif
 	// configure statefull connection
+	MQTT_DeleteClient(&mqtt_client);
 	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// save state
 	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
 	MQTT_OnDisconnected(&mqtt_client, mqttDisconnectedCb);
