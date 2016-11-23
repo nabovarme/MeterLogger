@@ -605,6 +605,9 @@ MQTT_Task(os_event_t *e)
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
 #ifdef DEBUG
+	sint8_t r;
+#endif
+#ifdef DEBUG
 	os_printf("%sS%d\n", ((e->par == 0) ? "-" : ""), client->connState);
 #endif
 	if (e->par == 0)
@@ -663,7 +666,15 @@ MQTT_Task(os_event_t *e)
 #endif
 			}
 			else {
+#ifdef DEBUG
+				r = espconn_send(client->pCon, dataBuffer, dataLen);
+				if (r != 0) {
+					os_printf("\nERROR, ERROR!\n\n");
+				}
+#else
 				espconn_send(client->pCon, dataBuffer, dataLen);
+#endif
+
 			}
 
 			client->mqtt_state.outbound_message = NULL;
