@@ -900,7 +900,7 @@ debug_print_mqtt_queue(MQTT_Client *client) {
 	uint32_t i;
 	printf("size: %u, queue:\n", client->msgQueue.rb.size);
 	for (i = 0; i < client->msgQueue.rb.size; i++) {
-		printf("%02x", *client->msgQueue.rb.p_o);
+		printf("%02x", *(client->msgQueue.rb.p_o + i));
 		printf(" ");
 	}
 }
