@@ -903,9 +903,17 @@ debug_print_mqtt_queue(MQTT_Client *client) {
 		if (client->msgQueue.rb.p_r == (client->msgQueue.rb.p_o + i)) {
 			printf(">");
 		}
+		if (client->msgQueue.rb.p_w == client->msgQueue.rb.p_o) {
+			// rolled back
+			printf("<");
+		}
+		printf("%02x", *(client->msgQueue.rb.p_o + i));
+		if ((client->msgQueue.rb.p_w == (client->msgQueue.rb.p_o + i + 1)) && (client->msgQueue.rb.p_w != client->msgQueue.rb.p_o)) {
+			printf("<");
+		}
 		else {
 			printf(" ");
-		}	
-		printf("%02x", *(client->msgQueue.rb.p_o + i));
+		}
 	}
+	printf("\nfilled: %u\n", client->msgQueue.rb.fill_cnt);
 }

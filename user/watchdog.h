@@ -1,7 +1,7 @@
 #define WATCHDOG_MAX	1
 
 #define MQTT_WATCHDOG_ID		1
-#define MQTT_WATCHDOG_TIMEOUT	120		// restart wifi after 2 minutes without being able to send mqtt
+#define MQTT_WATCHDOG_TIMEOUT	90		// restart wifi after 90 seconds without being able to send mqtt
 
 typedef enum {
 	NOT_ENABLED,
