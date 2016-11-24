@@ -37,7 +37,7 @@
 #include "queue.h"
 
 #define MQTT_TASK_PRIO        		USER_TASK_PRIO_1
-#define MQTT_TASK_QUEUE_SIZE    	1
+#define MQTT_TASK_QUEUE_SIZE    	100
 #define MQTT_SEND_TIMOUT			5
 
 #ifndef QUEUE_BUFFER_SIZE
@@ -154,10 +154,16 @@ void ICACHE_FLASH_ATTR
 mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 {
 	if (mqttClient->pCon != NULL) {
-		INFO("Free memory\r\n");
+		INFO("TCP: Free memory\r\n");
+		// Force abort connections
+		espconn_abort(mqttClient->pCon);
+		// Delete connections
 		espconn_delete(mqttClient->pCon);
-		if (mqttClient->pCon->proto.tcp)
+		
+		if (mqttClient->pCon->proto.tcp) {
 			os_free(mqttClient->pCon->proto.tcp);
+			mqttClient->pCon->proto.tcp = NULL;
+		}
 		os_free(mqttClient->pCon);
 		mqttClient->pCon = NULL;
 	}
@@ -171,7 +177,13 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 void ICACHE_FLASH_ATTR
 mqtt_client_delete(MQTT_Client *mqttClient)
 {
-	mqtt_tcpclient_delete(mqttClient);
+	if(mqttClient == NULL)
+		return;
+
+	if (mqttClient->pCon != NULL){
+		mqtt_tcpclient_delete(mqttClient);
+	}
+
 	if (mqttClient->host != NULL) {
 		os_free(mqttClient->host);
 		mqttClient->host = NULL;
@@ -180,6 +192,29 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 	if (mqttClient->user_data != NULL) {
 		os_free(mqttClient->user_data);
 		mqttClient->user_data = NULL;
+	}
+
+	if(mqttClient->mqtt_state.in_buffer != NULL) {
+		os_free(mqttClient->mqtt_state.in_buffer);
+		mqttClient->mqtt_state.in_buffer = NULL;
+	}
+
+	if(mqttClient->mqtt_state.out_buffer != NULL) {
+		os_free(mqttClient->mqtt_state.out_buffer);
+		mqttClient->mqtt_state.out_buffer = NULL;
+	}
+
+	if(mqttClient->mqtt_state.outbound_message != NULL) {
+		if(mqttClient->mqtt_state.outbound_message->data != NULL)
+		{
+			os_free(mqttClient->mqtt_state.outbound_message->data);
+			mqttClient->mqtt_state.outbound_message->data = NULL;
+		}
+	}
+
+	if(mqttClient->mqtt_state.mqtt_connection.buffer != NULL) {
+		// Already freed but not NULL
+		mqttClient->mqtt_state.mqtt_connection.buffer = NULL;
 	}
 
 	if(mqttClient->connect_info.client_id != NULL) {
@@ -207,15 +242,21 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 		mqttClient->connect_info.will_message = NULL;
 	}
 
-	if(mqttClient->mqtt_state.in_buffer != NULL) {
-		os_free(mqttClient->mqtt_state.in_buffer);
-		mqttClient->mqtt_state.in_buffer = NULL;
+	if (mqttClient->msgQueue.buf != NULL) {
+		os_free(mqttClient->msgQueue.buf);
+		mqttClient->msgQueue.buf = NULL;
 	}
 
-	if(mqttClient->mqtt_state.out_buffer != NULL) {
-		os_free(mqttClient->mqtt_state.out_buffer);
-		mqttClient->mqtt_state.out_buffer = NULL;
-	}
+	// Initialize state
+	mqttClient->connState = WIFI_INIT;
+	// Clear callback functions to avoid abnormal callback
+	mqttClient->connectedCb = NULL;
+	mqttClient->disconnectedCb = NULL;
+	mqttClient->publishedCb = NULL;
+	mqttClient->timeoutCb = NULL;
+	mqttClient->dataCb = NULL;
+
+	INFO("MQTT: client already deleted\r\n");
 }
 
 
@@ -239,6 +280,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	client->keepAliveTick = 0;
 READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
+	// INFO("STATE: %d\r\n", client->connState);
 	if (len < MQTT_BUF_SIZE && len > 0) {
 		os_memcpy(client->mqtt_state.in_buffer, pdata, len);
 
@@ -250,8 +292,16 @@ READPACKET:
 			if (msg_type == MQTT_MSG_TYPE_CONNACK) {
 				if (client->mqtt_state.pending_msg_type != MQTT_MSG_TYPE_CONNECT) {
 					INFO("MQTT: Invalid packet\r\n");
-					client->connState = TCP_RECONNECT_DISCONNECTING;
-					// espconn_disconnect(client->pCon); dont call this in any espconn callback
+					if (client->security) {
+#ifdef MQTT_SSL_ENABLE
+						espconn_secure_disconnect(client->pCon);
+#else
+						INFO("TCP: Do not support SSL\r\n");
+#endif
+					}
+					else {
+						espconn_disconnect(client->pCon);
+					}
 				} else {
 					INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
 					client->connState = MQTT_DATA;
@@ -380,7 +430,7 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 
 	if (client->connState == MQTT_DATA) {
 		client->keepAliveTick ++;
-		if (client->keepAliveTick > client->mqtt_state.connect_info->keepalive) {
+		if (client->keepAliveTick > (client->mqtt_state.connect_info->keepalive / 2)) {
 			client->connState = MQTT_KEEPALIVE_SEND;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
@@ -605,6 +655,9 @@ MQTT_Task(os_event_t *e)
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
 #ifdef DEBUG
+	sint8_t r;
+#endif
+#ifdef DEBUG
 	os_printf("%sS%d\n", ((e->par == 0) ? "-" : ""), client->connState);
 #endif
 	if (e->par == 0)
@@ -663,7 +716,15 @@ MQTT_Task(os_event_t *e)
 #endif
 			}
 			else {
+#ifdef DEBUG
+				r = espconn_send(client->pCon, dataBuffer, dataLen);
+				if (r != 0) {
+					os_printf("\nERROR, ERROR!\n\n");
+				}
+#else
 				espconn_send(client->pCon, dataBuffer, dataLen);
+#endif
+
 			}
 
 			client->mqtt_state.outbound_message = NULL;
@@ -685,7 +746,7 @@ void ICACHE_FLASH_ATTR
 MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32_t port, uint8_t security)
 {
 	uint32_t temp;
-	INFO("MQTT_InitConnection\r\n");
+	INFO("MQTT:InitConnection\r\n");
 	os_memset(mqttClient, 0, sizeof(MQTT_Client));
 	temp = os_strlen(host);
 	mqttClient->host = (uint8_t*)os_zalloc(temp + 1);
@@ -709,7 +770,7 @@ void ICACHE_FLASH_ATTR
 MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_user, uint8_t* client_pass, uint32_t keepAliveTime, uint8_t cleanSession)
 {
 	uint32_t temp;
-	INFO("MQTT_InitClient\r\n");
+	INFO("MQTT:InitClient\r\n");
 
 	os_memset(&mqttClient->connect_info, 0, sizeof(mqtt_connect_info_t));
 
@@ -849,7 +910,16 @@ MQTT_Disconnect(MQTT_Client *mqttClient)
 void ICACHE_FLASH_ATTR
 MQTT_DeleteClient(MQTT_Client *mqttClient)
 {
-	mqttClient->connState = MQTT_DELETING;
+	if(NULL == mqttClient)
+		return;
+
+	mqttClient->connState = MQTT_DELETED;
+	// if(TCP_DISCONNECTED == mqttClient->connState) {
+	// 	mqttClient->connState = MQTT_DELETED;
+	// } else if(MQTT_DELETED != mqttClient->connState) {
+	// 	mqttClient->connState = MQTT_DELETING;	
+	// }
+
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 	os_timer_disarm(&mqttClient->mqttTimer);
 }
@@ -882,4 +952,27 @@ void ICACHE_FLASH_ATTR
 MQTT_OnTimeout(MQTT_Client *mqttClient, MqttCallback timeoutCb)
 {
 	mqttClient->timeoutCb = timeoutCb;
+}
+
+void ICACHE_FLASH_ATTR
+debug_print_mqtt_queue(MQTT_Client *client) {
+	uint32_t i;
+	printf("size: %u, queue:\n", client->msgQueue.rb.size);
+	for (i = 0; i < client->msgQueue.rb.size; i++) {
+		if (client->msgQueue.rb.p_r == (client->msgQueue.rb.p_o + i)) {
+			printf(">");
+		}
+		if (client->msgQueue.rb.p_w == client->msgQueue.rb.p_o) {
+			// rolled back
+			printf("<");
+		}
+		printf("%02x", *(client->msgQueue.rb.p_o + i));
+		if ((client->msgQueue.rb.p_w == (client->msgQueue.rb.p_o + i + 1)) && (client->msgQueue.rb.p_w != client->msgQueue.rb.p_o)) {
+			printf("<");
+		}
+		else {
+			printf(" ");
+		}
+	}
+	printf("\nfilled: %u\n", client->msgQueue.rb.fill_cnt);
 }
