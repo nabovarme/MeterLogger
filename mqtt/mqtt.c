@@ -51,6 +51,10 @@ unsigned int default_private_key_len = 0;
 
 os_event_t mqtt_procTaskQueue[MQTT_TASK_QUEUE_SIZE];
 
+#ifdef PROTOCOL_NAMEv311
+LOCAL uint8_t zero_len_id[2] = { 0, 0 };
+#endif
+
 LOCAL void ICACHE_FLASH_ATTR
 mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
@@ -273,6 +277,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	uint8_t msg_type;
 	uint8_t msg_qos;
 	uint16_t msg_id;
+	uint8_t msg_conn_ret;
 
 	struct espconn *pCon = (struct espconn*)arg;
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
@@ -303,10 +308,31 @@ READPACKET:
 						espconn_disconnect(client->pCon);
 					}
 				} else {
-					INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
-					client->connState = MQTT_DATA;
-					if (client->connectedCb)
-						client->connectedCb((uint32_t*)client);
+					msg_conn_ret = mqtt_get_connect_return_code(client->mqtt_state.in_buffer);
+					switch (msg_conn_ret) {
+						case CONNECTION_ACCEPTED:
+							INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
+							client->connState = MQTT_DATA;
+							if (client->connectedCb)
+								client->connectedCb((uint32_t*)client);
+						break;
+						case CONNECTION_REFUSE_PROTOCOL:
+						case CONNECTION_REFUSE_SERVER_UNAVAILABLE:
+						case CONNECTION_REFUSE_BAD_USERNAME:
+						case CONNECTION_REFUSE_NOT_AUTHORIZED:
+							INFO("MQTT: Connection refuse, reason code: %d\r\n", msg_conn_ret);
+						default:
+						if (client->security) {
+#ifdef MQTT_SSL_ENABLE
+							espconn_secure_disconnect(client->pCon);
+#else
+							INFO("TCP: Do not support SSL\r\n");
+#endif
+						}
+						else {
+							espconn_disconnect(client->pCon);
+						}
+					}
 				}
 
 			}
@@ -317,9 +343,7 @@ READPACKET:
 			client->mqtt_state.message_length = mqtt_get_total_length(client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
 
 
-			switch (msg_type)
-			{
-
+			switch (msg_type) {
 			case MQTT_MSG_TYPE_SUBACK:
 				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_SUBSCRIBE && client->mqtt_state.pending_msg_id == msg_id)
 					INFO("MQTT: Subscribe successful\r\n");
@@ -755,7 +779,7 @@ MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32_t port, uint8
   * @param  client_pass:MQTT keep alive timer, in second
   * @retval None
   */
-void ICACHE_FLASH_ATTR
+BOOL ICACHE_FLASH_ATTR
 MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_user, uint8_t* client_pass, uint32_t keepAliveTime, uint8_t cleanSession)
 {
 	uint32_t temp;
@@ -763,10 +787,31 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 
 	os_memset(&mqttClient->connect_info, 0, sizeof(mqtt_connect_info_t));
 
-	temp = os_strlen(client_id);
-	mqttClient->connect_info.client_id = (uint8_t*)os_zalloc(temp + 1);
-	os_strcpy(mqttClient->connect_info.client_id, client_id);
-	mqttClient->connect_info.client_id[temp] = 0;
+	if ( !client_id ) {
+		/* Should be allowed by broker, but clean session flag must be set. */
+#ifdef PROTOCOL_NAMEv311
+		if (cleanSession) {
+			mqttClient->connect_info.client_id = zero_len_id;
+		} else {
+			INFO("cleanSession must be set to use 0 length client_id\r\n");
+			return false;
+		}
+		/* Not supported. Return. */
+#else
+		INFO("Client ID required for MQTT < 3.1.1!\r\n");
+		return false;
+#endif
+	}
+
+    /* If connect_info's client_id is still NULL and we get here, we can        *
+     * assume the passed client_id is non-NULL.                                 */
+    if ( !(mqttClient->connect_info.client_id) )
+    {
+      temp = os_strlen(client_id);
+      mqttClient->connect_info.client_id = (uint8_t*)os_zalloc(temp + 1);
+      os_strcpy(mqttClient->connect_info.client_id, client_id);
+      mqttClient->connect_info.client_id[temp] = 0;
+    }
 
 	if (client_user)
 	{
@@ -800,6 +845,7 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 
 	system_os_task(MQTT_Task, MQTT_TASK_PRIO, mqtt_procTaskQueue, MQTT_TASK_QUEUE_SIZE);
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
+	return true;
 }
 void ICACHE_FLASH_ATTR
 MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, uint8_t will_qos, uint8_t will_retain)

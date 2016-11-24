@@ -35,30 +35,30 @@
 #include "queue.h"
 typedef struct mqtt_event_data_t
 {
-  uint8_t type;
-  const char* topic;
-  const char* data;
-  uint16_t topic_length;
-  uint16_t data_length;
-  uint16_t data_offset;
+	uint8_t type;
+	const char* topic;
+	const char* data;
+	uint16_t topic_length;
+	uint16_t data_length;
+	uint16_t data_offset;
 } mqtt_event_data_t;
 
 typedef struct mqtt_state_t
 {
-  uint16_t port;
-  int auto_reconnect;
-  mqtt_connect_info_t* connect_info;
-  uint8_t* in_buffer;
-  uint8_t* out_buffer;
-  int in_buffer_length;
-  int out_buffer_length;
-  uint16_t message_length;
-  uint16_t message_length_read;
-  mqtt_message_t* outbound_message;
-  mqtt_connection_t mqtt_connection;
-  uint16_t pending_msg_id;
-  int pending_msg_type;
-  int pending_publish_qos;
+	uint16_t port;
+	int auto_reconnect;
+	mqtt_connect_info_t* connect_info;
+	uint8_t* in_buffer;
+	uint8_t* out_buffer;
+	int in_buffer_length;
+	int out_buffer_length;
+	uint16_t message_length;
+	uint16_t message_length_read;
+	mqtt_message_t* outbound_message;
+	mqtt_connection_t mqtt_connection;
+	uint16_t pending_msg_id;
+	int pending_msg_type;
+	int pending_publish_qos;
 } mqtt_state_t;
 
 typedef enum {
@@ -113,24 +113,24 @@ typedef struct  {
 } MQTT_Client;
 
 #define SEC_NONSSL 0
-#define SEC_SSL	1
+#define SEC_SSL 1
 
-#define MQTT_FLAG_CONNECTED 	1
-#define MQTT_FLAG_READY 		2
-#define MQTT_FLAG_EXIT 			4
+#define MQTT_FLAG_CONNECTED   1
+#define MQTT_FLAG_READY     2
+#define MQTT_FLAG_EXIT      4
 
-#define MQTT_EVENT_TYPE_NONE 			0
-#define MQTT_EVENT_TYPE_CONNECTED 		1
-#define MQTT_EVENT_TYPE_DISCONNECTED 	2
-#define MQTT_EVENT_TYPE_SUBSCRIBED 		3
-#define MQTT_EVENT_TYPE_UNSUBSCRIBED 	4
-#define MQTT_EVENT_TYPE_PUBLISH 		5
-#define MQTT_EVENT_TYPE_PUBLISHED 		6
-#define MQTT_EVENT_TYPE_EXITED 			7
+#define MQTT_EVENT_TYPE_NONE      0
+#define MQTT_EVENT_TYPE_CONNECTED     1
+#define MQTT_EVENT_TYPE_DISCONNECTED  2
+#define MQTT_EVENT_TYPE_SUBSCRIBED    3
+#define MQTT_EVENT_TYPE_UNSUBSCRIBED  4
+#define MQTT_EVENT_TYPE_PUBLISH     5
+#define MQTT_EVENT_TYPE_PUBLISHED     6
+#define MQTT_EVENT_TYPE_EXITED      7
 #define MQTT_EVENT_TYPE_PUBLISH_CONTINUATION 8
 
 void ICACHE_FLASH_ATTR MQTT_InitConnection(MQTT_Client *mqttClient, uint8_t* host, uint32_t port, uint8_t security);
-void ICACHE_FLASH_ATTR MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_user, uint8_t* client_pass, uint32_t keepAliveTime, uint8_t cleanSession);
+BOOL ICACHE_FLASH_ATTR MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_user, uint8_t* client_pass, uint32_t keepAliveTime, uint8_t cleanSession);
 void ICACHE_FLASH_ATTR MQTT_DeleteClient(MQTT_Client *mqttClient);
 void ICACHE_FLASH_ATTR MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, uint8_t will_qos, uint8_t will_retain);
 void ICACHE_FLASH_ATTR MQTT_OnConnected(MQTT_Client *mqttClient, MqttCallback connectedCb);

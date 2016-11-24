@@ -86,8 +86,10 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #endif // IMPULSE
 	
 	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
-
-	MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0);	// keep state
+	if (!MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0)) {	// keep state
+		INFO("Failed to initialize properly. Check MQTT version.\r\n");
+		led_on();	// show error with LED
+	}
 
 	// set MQTT LWP topic
 #ifdef IMPULSE
