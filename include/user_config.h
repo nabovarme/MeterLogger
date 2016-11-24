@@ -22,7 +22,7 @@
 //#define MQTT_HOST			"10.0.1.3"
 #define MQTT_PORT			1883
 #define MQTT_BUF_SIZE		1024
-#define MQTT_KEEPALIVE		120	 /*second*/
+#define MQTT_KEEPALIVE		60	 /*second*/
 
 #define MQTT_CLIENT_ID		"ESP_%08X"
 #define MQTT_USER			"esp8266"
@@ -36,7 +36,7 @@
 #ifdef IMPULSE
 #define QUEUE_BUFFER_SIZE		 		20480		// larger queue for impulse meters
 #else
-#define QUEUE_BUFFER_SIZE		 		16384		// larger queue
+#define QUEUE_BUFFER_SIZE		 		10240		// larger queue
 #endif // IMPULSE
 
 //#ifndef MQTT_SSL_SIZE
