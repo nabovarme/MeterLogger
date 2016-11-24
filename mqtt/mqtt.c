@@ -655,9 +655,6 @@ MQTT_Task(os_event_t *e)
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
 #ifdef DEBUG
-	sint8_t r;
-#endif
-#ifdef DEBUG
 	os_printf("%sS%d\n", ((e->par == 0) ? "-" : ""), client->connState);
 #endif
 	if (e->par == 0)
@@ -716,15 +713,7 @@ MQTT_Task(os_event_t *e)
 #endif
 			}
 			else {
-#ifdef DEBUG
-				r = espconn_send(client->pCon, dataBuffer, dataLen);
-				if (r != 0) {
-					os_printf("\nERROR, ERROR!\n\n");
-				}
-#else
 				espconn_send(client->pCon, dataBuffer, dataLen);
-#endif
-
 			}
 
 			client->mqtt_state.outbound_message = NULL;
@@ -952,27 +941,4 @@ void ICACHE_FLASH_ATTR
 MQTT_OnTimeout(MQTT_Client *mqttClient, MqttCallback timeoutCb)
 {
 	mqttClient->timeoutCb = timeoutCb;
-}
-
-void ICACHE_FLASH_ATTR
-debug_print_mqtt_queue(MQTT_Client *client) {
-	uint32_t i;
-	printf("size: %u, queue:\n", client->msgQueue.rb.size);
-	for (i = 0; i < client->msgQueue.rb.size; i++) {
-		if (client->msgQueue.rb.p_r == (client->msgQueue.rb.p_o + i)) {
-			printf(">");
-		}
-		if (client->msgQueue.rb.p_w == client->msgQueue.rb.p_o) {
-			// rolled back
-			printf("<");
-		}
-		printf("%02x", *(client->msgQueue.rb.p_o + i));
-		if ((client->msgQueue.rb.p_w == (client->msgQueue.rb.p_o + i + 1)) && (client->msgQueue.rb.p_w != client->msgQueue.rb.p_o)) {
-			printf("<");
-		}
-		else {
-			printf(" ");
-		}
-	}
-	printf("\nfilled: %u\n", client->msgQueue.rb.fill_cnt);
 }
