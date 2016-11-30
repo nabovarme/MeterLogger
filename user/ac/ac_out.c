@@ -175,9 +175,13 @@ void ac_thermo_open() {
 #ifdef THERMO_NO	
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
+	//Set GPI15 to LOW
+	gpio_output_set(0, BIT15, BIT15, 0);
 #else	// THERMO_NC
 	//Set GPI14 to HIGH
 	gpio_output_set(BIT14, 0, BIT14, 0);
+	//Set GPI15 to HIGH
+	gpio_output_set(BIT15, 0, BIT15, 0);
 #endif
 	if (!sys_cfg.ac_thermo_state) {	// only save if state changed
 		sys_cfg.ac_thermo_state = 1;
@@ -197,9 +201,13 @@ void ac_thermo_close() {
 #ifdef THERMO_NO
 	//Set GPI14 to HIGHT
 	gpio_output_set(BIT14, 0, BIT14, 0);
+	//Set GPI15 to HIGH
+	gpio_output_set(BIT15, 0, BIT15, 0);
 #else	// THERMO_NC
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
+	//Set GPI15 to LOW
+	gpio_output_set(0, BIT15, BIT15, 0);
 #endif
 	if (sys_cfg.ac_thermo_state) {	// only save if state changed
 		sys_cfg.ac_thermo_state = 0;
