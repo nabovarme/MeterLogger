@@ -26,6 +26,9 @@ thermo actuator is normal open
 LED_ON_AC=1  
 use led to indicate ac state  
 
+SERIAL=9999999  
+serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_99999. Used in wifisetup make target.   
+
 KEY=ef500c9268cf749016d26d6cbfaaf7bf
 master key for crypto, 16 bytes
 Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
