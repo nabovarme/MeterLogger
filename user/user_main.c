@@ -92,9 +92,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	}
 
 	// set MQTT LWP topic
-#ifdef EN61107
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/offline/v1/%07u", en61107_get_received_serial());
-#elif defined IMPULSE
+#ifdef IMPULSE
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/offline/v1/%s", sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/offline/v1/%07u", kmp_get_received_serial());
@@ -119,9 +117,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	wifi_softap_get_config(&ap_conf);
 	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	memset(ap_conf.password, 0, sizeof(ap_conf.password));
-#ifdef EN61107
-	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, en61107_get_received_serial());
-#elif defined IMPULSE
+#ifdef IMPULSE
 	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, kmp_get_received_serial());
@@ -284,9 +280,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	}
 	
 	// subscribe to /config/v2/[serial]/#
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", en61107_get_received_serial());
-#elif defined IMPULSE
+#ifdef IMPULSE
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
@@ -298,9 +292,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -324,9 +316,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -343,11 +333,7 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#endif
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -420,9 +406,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	// mqtt rpc dispatcher goes here
 	if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -434,9 +418,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -457,9 +439,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -472,9 +452,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "rssi", FUNCTIONNAME_L) == 0) {
 		// found rssi
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -487,9 +465,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "ssid", FUNCTIONNAME_L) == 0) {
 		// found uptime
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -502,9 +478,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -520,9 +494,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -543,9 +515,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found mem
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
+#ifdef IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
@@ -575,11 +545,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
 		memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 		// encrypt and send
@@ -607,11 +573,7 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
 		memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 		// encrypt and send
@@ -722,34 +684,26 @@ void impulse_meter_init(void) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
-#ifdef DEBUG_NO_METER
+#ifdef DEBUG
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
-#elif defined EN61107
-	uart_init(BIT_RATE_300, BIT_RATE_300);
 #else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-#endif	// DEBUG_NO_METER
-
+#endif
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
-
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
 #endif
-
 #ifdef IMPULSE
 	printf("\t(IMPULSE)\n\r");
 #endif
-
 #ifdef DEBUG_NO_METER
 	printf("\t(DEBUG_NO_METER)\n\r");
 #endif
-
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
-
 #ifdef THERMO_NO
 	printf("\t(THERMO_NO)\n\r");
 #else
