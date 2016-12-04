@@ -30,6 +30,7 @@
 #define UART_HW_RTS   0   //set 1: enable uart hw flow control RTS, PIN MTDO, FOR UART0
 #define UART_HW_CTS  0    //set1: enable uart hw flow contrl CTS , PIN MTCK, FOR UART0
 
+#define UART_LINE_INV_MASK      (0x3f<<19)
 
 
 
@@ -189,6 +190,11 @@ void  uart_rx_intr_enable(uint8 uart_no);
 void  uart_rx_intr_disable(uint8 uart_no);
 void uart0_tx_buffer(uint8 *buf, uint16 len);
 
+void ICACHE_FLASH_ATTR uart_set_word_length(uint8_t uart_no, UartBitsNum4Char len);
+void ICACHE_FLASH_ATTR uart_set_stop_bits(uint8_t uart_no, UartStopBitsNum bit_num);
+void ICACHE_FLASH_ATTR uart_set_line_inverse(uint8_t uart_no, UART_LineLevelInverse inverse_mask);
+void ICACHE_FLASH_ATTR uart_set_parity(uint8_t uart_no, UartParityMode Parity_mode);
+void ICACHE_FLASH_ATTR uart_set_baudrate(uint8_t uart_no, uint32_t baud_rate);
 
 #endif
 

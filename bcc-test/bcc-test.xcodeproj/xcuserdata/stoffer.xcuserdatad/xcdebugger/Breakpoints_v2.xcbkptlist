@@ -16,7 +16,7 @@
             startingLineNumber = "142"
             endingLineNumber = "142"
             landmarkName = "parse_en61107_frame()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -32,7 +32,7 @@
             startingLineNumber = "115"
             endingLineNumber = "115"
             landmarkName = "parse_en61107_frame()"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

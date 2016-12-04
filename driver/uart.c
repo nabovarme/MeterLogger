@@ -316,9 +316,33 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
 }
 
 void ICACHE_FLASH_ATTR
-uart_reattach()
-{
-	uart_init(BIT_RATE_74880, BIT_RATE_74880);
-//  ETS_UART_INTR_ATTACH(uart_rx_intr_handler_ssc,  &(UartDev.rcv_buff));
-//  ETS_UART_INTR_ENABLE();
+uart_set_word_length(uint8_t uart_no, UartBitsNum4Char len) {
+    SET_PERI_REG_BITS(UART_CONF0(uart_no), UART_BIT_NUM, len, UART_BIT_NUM_S);
 }
+
+void ICACHE_FLASH_ATTR
+uart_set_stop_bits(uint8_t uart_no, UartStopBitsNum bit_num) {
+    SET_PERI_REG_BITS(UART_CONF0(uart_no), UART_STOP_BIT_NUM, bit_num, UART_STOP_BIT_NUM_S);
+}
+
+void ICACHE_FLASH_ATTR
+uart_set_line_inverse(uint8_t uart_no, UART_LineLevelInverse inverse_mask) {
+    CLEAR_PERI_REG_MASK(UART_CONF0(uart_no), UART_LINE_INV_MASK);
+    SET_PERI_REG_MASK(UART_CONF0(uart_no), inverse_mask);
+}
+
+void ICACHE_FLASH_ATTR
+uart_set_parity(uint8_t uart_no, UartParityMode Parity_mode) {
+    CLEAR_PERI_REG_MASK(UART_CONF0(uart_no), UART_PARITY | UART_PARITY_EN);
+    if (Parity_mode == NONE_BITS) {
+    }
+	else {
+        SET_PERI_REG_MASK(UART_CONF0(uart_no), Parity_mode| UART_PARITY_EN);
+    }
+}
+
+void ICACHE_FLASH_ATTR
+uart_set_baudrate(uint8 uart_no, uint32_t baud_rate) {
+    uart_div_modify(uart_no, UART_CLK_FREQ / baud_rate);
+}
+
