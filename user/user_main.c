@@ -722,31 +722,34 @@ void impulse_meter_init(void) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
-#ifdef DEBUG
+#ifdef DEBUG_NO_METER
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
-#else
-#ifdef EN61107
+#elif defined EN61107
 	uart_init(BIT_RATE_300, BIT_RATE_300);
 #else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-#endif	// E61197
-#endif	// DEBUG
+#endif	// DEBUG_NO_METER
 
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
+
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
 #endif
+
 #ifdef IMPULSE
 	printf("\t(IMPULSE)\n\r");
 #endif
+
 #ifdef DEBUG_NO_METER
 	printf("\t(DEBUG_NO_METER)\n\r");
 #endif
+
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
+
 #ifdef THERMO_NO
 	printf("\t(THERMO_NO)\n\r");
 #else
