@@ -725,8 +725,13 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef DEBUG
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 #else
+#ifdef EN61107
+	uart_init(BIT_RATE_300, BIT_RATE_300);
+#else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-#endif
+#endif	// E61197
+#endif	// DEBUG
+
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
