@@ -101,13 +101,15 @@ unsigned int en61107_get_received_serial() {
 ICACHE_FLASH_ATTR
 void en61107_get_data_timer_func() {
 	// change to 300 bps
-	uart_init(BIT_RATE_300, BIT_RATE_300);
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, ONE_STOP_BIT);
 	
 	frame_length = en61107_get_data(frame);
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
 	
 	// reply comes at 300 bps 7e1 NOT 7e2 as stated in docs
-	//uart_init(BIT_RATE_1200, BIT_RATE_1200);
 }
 
 ICACHE_FLASH_ATTR
@@ -138,18 +140,18 @@ void en61107_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
-    os_timer_disarm(&en61107_get_data_timer);
-    os_timer_setfn(&en61107_get_data_timer, (os_timer_func_t *)en61107_get_data_timer_func, NULL);
-    os_timer_arm(&en61107_get_data_timer, 0, 0);		// now
+	os_timer_disarm(&en61107_get_data_timer);
+	os_timer_setfn(&en61107_get_data_timer, (os_timer_func_t *)en61107_get_data_timer_func, NULL);
+	os_timer_arm(&en61107_get_data_timer, 0, 0);		// now
 	
-    os_timer_disarm(&en61107_get_register_timer);
-    os_timer_setfn(&en61107_get_register_timer, (os_timer_func_t *)en61107_get_register_timer_func, NULL);
-    os_timer_arm(&en61107_get_register_timer, 4500, 0);		// after 4.5 seconds
+//	os_timer_disarm(&en61107_get_register_timer);
+//	os_timer_setfn(&en61107_get_register_timer, (os_timer_func_t *)en61107_get_register_timer_func, NULL);
+//	os_timer_arm(&en61107_get_register_timer, 4500, 0);		// after 4.5 seconds
 	
 	// start retransmission timeout timer
-    os_timer_disarm(&en61107_receive_timeout_timer);
-    os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-    os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);		// after 6 seconds
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);		// after 6 seconds
 	
 	en61107_requests_sent++;
 #ifdef DEBUG_NO_METER
@@ -160,10 +162,10 @@ void en61107_request_send() {
 	
 	// fake serial for testing without meter
 	en61107_serial = atoi(DEFAULT_METER_SERIAL);
-
+	
 	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", en61107_serial, get_unix_time());
 	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
-
+	
 	if (mqtt_client) {
 		// if mqtt_client is initialized
 		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2

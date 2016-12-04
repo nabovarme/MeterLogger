@@ -722,13 +722,7 @@ void impulse_meter_init(void) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
-#ifdef DEBUG_NO_METER
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
-#elif defined EN61107
-	uart_init(BIT_RATE_300, BIT_RATE_300);
-#else
-	uart_init(BIT_RATE_1200, BIT_RATE_1200);
-#endif	// DEBUG_NO_METER
 
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
@@ -755,6 +749,13 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #else
 	printf("\t(THERMO_NC)\n\r");
 #endif
+
+#ifdef EN61107
+	uart_init(BIT_RATE_300, BIT_RATE_300);
+#else
+	uart_init(BIT_RATE_1200, BIT_RATE_1200);
+#endif
+
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));
 
