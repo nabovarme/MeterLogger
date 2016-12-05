@@ -221,7 +221,7 @@ uart0_rx_intr_handler(void *para)
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
 #ifdef EN61107
 			en61107_fifo_put(RcvChar);
-			if ((RcvChar == 0x03)  || (RcvChar == 0x0d)) {				// if end of kmp frame received or acknowledge
+			if (RcvChar == 0x0d) {							// if end of mc66 frame received
 				system_os_post(en61107_received_task_prio, 0, 0);
 			}
 #elif defined IMPULSE
@@ -241,20 +241,17 @@ uart0_rx_intr_handler(void *para)
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
 #ifdef EN61107
 			en61107_fifo_put(RcvChar);
+			if (RcvChar == 0x0d) {							// if end of mc66 frame received
+				system_os_post(en61107_received_task_prio, 0, 0);
+			}
 #elif defined IMPULSE
 			// nothing
 #else
 			kmp_fifo_put(RcvChar);
-#endif
 			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
-#ifdef EN61107
-				system_os_post(en61107_received_task_prio, 0, 0);
-#elif defined IMPULSE
-			// nothing
-#else
 				system_os_post(kmp_received_task_prio, 0, 0);
-#endif
 			}
+#endif		
 		}
 	}
 
