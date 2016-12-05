@@ -221,7 +221,7 @@ uart0_rx_intr_handler(void *para)
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
 #ifdef EN61107
 			en61107_fifo_put(RcvChar);
-			if (RcvChar == 0x03) {				// if end of kmp frame received or acknowledge
+			if ((RcvChar == 0x03)  || (RcvChar == 0x0d)) {				// if end of kmp frame received or acknowledge
 				system_os_post(en61107_received_task_prio, 0, 0);
 			}
 #elif defined IMPULSE

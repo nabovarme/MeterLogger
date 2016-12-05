@@ -18,7 +18,8 @@ unsigned int en61107_get_data(char *frame) {
     en61107_frame = frame;
     memset(en61107_frame, 0x00, EN61107_FRAME_L);
 	
-	strncpy(en61107_frame, "/?!\r\n", EN61107_FRAME_L);
+//	strncpy(en61107_frame, "/?!\r\n", EN61107_FRAME_L);
+	strncpy(en61107_frame, "/#2\r", EN61107_FRAME_L);
 	
 	return strlen(en61107_frame);
 }

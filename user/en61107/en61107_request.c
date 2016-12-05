@@ -110,6 +110,11 @@ void en61107_get_data_timer_func() {
 	uart0_tx_buffer(frame, frame_length);     // send kmp request
 	
 	// reply comes at 300 bps 7e1 NOT 7e2 as stated in docs
+	// change to 300 bps
+	uart_set_baudrate(UART0, BIT_RATE_1200);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, ONE_STOP_BIT);
 }
 
 ICACHE_FLASH_ATTR
