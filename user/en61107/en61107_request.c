@@ -42,7 +42,7 @@ static os_timer_t en61107_get_serial_timer;
 static os_timer_t en61107_receive_timeout_timer;
 
 unsigned int en61107_requests_sent;
-unsigned int en61107_get_serial_byte_state;
+unsigned int en61107_get_serial_data_state;
 
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
@@ -58,7 +58,7 @@ static void en61107_received_task(os_event_t *events) {
 	int topic_l;
 	int message_l;
 
-	if (en61107_get_serial_byte_state == 0) {
+	if (en61107_get_serial_data_state == 0) {
 		return;
 	}
 
@@ -75,7 +75,7 @@ static void en61107_received_task(os_event_t *events) {
 		message_l--;
 	}
 
-	switch (en61107_get_serial_byte_state) {
+	switch (en61107_get_serial_data_state) {
 		case 1:
 			en61107_serial = atoi(message);
 			break;
@@ -118,7 +118,7 @@ static void en61107_received_task(os_event_t *events) {
 		}
 	}
 	en61107_requests_sent = 0;	// reset retry counter
-	en61107_get_serial_byte_state = 0;
+	en61107_get_serial_data_state = 0;
 }
 
 ICACHE_FLASH_ATTR
@@ -127,7 +127,7 @@ void en61107_request_init() {
 	fifo_tail = 0;
 
 	en61107_requests_sent = 0;
-	en61107_get_serial_byte_state = 0;
+	en61107_get_serial_data_state = 0;
 	
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -191,7 +191,7 @@ void en61107_get_serial_byte_1_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 1;
+	en61107_get_serial_data_state = 1;
 }
 
 ICACHE_FLASH_ATTR
@@ -205,7 +205,7 @@ void en61107_get_serial_byte_2_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 2;
+	en61107_get_serial_data_state = 2;
 }
 
 ICACHE_FLASH_ATTR
@@ -219,7 +219,7 @@ void en61107_get_serial_byte_3_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 3;
+	en61107_get_serial_data_state = 3;
 }
 
 ICACHE_FLASH_ATTR
@@ -233,7 +233,7 @@ void en61107_get_serial_byte_4_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 4;
+	en61107_get_serial_data_state = 4;
 }
 
 ICACHE_FLASH_ATTR
@@ -247,7 +247,7 @@ void en61107_get_serial_byte_5_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 5;
+	en61107_get_serial_data_state = 5;
 }
 
 ICACHE_FLASH_ATTR
@@ -261,7 +261,7 @@ void en61107_get_serial_byte_6_timer_func() {
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	en61107_get_serial_byte_state = 6;
+	en61107_get_serial_data_state = 6;
 }
 
 ICACHE_FLASH_ATTR
