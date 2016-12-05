@@ -15,12 +15,6 @@ ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_serial();
 
 ICACHE_FLASH_ATTR
-void en61107_get_data_timer_func();
-
-ICACHE_FLASH_ATTR
-void en61107_get_register_timer_func();
-
-ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func();
 
 ICACHE_FLASH_ATTR
