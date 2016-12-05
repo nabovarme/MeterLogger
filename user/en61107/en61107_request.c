@@ -58,10 +58,6 @@ static void en61107_received_task(os_event_t *events) {
 	int topic_l;
 	int message_l;
 
-	if (en61107_uart_state == 0) {
-		return;
-	}
-
 	memset(message, 0x00, EN61107_FRAME_L);			// clear message buffer
 	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
@@ -200,6 +196,8 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_requests_sent++;
 			en61107_uart_state = UART_STATE_NONE;
 			break;
+		default:
+			return;			
 	}
 	
 	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
