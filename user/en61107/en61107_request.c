@@ -26,23 +26,23 @@ en61107_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-static os_timer_t en61107_get_standard_data_timer;
-static os_timer_t en61107_get_unknown_1_timer;
-static os_timer_t en61107_get_unknown_2_timer;
-static os_timer_t en61107_get_serial_byte_1_timer;
-static os_timer_t en61107_get_serial_byte_2_timer;
-static os_timer_t en61107_get_serial_byte_3_timer;
-static os_timer_t en61107_get_serial_byte_4_timer;
-static os_timer_t en61107_get_serial_byte_5_timer;
-static os_timer_t en61107_get_unknown_3_timer;
-
-static os_timer_t en61107_get_serial_timer;
-
-
 static os_timer_t en61107_receive_timeout_timer;
 
 unsigned int en61107_requests_sent;
-unsigned int en61107_get_serial_data_state;
+//unsigned int en61107_uart_state;
+enum {
+	UART_STATE_NONE,
+	UART_STATE_STANDARD_DATA,
+	UART_STATE_UNKNOWN_1,
+	UART_STATE_UNKNOWN_2,
+	UART_STATE_SERIAL_BYTE_1,
+	UART_STATE_SERIAL_BYTE_2,
+	UART_STATE_SERIAL_BYTE_3,
+	UART_STATE_SERIAL_BYTE_4,
+	UART_STATE_SERIAL_BYTE_5,
+	UART_STATE_SERIAL_BYTE_6,
+	UART_STATE_UNKNOWN_3,
+} en61107_uart_state;
 
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
@@ -58,7 +58,7 @@ static void en61107_received_task(os_event_t *events) {
 	int topic_l;
 	int message_l;
 
-	if (en61107_get_serial_data_state == 0) {
+	if (en61107_uart_state == 0) {
 		return;
 	}
 
@@ -75,24 +75,130 @@ static void en61107_received_task(os_event_t *events) {
 		message_l--;
 	}
 
-	switch (en61107_get_serial_data_state) {
-		case 1:
+	switch (en61107_uart_state) {
+		case UART_STATE_STANDARD_DATA:
+			uart_set_baudrate(UART0, BIT_RATE_300);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "/MP1\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_UNKNOWN_1;
+			break;
+		case UART_STATE_UNKNOWN_1:
+			uart_set_baudrate(UART0, BIT_RATE_1200);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M32\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_UNKNOWN_2;
+			break;
+		case UART_STATE_UNKNOWN_2:
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200654\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
+			break;
+		case UART_STATE_SERIAL_BYTE_1:
 			en61107_serial = atoi(message);
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200655\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
 			break;
-		case 2:
+		case UART_STATE_SERIAL_BYTE_2:
 			en61107_serial += atoi(message) << 8;
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200656\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
 			break;
-		case 3:
+		case UART_STATE_SERIAL_BYTE_3:
 			en61107_serial += atoi(message) << 16;
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200657\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
 			break;
-		case 4:
+		case UART_STATE_SERIAL_BYTE_4:
 			en61107_serial += atoi(message) << 24;
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200658\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
 			break;
-		case 5:
+		case UART_STATE_SERIAL_BYTE_5:
 			en61107_serial += atoi(message) << 32;
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M200659\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
 			break;
-		case 6:
+		case UART_STATE_SERIAL_BYTE_6:
 			en61107_serial += atoi(message) << 40;
+
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "M906540659\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			en61107_uart_state = UART_STATE_UNKNOWN_3;
+			break;
+		case UART_STATE_UNKNOWN_3:
+			en61107_requests_sent++;
+			en61107_uart_state = UART_STATE_NONE;
 			break;
 	}
 	
@@ -118,7 +224,7 @@ static void en61107_received_task(os_event_t *events) {
 		}
 	}
 	en61107_requests_sent = 0;	// reset retry counter
-	en61107_get_serial_data_state = 0;
+	en61107_uart_state = 0;
 }
 
 ICACHE_FLASH_ATTR
@@ -127,7 +233,7 @@ void en61107_request_init() {
 	fifo_tail = 0;
 
 	en61107_requests_sent = 0;
-	en61107_get_serial_data_state = 0;
+	en61107_uart_state = UART_STATE_NONE;
 	
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -145,138 +251,6 @@ unsigned int en61107_get_received_serial() {
 }
 
 ICACHE_FLASH_ATTR
-void en61107_get_standard_data_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "/#2\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_unknown_1_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "/MP1\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_unknown_2_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_1200);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M32\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_1_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200654\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 1;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_2_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200655\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 2;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_3_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200656\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 3;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_4_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200657\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 4;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_5_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200658\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 5;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_serial_byte_6_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M200659\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	en61107_get_serial_data_state = 6;
-}
-
-ICACHE_FLASH_ATTR
-void en61107_get_unknown_3_timer_func() {
-	uart_set_baudrate(UART0, BIT_RATE_2400);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strncpy(frame, "M906540659\r", EN61107_FRAME_L);
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-}
-
-ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func() {
 	if (en61107_requests_sent > 0) {
 		// if no reply received, retransmit
@@ -286,48 +260,21 @@ void en61107_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
-	os_timer_disarm(&en61107_get_standard_data_timer);
-	os_timer_setfn(&en61107_get_standard_data_timer, (os_timer_func_t *)en61107_get_standard_data_timer_func, NULL);
-	os_timer_arm(&en61107_get_standard_data_timer, 0, 0);
-
-	os_timer_disarm(&en61107_get_unknown_1_timer);
-	os_timer_setfn(&en61107_get_unknown_1_timer, (os_timer_func_t *)en61107_get_unknown_1_timer_func, NULL);
-	os_timer_arm(&en61107_get_unknown_1_timer, 3200, 0);
-
-	os_timer_disarm(&en61107_get_unknown_2_timer);
-	os_timer_setfn(&en61107_get_unknown_2_timer, (os_timer_func_t *)en61107_get_unknown_2_timer_func, NULL);
-	os_timer_arm(&en61107_get_unknown_2_timer, (3200 + 2200), 0);
-
-	os_timer_disarm(&en61107_get_serial_byte_1_timer);
-	os_timer_setfn(&en61107_get_serial_byte_1_timer, (os_timer_func_t *)en61107_get_serial_byte_1_timer_func, NULL);
-	os_timer_arm(&en61107_get_serial_byte_1_timer, (3200 + 2200 + 400), 0);
-
-	os_timer_disarm(&en61107_get_serial_byte_2_timer);
-	os_timer_setfn(&en61107_get_serial_byte_2_timer, (os_timer_func_t *)en61107_get_serial_byte_2_timer_func, NULL);
-	os_timer_arm(&en61107_get_serial_byte_2_timer, (3200 + 2200 + 400 + 200), 0);
-
-	os_timer_disarm(&en61107_get_serial_byte_3_timer);
-	os_timer_setfn(&en61107_get_serial_byte_3_timer, (os_timer_func_t *)en61107_get_serial_byte_3_timer_func, NULL);
-	os_timer_arm(&en61107_get_serial_byte_3_timer, (3200 + 2200 + 400 + 400), 0);
-
-	os_timer_disarm(&en61107_get_serial_byte_4_timer);
-	os_timer_setfn(&en61107_get_serial_byte_4_timer, (os_timer_func_t *)en61107_get_serial_byte_4_timer_func, NULL);
-	os_timer_arm(&en61107_get_serial_byte_4_timer, (3200 + 2200 + 400 + 600), 0);
-
-	os_timer_disarm(&en61107_get_serial_byte_4_timer);
-	os_timer_setfn(&en61107_get_serial_byte_4_timer, (os_timer_func_t *)en61107_get_serial_byte_4_timer_func, NULL);
-	os_timer_arm(&en61107_get_serial_byte_4_timer, (3200 + 2200 + 400 + 800), 0);
-
-	os_timer_disarm(&en61107_get_unknown_3_timer);
-	os_timer_setfn(&en61107_get_unknown_3_timer, (os_timer_func_t *)en61107_get_unknown_3_timer_func, NULL);
-	os_timer_arm(&en61107_get_unknown_3_timer, (3200 + 2200 + 400 + 1000), 0);
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+	strncpy(frame, "/#2\r", EN61107_FRAME_L);
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
 
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 10000, 0);		// after 10 seconds
-	
-	en61107_requests_sent++;
+	os_timer_arm(&en61107_receive_timeout_timer, 10000, 0);         // after 10 seconds
+
+	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER
 	unsigned char topic[128];
 	unsigned char message[EN61107_FRAME_L];
