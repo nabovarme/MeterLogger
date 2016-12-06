@@ -45,6 +45,8 @@ enum {
 } en61107_uart_state;
 UartDevice uart_settings;
 
+uint8_t en61107_eod;
+
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
@@ -226,6 +228,7 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
 		case UART_STATE_UNKNOWN_3:
+			// en61107_eod = 0x03;
 			en61107_uart_state = UART_STATE_NONE;
 //			led_on();
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
@@ -278,6 +281,16 @@ unsigned int en61107_get_received_serial() {
 }
 
 ICACHE_FLASH_ATTR
+bool en61107_is_eod_char(uint8_t c) {
+	if (c == en61107_eod) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func() {
 	if (en61107_uart_state != UART_STATE_NONE) {
 		// if no reply received, retransmit
@@ -296,6 +309,8 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+	en61107_eod = 0x0d;
+
 	// 300 bps
 	uart_set_baudrate(UART0, BIT_RATE_300);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -385,3 +400,4 @@ unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
 		return 0;
 	}
 }
+
