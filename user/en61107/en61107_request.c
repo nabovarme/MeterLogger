@@ -6,7 +6,7 @@
 #include "tinyprintf.h"
 #include "en61107.h"
 #include "en61107_request.h"
-#include "led.h"
+//#include "led.h"
 
 #define QUEUE_SIZE 256
 
@@ -30,8 +30,6 @@ static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
 
-unsigned int en61107_requests_sent;
-//unsigned int en61107_uart_state;
 enum {
 	UART_STATE_NONE,
 	UART_STATE_STANDARD_DATA,
@@ -228,9 +226,8 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
 		case UART_STATE_UNKNOWN_3:
-			en61107_requests_sent++;	// DEBUG: not needed?
 			en61107_uart_state = UART_STATE_NONE;
-			led_on();
+//			led_on();
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
    				// prepare for mqtt transmission if we got serial number from meter
@@ -252,8 +249,8 @@ static void en61107_received_task(os_event_t *events) {
 					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 				}
 			}
-			en61107_requests_sent = 0;	// reset retry counter
 
+			en61107_uart_state = UART_STATE_NONE;
 			break;
 	}
 }
@@ -263,7 +260,6 @@ void en61107_request_init() {
 	fifo_head = 0;
 	fifo_tail = 0;
 
-	en61107_requests_sent = 0;
 	en61107_uart_state = UART_STATE_NONE;
 	
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
@@ -283,7 +279,7 @@ unsigned int en61107_get_received_serial() {
 
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func() {
-	if (en61107_requests_sent > 0) {
+	if (en61107_uart_state != UART_STATE_NONE) {
 		// if no reply received, retransmit
 		en61107_request_send();
 	}
@@ -340,7 +336,6 @@ void en61107_request_send() {
 		// if mqtt_client is initialized
 		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}
-	en61107_requests_sent = 0;	// reset retry counter
 #endif
 }
 
