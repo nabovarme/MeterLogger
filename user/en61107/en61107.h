@@ -10,8 +10,6 @@ typedef struct {
     char rid[EN61107_RID_L];
     char unit[EN61107_UNIT_L];
     char value[EN61107_VALUE_L];
-
-
 } en61107_response_register_t;
 
 typedef en61107_response_register_t en61107_response_register_list_t[8];   // max 8 registers per request
@@ -21,6 +19,7 @@ typedef struct {
     char en61107_response_meter_type[EN61107_METER_TYPE_L];
     en61107_response_register_list_t en61107_response_register_list;
 } en61107_response_t;
+
 ICACHE_FLASH_ATTR
-int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length);
+int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_frame, unsigned int en61107_frame_length);
 

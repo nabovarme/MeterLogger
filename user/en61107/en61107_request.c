@@ -20,7 +20,6 @@ volatile unsigned char fifo_buffer[QUEUE_SIZE];
 // allocate frame to send
 char frame[EN61107_FRAME_L];
 unsigned int frame_length;
-uint16_t register_list[8];
 
 // allocate struct for response
 en61107_response_t response;
@@ -254,7 +253,7 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_EN61107:
 			led_on();
 
-			parse_en61107_frame(message, message_l);
+			parse_en61107_frame(&response, message, message_l);
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
