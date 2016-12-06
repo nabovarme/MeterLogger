@@ -15,7 +15,7 @@ ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_serial();
 
 //ICACHE_FLASH_ATTR
-bool en61107_is_eod_char(uint8_t c);
+inline bool en61107_is_eod_char(uint8_t c);
 
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func();
