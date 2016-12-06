@@ -42,6 +42,7 @@ enum {
 	UART_STATE_SERIAL_BYTE_5,
 	UART_STATE_SERIAL_BYTE_6,
 	UART_STATE_UNKNOWN_3,
+	UART_STATE_EN61107
 } en61107_uart_state;
 UartDevice uart_settings;
 
@@ -228,9 +229,33 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
 		case UART_STATE_UNKNOWN_3:
-			// en61107_eod = 0x03;
-			en61107_uart_state = UART_STATE_NONE;
-//			led_on();
+			en61107_eod = 0x03;
+
+			// 300 bps
+			uart_set_baudrate(UART0, BIT_RATE_300);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+			strncpy(frame, "/?!\r\n", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			// reply is 300 bps, 7e1, not 7e2 as stated in standard
+			uart_settings.baut_rate = BIT_RATE_300;
+			uart_settings.stop_bits = ONE_STOP_BIT;
+			// change uart settings after the data has been sent
+			os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
+			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
+
+			en61107_uart_state = UART_STATE_EN61107;
+			break;
+		case UART_STATE_EN61107:
+			led_on();
+
+			parse_en61107_frame(message, message_l);
+
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
    				// prepare for mqtt transmission if we got serial number from meter

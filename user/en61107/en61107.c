@@ -4,10 +4,10 @@
 #include <esp8266.h>
 #include "en61107.h"
 
-char *en61107_frame;
-unsigned int en61107_frame_length;
+//char *en61107_frame;
+//unsigned int en61107_frame_length;
 
-en61107_response_t en61107_response;
+en61107_response_t en61107_response;	// DEBUG: this should go into en61107_request.c not here
 
 #pragma mark - EN61107 Decoder
 
