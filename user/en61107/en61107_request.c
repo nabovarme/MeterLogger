@@ -92,11 +92,11 @@ static void en61107_received_task(os_event_t *events) {
 			// change uart settings after the data has been sent
 			os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 110 mS
+			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
 			en61107_uart_state = UART_STATE_UNKNOWN_1;
 			break;
 		case UART_STATE_UNKNOWN_1:
-			// 1200 bps
+			// 1200 bps, 7e1, not 7e2 as stated in standard
 			uart_set_baudrate(UART0, BIT_RATE_1200);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -106,20 +106,12 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			/*
-			// reply is 1200 bps, 7e1, not 7e2 as stated in standard
-			uart_settings.baut_rate = BIT_RATE_1200;
-			uart_settings.stop_bits = ONE_STOP_BIT;
-			// change uart settings after the data has been sent
-			os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
-			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 110 mS
-			*/
+			// reply is 1200 bps
 
 			en61107_uart_state = UART_STATE_UNKNOWN_2;
 			break;
 		case UART_STATE_UNKNOWN_2:
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -129,14 +121,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
 			en61107_serial = atoi(message);
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -146,14 +138,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
 			en61107_serial += atoi(message) << 8;
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -163,14 +155,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
 			en61107_serial += atoi(message) << 16;
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -180,14 +172,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
 			en61107_serial += atoi(message) << 24;
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -197,14 +189,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
 			en61107_serial += atoi(message) << 32;
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -214,14 +206,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
 			en61107_serial += atoi(message) << 40;
 
-			// 2400 bps
+			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -231,41 +223,39 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 2400 bps
+			// reply is 2400 bps, 7e2
 
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
 		case UART_STATE_UNKNOWN_3:
-			en61107_requests_sent++;
+			en61107_requests_sent++;	// DEBUG: not needed?
 			en61107_uart_state = UART_STATE_NONE;
 			led_on();
+			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+			if (current_unix_time) {	// only send mqtt if we got current time via ntp
+   				// prepare for mqtt transmission if we got serial number from meter
+        
+   				// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
+				memset(topic, 0, sizeof(topic));			// clear it
+				tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
+				tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
+
+   				//strcpy(message, "");	// clear it
+		
+				key_value_l = os_sprintf(key_value, "test=%s&", message);
+				strncpy(message, key_value, key_value_l);
+			}
+	
+			if (mqtt_client) {
+				// if mqtt_client is initialized
+				if (message_l > 1) {
+					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+				}
+			}
+			en61107_requests_sent = 0;	// reset retry counter
+
 			break;
 	}
-	
-/*
-	current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-//	if (current_unix_time) {	// only send mqtt if we got current time via ntp
-   		// prepare for mqtt transmission if we got serial number from meter
-        
-   		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
-		memset(topic, 0, sizeof(topic));			// clear it
-		tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-		tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
-
-   		//strcpy(message, "");	// clear it
-		
-		key_value_l = os_sprintf(key_value, "test=%s&", message);
-		strncpy(message, key_value, key_value_l);
-//	}
-	
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		if (message_l > 1) {
-			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-		}
-	}
-*/
-	en61107_requests_sent = 0;	// reset retry counter
 }
 
 ICACHE_FLASH_ATTR
@@ -301,26 +291,9 @@ void en61107_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
-/*
-	if (uart_settings->baut_rate == BIT_RATE_300) {
-		uart0_tx_buffer('3', 1);
-	}
-	else {
-		uart0_tx_buffer('0', 1);
-	}
-	if (uart_settings->stop_bits == ONE_STOP_BIT) {
-		uart0_tx_buffer('1', 1);
-	}
-	else {
-		uart0_tx_buffer('2', 1);
-	}
-*/
-//	if (en61107_uart_state == UART_STATE_UNKNOWN_1) {
-//		uart0_tx_buffer('x', 1);
-//	}
 	uart_set_baudrate(UART0, uart_settings->baut_rate);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
+//	uart_set_word_length(UART0, SEVEN_BITS);
+//	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, uart_settings->stop_bits);
 }
 
@@ -343,7 +316,7 @@ void en61107_request_send() {
 	// change uart settings after the data has been sent
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 110 mS
+	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
 
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
