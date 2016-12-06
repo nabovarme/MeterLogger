@@ -55,7 +55,7 @@ int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fram
                         length = pos - en61107_frame;               // ...save meter_type string
                         // DEBUG: check if length - 3 is >= 0
                         memcpy(en61107_response->en61107_response_meter_type, en61107_frame + 1, length - 3);
-                        printf("meter type: %s\n", en61107_response->en61107_response_meter_type);
+                        //printf("meter type: %s\n", en61107_response->en61107_response_meter_type);
                         en61107_frame += length + 3;
                     }
                     
@@ -96,12 +96,12 @@ int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fram
                                 // serial number, no unit
                                 serial_string_length = pos - rid_value_unit_string_ptr;
                                 memcpy(en61107_response->en61107_response_serial, rid_value_unit_string_ptr, serial_string_length);
-                                printf("rid: %s serial: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_serial);
+                                //printf("rid: %s serial: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_serial);
                             }
                             else {
                                 unit_string_length = pos - rid_value_unit_string_ptr;
                                 memcpy(en61107_response->en61107_response_register_list[j].unit, rid_value_unit_string_ptr, unit_string_length);
-                                printf("rid: %s value: %s unit: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_register_list[j].value, en61107_response->en61107_response_register_list[j].unit);
+                                //printf("rid: %s value: %s unit: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_register_list[j].value, en61107_response->en61107_response_register_list[j].unit);
                                 j++;
 
                             }
