@@ -18,6 +18,9 @@ ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func();
 
 ICACHE_FLASH_ATTR
+void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings);
+
+ICACHE_FLASH_ATTR
 void en61107_request_send();
 
 // fifo
