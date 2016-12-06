@@ -253,7 +253,9 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_EN61107:
 			led_on();
 
-			parse_en61107_frame(&response, message, message_l);
+			if (parse_en61107_frame(&response, message, message_l) == 0) {
+				return;
+			}
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
@@ -266,7 +268,7 @@ static void en61107_received_task(os_event_t *events) {
 
    				//strcpy(message, "");	// clear it
 		
-				key_value_l = os_sprintf(key_value, "test=%s&", message);
+				key_value_l = os_sprintf(key_value, "test=%s&", response.en61107_response_meter_type);
 				strncpy(message, key_value, key_value_l);
 			}
 	
