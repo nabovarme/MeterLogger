@@ -73,6 +73,7 @@ static void en61107_received_task(os_event_t *events) {
 
 	switch (en61107_uart_state) {
 		case UART_STATE_STANDARD_DATA:
+			// 300 bps
 			uart_set_baudrate(UART0, BIT_RATE_300);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -82,9 +83,12 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 300 bps
+
 			en61107_uart_state = UART_STATE_UNKNOWN_1;
 			break;
 		case UART_STATE_UNKNOWN_1:
+			// 1200 bps
 			uart_set_baudrate(UART0, BIT_RATE_1200);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -94,9 +98,12 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 1200 bps
+
 			en61107_uart_state = UART_STATE_UNKNOWN_2;
 			break;
 		case UART_STATE_UNKNOWN_2:
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -106,11 +113,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
 			en61107_serial = atoi(message);
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -120,11 +130,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
 			en61107_serial += atoi(message) << 8;
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -134,11 +147,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
 			en61107_serial += atoi(message) << 16;
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -148,11 +164,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
 			en61107_serial += atoi(message) << 24;
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -162,11 +181,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
 			en61107_serial += atoi(message) << 32;
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -176,11 +198,14 @@ static void en61107_received_task(os_event_t *events) {
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
+			// reply is 2400 bps
+
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
 			en61107_serial += atoi(message) << 40;
 
+			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
@@ -189,6 +214,8 @@ static void en61107_received_task(os_event_t *events) {
 			strncpy(frame, "M906540659\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
+
+			// reply is 2400 bps
 
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
@@ -258,6 +285,7 @@ void en61107_receive_timeout_timer_func() {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+	// 300 bps
 	uart_set_baudrate(UART0, BIT_RATE_300);
 	uart_set_word_length(UART0, SEVEN_BITS);
 	uart_set_parity(UART0, EVEN_BITS);
@@ -266,6 +294,12 @@ void en61107_request_send() {
 	strncpy(frame, "/#2\r", EN61107_FRAME_L);
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 1200 bps
+	uart_set_baudrate(UART0, BIT_RATE_1200);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
