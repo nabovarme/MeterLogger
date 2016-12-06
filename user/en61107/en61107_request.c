@@ -47,7 +47,7 @@ enum {
 UartDevice uart_settings;
 
 volatile uint8_t en61107_eod;
-volatile uint8_t last_en61107_eod_c;
+bool en61107_etx_received;
 
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
@@ -320,7 +320,7 @@ void en61107_request_init() {
 
 	en61107_uart_state = UART_STATE_NONE;
 
-	last_en61107_eod_c = 0;
+	en61107_etx_received = false;
 	
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -341,20 +341,13 @@ unsigned int en61107_get_received_serial() {
 inline bool en61107_is_eod_char(uint8_t c) {
 	if (en61107_eod == 0x03) {
 		// we need to get the next char as well for this protocol
-//		if (last_en61107_eod_c == 0x03) {
-//			return true;
-//		}
-//		else {
-//			return false;
-//		}
-//		last_en61107_eod_c = c;
 		if (c == en61107_eod) {
-			last_en61107_eod_c = 0x03;
+			en61107_etx_received = true;
 			return false;
 		}
 		else {
-			if (last_en61107_eod_c == 0x03) {
-				last_en61107_eod_c = 0;
+			if (en61107_etx_received) {
+				en61107_etx_received = false;
 				return true;
 			}
 		}
