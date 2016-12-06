@@ -41,11 +41,13 @@ enum {
 	UART_STATE_SERIAL_BYTE_5,
 	UART_STATE_SERIAL_BYTE_6,
 	UART_STATE_UNKNOWN_3,
+	UART_STATE_UNKNOWN_4,
 	UART_STATE_EN61107
 } en61107_uart_state;
 UartDevice uart_settings;
 
-uint8_t en61107_eod;
+volatile uint8_t en61107_eod;
+uint8_t last_en61107_eod_c;
 
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
@@ -228,6 +230,21 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
 			break;
 		case UART_STATE_UNKNOWN_3:
+			// 2400 bps, 7e2
+			uart_set_baudrate(UART0, BIT_RATE_2400);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+			strncpy(frame, "*\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			// reply is 2400 bps, 7e2
+
+			en61107_uart_state = UART_STATE_UNKNOWN_4;
+			break;
+		case UART_STATE_UNKNOWN_4:
 			en61107_eod = 0x03;
 
 			// 300 bps
@@ -253,6 +270,17 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_EN61107:
 			led_on();
 
+			// 300 bps
+			uart_set_baudrate(UART0, BIT_RATE_300);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+			strncpy(frame, "\r", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
+
+			/*
 			if (parse_en61107_frame(&response, message, message_l) == 0) {
 				return;
 			}
@@ -278,6 +306,7 @@ static void en61107_received_task(os_event_t *events) {
 					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 				}
 			}
+			*/
 
 			en61107_uart_state = UART_STATE_NONE;
 			break;
@@ -290,6 +319,8 @@ void en61107_request_init() {
 	fifo_tail = 0;
 
 	en61107_uart_state = UART_STATE_NONE;
+
+	last_en61107_eod_c = 0;
 	
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -306,14 +337,26 @@ unsigned int en61107_get_received_serial() {
 	return en61107_serial;
 }
 
-ICACHE_FLASH_ATTR
+//ICACHE_FLASH_ATTR
 bool en61107_is_eod_char(uint8_t c) {
-	if (c == en61107_eod) {
-		return true;
-	}
-	else {
-		return false;
-	}
+//	if (en61107_eod == 0x03) {
+//		// we need to get the next char as well for this protocol
+//		if (last_en61107_eod_c == 0x03) {
+//			return;
+//		}
+//		else {
+//			return false;
+//		}
+//		last_en61107_eod_c = c;
+//	}
+//	else {
+		if (c == en61107_eod) {
+			return true;
+		}
+		else {
+			return false;
+		}
+//	}
 }
 
 ICACHE_FLASH_ATTR
@@ -358,7 +401,7 @@ void en61107_request_send() {
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 10000, 0);         // after 10 seconds
+	os_timer_arm(&en61107_receive_timeout_timer, 12000, 0);         // after 12 seconds
 
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER
