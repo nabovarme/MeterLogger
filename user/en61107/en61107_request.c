@@ -339,7 +339,7 @@ unsigned int en61107_get_received_serial() {
 
 //ICACHE_FLASH_ATTR
 bool en61107_is_eod_char(uint8_t c) {
-//	if (en61107_eod == 0x03) {
+	if (en61107_eod == 0x03) {
 //		// we need to get the next char as well for this protocol
 //		if (last_en61107_eod_c == 0x03) {
 //			return;
@@ -348,15 +348,21 @@ bool en61107_is_eod_char(uint8_t c) {
 //			return false;
 //		}
 //		last_en61107_eod_c = c;
-//	}
-//	else {
 		if (c == en61107_eod) {
 			return true;
 		}
 		else {
 			return false;
 		}
-//	}
+	}
+	else {
+		if (c == en61107_eod) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 ICACHE_FLASH_ATTR
