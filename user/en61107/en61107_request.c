@@ -123,7 +123,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200654\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -134,14 +134,13 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
-			led_on();
 			en61107_serial = atoi(message);
 
 			// 2400 bps
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200655\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -158,7 +157,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200656\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -175,7 +174,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200657\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -192,7 +191,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200658\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -209,7 +208,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M200659\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -226,7 +225,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_baudrate(UART0, BIT_RATE_2400);
 			uart_set_word_length(UART0, SEVEN_BITS);
 			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, ONE_STOP_BIT);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
 			strncpy(frame, "M906540659\r", EN61107_FRAME_L);
 			frame_length = strlen(frame);
@@ -239,6 +238,7 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_UNKNOWN_3:
 			en61107_requests_sent++;
 			en61107_uart_state = UART_STATE_NONE;
+			led_on();
 			break;
 	}
 	
