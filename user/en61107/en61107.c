@@ -48,7 +48,8 @@ bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fra
                 if (bcc == calculated_bcc) {
                     // crc ok
                     // parse meter_type
-                    memset(&en61107_response, 0, sizeof(en61107_response_t));
+
+                    memset(en61107_response, 0, sizeof(en61107_response_t));
                     memset(meter_type_string, 0, EN61107_REGISTER_L);    // clear meter_type_string (null terminalte)
                     pos = strstr(en61107_frame, stx);               // find position of stx char
                     if (pos != NULL) {                              // if found stx char...
@@ -66,6 +67,7 @@ bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fra
                         length = pos - en61107_frame;
                         memcpy(register_list_string, en61107_frame, length);
                     }
+
 
                     // parse values
                     j = 0;

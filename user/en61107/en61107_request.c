@@ -297,17 +297,7 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_EN61107:
 			en61107_eod = '\r';
 
-			/*
-			message[message_l] = 0;		// null terminate
-			if (message[0] == '@') {	// remove first char @
-				memmove(message, message + 1, strlen(message));
-				message_l--;
-			}
-
-			if (parse_en61107_frame(&response, message, message_l) == 0) {
-				return;
-			}
-			*/
+			parse_en61107_frame(&response, message, message_l);
 
 			// 300 bps
 			uart_set_baudrate(UART0, BIT_RATE_300);
@@ -344,7 +334,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
 
-					memset(message, 0, sizeof(char[EN61107_FRAME_L]));			// clear it
+					memset(message, 0, sizeof(EN61107_FRAME_L));			// clear it
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
