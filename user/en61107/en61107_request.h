@@ -30,8 +30,8 @@ void en61107_request_send();
 ICACHE_FLASH_ATTR
 unsigned int en61107_fifo_in_use();
 
-ICACHE_FLASH_ATTR
-unsigned char en61107_fifo_put(unsigned char c);
+//ICACHE_FLASH_ATTR
+inline unsigned char en61107_fifo_put(unsigned char c);
 
 ICACHE_FLASH_ATTR
 unsigned char en61107_fifo_get(unsigned char *c);

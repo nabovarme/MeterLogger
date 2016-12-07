@@ -330,7 +330,7 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_INST_VALUES;
 			break;
 		case UART_STATE_INST_VALUES:
-			message[message_l - 1] = 0;		// null terminate
+			message[message_l] = '\0';		// null terminate
 
 			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
 			if (parse_mc66cde_frame(mc66cde_temp_array, message)) {
@@ -338,15 +338,13 @@ static void en61107_received_task(os_event_t *events) {
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
-   					// prepare for mqtt transmission if we got serial number from meter
         
    					// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
 
-/*
-   					memset(message, 0, sizeof(message));			// clear it
+//					memset(message, 0, sizeof(char[EN61107_FRAME_L]));			// clear it
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
@@ -362,14 +360,13 @@ static void en61107_received_task(os_event_t *events) {
 					strcat(message, key_value);
 
 					message_l = strlen(message);				
-	
+
 					if (mqtt_client) {
 						// if mqtt_client is initialized
 						if (message_l > 1) {
 							MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 						}
 					}
-*/
 					en61107_uart_state = UART_STATE_NONE;
 				}
 			}
@@ -494,8 +491,8 @@ unsigned int en61107_fifo_in_use() {
 	return fifo_head - fifo_tail;
 }
 
-ICACHE_FLASH_ATTR
-unsigned char en61107_fifo_put(unsigned char c) {
+//ICACHE_FLASH_ATTR
+inline unsigned char en61107_fifo_put(unsigned char c) {
 	if (en61107_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
