@@ -6,7 +6,6 @@
 #include "tinyprintf.h"
 #include "en61107.h"
 #include "en61107_request.h"
-//#include "led.h"
 
 #define QUEUE_SIZE 256
 
@@ -324,7 +323,6 @@ static void en61107_received_task(os_event_t *events) {
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			if (parse_mc66cde_inst_values_frame(&response, message)) {
-				led_on();
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
@@ -369,7 +367,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
 
-					message_l = strlen(message);				
+					message_l = strlen(message);
 
 					if (mqtt_client) {
 						// if mqtt_client is initialized

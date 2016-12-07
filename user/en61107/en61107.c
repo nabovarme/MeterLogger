@@ -69,6 +69,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					// parse values
 					j = 0;
 					memset(rid_value_unit_string, 0, EN61107_REGISTER_L);
+					memset(rid, 0, EN61107_RID_L);
 					register_list_string_ptr = register_list_string;		// force pointer arithmetics
 					while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
 						length = pos - register_list_string_ptr;
