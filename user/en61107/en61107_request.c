@@ -42,7 +42,8 @@ enum {
 	UART_STATE_SERIAL_BYTE_6,
 	UART_STATE_UNKNOWN_3,
 	UART_STATE_UNKNOWN_4,
-	UART_STATE_EN61107
+	UART_STATE_EN61107,
+	UART_STATE_INST_VALUES
 } en61107_uart_state;
 UartDevice uart_settings;
 
@@ -269,7 +270,13 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_EN61107;
 			break;
 		case UART_STATE_EN61107:
-			led_on();
+			en61107_eod = '\r';
+
+			/*
+			if (parse_en61107_frame(&response, message, message_l) == 0) {
+				return;
+			}
+			*/
 
 			// 300 bps
 			uart_set_baudrate(UART0, BIT_RATE_300);
@@ -277,16 +284,22 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-			//strncpy(frame, "\r", EN61107_FRAME_L);
-			//frame_length = strlen(frame);
-			//uart0_tx_buffer(frame, frame_length);     // send request
-			uart0_tx_buffer((message + message_l - 1), 1);
+			strncpy(frame, "/#C", EN61107_FRAME_L);
+			frame_length = strlen(frame);
+			uart0_tx_buffer(frame, frame_length);     // send request
 
-			/*
-			if (parse_en61107_frame(&response, message, message_l) == 0) {
-				return;
-			}
-			*/
+			// reply is 1200 bps, 7e1, not 7e2 as stated in standard
+			uart_settings.baut_rate = BIT_RATE_1200;
+			uart_settings.stop_bits = ONE_STOP_BIT;
+			// change uart settings after the data has been sent
+			os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
+			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
+
+			en61107_uart_state = UART_STATE_INST_VALUES;
+			break;
+		case UART_STATE_INST_VALUES:
+			led_on();
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
