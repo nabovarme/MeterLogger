@@ -17,6 +17,7 @@ typedef struct {
 	en61107_response_register_t t1;
 	en61107_response_register_t t2;
 	en61107_response_register_t t3;
+	en61107_response_register_t tdif;
 	en61107_response_register_t flow1;
 	en61107_response_register_t effect1;
 	en61107_response_register_t hr;

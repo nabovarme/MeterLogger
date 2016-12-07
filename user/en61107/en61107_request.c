@@ -347,6 +347,14 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
 					strcat(message, key_value);
 
+					// t3 temperature
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "t3=%s %s&", response.t3.value, response.t3.unit);
+					strcat(message, key_value);
+
+					// calculated temperature difference
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", response.t3.value, response.t3.unit);
+					strcat(message, key_value);
+
 					// flow
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", response.flow1.value, response.flow1.unit);
 					strcat(message, key_value);
