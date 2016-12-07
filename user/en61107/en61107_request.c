@@ -60,7 +60,6 @@ static void en61107_received_task(os_event_t *events) {
 	char key_value[128];
 	unsigned char topic[128];
 	unsigned char message[EN61107_FRAME_L];
-	int32_t mc66cde_temp_array[8];			// DEBUG: should be removed
 	int key_value_l;
 	int topic_l;
 	int message_l;
@@ -324,13 +323,12 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_INST_VALUES:
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
-			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
-			if (parse_mc66cde_inst_values_frame(mc66cde_temp_array, message)) {
+			if (parse_mc66cde_inst_values_frame(&response, message)) {
 				led_on();
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
-        
+
    					// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
@@ -344,13 +342,14 @@ static void en61107_received_task(os_event_t *events) {
 
 					// heating meter specific
 					// flow temperature
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%d C&", mc66cde_temp_array[0]);
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", response.t1.value, response.t1.unit);
 					strcat(message, key_value);
         	
 					// return flow temperature
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%d C&", mc66cde_temp_array[2]);
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
 					strcat(message, key_value);
 
+/*
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "x1=%s %s&", response.en61107_response_register_list[0].value, 
 						response.en61107_response_register_list[0].unit);
 					strcat(message, key_value);
@@ -382,6 +381,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "x8=%s %s&", response.en61107_response_register_list[7].value, 
 						response.en61107_response_register_list[7].unit);
 					strcat(message, key_value);
+*/
 
 					message_l = strlen(message);				
 

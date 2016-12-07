@@ -5,7 +5,8 @@
 #include "en61107.h"
 
 ICACHE_FLASH_ATTR
-bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_frame, unsigned int en61107_frame_length) {
+bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+	/*
     unsigned int i, j;
     uint8_t bcc;
     uint8_t calculated_bcc;
@@ -27,45 +28,45 @@ bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fra
     
     
     // sanity check
-    if (!en61107_frame_length) {
+    if (!frame_length) {
         return false;
     }
     
-    bcc = en61107_frame[en61107_frame_length - 1];
+    bcc = frame[frame_length - 1];
     calculated_bcc = 0;
-    for (i = 0; i < en61107_frame_length; i++) {
-        //printf("#%d %c (0x%x)\n", i, en61107_frame[i], en61107_frame[i]);
-        if (en61107_frame[i] == 0x02) {
+    for (i = 0; i < frame_length; i++) {
+        //printf("#%d %c (0x%x)\n", i, frame[i], frame[i]);
+        if (frame[i] == 0x02) {
             // stx
             calculated_bcc = 0;
         }
         else {
-            calculated_bcc += en61107_frame[i];
+            calculated_bcc += frame[i];
             calculated_bcc &= 0x7f;  // 7 bit value
             
-            if (en61107_frame[i] == 0x03) {
+            if (frame[i] == 0x03) {
                 // etx
                 if (bcc == calculated_bcc) {
                     // crc ok
                     // parse meter_type
 
-                    memset(en61107_response, 0, sizeof(en61107_response_t));
+                    memset(response, 0, sizeof(en61107_response_t));
                     memset(meter_type_string, 0, EN61107_REGISTER_L);    // clear meter_type_string (null terminalte)
-                    pos = strstr(en61107_frame, stx);               // find position of stx char
+                    pos = strstr(frame, stx);               // find position of stx char
                     if (pos != NULL) {                              // if found stx char...
-                        length = pos - en61107_frame;               // ...save meter_type string
+                        length = pos - frame;               // ...save meter_type string
                         // DEBUG: check if length - 3 is >= 0
-                        memcpy(en61107_response->en61107_response_meter_type, en61107_frame + 1, length - 3);
-                        //printf("meter type: %s\n", en61107_response->en61107_response_meter_type);
-                        en61107_frame += length + 3;
+                        memcpy(response->en61107_response_meter_type, frame + 1, length - 3);
+                        //printf("meter type: %s\n", response->en61107_response_meter_type);
+                        frame += length + 3;
                     }
                     
                     // parse to etx and save to register_list_string
                     memset(register_list_string, 0, EN61107_FRAME_L);
-                    pos = strstr(en61107_frame, etx);               // find position of etx
+                    pos = strstr(frame, etx);               // find position of etx
                     if (pos != NULL) {
-                        length = pos - en61107_frame;
-                        memcpy(register_list_string, en61107_frame, length);
+                        length = pos - frame;
+                        memcpy(register_list_string, frame, length);
                     }
 
 
@@ -83,27 +84,27 @@ bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fra
                         pos = strstr(rid_value_unit_string, "(");
                         if (pos != NULL) {
                             rid_string_length = pos - rid_value_unit_string;
-                            memcpy(en61107_response->en61107_response_register_list[j].rid, rid_value_unit_string, rid_string_length);
+                            memcpy(response->en61107_response_register_list[j].rid, rid_value_unit_string, rid_string_length);
                             rid_value_unit_string_ptr += rid_string_length + 1;
                         }
                         pos = strstr(rid_value_unit_string_ptr, "*");
                         if (pos != NULL) {
                             value_string_length = pos - rid_value_unit_string_ptr;
-                            memcpy(en61107_response->en61107_response_register_list[j].value, rid_value_unit_string_ptr, value_string_length);
+                            memcpy(response->en61107_response_register_list[j].value, rid_value_unit_string_ptr, value_string_length);
                             rid_value_unit_string_ptr += value_string_length + 1;
                         }
                         pos = strstr(rid_value_unit_string_ptr, ")");
                         if (pos != NULL) {
-                            if (strncmp(en61107_response->en61107_response_register_list[j].rid, "0", 1) == 0) {
+                            if (strncmp(response->en61107_response_register_list[j].rid, "0", 1) == 0) {
                                 // serial number, no unit
                                 serial_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(en61107_response->en61107_response_serial, rid_value_unit_string_ptr, serial_string_length);
-                                //printf("rid: %s serial: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_serial);
+                                memcpy(response->en61107_response_serial, rid_value_unit_string_ptr, serial_string_length);
+                                //printf("rid: %s serial: %s\n", response->en61107_response_register_list[j].rid, response->en61107_response_serial);
                             }
                             else {
                                 unit_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(en61107_response->en61107_response_register_list[j].unit, rid_value_unit_string_ptr, unit_string_length);
-                                //printf("rid: %s value: %s unit: %s\n", en61107_response->en61107_response_register_list[j].rid, en61107_response->en61107_response_register_list[j].value, en61107_response->en61107_response_register_list[j].unit);
+                                memcpy(response->en61107_response_register_list[j].unit, rid_value_unit_string_ptr, unit_string_length);
+                                //printf("rid: %s value: %s unit: %s\n", response->en61107_response_register_list[j].rid, response->en61107_response_register_list[j].value, response->en61107_response_register_list[j].unit);
                                 j++;
 
                             }
@@ -118,16 +119,38 @@ bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fra
         }
     }
     return false;
+	*/
 }
 
 ICACHE_FLASH_ATTR
-bool parse_mc66cde_inst_values_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) {
 	char *p;
 	int i = 0;
 
-	p = strtok(mc66cde_frame, " ");
+	p = strtok(frame, " ");
 	while (p != NULL) {
-		*(mc66cde_response + i) = atoi(p);
+		switch (i) {
+			case 0:
+				strncpy(response->t1.value, p, EN61107_VALUE_L);
+				strncpy(response->t1.unit, "C", EN61107_UNIT_L);
+				break;
+			case 1:
+				strncpy(response->t3.value, p, EN61107_VALUE_L);
+				strncpy(response->t3.unit, "C", EN61107_UNIT_L);
+				break;
+			case 2:
+				strncpy(response->t2.value, p, EN61107_VALUE_L);
+				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
+				break;
+			case 5:
+				strncpy(response->flow1.value, p, EN61107_VALUE_L);
+				strncpy(response->flow1.unit, "l/h", EN61107_UNIT_L);
+				break;
+			case 7:
+				strncpy(response->effect1.value, p, EN61107_VALUE_L);
+				strncpy(response->effect1.unit, "kW", EN61107_UNIT_L);
+				break;
+		}
 		i++;
 		p = strtok(NULL, " ");
 	}
