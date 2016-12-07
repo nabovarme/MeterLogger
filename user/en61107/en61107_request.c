@@ -361,7 +361,7 @@ inline bool en61107_is_eod_char(uint8_t c) {
 			return false;
 		}
 		else if (en61107_etx_received) {
-//			en61107_etx_received = false;
+//			en61107_etx_received = false;	// DEBUG: should really be here
 			return true;
 		}
 	}
