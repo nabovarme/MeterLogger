@@ -246,6 +246,7 @@ static void en61107_received_task(os_event_t *events) {
 			break;
 		case UART_STATE_UNKNOWN_4:
 			en61107_eod = 0x03;
+			en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
 			// 300 bps
 			uart_set_baudrate(UART0, BIT_RATE_300);
@@ -276,14 +277,16 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-			strncpy(frame, "\r", EN61107_FRAME_L);
-			frame_length = strlen(frame);
-			uart0_tx_buffer(frame, frame_length);     // send request
+			//strncpy(frame, "\r", EN61107_FRAME_L);
+			//frame_length = strlen(frame);
+			//uart0_tx_buffer(frame, frame_length);     // send request
+			uart0_tx_buffer((message + message_l - 1), 1);
 
 			/*
 			if (parse_en61107_frame(&response, message, message_l) == 0) {
 				return;
 			}
+			*/
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
@@ -306,7 +309,6 @@ static void en61107_received_task(os_event_t *events) {
 					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 				}
 			}
-			*/
 
 			en61107_uart_state = UART_STATE_NONE;
 			break;
@@ -345,11 +347,9 @@ inline bool en61107_is_eod_char(uint8_t c) {
 			en61107_etx_received = true;
 			return false;
 		}
-		else {
-			if (en61107_etx_received) {
-				en61107_etx_received = false;
-				return true;
-			}
+		else if (en61107_etx_received) {
+//			en61107_etx_received = false;
+			return true;
 		}
 	}
 	else {
@@ -381,7 +381,7 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
-	en61107_eod = 0x0d;
+	en61107_eod = '\r';
 
 	// 300 bps
 	uart_set_baudrate(UART0, BIT_RATE_300);
