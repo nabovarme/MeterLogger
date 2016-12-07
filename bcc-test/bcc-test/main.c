@@ -15,6 +15,7 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <strings.h>
 
@@ -27,26 +28,60 @@
 #define EN61107_METER_TYPE_L 8
 
 typedef struct {
-    char rid[EN61107_RID_L];
-    char unit[EN61107_UNIT_L];
     char value[EN61107_VALUE_L];
+    char unit[EN61107_UNIT_L];
 } en61107_response_register_t;
 
-typedef en61107_response_register_t en61107_response_register_list_t[8];   // max 8 registers per request
-
 typedef struct {
-    char en61107_response_serial[EN61107_SERIAL_L];
-    char en61107_response_meter_type[EN61107_METER_TYPE_L];
-    en61107_response_register_list_t en61107_response_register_list;
+    char serial[EN61107_SERIAL_L];
+    char meter_type[EN61107_METER_TYPE_L];
+    en61107_response_register_t t1;
+    en61107_response_register_t t2;
+    en61107_response_register_t t3;
+    en61107_response_register_t flow1;
+    en61107_response_register_t effect1;
+    en61107_response_register_t hr;
+    en61107_response_register_t v1;
+    en61107_response_register_t e1;
 } en61107_response_t;
 
-en61107_response_t en_61107_response;
+en61107_response_t en61107_response;
 
 char data[EN61107_FRAME_L] = "\x2F\x4B\x41\x4D\x20\x4D\x43\x0D\x0A\x02\x30\x2E\x30\x28\x30\x30\x30\x30\x30\x30\x30\x30\x30\x34\x30\x29\x0D\x0A\x36\x2E\x38\x28\x30\x30\x30\x30\x30\x2E\x30\x30\x2A\x4D\x57\x68\x29\x0D\x0A\x36\x2E\x32\x36\x28\x30\x30\x30\x30\x30\x30\x2E\x30\x2A\x6D\x33\x29\x0D\x0A\x36\x2E\x33\x31\x28\x30\x30\x35\x33\x31\x38\x39\x2A\x68\x29\x21\x0D\x0A\x03\x0e";
 
 unsigned int data_length = 86;
 
-int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) {
+void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
+    if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
+        // energy
+        strncpy(response->e1.value, value, value_length);
+    }
+    else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
+        // volume
+        strncpy(response->v1.value, value, value_length);
+    }
+    else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
+        // hours
+        strncpy(response->hr.value, value, value_length);
+    }
+}
+
+void en61107_response_set_unit(en61107_response_t *response, char *rid, char *unit, unsigned int unit_length) {
+    if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
+        // energy
+        strncpy(response->e1.unit, unit, unit_length);
+    }
+    else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
+        // volume
+        strncpy(response->v1.unit, unit, unit_length);
+    }
+    else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
+        // hours
+        strncpy(response->hr.unit, unit, unit_length);
+    }
+}
+
+bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
     unsigned int i, j;
     uint8_t bcc;
     uint8_t calculated_bcc;
@@ -54,6 +89,7 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     const char *separator = "\x0D\x0A";
     const char *stx = "\x02";
     const char *etx = "\x21\x0D\x0A\x03";
+    char rid[EN61107_RID_L];
     char meter_type_string[EN61107_REGISTER_L];
     char rid_value_unit_string[EN61107_REGISTER_L];
     char register_list_string[EN61107_FRAME_L];
@@ -68,44 +104,42 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
     
     
     // sanity check
-    if (!en61107_frame_length) {
+    if (!frame_length) {
         return 0;
     }
     
-    bcc = en61107_frame[en61107_frame_length - 1];
+    bcc = frame[frame_length - 1];
     calculated_bcc = 0;
-    for (i = 0; i < data_length; i++) {
-        //printf("#%d %c (0x%x)\n", i, en61107_frame[i], en61107_frame[i]);
-        if (en61107_frame[i] == 0x02) {
+    for (i = 0; i < frame_length; i++) {
+        if (frame[i] == 0x02) {
             // stx
             calculated_bcc = 0;
         }
         else {
-            calculated_bcc += en61107_frame[i];
+            calculated_bcc += frame[i];
             calculated_bcc &= 0x7f;  // 7 bit value
             
-            if (en61107_frame[i] == 0x03) {
+            if (frame[i] == 0x03) {
                 // etx
                 if (bcc == calculated_bcc) {
                     // crc ok
                     // parse meter_type
-                    memset(&en_61107_response, 0, sizeof(en_61107_response));
+                    memset(response, 0, sizeof(en61107_response_t));
                     memset(meter_type_string, 0, EN61107_REGISTER_L);    // clear meter_type_string (null terminalte)
-                    pos = strstr(en61107_frame, stx);               // find position of stx char
+                    pos = strstr(frame, stx);               // find position of stx char
                     if (pos != NULL) {                              // if found stx char...
-                        length = pos - en61107_frame;               // ...save meter_type string
+                        length = pos - frame;               // ...save meter_type string
                         // DEBUG: check if length - 3 is >= 0
-                        memcpy(en_61107_response.en61107_response_meter_type, en61107_frame + 1, length - 3);
-                        printf("meter type: %s\n", en_61107_response.en61107_response_meter_type);
-                        en61107_frame += length + 3;
+                        memcpy(response->meter_type, frame + 1, length - 3);
+                        frame += length + 3;
                     }
                     
                     // parse to etx and save to register_list_string
                     memset(register_list_string, 0, EN61107_FRAME_L);
-                    pos = strstr(en61107_frame, etx);               // find position of etx
+                    pos = strstr(frame, etx);               // find position of etx
                     if (pos != NULL) {
-                        length = pos - en61107_frame;
-                        memcpy(register_list_string, en61107_frame, length);
+                        length = pos - frame;
+                        memcpy(register_list_string, frame, length);
                     }
 
                     // parse values
@@ -115,40 +149,69 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
                     while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
                         length = pos - register_list_string_ptr;
                         memcpy(rid_value_unit_string, register_list_string_ptr, length);
-                        //printf(">%s<\n", rid_value_unit_string);
                         rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 
                         // parse register number, value and unit unless rid == 0
                         pos = strstr(rid_value_unit_string, "(");
                         if (pos != NULL) {
                             rid_string_length = pos - rid_value_unit_string;
-                            memcpy(en_61107_response.en61107_response_register_list[j].rid, rid_value_unit_string, rid_string_length);
+                            memcpy(rid, rid_value_unit_string, rid_string_length);
                             rid_value_unit_string_ptr += rid_string_length + 1;
                         }
                         pos = strstr(rid_value_unit_string_ptr, "*");
                         if (pos != NULL) {
                             value_string_length = pos - rid_value_unit_string_ptr;
-                            memcpy(en_61107_response.en61107_response_register_list[j].value, rid_value_unit_string_ptr, value_string_length);
+                            en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
                             rid_value_unit_string_ptr += value_string_length + 1;
                         }
                         pos = strstr(rid_value_unit_string_ptr, ")");
                         if (pos != NULL) {
-                            if (strncmp(en_61107_response.en61107_response_register_list[j].rid, "0", 1) == 0) {
+                            if (strncmp(rid, "0", 1) == 0) {
                                 // serial number, no unit
                                 serial_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(en_61107_response.en61107_response_serial, rid_value_unit_string_ptr, serial_string_length);
-                                printf("rid: %s serial: %s\n", en_61107_response.en61107_response_register_list[j].rid, en_61107_response.en61107_response_serial);
+                                memcpy(response->serial, rid_value_unit_string_ptr, serial_string_length);
                             }
                             else {
                                 unit_string_length = pos - rid_value_unit_string_ptr;
-                                memcpy(en_61107_response.en61107_response_register_list[j].unit, rid_value_unit_string_ptr, unit_string_length);
-                                printf("rid: %s value: %s unit: %s\n", en_61107_response.en61107_response_register_list[j].rid, en_61107_response.en61107_response_register_list[j].value, en_61107_response.en61107_response_register_list[j].unit);
+                                en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
                                 j++;
 
                             }
                         }
 
                         register_list_string_ptr += length + 2;
+                    }
+                    
+                    
+                    // handle the last
+                    length = strlen(register_list_string_ptr);
+                    memcpy(rid_value_unit_string, register_list_string_ptr, length);
+                    rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
+                    
+                    // parse register number, value and unit unless rid == 0
+                    pos = strstr(rid_value_unit_string, "(");
+                    if (pos != NULL) {
+                        rid_string_length = pos - rid_value_unit_string;
+                        memcpy(rid, rid_value_unit_string, rid_string_length);
+                        rid_value_unit_string_ptr += rid_string_length + 1;
+                    }
+                    pos = strstr(rid_value_unit_string_ptr, "*");
+                    if (pos != NULL) {
+                        value_string_length = pos - rid_value_unit_string_ptr;
+                        en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
+                        rid_value_unit_string_ptr += value_string_length + 1;
+                    }
+                    pos = strstr(rid_value_unit_string_ptr, ")");
+                    if (pos != NULL) {
+                        if (strncmp(rid, "0", 1) == 0) {
+                            // serial number, no unit
+                            serial_string_length = pos - rid_value_unit_string_ptr;
+                            memcpy(response->serial, rid_value_unit_string_ptr, serial_string_length);
+                        }
+                        else {
+                            unit_string_length = pos - rid_value_unit_string_ptr;
+                            en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
+                        }
                     }
 
                     return 1;
@@ -161,8 +224,14 @@ int parse_en61107_frame(char *en61107_frame, unsigned int en61107_frame_length) 
 
 
 int main(int argc, const char * argv[]) {
-    if (parse_en61107_frame(data, data_length)) {
+    if (parse_en61107_frame(&en61107_response, data, data_length)) {
         printf("bcc ok\n");
+        
+        printf("serial: %s\n", en61107_response.serial);
+        printf("meter type: %s\n", en61107_response.meter_type);
+        printf("e1: %s %s\n", en61107_response.e1.value, en61107_response.e1.unit);
+        printf("v1: %s %s\n", en61107_response.v1.value, en61107_response.v1.unit);
+        printf("hr: %s %s\n", en61107_response.hr.value, en61107_response.v1.unit);
     }
     else {
         printf("bcc error\n");

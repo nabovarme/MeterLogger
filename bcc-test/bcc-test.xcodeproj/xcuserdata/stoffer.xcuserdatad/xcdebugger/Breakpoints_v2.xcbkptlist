@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bcc-test/main.c"
-            timestampString = "477526105.95121"
+            timestampString = "502837902.408289"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
             landmarkName = "parse_en61107_frame()"
             landmarkType = "9">
          </BreakpointContent>
@@ -26,11 +26,27 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bcc-test/main.c"
-            timestampString = "477526105.95121"
+            timestampString = "502837902.408289"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "parse_en61107_frame()"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bcc-test/main.c"
+            timestampString = "502837902.408289"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
             landmarkName = "parse_en61107_frame()"
             landmarkType = "9">
          </BreakpointContent>

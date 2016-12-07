@@ -349,39 +349,21 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
 					strcat(message, key_value);
 
-/*
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x1=%s %s&", response.en61107_response_register_list[0].value, 
-						response.en61107_response_register_list[0].unit);
+					// flow
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", response.flow1.value, response.flow1.unit);
 					strcat(message, key_value);
 
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x2=%s %s&", response.en61107_response_register_list[1].value, 
-						response.en61107_response_register_list[1].unit);
+					// current power
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", response.effect1.value, response.effect1.unit);
 					strcat(message, key_value);
 
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x3=%s %s&", response.en61107_response_register_list[2].value, 
-						response.en61107_response_register_list[2].unit);
+					// hours
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", response.hr.value, response.hr.unit);
 					strcat(message, key_value);
 
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x4=%s %s&", response.en61107_response_register_list[3].value, 
-						response.en61107_response_register_list[3].unit);
+					// power
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
-
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x5=%s %s&", response.en61107_response_register_list[4].value, 
-						response.en61107_response_register_list[4].unit);
-					strcat(message, key_value);
-
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x6=%s %s&", response.en61107_response_register_list[5].value, 
-						response.en61107_response_register_list[5].unit);
-					strcat(message, key_value);
-
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x7=%s %s&", response.en61107_response_register_list[6].value, 
-						response.en61107_response_register_list[6].unit);
-					strcat(message, key_value);
-
-					tfp_snprintf(key_value, MQTT_TOPIC_L, "x8=%s %s&", response.en61107_response_register_list[7].value, 
-						response.en61107_response_register_list[7].unit);
-					strcat(message, key_value);
-*/
 
 					message_l = strlen(message);				
 
