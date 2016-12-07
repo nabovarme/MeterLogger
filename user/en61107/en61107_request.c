@@ -297,7 +297,9 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_EN61107:
 			en61107_eod = '\r';
 
-			parse_en61107_frame(&response, message, message_l);
+			if (parse_en61107_frame(&response, message, message_l) == false) {
+				break;
+			}
 
 			// 300 bps
 			uart_set_baudrate(UART0, BIT_RATE_300);
@@ -347,6 +349,38 @@ static void en61107_received_task(os_event_t *events) {
         	
 					// return flow temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%d C&", mc66cde_temp_array[2]);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x1=%s %s&", response.en61107_response_register_list[0].value, 
+						response.en61107_response_register_list[0].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x2=%s %s&", response.en61107_response_register_list[1].value, 
+						response.en61107_response_register_list[1].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x3=%s %s&", response.en61107_response_register_list[2].value, 
+						response.en61107_response_register_list[2].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x4=%s %s&", response.en61107_response_register_list[3].value, 
+						response.en61107_response_register_list[3].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x5=%s %s&", response.en61107_response_register_list[4].value, 
+						response.en61107_response_register_list[4].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x6=%s %s&", response.en61107_response_register_list[5].value, 
+						response.en61107_response_register_list[5].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x7=%s %s&", response.en61107_response_register_list[6].value, 
+						response.en61107_response_register_list[6].unit);
+					strcat(message, key_value);
+
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "x8=%s %s&", response.en61107_response_register_list[7].value, 
+						response.en61107_response_register_list[7].unit);
 					strcat(message, key_value);
 
 					message_l = strlen(message);				
