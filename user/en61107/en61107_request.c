@@ -333,10 +333,9 @@ static void en61107_received_task(os_event_t *events) {
 			led_on();
 
 			message[message_l - 1] = 0;		// null terminate
-			message_l = strlen(message);
 
 			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
-			parse_mc66cde_frame(mc66cde_temp_array, message);
+			//parse_mc66cde_frame(mc66cde_temp_array, message);
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
@@ -361,6 +360,8 @@ static void en61107_received_task(os_event_t *events) {
 				// return flow temperature
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%d C&", mc66cde_temp_array[2]);
 				strcat(message, key_value);
+
+				message_l = strlen(message);				
 			}
 	
 			if (mqtt_client) {
@@ -464,7 +465,7 @@ void en61107_request_send() {
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 12000, 0);         // after 12 seconds
+	os_timer_arm(&en61107_receive_timeout_timer, 16000, 0);         // after 16 seconds
 
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER
