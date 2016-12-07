@@ -5,7 +5,7 @@
 #include "en61107.h"
 
 ICACHE_FLASH_ATTR
-int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_frame, unsigned int en61107_frame_length) {
+bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_frame, unsigned int en61107_frame_length) {
     unsigned int i, j;
     uint8_t bcc;
     uint8_t calculated_bcc;
@@ -28,7 +28,7 @@ int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fram
     
     // sanity check
     if (!en61107_frame_length) {
-        return 0;
+        return false;
     }
     
     bcc = en61107_frame[en61107_frame_length - 1];
@@ -110,16 +110,16 @@ int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fram
                         register_list_string_ptr += length + 2;
                     }
 
-                    return 1;
+                    return true;
                 }
             }
         }
     }
-    return 0;
+    return false;
 }
 
 ICACHE_FLASH_ATTR
-int parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
+bool parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
 	char *p;
 	int i = 0;
 
@@ -131,6 +131,6 @@ int parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
 		p = strtok(NULL, " ");
 	}
 */
-	return 1;
+	return true;
 }
 
