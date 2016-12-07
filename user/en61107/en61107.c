@@ -123,11 +123,14 @@ int parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
 	char *p;
 	int i = 0;
 
+/*
 	p = strtok(mc66cde_frame, " ");
 	while (p != NULL) {
-		*(mc66cde_response + i) = atoi(p);
+		//*(mc66cde_response + i) = atoi(p);
 		i++;
 		p = strtok(NULL, " ");
 	}
+*/
+	return 1;
 }
 

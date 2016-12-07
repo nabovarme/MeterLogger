@@ -330,12 +330,17 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_INST_VALUES;
 			break;
 		case UART_STATE_INST_VALUES:
-			led_on();
-
 			message[message_l - 1] = 0;		// null terminate
 
 			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
-			//parse_mc66cde_frame(mc66cde_temp_array, message);
+			if (strlen(message) > 0) {
+//				parse_mc66cde_frame(mc66cde_temp_array, message);
+			}
+			else {
+				break;
+			}
+
+			led_on();
 
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
@@ -346,8 +351,9 @@ static void en61107_received_task(os_event_t *events) {
 				tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 				tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
 
+/*
    				memset(message, 0, sizeof(message));			// clear it
-        	
+
 				// heap size
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 				strcat(message, key_value);
@@ -360,14 +366,14 @@ static void en61107_received_task(os_event_t *events) {
 				// return flow temperature
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%d C&", mc66cde_temp_array[2]);
 				strcat(message, key_value);
-
+*/
 				message_l = strlen(message);				
-			}
 	
-			if (mqtt_client) {
-				// if mqtt_client is initialized
-				if (message_l > 1) {
-					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+				if (mqtt_client) {
+					// if mqtt_client is initialized
+					if (message_l > 1) {
+						MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+					}
 				}
 			}
 
