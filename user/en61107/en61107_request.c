@@ -325,7 +325,7 @@ static void en61107_received_task(os_event_t *events) {
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
-			if (parse_mc66cde_frame(mc66cde_temp_array, message)) {
+			if (parse_mc66cde_inst_values_frame(mc66cde_temp_array, message)) {
 				led_on();
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)

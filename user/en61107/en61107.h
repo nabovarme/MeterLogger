@@ -24,5 +24,5 @@ ICACHE_FLASH_ATTR
 bool parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_frame, unsigned int en61107_frame_length);
 
 ICACHE_FLASH_ATTR
-bool parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame);
+bool parse_mc66cde_inst_values_frame(int32_t *mc66cde_response, char *mc66cde_frame);
 
