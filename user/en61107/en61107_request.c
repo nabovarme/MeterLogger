@@ -71,12 +71,6 @@ static void en61107_received_task(os_event_t *events) {
 	}
 	message_l = i;
 
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-
 	switch (en61107_uart_state) {
 		case UART_STATE_STANDARD_DATA:
 			// 300 bps
@@ -129,6 +123,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial = atoi(message);
 
 			// 2400 bps, 7e2
@@ -146,6 +145,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial += atoi(message) << 8;
 
 			// 2400 bps, 7e2
@@ -163,6 +167,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial += atoi(message) << 16;
 
 			// 2400 bps, 7e2
@@ -180,6 +189,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial += atoi(message) << 24;
 
 			// 2400 bps, 7e2
@@ -197,6 +211,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial += atoi(message) << 32;
 
 			// 2400 bps, 7e2
@@ -214,6 +233,11 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
 			en61107_serial += atoi(message) << 40;
 
 			// 2400 bps, 7e2
@@ -273,6 +297,12 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_eod = '\r';
 
 			/*
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+
 			if (parse_en61107_frame(&response, message, message_l) == 0) {
 				return;
 			}
@@ -301,6 +331,8 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_INST_VALUES:
 			led_on();
 
+			message[message_l] = 0;		// null terminate
+			message_l = strlen(message);
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
    				// prepare for mqtt transmission if we got serial number from meter
