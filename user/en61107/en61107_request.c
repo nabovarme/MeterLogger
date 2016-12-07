@@ -60,6 +60,7 @@ static void en61107_received_task(os_event_t *events) {
 	char key_value[128];
 	unsigned char topic[128];
 	unsigned char message[EN61107_FRAME_L];
+	int32_t mc66cde_temp_array[8];			// DEBUG: should be removed
 	int key_value_l;
 	int topic_l;
 	int message_l;
@@ -331,8 +332,12 @@ static void en61107_received_task(os_event_t *events) {
 		case UART_STATE_INST_VALUES:
 			led_on();
 
-			message[message_l] = 0;		// null terminate
+			message[message_l - 1] = 0;		// null terminate
 			message_l = strlen(message);
+
+			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
+			parse_mc66cde_frame(mc66cde_temp_array, message);
+
 			current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 			if (current_unix_time) {	// only send mqtt if we got current time via ntp
    				// prepare for mqtt transmission if we got serial number from meter
@@ -342,10 +347,20 @@ static void en61107_received_task(os_event_t *events) {
 				tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 				tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
 
-   				//strcpy(message, "");	// clear it
-		
-				key_value_l = os_sprintf(key_value, "test=%s&", response.en61107_response_meter_type);
-				strncpy(message, key_value, key_value_l);
+   				memset(message, 0, sizeof(message));			// clear it
+        	
+				// heap size
+				tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
+				strcat(message, key_value);
+
+				// heating meter specific
+				// flow temperature
+				tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%d C&", mc66cde_temp_array[0]);
+				strcat(message, key_value);
+        	
+				// return flow temperature
+				tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%d C&", mc66cde_temp_array[2]);
+				strcat(message, key_value);
 			}
 	
 			if (mqtt_client) {

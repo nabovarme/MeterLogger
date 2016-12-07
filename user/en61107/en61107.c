@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <strings.h>
+#include <string.h>
 
 #include <esp8266.h>
 #include "en61107.h"
@@ -116,5 +116,18 @@ int parse_en61107_frame(en61107_response_t *en61107_response, char *en61107_fram
         }
     }
     return 0;
+}
+
+ICACHE_FLASH_ATTR
+int parse_mc66cde_frame(int32_t *mc66cde_response, char *mc66cde_frame) {
+	char *p;
+	int i = 0;
+
+	p = strtok(mc66cde_frame, " ");
+	while (p != NULL) {
+		*(mc66cde_response + i) = atoi(p);
+		i++;
+		p = strtok(NULL, " ");
+	}
 }
 
