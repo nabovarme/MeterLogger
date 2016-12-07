@@ -330,7 +330,7 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_INST_VALUES;
 			break;
 		case UART_STATE_INST_VALUES:
-			message[message_l] = '\0';		// null terminate
+			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			memset(mc66cde_temp_array, 0, sizeof(mc66cde_temp_array));
 			if (parse_mc66cde_frame(mc66cde_temp_array, message)) {
@@ -344,7 +344,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
 
-//					memset(message, 0, sizeof(char[EN61107_FRAME_L]));			// clear it
+					memset(message, 0, sizeof(char[EN61107_FRAME_L]));			// clear it
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
