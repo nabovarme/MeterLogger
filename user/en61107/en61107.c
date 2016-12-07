@@ -25,7 +25,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	size_t value_string_length;
 	size_t unit_string_length;
 	size_t serial_string_length;
-	
+
+	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 	
 	// sanity check
 	if (!frame_length) {
@@ -86,7 +87,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
 							value_string_length = pos - rid_value_unit_string_ptr;
-							en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
+							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str);
+							en61107_response_set_value(response, rid, decimal_str, value_string_length);
 							rid_value_unit_string_ptr += value_string_length + 1;
 						}
 						pos = strstr(rid_value_unit_string_ptr, ")");
@@ -123,7 +125,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, "*");
 					if (pos != NULL) {
 						value_string_length = pos - rid_value_unit_string_ptr;
-						en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
+						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str);
+						en61107_response_set_value(response, rid, decimal_str, value_string_length);
 						rid_value_unit_string_ptr += value_string_length + 1;
 					}
 					pos = strstr(rid_value_unit_string_ptr, ")");
@@ -151,28 +154,34 @@ ICACHE_FLASH_ATTR
 bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) {
 	char *p;
 	int i = 0;
+	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
 	p = strtok(frame, " ");
 	while (p != NULL) {
 		switch (i) {
 			case 0:
-				strncpy(response->t1.value, p, EN61107_VALUE_L);
+				divide_str_by_100(p, decimal_str);
+				strncpy(response->t1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t1.unit, "C", EN61107_UNIT_L);
 				break;
 			case 1:
-				strncpy(response->t3.value, p, EN61107_VALUE_L);
+				divide_str_by_100(p, decimal_str);
+				strncpy(response->t3.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t3.unit, "C", EN61107_UNIT_L);
 				break;
 			case 2:
-				strncpy(response->t2.value, p, EN61107_VALUE_L);
+				divide_str_by_100(p, decimal_str);
+				strncpy(response->t2.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
 				break;
 			case 5:
-				strncpy(response->flow1.value, p, EN61107_VALUE_L);
+				divide_str_by_100(p, decimal_str);
+				strncpy(response->flow1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->flow1.unit, "l/h", EN61107_UNIT_L);
 				break;
 			case 7:
-				strncpy(response->effect1.value, p, EN61107_VALUE_L);
+				divide_str_by_100(p, decimal_str);
+				strncpy(response->effect1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->effect1.unit, "kW", EN61107_UNIT_L);
 				break;
 		}
