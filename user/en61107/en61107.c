@@ -198,11 +198,12 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	}
 
 	// calculate tdif
-	tdif_int = atoi(t2) - atoi(t1);
+	tdif_int = atoi(t1) - atoi(t2);
 	if (tdif_int < 0) {
 		// dont send negative tdif
 		tdif_int = 0;
 	}
+
 	tfp_snprintf(tdif, EN61107_VALUE_L, "%d", tdif_int);
 	divide_str_by_100(tdif, decimal_str);
 	strncpy(response->tdif.value, decimal_str, EN61107_VALUE_L);
