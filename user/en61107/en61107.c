@@ -2,6 +2,8 @@
 #include <string.h>
 
 #include <esp8266.h>
+#include "utils.h"
+#include "tinyprintf.h"
 #include "en61107.h"
 
 ICACHE_FLASH_ATTR
@@ -157,8 +159,8 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
 	// for calculation of tdif
-	int32_t t1;
-	int32_t t2;
+	int32_t t1 = 0;
+	int32_t t2 = 0;
 	char tdif[EN61107_VALUE_L];
 	int32_t tdif_int;
 

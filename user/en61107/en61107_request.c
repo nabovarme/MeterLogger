@@ -13,7 +13,7 @@
 
 #define QUEUE_SIZE 256
 
-unsigned int en61107_serial = 0;
+long long unsigned int en61107_serial = 0;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -63,8 +63,6 @@ static void en61107_received_task(os_event_t *events) {
 	char key_value[128];
 	unsigned char topic[128];
 	unsigned char message[EN61107_FRAME_L];
-	int key_value_l;
-	int topic_l;
 	int message_l;
 
 	// vars for aes encryption
@@ -134,7 +132,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial = atoi(message);
+			en61107_serial = (long long unsigned int)atoi(message);
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -156,7 +154,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += atoi(message) << 8;
+			en61107_serial += (long long unsigned int)atoi(message) << 8;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -178,7 +176,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += atoi(message) << 16;
+			en61107_serial += (long long unsigned int)atoi(message) << 16;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -200,7 +198,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += atoi(message) << 24;
+			en61107_serial += (long long unsigned int)atoi(message) << 24;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -222,7 +220,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += atoi(message) << 32;
+			en61107_serial += (long long unsigned int)atoi(message) << 32;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -244,7 +242,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += atoi(message) << 40;
+			en61107_serial += (long long unsigned int)atoi(message) << 40;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -337,7 +335,7 @@ static void en61107_received_task(os_event_t *events) {
    					// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", en61107_serial, current_unix_time_string);
+					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%llu/%s", en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(EN61107_FRAME_L));			// clear it
 
@@ -448,6 +446,7 @@ inline bool en61107_is_eod_char(uint8_t c) {
 			return false;
 		}
 	}
+	return false;
 }
 
 ICACHE_FLASH_ATTR
