@@ -328,6 +328,7 @@ static void en61107_received_task(os_event_t *events) {
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			if (parse_mc66cde_inst_values_frame(&response, message)) {
+				led_blink();	// DEBUG
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp

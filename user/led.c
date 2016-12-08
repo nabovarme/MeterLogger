@@ -3,6 +3,7 @@
 #include "led.h"
 
 static os_timer_t led_blinker_timer;
+static os_timer_t led_single_blink_off_timer;
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
 	// do blinky stuff
@@ -12,6 +13,10 @@ ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
 	else {
 		led_off();
 	}
+}
+
+ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
+	led_off();
 }
 	
 ICACHE_FLASH_ATTR void led_init(void) {
@@ -31,6 +36,13 @@ ICACHE_FLASH_ATTR void led_off(void) {
 	
 	// Set GPIO2 to HIGH
 	gpio_output_set(BIT2, 0, BIT2, 0);
+}
+
+ICACHE_FLASH_ATTR void led_blink(void) {
+	led_on();
+	os_timer_disarm(&led_single_blink_off_timer);
+	os_timer_setfn(&led_single_blink_off_timer, (os_timer_func_t *)led_single_blink_off_timer_func, NULL);
+	os_timer_arm(&led_single_blink_off_timer, 1000, 0);
 }
 
 ICACHE_FLASH_ATTR void led_pattern_a(void) {
