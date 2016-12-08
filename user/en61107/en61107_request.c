@@ -6,6 +6,9 @@
 #include "tinyprintf.h"
 #include "en61107.h"
 #include "en61107_request.h"
+#include "config.h"
+#include "crypto/crypto.h"
+#include "crypto/aes.h"
 
 #define QUEUE_SIZE 256
 
@@ -62,6 +65,9 @@ static void en61107_received_task(os_event_t *events) {
 	int key_value_l;
 	int topic_l;
 	int message_l;
+
+	// vars for aes encryption
+	uint8_t cleartext[EN61107_FRAME_L];
 
 	memset(message, 0x00, EN61107_FRAME_L);			// clear message buffer
 	i = 0;
@@ -330,7 +336,7 @@ static void en61107_received_task(os_event_t *events) {
    					// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%u/%s", en61107_serial, current_unix_time_string);
+					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(EN61107_FRAME_L));			// clear it
 
@@ -375,6 +381,12 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
 
+					memset(cleartext, 0, EN61107_FRAME_L);
+					os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
+					os_memset(message, 0, EN61107_FRAME_L);			// ...and clear it
+						
+					// encrypt and send
+					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 					message_l = strlen(message);
 
 					if (mqtt_client) {
