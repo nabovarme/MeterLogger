@@ -134,8 +134,8 @@ ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str) {
 	int32_t l;
 
-	strcpy(cleaned_up_str, decimal_str);
-
+	strncpy(cleaned_up_str, decimal_str);
+/*
 	// cleanup leading non integers
 	l = strlen(cleaned_up_str);
 	while (l && ((*cleaned_up_str <= '0') || (*cleaned_up_str > '9'))) {
@@ -152,6 +152,7 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 	if (strlen(cleaned_up_str) == 0) {
 		strcpy(cleaned_up_str, "0");
 	}
+*/
 }
 
 ICACHE_FLASH_ATTR
