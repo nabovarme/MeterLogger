@@ -183,7 +183,8 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
 				break;
 			case 5:
-				strncpy(response->flow1.value, p, EN61107_VALUE_L);
+				divide_str_by_10(p, decimal_str);
+				strncpy(response->flow1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->flow1.unit, "l/h", EN61107_UNIT_L);
 				break;
 			case 7:

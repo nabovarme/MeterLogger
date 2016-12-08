@@ -7,6 +7,7 @@
 ICACHE_FLASH_ATTR uint16_t ccit_crc16(uint8_t *data_p, unsigned int length);
 ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw);
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w);
+ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str);
 ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str);
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str);
 ICACHE_FLASH_ATTR unsigned int decimal_number_length(int n);

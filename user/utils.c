@@ -105,6 +105,19 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	tfp_snprintf(w, 11, "%u", result_int);
 }
 
+ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str) {
+	uint32_t result_int, result_frac;
+	uint32_t value_int;
+    
+	value_int = atoi(str);
+    
+	// ...divide by 10 and prepare decimal string
+	result_int = (int32_t)(value_int / 10);
+	result_frac = value_int % 10;
+    
+	tfp_snprintf(decimal_str, 8, "%u.%01u", result_int, result_frac);
+}
+
 ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 	uint32_t result_int, result_frac;
 	uint32_t value_int;
