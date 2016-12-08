@@ -9,6 +9,7 @@
 #include "config.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
+#include "utils.h"
 
 #define QUEUE_SIZE 256
 
@@ -491,7 +492,7 @@ void en61107_request_send() {
 	// start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 16000, 0);         // after 16 seconds
+	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
 
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER

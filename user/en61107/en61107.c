@@ -157,8 +157,8 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
 	// for calculation of tdif
-	char t1[EN61107_VALUE_L];
-	char t2[EN61107_VALUE_L];
+	int32_t t1;
+	int32_t t2;
 	char tdif[EN61107_VALUE_L];
 	int32_t tdif_int;
 
@@ -166,18 +166,20 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	while (p != NULL) {
 		switch (i) {
 			case 0:
-				strncpy(t1, p, EN61107_VALUE_L);	// for later calculation of tdif
+				//strncpy(t1, p, EN61107_VALUE_L);	// for later calculation of tdif
+				t1 = atoi(p);
 				divide_str_by_100(p, decimal_str);
 				strncpy(response->t1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t1.unit, "C", EN61107_UNIT_L);
 				break;
 			case 1:
-				strncpy(t2, p, EN61107_VALUE_L);	// for later calculation of tdif
 				divide_str_by_100(p, decimal_str);
 				strncpy(response->t3.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t3.unit, "C", EN61107_UNIT_L);
 				break;
 			case 2:
+				//strncpy(t2, p, EN61107_VALUE_L);	// for later calculation of tdif
+				t2 = atoi(p);
 				divide_str_by_100(p, decimal_str);
 				strncpy(response->t2.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
@@ -197,13 +199,13 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	}
 
 	// calculate tdif
-	tdif_int = atoi(t1) - atoi(t2);
+	tdif_int = t1 - t2;
 	if (tdif_int < 0) {
 		// dont send negative tdif
 		tdif_int = 0;
 	}
 
-	tfp_snprintf(tdif, EN61107_VALUE_L, "%d", tdif_int);
+	tfp_snprintf(tdif, EN61107_VALUE_L, "%u", tdif_int);
 	divide_str_by_100(tdif, decimal_str);
 	strncpy(response->tdif.value, decimal_str, EN61107_VALUE_L);
 	strncpy(response->tdif.unit, "C", EN61107_UNIT_L);
