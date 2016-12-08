@@ -131,10 +131,10 @@ ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 	tfp_snprintf(decimal_str, 8, "%u.%02u", result_int, result_frac);
 }
 
-ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str) {
+ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
 	int32_t l;
 
-	strncpy(cleaned_up_str, decimal_str);
+	strncpy(cleaned_up_str, decimal_str, length);
 /*
 	// cleanup leading non integers
 	l = strlen(cleaned_up_str);

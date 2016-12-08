@@ -89,7 +89,9 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
 							value_string_length = pos - rid_value_unit_string_ptr;
-							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str);
+							memset(decimal_str, 0, (EN61107_VALUE_L + 1));	// clear before use
+							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+							value_string_length = strlen(decimal_str);
 							en61107_response_set_value(response, rid, decimal_str, value_string_length);
 							rid_value_unit_string_ptr += value_string_length + 1;
 						}
@@ -127,7 +129,9 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, "*");
 					if (pos != NULL) {
 						value_string_length = pos - rid_value_unit_string_ptr;
-						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str);
+						memset(decimal_str, 0, (EN61107_VALUE_L + 1));	// clear before use
+						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+						value_string_length = strlen(decimal_str);
 						en61107_response_set_value(response, rid, decimal_str, value_string_length);
 						rid_value_unit_string_ptr += value_string_length + 1;
 					}
