@@ -448,7 +448,13 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
-#ifdef IMPULSE
+#ifdef EN61107
+#	ifdef THERMO_NO
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#elif defined IMPULSE
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
 #else
 #	ifdef THERMO_NO
@@ -534,7 +540,13 @@ ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t to
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
-#ifdef IMPULSE
+#ifdef EN61107
+#	ifdef THERMO_NO
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#elif defined IMPULSE
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
 #else
 #	ifdef THERMO_NO
