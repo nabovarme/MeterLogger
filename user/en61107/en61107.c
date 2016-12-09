@@ -27,7 +27,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	size_t rid_string_length;
 	size_t value_string_length;
 	size_t unit_string_length;
-	size_t serial_string_length;
+	size_t customer_no_string_length;
 
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 	
@@ -98,9 +98,9 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, ")");
 						if (pos != NULL) {
 							if (strncmp(rid, "0", 1) == 0) {
-								// serial number, no unit
-								serial_string_length = pos - rid_value_unit_string_ptr;
-								memcpy(response->serial, rid_value_unit_string_ptr, serial_string_length);
+								// customer number, no unit
+								customer_no_string_length = pos - rid_value_unit_string_ptr;
+								memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 							}
 							else {
 								unit_string_length = pos - rid_value_unit_string_ptr;
@@ -137,9 +137,9 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, ")");
 					if (pos != NULL) {
 						if (strncmp(rid, "0", 1) == 0) {
-							// serial number, no unit
-							serial_string_length = pos - rid_value_unit_string_ptr;
-							memcpy(response->serial, rid_value_unit_string_ptr, serial_string_length);
+							// customer number, no unit
+							customer_no_string_length = pos - rid_value_unit_string_ptr;
+							memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 						}
 						else {
 							unit_string_length = pos - rid_value_unit_string_ptr;

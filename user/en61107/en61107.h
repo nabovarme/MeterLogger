@@ -3,7 +3,7 @@
 #define EN61107_RID_L 6
 #define EN61107_UNIT_L 5
 #define EN61107_VALUE_L 10
-#define EN61107_SERIAL_L 13
+#define EN61107_CUSTOMER_NO_L 13
 #define EN61107_METER_TYPE_L 8
 
 typedef struct {
@@ -12,7 +12,7 @@ typedef struct {
 } en61107_response_register_t;
 
 typedef struct {
-	char serial[EN61107_SERIAL_L];
+	char customer_no[EN61107_CUSTOMER_NO_L];
 	char meter_type[EN61107_METER_TYPE_L];
 	en61107_response_register_t t1;
 	en61107_response_register_t t2;
