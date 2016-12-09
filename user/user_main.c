@@ -783,9 +783,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 	// start watchdog
 	init_watchdog();
-#ifndef EN61107
 	start_watchdog();
-#endif
 
 #ifdef IMPULSE
 	ext_spi_init();
