@@ -14,7 +14,6 @@
 
 #define QUEUE_SIZE 256
 
-long long unsigned int en61107_customer_number = 0;
 long long unsigned int en61107_serial = 0;
 //unsigned int mqtt_lwt_flag = 0;
 
@@ -134,7 +133,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number = (long long unsigned int)atoi(message);
+			en61107_serial = (long long unsigned int)atoi(message);
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -156,7 +155,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number += (long long unsigned int)atoi(message) << 8;
+			en61107_serial += (long long unsigned int)atoi(message) << 8;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -178,7 +177,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number += (long long unsigned int)atoi(message) << 16;
+			en61107_serial += (long long unsigned int)atoi(message) << 16;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -200,7 +199,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number += (long long unsigned int)atoi(message) << 24;
+			en61107_serial += (long long unsigned int)atoi(message) << 24;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -222,7 +221,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number += (long long unsigned int)atoi(message) << 32;
+			en61107_serial += (long long unsigned int)atoi(message) << 32;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -244,7 +243,7 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_customer_number += (long long unsigned int)atoi(message) << 40;
+			en61107_serial += (long long unsigned int)atoi(message) << 40;
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -331,7 +330,6 @@ static void en61107_received_task(os_event_t *events) {
 
 			if (parse_mc66cde_inst_values_frame(&response, message)) {
 				led_blink();	// DEBUG
-				en61107_serial = atol(response.serial);
 
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
