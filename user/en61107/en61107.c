@@ -3,6 +3,7 @@
 
 #include <esp8266.h>
 #include "utils.h"
+#include "led.h"
 #include "tinyprintf.h"
 #include "en61107.h"
 
@@ -89,7 +90,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
 							value_string_length = pos - rid_value_unit_string_ptr;
-							memset(decimal_str, 0, (EN61107_VALUE_L + 1));	// clear before use
 							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
 							value_string_length = strlen(decimal_str);
 							en61107_response_set_value(response, rid, decimal_str, value_string_length);
@@ -129,7 +129,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, "*");
 					if (pos != NULL) {
 						value_string_length = pos - rid_value_unit_string_ptr;
-						memset(decimal_str, 0, (EN61107_VALUE_L + 1));	// clear before use
 						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
 						value_string_length = strlen(decimal_str);
 						en61107_response_set_value(response, rid, decimal_str, value_string_length);

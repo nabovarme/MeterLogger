@@ -10,6 +10,7 @@
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
 #include "utils.h"
+#include "led.h"
 
 #define QUEUE_SIZE 256
 
