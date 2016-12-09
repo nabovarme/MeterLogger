@@ -470,6 +470,11 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+	if (en61107_uart_state != UART_STATE_NONE) {
+		// allready sending request to meter
+		return;
+	}
+
 	en61107_eod = '\r';
 
 	// 300 bps
