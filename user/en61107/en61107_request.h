@@ -17,8 +17,8 @@ unsigned int en61107_get_received_serial();
 //ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c);
 
-ICACHE_FLASH_ATTR
-void en61107_receive_timeout_timer_func();
+//ICACHE_FLASH_ATTR
+//void en61107_receive_timeout_timer_func();
 
 ICACHE_FLASH_ATTR
 void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings);

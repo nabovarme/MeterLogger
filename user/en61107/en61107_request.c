@@ -15,6 +15,7 @@
 #define QUEUE_SIZE 256
 
 long long unsigned int en61107_serial = 0;
+bool en61107_serial_set = false;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -30,7 +31,7 @@ en61107_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-static os_timer_t en61107_receive_timeout_timer;
+//static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
 
 enum {
@@ -133,7 +134,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial = (long long unsigned int)atoi(message);
+			if (en61107_serial_set == false) {
+				en61107_serial = (long long unsigned int)atoi(message);
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -155,7 +158,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += (long long unsigned int)atoi(message) << 8;
+			if (en61107_serial_set == false) {
+				en61107_serial += (long long unsigned int)atoi(message) << 8;
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -177,7 +182,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += (long long unsigned int)atoi(message) << 16;
+			if (en61107_serial_set == false) {
+				en61107_serial += (long long unsigned int)atoi(message) << 16;
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -199,7 +206,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += (long long unsigned int)atoi(message) << 24;
+			if (en61107_serial_set == false) {
+				en61107_serial += (long long unsigned int)atoi(message) << 24;
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -221,7 +230,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += (long long unsigned int)atoi(message) << 32;
+			if (en61107_serial_set == false) {
+				en61107_serial += (long long unsigned int)atoi(message) << 32;
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -243,7 +254,9 @@ static void en61107_received_task(os_event_t *events) {
 				memmove(message, message + 1, strlen(message));
 				message_l--;
 			}
-			en61107_serial += (long long unsigned int)atoi(message) << 40;
+			if (en61107_serial_set == false) {
+				en61107_serial += (long long unsigned int)atoi(message) << 40;
+			}
 
 			// 2400 bps, 7e2
 			uart_set_baudrate(UART0, BIT_RATE_2400);
@@ -337,7 +350,7 @@ static void en61107_received_task(os_event_t *events) {
    					// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%llu/%s", en61107_serial, current_unix_time_string);
+					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v1/%llu/%s", en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(EN61107_FRAME_L));			// clear it
 
@@ -382,12 +395,12 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
 
-					memset(cleartext, 0, EN61107_FRAME_L);
-					os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-					os_memset(message, 0, EN61107_FRAME_L);			// ...and clear it
+					//memset(cleartext, 0, EN61107_FRAME_L);
+					//os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
+					//os_memset(message, 0, EN61107_FRAME_L);			// ...and clear it
 						
 					// encrypt and send
-					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+					//message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 					message_l = strlen(message);
 
 					if (mqtt_client) {
@@ -451,13 +464,13 @@ inline bool en61107_is_eod_char(uint8_t c) {
 	return false;
 }
 
-ICACHE_FLASH_ATTR
-void en61107_receive_timeout_timer_func() {
-	if (en61107_uart_state != UART_STATE_NONE) {
-		// if no reply received, retransmit
-		en61107_request_send();
-	}
-}
+//ICACHE_FLASH_ATTR
+//void en61107_receive_timeout_timer_func() {
+//	if (en61107_uart_state != UART_STATE_NONE) {
+//		// if no reply received, retransmit
+//		en61107_request_send();
+//	}
+//}
 
 ICACHE_FLASH_ATTR
 void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
@@ -496,9 +509,9 @@ void en61107_request_send() {
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
 
 	// start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
+//	os_timer_disarm(&en61107_receive_timeout_timer);
+//	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+//	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
 
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER

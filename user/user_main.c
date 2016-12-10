@@ -899,7 +899,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifndef DEBUG_SHORT_WEB_CONFIG_TIME
 		os_timer_arm(&sample_mode_timer, 120000, 0);
 #else
-		os_timer_arm(&sample_mode_timer, 18000, 0);
+		os_timer_arm(&sample_mode_timer, 22000, 0);
 #endif
 	}
 }
