@@ -340,10 +340,10 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_state = UART_STATE_INST_VALUES;
 			break;
 		case UART_STATE_INST_VALUES:
-			led_blink();	// DEBUG
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			if (parse_mc66cde_inst_values_frame(&response, message)) {
+				led_blink();	// DEBUG
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
 
@@ -395,9 +395,9 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
 
-					memset(cleartext, 0, cleartext);
+					memset(cleartext, 0, sizeof(cleartext));
 					os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-					os_memset(message, 0, message);				// ...and clear it
+					os_memset(message, 0, sizeof(message));				// ...and clear it
 
 					// encrypt and send
 					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);

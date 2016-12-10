@@ -52,6 +52,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 				if (bcc == calculated_bcc) {
 					// crc ok
 					// parse meter_type
+					memset(response, 0, sizeof(en61107_response_t));
 					memset(meter_type_string, 0, EN61107_REGISTER_L);	// clear meter_type_string (null terminalte)
 					pos = strstr(frame, stx);			   // find position of stx char
 					if (pos != NULL) {							  // if found stx char...
