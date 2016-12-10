@@ -769,9 +769,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 
 #ifdef EN61107
-//	uart_init(BIT_RATE_300, BIT_RATE_300);
+	uart_init(BIT_RATE_300, BIT_RATE_300);
 #else
-//	uart_init(BIT_RATE_1200, BIT_RATE_1200);
+	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 #endif
 
 	// clear mqtt_client

@@ -400,7 +400,7 @@ static void en61107_received_task(os_event_t *events) {
 					os_memset(message, 0, sizeof(message));				// ...and clear it
 
 					// encrypt and send
-					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext));
 					message_l = strlen(message);
 
 					if (mqtt_client) {
@@ -490,7 +490,7 @@ void en61107_request_send() {
 //		// allready sending request to meter
 //		return;
 //	}
-/*
+
 	en61107_eod = '\r';
 
 	// 300 bps
@@ -519,23 +519,6 @@ void en61107_request_send() {
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
 #ifdef DEBUG_NO_METER
 	unsigned char topic[128];
-	unsigned char message[EN61107_FRAME_L];
-	int topic_l;
-	int message_l;
-	
-	// fake serial for testing without meter
-	en61107_serial = atoi(DEFAULT_METER_SERIAL);
-	
-	topic_l = os_sprintf(topic, "/sample/v1/%u/%u", en61107_serial, get_unix_time());
-	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
-	
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-	}
-#endif
-*/
-	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];
 	unsigned char message[EN61107_FRAME_L];
 	int topic_l;
@@ -551,11 +534,6 @@ void en61107_request_send() {
 	os_memset(message, 0, sizeof(message));				// ...and clear it
 
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext));
-//	message_l = strlen(message);
-
-	system_set_os_print(1);
-	printf("len: %d enc: %s\n", message_l, message);
-	system_set_os_print(0);
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized
@@ -564,6 +542,7 @@ void en61107_request_send() {
 			led_blink();
 		}
 	}
+#endif
 }
 
 // fifo
