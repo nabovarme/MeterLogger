@@ -17,7 +17,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	const char *stx = "\x02";
 	const char *etx = "\x21\x0D\x0A\x03";
 	char rid[EN61107_RID_L];
-	char meter_type_string[EN61107_REGISTER_L];
 	char rid_value_unit_string[EN61107_REGISTER_L];
 	char register_list_string[EN61107_FRAME_L];
 	char *register_list_string_ptr;
@@ -53,12 +52,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					// crc ok
 					// parse meter_type
 					memset(response, 0, sizeof(en61107_response_t));
-					memset(meter_type_string, 0, EN61107_REGISTER_L);	// clear meter_type_string (null terminalte)
+					memset(response->meter_type, 0, EN61107_METER_TYPE_L);	// clear meter_type_string (null terminalte)
 					pos = strstr(frame, stx);			   // find position of stx char
 					if (pos != NULL) {							  // if found stx char...
 						length = pos - frame;			   // ...save meter_type string
 						// DEBUG: check if length - 3 is >= 0
-						memcpy(response->meter_type, frame + 1, length - 3);
+						memcpy(response->meter_type, frame + 1, length - 3);	// DEBUG: check bounds
 						frame += length + 3;
 					}
 					
@@ -72,11 +71,10 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 
 					// parse values
 					j = 0;
-					memset(rid_value_unit_string, 0, EN61107_REGISTER_L);
-					memset(rid, 0, EN61107_RID_L);
 					register_list_string_ptr = register_list_string;		// force pointer arithmetics
 					while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
 						length = pos - register_list_string_ptr;
+						memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 						memcpy(rid_value_unit_string, register_list_string_ptr, length);
 						rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 
@@ -84,6 +82,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string, "(");
 						if (pos != NULL) {
 							rid_string_length = pos - rid_value_unit_string;
+							memset(rid, 0, EN61107_RID_L);					// zero (null terminate)
 							memcpy(rid, rid_value_unit_string, rid_string_length);
 							rid_value_unit_string_ptr += rid_string_length + 1;
 						}
@@ -101,6 +100,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 							if (strncmp(rid, "0", 1) == 0) {
 								// customer number, no unit
 								customer_no_string_length = pos - rid_value_unit_string_ptr;
+								memset(response->customer_no, 0, EN61107_CUSTOMER_NO_L);	// zero (null terminate)
 								memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 							}
 							else {
@@ -117,6 +117,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					
 					// handle the last
 					length = strlen(register_list_string_ptr);
+					memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 					memcpy(rid_value_unit_string, register_list_string_ptr, length);
 					rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
 					
@@ -124,6 +125,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string, "(");
 					if (pos != NULL) {
 						rid_string_length = pos - rid_value_unit_string;
+						memset(rid, 0, EN61107_RID_L);					// zero (null terminate)
 						memcpy(rid, rid_value_unit_string, rid_string_length);
 						rid_value_unit_string_ptr += rid_string_length + 1;
 					}
@@ -141,6 +143,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						if (strncmp(rid, "0", 1) == 0) {
 							// customer number, no unit
 							customer_no_string_length = pos - rid_value_unit_string_ptr;
+							memset(response->customer_no, 0, EN61107_CUSTOMER_NO_L);	// zero (null terminate)
 							memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 						}
 						else {
