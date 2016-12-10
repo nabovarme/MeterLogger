@@ -439,7 +439,8 @@ void en61107_set_mqtt_client(MQTT_Client* client) {
 // helper function to pass received kmp_serial to user_main.c
 ICACHE_FLASH_ATTR
 uint32_t en61107_get_received_serial() {
-	return (uint32_t)en61107_serial;
+	//return (uint32_t)en61107_serial;
+	return 4615611;
 }
 
 //ICACHE_FLASH_ATTR
@@ -489,7 +490,7 @@ void en61107_request_send() {
 //		// allready sending request to meter
 //		return;
 //	}
-
+/*
 	en61107_eod = '\r';
 
 	// 300 bps
@@ -533,6 +534,26 @@ void en61107_request_send() {
 		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}
 #endif
+*/
+	unsigned char topic[128];
+	unsigned char message[EN61107_FRAME_L];
+	int topic_l;
+	int message_l;
+	
+	// fake serial for testing without meter
+	en61107_serial = 4615611;
+	
+	topic_l = os_sprintf(topic, "/sample/v2/%u/%u", en61107_serial, get_unix_time());
+	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
+	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+	message_l = strlen(message);
+
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		if (message_l > 1) {
+			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+		}
+	}
 }
 
 // fifo
