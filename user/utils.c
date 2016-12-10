@@ -138,9 +138,10 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 	uint8_t prepend_zeroes;
 	char zeroes[8];
 
-	strncpy(cleaned_up_str, decimal_str, length);
-	cleaned_up_str[length] = 0;	// null terminate
-/*
+//	strncpy(cleaned_up_str, decimal_str, length);
+	strcpy(cleaned_up_str, "0123.012");
+//	cleaned_up_str[length] = 0;	// null terminate
+
 	pos = strstr(cleaned_up_str, ".");
 	if (pos == NULL) {
 		// non fractional number
@@ -168,7 +169,6 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 
 		tfp_snprintf(cleaned_up_str, length, "%u.%s%u", value_int, zeroes, value_frac);
 	}
-*/
 }
 
 ICACHE_FLASH_ATTR
