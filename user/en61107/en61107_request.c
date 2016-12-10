@@ -85,7 +85,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "/MP1\r", EN61107_FRAME_L);
+			strcpy(frame, "/MP1\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -105,7 +105,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, ONE_STOP_BIT);
 	
-			strncpy(frame, "M32\r", EN61107_FRAME_L);
+			strcpy(frame, "M32\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -120,7 +120,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200654\r", EN61107_FRAME_L);
+			strcpy(frame, "M200654\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -144,7 +144,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200655\r", EN61107_FRAME_L);
+			strcpy(frame, "M200655\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -168,7 +168,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200656\r", EN61107_FRAME_L);
+			strcpy(frame, "M200656\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -192,7 +192,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200657\r", EN61107_FRAME_L);
+			strcpy(frame, "M200657\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -216,7 +216,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200658\r", EN61107_FRAME_L);
+			strcpy(frame, "M200658\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -240,7 +240,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M200659\r", EN61107_FRAME_L);
+			strcpy(frame, "M200659\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -256,6 +256,7 @@ static void en61107_received_task(os_event_t *events) {
 			}
 			if (en61107_serial_set == false) {
 				en61107_serial += (long long unsigned int)atoi(message) << 40;
+				en61107_serial_set = true;
 			}
 
 			// 2400 bps, 7e2
@@ -264,7 +265,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "M906540659\r", EN61107_FRAME_L);
+			strcpy(frame, "M906540659\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -279,7 +280,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-			strncpy(frame, "*\r", EN61107_FRAME_L);
+			strcpy(frame, "*\r");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -297,7 +298,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-			strncpy(frame, "/?!\r\n", EN61107_FRAME_L);
+			strcpy(frame, "/?!\r\n");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -324,7 +325,7 @@ static void en61107_received_task(os_event_t *events) {
 			uart_set_parity(UART0, EVEN_BITS);
 			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-			strncpy(frame, "/#C", EN61107_FRAME_L);
+			strcpy(frame, "/#C");
 			frame_length = strlen(frame);
 			uart0_tx_buffer(frame, frame_length);     // send request
 
@@ -352,7 +353,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%llu/%s", en61107_serial, current_unix_time_string);
 
-					memset(message, 0, sizeof(message));			// clear it
+					memset(message, 0x00, EN61107_FRAME_L);			// clear it
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
@@ -398,7 +399,7 @@ static void en61107_received_task(os_event_t *events) {
 					memset(cleartext, 0, EN61107_FRAME_L);
 					os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
 					os_memset(message, 0, EN61107_FRAME_L);			// ...and clear it
-						
+
 					// encrypt and send
 					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 					message_l = strlen(message);
@@ -498,7 +499,7 @@ void en61107_request_send() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strncpy(frame, "/#2\r", EN61107_FRAME_L);
+	strcpy(frame, "/#2\r");
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
