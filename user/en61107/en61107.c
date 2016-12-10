@@ -157,7 +157,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 }
 
 ICACHE_FLASH_ATTR
-bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) {
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	char *p;
 	int i = 0;
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
@@ -191,7 +191,8 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
 				break;
 			case 5:
-				strncpy(response->flow1.value, p, EN61107_VALUE_L);
+				cleanup_decimal_str(p, decimal_str, strlen(p));
+				strncpy(response->flow1.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->flow1.unit, "l/h", EN61107_UNIT_L);
 				break;
 			case 7:
@@ -202,7 +203,7 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 		}
 		i++;
 		p = strtok(NULL, " ");
-	}
+	};
 
 	// calculate tdif
 	tdif_int = t1 - t2;
@@ -215,7 +216,7 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame) 
 	divide_str_by_100(tdif, decimal_str);
 	strncpy(response->tdif.value, decimal_str, EN61107_VALUE_L);
 	strncpy(response->tdif.unit, "C", EN61107_UNIT_L);
-	
+
 	return true;
 }
 

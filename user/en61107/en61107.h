@@ -29,7 +29,7 @@ ICACHE_FLASH_ATTR
 bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
-bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame);
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length);
