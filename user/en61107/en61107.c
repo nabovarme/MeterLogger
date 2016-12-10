@@ -27,7 +27,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	size_t value_string_length;
 	size_t unit_string_length;
 	size_t customer_no_string_length;
-
+	
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 	
 	// sanity check
@@ -68,7 +68,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						length = pos - frame;
 						memcpy(register_list_string, frame, length);
 					}
-
+					
 					// parse values
 					j = 0;
 					register_list_string_ptr = register_list_string;		// force pointer arithmetics
@@ -77,7 +77,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 						memcpy(rid_value_unit_string, register_list_string_ptr, length);
 						rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
-
+						
 						// parse register number, value and unit unless rid == 0
 						pos = strstr(rid_value_unit_string, "(");
 						if (pos != NULL) {
@@ -89,10 +89,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
 							value_string_length = pos - rid_value_unit_string_ptr;
-							//cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
-							//value_string_length = strlen(decimal_str);
-							//en61107_response_set_value(response, rid, decimal_str, value_string_length);
-							en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
+							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+							en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
 							rid_value_unit_string_ptr += value_string_length + 1;
 						}
 						pos = strstr(rid_value_unit_string_ptr, ")");
@@ -107,10 +105,10 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 								unit_string_length = pos - rid_value_unit_string_ptr;
 								en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
 								j++;
-
+								
 							}
 						}
-
+						
 						register_list_string_ptr += length + 2;
 					}
 					
@@ -132,10 +130,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, "*");
 					if (pos != NULL) {
 						value_string_length = pos - rid_value_unit_string_ptr;
-						//cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
-						//value_string_length = strlen(decimal_str);
-						//en61107_response_set_value(response, rid, decimal_str, value_string_length);
-						en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
+						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+						en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
 						rid_value_unit_string_ptr += value_string_length + 1;
 					}
 					pos = strstr(rid_value_unit_string_ptr, ")");
@@ -151,7 +147,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 							en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
 						}
 					}
-
+					
 					return true;
 				}
 			}
