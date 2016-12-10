@@ -63,7 +63,7 @@ static void en61107_received_task(os_event_t *events) {
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
-	unsigned char topic[128];
+	unsigned char topic[MQTT_TOPIC_L];
 	unsigned char message[EN61107_FRAME_L];
 	int message_l;
 
@@ -352,7 +352,7 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%llu/%s", en61107_serial, current_unix_time_string);
 
-					memset(message, 0, sizeof(EN61107_FRAME_L));			// clear it
+					memset(message, 0, sizeof(message));			// clear it
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
