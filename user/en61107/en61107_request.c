@@ -14,7 +14,7 @@
 
 #define QUEUE_SIZE 256
 
-long long unsigned int en61107_serial = 0;
+uint64_t en61107_serial = 0;
 bool en61107_serial_set = false;
 //unsigned int mqtt_lwt_flag = 0;
 
@@ -135,7 +135,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial = (long long unsigned int)atoi(message);
+				en61107_serial = (uint64_t)atoi(message);
 			}
 
 			// 2400 bps, 7e2
@@ -159,7 +159,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial += (long long unsigned int)atoi(message) << 8;
+				en61107_serial += (uint64_t)atoi(message) << 8;
 			}
 
 			// 2400 bps, 7e2
@@ -183,7 +183,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial += (long long unsigned int)atoi(message) << 16;
+				en61107_serial += (uint64_t)atoi(message) << 16;
 			}
 
 			// 2400 bps, 7e2
@@ -207,7 +207,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial += (long long unsigned int)atoi(message) << 24;
+				en61107_serial += (uint64_t)atoi(message) << 24;
 			}
 
 			// 2400 bps, 7e2
@@ -231,7 +231,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial += (long long unsigned int)atoi(message) << 32;
+				en61107_serial += (uint64_t)atoi(message) << 32;
 			}
 
 			// 2400 bps, 7e2
@@ -255,7 +255,7 @@ static void en61107_received_task(os_event_t *events) {
 				message_l--;
 			}
 			if (en61107_serial_set == false) {
-				en61107_serial += (long long unsigned int)atoi(message) << 40;
+				en61107_serial += (uint64_t)atoi(message) << 40;
 				en61107_serial_set = true;
 			}
 
@@ -350,7 +350,7 @@ static void en61107_received_task(os_event_t *events) {
    					// format /sample/v2/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%llu/%s", en61107_serial, current_unix_time_string);
+					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", (uint32_t)en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(message));			// clear it
 
@@ -438,8 +438,8 @@ void en61107_set_mqtt_client(MQTT_Client* client) {
 
 // helper function to pass received kmp_serial to user_main.c
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_serial() {
-	return en61107_serial;
+uint32_t en61107_get_received_serial() {
+	return (uint32_t)en61107_serial;
 }
 
 //ICACHE_FLASH_ATTR
