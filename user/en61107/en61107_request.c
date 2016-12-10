@@ -421,7 +421,7 @@ void en61107_request_init() {
 	fifo_head = 0;
 	fifo_tail = 0;
 
-	memset(&response, 0, sizeof(en61107_response_t);	// zero response before use
+	memset(&response, 0, sizeof(en61107_response_t));	// zero response before use
 
 	en61107_uart_state = UART_STATE_NONE;
 
