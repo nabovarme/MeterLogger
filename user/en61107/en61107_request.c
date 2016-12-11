@@ -36,7 +36,7 @@ static os_timer_t en61107_delayed_uart_change_setting_timer;
 
 enum {
 	UART_STATE_NONE,
-	UART_STATE_STANDARD_DATA,
+	UART_STATE_STANDARD_DATA_2,
 	UART_STATE_UNKNOWN_1,
 	UART_STATE_UNKNOWN_2,
 	UART_STATE_SERIAL_BYTE_1,
@@ -78,25 +78,27 @@ static void en61107_received_task(os_event_t *events) {
 	message_l = i;
 
 	switch (en61107_uart_state) {
-		case UART_STATE_STANDARD_DATA:
-			// 300 bps
-			uart_set_baudrate(UART0, BIT_RATE_300);
-			uart_set_word_length(UART0, SEVEN_BITS);
-			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-			strcpy(frame, "/MP1\r");
-			frame_length = strlen(frame);
-			uart0_tx_buffer(frame, frame_length);     // send request
+		case UART_STATE_STANDARD_DATA_2:
+			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
+				// 300 bps
+				uart_set_baudrate(UART0, BIT_RATE_300);
+				uart_set_word_length(UART0, SEVEN_BITS);
+				uart_set_parity(UART0, EVEN_BITS);
+				uart_set_stop_bits(UART0, TWO_STOP_BIT);
+		
+				strcpy(frame, "/MP1\r");
+				frame_length = strlen(frame);
+				uart0_tx_buffer(frame, frame_length);     // send request
 
-			// reply is 300 bps, 7e1, not 7e2 as stated in standard
-			uart_settings.baut_rate = BIT_RATE_300;
-			uart_settings.stop_bits = ONE_STOP_BIT;
-			// change uart settings after the data has been sent
-			os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
-			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
-			en61107_uart_state = UART_STATE_UNKNOWN_1;
+				// reply is 300 bps, 7e1, not 7e2 as stated in standard
+				uart_settings.baut_rate = BIT_RATE_300;
+				uart_settings.stop_bits = ONE_STOP_BIT;
+				// change uart settings after the data has been sent
+				os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+				os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
+				os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
+				en61107_uart_state = UART_STATE_UNKNOWN_1;
+			}
 			break;
 		case UART_STATE_UNKNOWN_1:
 			// 1200 bps, 7e1, not 7e2 as stated in standard
@@ -357,6 +359,18 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 					strcat(message, key_value);
 
+					// meter program
+					tfp_snprintf(key_value, MQTT_TOPIC_L, "program=%01u%01u%03u%02u%01u%02u%02u&", 
+						response.meter_program.a, 
+						response.meter_program.b, 
+						response.meter_program.ccc, 
+						response.meter_program.dd, 
+						response.meter_program.e, 
+						response.meter_program.ff, 
+						response.meter_program.gg
+					);
+					strcat(message, key_value);
+
 					// heating meter specific
 					// flow temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", response.t1.value, response.t1.unit);
@@ -399,7 +413,7 @@ static void en61107_received_task(os_event_t *events) {
 					os_memset(message, 0, sizeof(message));				// ...and clear it
 
 					// encrypt and send
-					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext));
+					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 					if (mqtt_client) {
 						// if mqtt_client is initialized
@@ -515,7 +529,7 @@ void en61107_request_send() {
 //	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 //	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
 
-	en61107_uart_state = UART_STATE_STANDARD_DATA;
+	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
 #else
 	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];
@@ -532,7 +546,7 @@ void en61107_request_send() {
 	os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
 	os_memset(message, 0, sizeof(message));				// ...and clear it
 
-	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext));
+	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized

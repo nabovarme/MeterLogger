@@ -12,8 +12,19 @@ typedef struct {
 } en61107_response_register_t;
 
 typedef struct {
+	uint8_t a;
+	uint8_t b;
+	uint32_t ccc;
+	uint16_t dd;
+	uint8_t e;
+	uint16_t ff;
+	uint16_t gg
+} en61107_meter_program_t;
+
+typedef struct {
 	char customer_no[EN61107_CUSTOMER_NO_L];
 	char meter_type[EN61107_METER_TYPE_L];
+	en61107_meter_program_t meter_program;
 	en61107_response_register_t t1;
 	en61107_response_register_t t2;
 	en61107_response_register_t t3;
@@ -27,6 +38,9 @@ typedef struct {
 
 ICACHE_FLASH_ATTR
 bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
+
+ICACHE_FLASH_ATTR
+bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
