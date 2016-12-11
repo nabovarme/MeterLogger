@@ -438,8 +438,7 @@ void en61107_set_mqtt_client(MQTT_Client* client) {
 // helper function to pass received kmp_serial to user_main.c
 ICACHE_FLASH_ATTR
 uint32_t en61107_get_received_serial() {
-	//return (uint32_t)en61107_serial;
-	return 4615611;
+	return (uint32_t)en61107_serial;
 }
 
 //ICACHE_FLASH_ATTR
