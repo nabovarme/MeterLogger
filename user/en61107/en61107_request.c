@@ -346,7 +346,6 @@ static void en61107_received_task(os_event_t *events) {
 				led_blink();	// DEBUG
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
-
    					// format /sample/v2/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
 					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
@@ -401,7 +400,6 @@ static void en61107_received_task(os_event_t *events) {
 
 					// encrypt and send
 					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext));
-					message_l = strlen(message);
 
 					if (mqtt_client) {
 						// if mqtt_client is initialized
@@ -409,6 +407,7 @@ static void en61107_received_task(os_event_t *events) {
 							MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 						}
 					}
+
 					en61107_uart_state = UART_STATE_NONE;
 				}
 			}
@@ -543,6 +542,7 @@ void en61107_request_send() {
 			led_blink();
 		}
 	}
+
 #endif
 }
 
