@@ -486,6 +486,7 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+#ifndef DEBUG_NO_METER
 //	if (en61107_uart_state != UART_STATE_NONE) {
 //		// allready sending request to meter
 //		return;
@@ -517,7 +518,7 @@ void en61107_request_send() {
 //	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
 
 	en61107_uart_state = UART_STATE_STANDARD_DATA;
-#ifdef DEBUG_NO_METER
+#else
 	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];
 	unsigned char message[EN61107_FRAME_L];

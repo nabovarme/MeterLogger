@@ -769,7 +769,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 
 #ifdef EN61107
+#ifndef DEBUG_NO_METER
 	uart_init(BIT_RATE_300, BIT_RATE_300);
+#endif	// DEBUG_NO_METER
 #else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 #endif
@@ -777,7 +779,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));
 
-#ifndef DEBUG
+#if !defined(DEBUG) || !defined(DEBUG_NO_METER)
 	// disable serial debug
 	system_set_os_print(0);
 #endif
