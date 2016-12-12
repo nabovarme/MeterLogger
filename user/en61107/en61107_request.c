@@ -427,7 +427,7 @@ static void en61107_received_task(os_event_t *events) {
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
 			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
-			os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_INST_VALUES
+			os_timer_arm(&en61107_receive_timeout_timer, 3200, 0);         // 3.2 seconds for UART_STATE_INST_VALUES
 			break;
 		case UART_STATE_INST_VALUES:
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
@@ -503,6 +503,9 @@ static void en61107_received_task(os_event_t *events) {
 					// encrypt and send
 					message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
+					// and stop retransmission timeout timer, last data from meter
+					os_timer_disarm(&en61107_receive_timeout_timer);
+
 					if (mqtt_client) {
 						// if mqtt_client is initialized
 						if (message_l > 1) {
@@ -512,9 +515,6 @@ static void en61107_received_task(os_event_t *events) {
 
 					// change to last state - idle state
 					en61107_uart_state = UART_STATE_NONE;
-
-					// and stop retransmission timeout timer, last data from meter
-					os_timer_disarm(&en61107_receive_timeout_timer);
 				}
 			}
 			break;
