@@ -4,8 +4,8 @@
 #include "unix_time.h"
 #include "mqtt.h"
 #include "tinyprintf.h"
-#include "en61107.h"
 #include "en61107_request.h"
+#include "en61107.h"
 #include "config.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
@@ -31,29 +31,32 @@ en61107_response_t response;
 
 static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
-//static os_timer_t en61107_receive_timeout_timer;
+static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
 
-enum {
-	UART_STATE_NONE,
-	UART_STATE_STANDARD_DATA_2,
-	UART_STATE_UNKNOWN_1,
-	UART_STATE_UNKNOWN_2,
-	UART_STATE_SERIAL_BYTE_1,
-	UART_STATE_SERIAL_BYTE_2,
-	UART_STATE_SERIAL_BYTE_3,
-	UART_STATE_SERIAL_BYTE_4,
-	UART_STATE_SERIAL_BYTE_5,
-	UART_STATE_SERIAL_BYTE_6,
-	UART_STATE_UNKNOWN_3,
-	UART_STATE_UNKNOWN_4,
-	UART_STATE_EN61107,
-	UART_STATE_INST_VALUES
-} en61107_uart_state;
+en61107_uart_state_t en61107_uart_state;
+en61107_uart_state_t next_en61107_uart_state;
 UartDevice uart_settings;
 
 volatile uint8_t en61107_eod;
 bool en61107_etx_received;
+
+ICACHE_FLASH_ATTR
+void en61107_receive_timeout_timer_func(en61107_uart_state_t *next_en61107_uart_state) {
+	if (en61107_uart_state != *next_en61107_uart_state) {
+		// if no reply received, retransmit
+		// DEBUG: stop all timers started via en61107_request_send()
+		en61107_request_send();
+	}
+}
+
+ICACHE_FLASH_ATTR
+void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
+	uart_set_baudrate(UART0, uart_settings->baut_rate);
+//	uart_set_word_length(UART0, SEVEN_BITS);
+//	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, uart_settings->stop_bits);
+}
 
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
@@ -97,7 +100,15 @@ static void en61107_received_task(os_event_t *events) {
 				os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 				os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 				os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
+
+				// change to next state
 				en61107_uart_state = UART_STATE_UNKNOWN_1;
+				next_en61107_uart_state = en61107_uart_state;
+
+				// and start retransmission timeout timer
+				os_timer_disarm(&en61107_receive_timeout_timer);
+				os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+				os_timer_arm(&en61107_receive_timeout_timer, 1400, 0);         // 1.4 seconds for UART_STATE_UNKNOWN_1
 			}
 			break;
 		case UART_STATE_UNKNOWN_1:
@@ -113,7 +124,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 1200 bps
 
+			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_2;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 80, 0);         // 80 mS for UART_STATE_UNKNOWN_2
 			break;
 		case UART_STATE_UNKNOWN_2:
 			// 2400 bps, 7e2
@@ -128,7 +146,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_1
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
 			message[message_l] = 0;		// null terminate
@@ -152,7 +177,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_2
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
 			message[message_l] = 0;		// null terminate
@@ -176,7 +208,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_3
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
 			message[message_l] = 0;		// null terminate
@@ -200,7 +239,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_4
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
 			message[message_l] = 0;		// null terminate
@@ -224,7 +270,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_5
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
 			message[message_l] = 0;		// null terminate
@@ -248,7 +301,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_6
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
 			message[message_l] = 0;		// null terminate
@@ -273,7 +333,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 300, 0);         // 300 mS for UART_STATE_UNKNOWN_3
 			break;
 		case UART_STATE_UNKNOWN_3:
 			// 2400 bps, 7e2
@@ -288,7 +355,14 @@ static void en61107_received_task(os_event_t *events) {
 
 			// reply is 2400 bps, 7e2
 
+			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_4;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 40, 0);         // 40 mS for UART_STATE_UNKNOWN_4
 			break;
 		case UART_STATE_UNKNOWN_4:
 			en61107_eod = 0x03;
@@ -312,7 +386,14 @@ static void en61107_received_task(os_event_t *events) {
 			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 400, 0);	// 400 mS
 
+			// change to next state
 			en61107_uart_state = UART_STATE_EN61107;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);         // 6 seconds for UART_STATE_EN61107
 			break;
 		case UART_STATE_EN61107:
 			en61107_eod = '\r';
@@ -339,7 +420,14 @@ static void en61107_received_task(os_event_t *events) {
 			os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 			os_timer_arm(&en61107_delayed_uart_change_setting_timer, 300, 0);	// 300 mS
 
+			// change to next state
 			en61107_uart_state = UART_STATE_INST_VALUES;
+			next_en61107_uart_state = en61107_uart_state;
+
+			// and start retransmission timeout timer
+			os_timer_disarm(&en61107_receive_timeout_timer);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_INST_VALUES
 			break;
 		case UART_STATE_INST_VALUES:
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
@@ -422,7 +510,11 @@ static void en61107_received_task(os_event_t *events) {
 						}
 					}
 
+					// change to last state - idle state
 					en61107_uart_state = UART_STATE_NONE;
+
+					// and stop retransmission timeout timer, last data from meter
+					os_timer_disarm(&en61107_receive_timeout_timer);
 				}
 			}
 			break;
@@ -479,23 +571,6 @@ inline bool en61107_is_eod_char(uint8_t c) {
 	return false;
 }
 
-//ICACHE_FLASH_ATTR
-//void en61107_receive_timeout_timer_func() {
-//	if (en61107_uart_state != UART_STATE_NONE) {
-//		// if no reply received, retransmit
-//		en61107_request_send();
-//	}
-//}
-
-ICACHE_FLASH_ATTR
-void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
-	uart_set_baudrate(UART0, uart_settings->baut_rate);
-//	uart_set_word_length(UART0, SEVEN_BITS);
-//	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, uart_settings->stop_bits);
-}
-
-
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
 #ifndef DEBUG_NO_METER
@@ -524,12 +599,14 @@ void en61107_request_send() {
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
 
-	// start retransmission timeout timer
-//	os_timer_disarm(&en61107_receive_timeout_timer);
-//	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-//	os_timer_arm(&en61107_receive_timeout_timer, 18000, 0);         // after 18 seconds
-
+	// change to next state
 	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
+	next_en61107_uart_state = en61107_uart_state;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_STANDARD_DATA_2
 #else
 	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];

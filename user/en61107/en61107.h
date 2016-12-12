@@ -1,3 +1,6 @@
+#ifndef EN61107_H
+#define EN61107_H
+
 #define EN61107_FRAME_L 1024
 #define EN61107_REGISTER_L 32
 #define EN61107_RID_L 6
@@ -36,6 +39,23 @@ typedef struct {
 	en61107_response_register_t e1;
 } en61107_response_t;
 
+typedef enum {
+	UART_STATE_NONE,
+	UART_STATE_STANDARD_DATA_2,
+	UART_STATE_UNKNOWN_1,
+	UART_STATE_UNKNOWN_2,
+	UART_STATE_SERIAL_BYTE_1,
+	UART_STATE_SERIAL_BYTE_2,
+	UART_STATE_SERIAL_BYTE_3,
+	UART_STATE_SERIAL_BYTE_4,
+	UART_STATE_SERIAL_BYTE_5,
+	UART_STATE_SERIAL_BYTE_6,
+	UART_STATE_UNKNOWN_3,
+	UART_STATE_UNKNOWN_4,
+	UART_STATE_EN61107,
+	UART_STATE_INST_VALUES
+} en61107_uart_state_t;
+
 ICACHE_FLASH_ATTR
 bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
@@ -50,3 +70,6 @@ void en61107_response_set_value(en61107_response_t *response, char *rid, char *v
 
 ICACHE_FLASH_ATTR
 void en61107_response_set_unit(en61107_response_t *response, char *rid, char *unit, unsigned int unit_length);
+
+#endif
+
