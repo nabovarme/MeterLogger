@@ -131,6 +131,19 @@ ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 	tfp_snprintf(decimal_str, 8, "%u.%02u", result_int, result_frac);
 }
 
+ICACHE_FLASH_ATTR void divide_str_by_1000(char *str, char *decimal_str) {
+	uint32_t result_int, result_frac;
+	uint32_t value_int;
+	
+	value_int = atoi(str);
+	
+	// ...divide by 100 and prepare decimal string
+	result_int = (int32_t)(value_int / 1000);
+	result_frac = value_int % 1000;
+	
+	tfp_snprintf(decimal_str, 8, "%u.%03u", result_int, result_frac);
+}
+
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
     uint32_t value_int, value_frac;
     char *pos;

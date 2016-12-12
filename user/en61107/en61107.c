@@ -232,7 +232,7 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, 
 				strncpy(response->t1.unit, "C", EN61107_UNIT_L);
 				break;
 			case 1:
-				divide_str_by_100(p, decimal_str);
+				divide_str_by_1000(p, decimal_str);	// t3 resolution of 0.01°C.
 				strncpy(response->t3.value, decimal_str, EN61107_VALUE_L);
 				strncpy(response->t3.unit, "C", EN61107_UNIT_L);
 				break;
