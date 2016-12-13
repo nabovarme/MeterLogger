@@ -33,6 +33,7 @@ static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
 static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
+static os_timer_t en61107_meter_wake_up_timer;
 
 en61107_uart_state_t en61107_uart_state;
 en61107_uart_state_t next_en61107_uart_state;
@@ -58,6 +59,38 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 	uart_set_stop_bits(UART0, uart_settings->stop_bits);
 }
 
+ICACHE_FLASH_ATTR
+void en61107_meter_wake_up_timer_func(void *arg) {
+	en61107_eod = '\r';
+
+	// 300 bps
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	
+	strcpy(frame, "/#2\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
+	uart_settings.baut_rate = BIT_RATE_1200;
+	uart_settings.stop_bits = ONE_STOP_BIT;
+	// change uart settings after the data has been sent
+	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
+	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
+
+	// change to next state
+	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
+	next_en61107_uart_state = en61107_uart_state;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
+}
+
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
@@ -81,28 +114,6 @@ static void en61107_received_task(os_event_t *events) {
 	message_l = i;
 
 	switch (en61107_uart_state) {
-		case UART_STATE_METER_WAKE_UP:
-			// 2400 bps, 7e2
-			uart_set_baudrate(UART0, BIT_RATE_2400);
-			uart_set_word_length(UART0, SEVEN_BITS);
-			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-			strcpy(frame, "*\r");
-			frame_length = strlen(frame);
-			uart0_tx_buffer(frame, frame_length);     // send request
-
-			// reply is 2400 bps, 7e2
-
-			// change to next state
-			en61107_uart_state = UART_STATE_STANDARD_DATA_2;
-			next_en61107_uart_state = en61107_uart_state;
-
-			// and start retransmission timeout timer
-			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
-			os_timer_arm(&en61107_receive_timeout_timer, 2000, 0);         // 2 seconds for UART_STATE_STANDARD_DATA_2
-		break;
 		case UART_STATE_STANDARD_DATA_2:
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
 				// 300 bps
@@ -601,34 +612,21 @@ void en61107_request_send() {
 //		return;
 //	}
 
-	en61107_eod = '\r';
-
 	// 300 bps
 	uart_set_baudrate(UART0, BIT_RATE_300);
 	uart_set_word_length(UART0, SEVEN_BITS);
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-	
-	strcpy(frame, "/#2\r");
+		
+	strcpy(frame, "/?!\r\n");
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
 
-	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
-	uart_settings.baut_rate = BIT_RATE_1200;
-	uart_settings.stop_bits = ONE_STOP_BIT;
-	// change uart settings after the data has been sent
-	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
-	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
+	// wait for meter to wake up and start communication with meter
+	os_timer_disarm(&en61107_meter_wake_up_timer);
+	os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
+	os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);         // 6 seconds for meter to wake up
 
-	// change to next state
-	en61107_uart_state = UART_STATE_METER_WAKE_UP;
-	next_en61107_uart_state = en61107_uart_state;
-
-	// and start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
-	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
 #else
 	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];
