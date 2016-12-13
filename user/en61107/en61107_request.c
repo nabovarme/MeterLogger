@@ -47,6 +47,7 @@ void en61107_receive_timeout_timer_func(en61107_uart_state_t *next_en61107_uart_
 	if (en61107_uart_state != *next_en61107_uart_state) {
 		// if no reply received, retransmit
 		// DEBUG: stop all timers started via en61107_request_send()
+		en61107_uart_state = UART_STATE_NONE;
 		en61107_request_send();
 	}
 }
@@ -607,22 +608,12 @@ inline bool en61107_is_eod_char(uint8_t c) {
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
 #ifndef DEBUG_NO_METER
-//	if (en61107_uart_state != UART_STATE_NONE) {
-//		// allready sending request to meter
-//		return;
-//	}
+	if (en61107_uart_state != UART_STATE_NONE) {
+		// allready sending request to meter
+		return;
+	}
 
-	// 300 bps
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-		
-	strcpy(frame, "/?!\r\n");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// wait for meter to wake up and start communication with meter
+	// give the meter some time between retransmissions
 	os_timer_disarm(&en61107_meter_wake_up_timer);
 	os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 	os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);         // 6 seconds for meter to wake up
