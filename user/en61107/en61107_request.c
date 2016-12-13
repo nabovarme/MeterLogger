@@ -81,6 +81,16 @@ static void en61107_received_task(os_event_t *events) {
 	message_l = i;
 
 	switch (en61107_uart_state) {
+		case UART_STATE_METER_WAKE_UP:
+				// change to next state
+				en61107_uart_state = UART_STATE_STANDARD_DATA_2;
+				next_en61107_uart_state = en61107_uart_state;
+
+				// and start retransmission timeout timer
+				os_timer_disarm(&en61107_receive_timeout_timer);
+				os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+				os_timer_arm(&en61107_receive_timeout_timer, 2000, 0);         // 2 seconds for UART_STATE_STANDARD_DATA_2
+		break;
 		case UART_STATE_STANDARD_DATA_2:
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
 				// 300 bps
@@ -600,13 +610,13 @@ void en61107_request_send() {
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
 
 	// change to next state
-	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
+	en61107_uart_state = UART_STATE_METER_WAKE_UP;
 	next_en61107_uart_state = en61107_uart_state;
 
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
-	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_STANDARD_DATA_2
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
 #else
 	unsigned char topic[128];
 	unsigned char cleartext[EN61107_FRAME_L];
