@@ -46,6 +46,9 @@ ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	// if no reply received, retransmit
 	// DEBUG: stop all timers started via en61107_request_send()
+	//os_timer_disarm(&en61107_meter_wake_up_timer);
+	//os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+	led_blink();	// DEBUG
 	en61107_uart_state = UART_STATE_NONE;
 	en61107_request_send();
 }
@@ -452,7 +455,6 @@ static void en61107_received_task(os_event_t *events) {
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
 
 			if (parse_mc66cde_inst_values_frame(&response, message, message_l)) {
-				led_blink();	// DEBUG
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
    					// format /sample/v2/serial/unix_time => val1=23&val2=val3&baz=blah
