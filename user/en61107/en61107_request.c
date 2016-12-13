@@ -36,20 +36,18 @@ static os_timer_t en61107_delayed_uart_change_setting_timer;
 static os_timer_t en61107_meter_wake_up_timer;
 
 volatile en61107_uart_state_t en61107_uart_state;
-volatile en61107_uart_state_t next_en61107_uart_state;
+
 UartDevice uart_settings;
 
 volatile uint8_t en61107_eod;
 bool en61107_etx_received;
 
 ICACHE_FLASH_ATTR
-void en61107_receive_timeout_timer_func(en61107_uart_state_t *next_en61107_uart_state) {
-	if (en61107_uart_state != *next_en61107_uart_state) {
-		// if no reply received, retransmit
-		// DEBUG: stop all timers started via en61107_request_send()
-		en61107_uart_state = UART_STATE_NONE;
-		en61107_request_send();
-	}
+void en61107_receive_timeout_timer_func(void *arg) {
+	// if no reply received, retransmit
+	// DEBUG: stop all timers started via en61107_request_send()
+	en61107_uart_state = UART_STATE_NONE;
+	en61107_request_send();
 }
 
 ICACHE_FLASH_ATTR
@@ -84,11 +82,10 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 
 	// change to next state
 	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
-	next_en61107_uart_state = en61107_uart_state;
 
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
 }
 
@@ -137,11 +134,10 @@ static void en61107_received_task(os_event_t *events) {
 
 				// change to next state
 				en61107_uart_state = UART_STATE_UNKNOWN_1;
-				next_en61107_uart_state = en61107_uart_state;
 
 				// and start retransmission timeout timer
 				os_timer_disarm(&en61107_receive_timeout_timer);
-				os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+				os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 				os_timer_arm(&en61107_receive_timeout_timer, 1400, 0);         // 1.4 seconds for UART_STATE_UNKNOWN_1
 			}
 			break;
@@ -160,11 +156,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_2;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 80, 0);         // 80 mS for UART_STATE_UNKNOWN_2
 			break;
 		case UART_STATE_UNKNOWN_2:
@@ -182,11 +177,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_1
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
@@ -213,11 +207,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_2
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
@@ -244,11 +237,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_3
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
@@ -275,11 +267,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_4
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
@@ -306,11 +297,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_5
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
@@ -337,11 +327,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_6
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
@@ -369,11 +358,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_3;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 300, 0);         // 300 mS for UART_STATE_UNKNOWN_3
 			break;
 		case UART_STATE_UNKNOWN_3:
@@ -391,11 +379,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_UNKNOWN_4;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 40, 0);         // 40 mS for UART_STATE_UNKNOWN_4
 			break;
 		case UART_STATE_UNKNOWN_4:
@@ -422,11 +409,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_EN61107;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);         // 6 seconds for UART_STATE_EN61107
 			break;
 		case UART_STATE_EN61107:
@@ -456,11 +442,10 @@ static void en61107_received_task(os_event_t *events) {
 
 			// change to next state
 			en61107_uart_state = UART_STATE_INST_VALUES;
-			next_en61107_uart_state = en61107_uart_state;
 
 			// and start retransmission timeout timer
 			os_timer_disarm(&en61107_receive_timeout_timer);
-			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, &next_en61107_uart_state);
+			os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 			os_timer_arm(&en61107_receive_timeout_timer, 3200, 0);         // 3.2 seconds for UART_STATE_INST_VALUES
 			break;
 		case UART_STATE_INST_VALUES:
@@ -609,7 +594,7 @@ ICACHE_FLASH_ATTR
 void en61107_request_send() {
 #ifndef DEBUG_NO_METER
 	if (en61107_uart_state != UART_STATE_NONE) {
-		// allready sending request to meter
+		// dont send again, allready sending request to meter
 		return;
 	}
 
