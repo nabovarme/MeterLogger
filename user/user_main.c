@@ -852,7 +852,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef EN61107
 	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
-	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+	os_timer_arm(&en61107_request_send_timer, 1000, 0);
 #elif defined IMPULSE
 	// do nothing here
 #else
@@ -887,6 +887,12 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		os_timer_disarm(&config_mode_timer);
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 		os_timer_arm(&config_mode_timer, 100, 0);
+#elif defined EN61107
+		// start waiting for serial number after 30 seconds
+		// and start ap mode
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 30000, 0);
 #else
 		// start waiting for serial number after 16 seconds
 		// and start ap mode
@@ -899,7 +905,13 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 #ifndef DEBUG_SHORT_WEB_CONFIG_TIME
-		os_timer_arm(&sample_mode_timer, 120000, 0);
+#ifdef IMPULSE
+		os_timer_arm(&sample_mode_timer, 120000 + 100, 0);
+#elif defined EN61107
+		os_timer_arm(&sample_mode_timer, 120000 + 30000, 0);
+#else
+		os_timer_arm(&sample_mode_timer, 120000 + 16000, 0);
+#endif
 #else
 		os_timer_arm(&sample_mode_timer, 22000, 0);
 #endif
