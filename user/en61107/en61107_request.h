@@ -24,6 +24,46 @@ inline bool en61107_is_eod_char(uint8_t c);
 ICACHE_FLASH_ATTR
 void en61107_request_send();
 
+// uart send en61107 commands
+ICACHE_FLASH_ATTR
+void en61107_uart_send_standard_data_2();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_unknown_1();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_unknown_2();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_1();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_2();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_3();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_4();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_5();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_serial_byte_6();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_unknown_3();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_unknown_4();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_en61107();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_inst_values();
+
 // fifo
 ICACHE_FLASH_ATTR
 unsigned int en61107_fifo_in_use();
