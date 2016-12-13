@@ -138,21 +138,76 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_send_serial_byte_1();
 			break;
 		case UART_STATE_SERIAL_BYTE_1:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial = (uint64_t)atoi(message);
+			}
+
 			en61107_uart_send_serial_byte_2();
 			break;
 		case UART_STATE_SERIAL_BYTE_2:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial += (uint64_t)atoi(message) << 8;
+			}
+
 			en61107_uart_send_serial_byte_3();
 			break;
 		case UART_STATE_SERIAL_BYTE_3:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial += (uint64_t)atoi(message) << 16;
+			}
+
 			en61107_uart_send_serial_byte_4();
 			break;
 		case UART_STATE_SERIAL_BYTE_4:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial += (uint64_t)atoi(message) << 24;
+			}
+
 			en61107_uart_send_serial_byte_5();
 			break;
 		case UART_STATE_SERIAL_BYTE_5:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial += (uint64_t)atoi(message) << 32;
+			}
+
 			en61107_uart_send_serial_byte_6();
 			break;
 		case UART_STATE_SERIAL_BYTE_6:
+			message[message_l] = 0;		// null terminate
+			if (message[0] == '@') {	// remove first char @
+				memmove(message, message + 1, strlen(message));
+				message_l--;
+			}
+			if (en61107_serial_set == false) {
+				en61107_serial += (uint64_t)atoi(message) << 40;
+				en61107_serial_set = true;
+			}
+
 			en61107_uart_send_unknown_3();
 			break;
 		case UART_STATE_UNKNOWN_3:
@@ -162,6 +217,12 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_send_en61107();
 			break;
 		case UART_STATE_EN61107:
+			en61107_eod = '\r';
+
+			if (parse_en61107_frame(&response, message, message_l) == false) {
+				break;
+			}
+
 			en61107_uart_send_inst_values();
 			break;
 		case UART_STATE_INST_VALUES:
@@ -452,15 +513,6 @@ void en61107_uart_send_serial_byte_1() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_serial_byte_2() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial = (uint64_t)atoi(message);
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -484,15 +536,6 @@ void en61107_uart_send_serial_byte_2() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_serial_byte_3() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial += (uint64_t)atoi(message) << 8;
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -516,15 +559,6 @@ void en61107_uart_send_serial_byte_3() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_serial_byte_4() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial += (uint64_t)atoi(message) << 16;
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -548,15 +582,6 @@ void en61107_uart_send_serial_byte_4() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_serial_byte_5() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial += (uint64_t)atoi(message) << 24;
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -580,15 +605,6 @@ void en61107_uart_send_serial_byte_5() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_serial_byte_6() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial += (uint64_t)atoi(message) << 32;
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -612,16 +628,6 @@ void en61107_uart_send_serial_byte_6() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_unknown_3() {
-	message[message_l] = 0;		// null terminate
-	if (message[0] == '@') {	// remove first char @
-		memmove(message, message + 1, strlen(message));
-		message_l--;
-	}
-	if (en61107_serial_set == false) {
-		en61107_serial += (uint64_t)atoi(message) << 40;
-		en61107_serial_set = true;
-	}
-
 	// 2400 bps, 7e2
 	uart_set_baudrate(UART0, BIT_RATE_2400);
 	uart_set_word_length(UART0, SEVEN_BITS);
@@ -700,12 +706,6 @@ void en61107_uart_send_en61107() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_inst_values() {
-	en61107_eod = '\r';
-
-	if (parse_en61107_frame(&response, message, message_l) == false) {
-		break;
-	}
-
 	// 300 bps
 	uart_set_baudrate(UART0, BIT_RATE_300);
 	uart_set_word_length(UART0, SEVEN_BITS);
