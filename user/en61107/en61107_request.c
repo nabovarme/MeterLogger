@@ -133,7 +133,7 @@ static void en61107_received_task(os_event_t *events) {
 				// change uart settings after the data has been sent
 				os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 				os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
-				os_timer_arm(&en61107_delayed_uart_change_setting_timer, 380, 0);	// 380 mS
+				os_timer_arm(&en61107_delayed_uart_change_setting_timer, 1800, 0);	// 1800 mS
 
 				// change to next state
 				en61107_uart_state = UART_STATE_UNKNOWN_1;
