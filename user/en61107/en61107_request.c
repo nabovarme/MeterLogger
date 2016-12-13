@@ -35,8 +35,8 @@ static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
 static os_timer_t en61107_meter_wake_up_timer;
 
-en61107_uart_state_t en61107_uart_state;
-en61107_uart_state_t next_en61107_uart_state;
+volatile en61107_uart_state_t en61107_uart_state;
+volatile en61107_uart_state_t next_en61107_uart_state;
 UartDevice uart_settings;
 
 volatile uint8_t en61107_eod;
