@@ -16,6 +16,7 @@
 
 uint64_t en61107_serial = 0;
 bool en61107_serial_set = false;
+int8_t en61107_request_num;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -46,46 +47,55 @@ ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
 	// if no reply received, retransmit
-	switch (en61107_uart_state) {
-		case UART_STATE_STANDARD_DATA_2:
-			en61107_uart_send_standard_data_2();
-			break;
-		case UART_STATE_UNKNOWN_1:
-			en61107_uart_send_unknown_1();
-			break;
-		case UART_STATE_UNKNOWN_2:
-			en61107_uart_send_unknown_2();
-			break;
-		case UART_STATE_SERIAL_BYTE_1:
-			en61107_uart_send_serial_byte_1();
-			break;
-		case UART_STATE_SERIAL_BYTE_2:
-			en61107_uart_send_serial_byte_2();
-			break;
-		case UART_STATE_SERIAL_BYTE_3:
-			en61107_uart_send_serial_byte_3();
-			break;
-		case UART_STATE_SERIAL_BYTE_4:
-			en61107_uart_send_serial_byte_4();
-			break;
-		case UART_STATE_SERIAL_BYTE_5:
-			en61107_uart_send_serial_byte_5();	
-			break;
-		case UART_STATE_SERIAL_BYTE_6:
-			en61107_uart_send_serial_byte_6();
-			break;
-		case UART_STATE_UNKNOWN_3:
-			en61107_uart_send_unknown_3();
-			break;
-		case UART_STATE_UNKNOWN_4:
-			en61107_uart_send_unknown_4();
-			break;
-		case UART_STATE_EN61107:
-			en61107_uart_send_en61107();
-			break;
-		case UART_STATE_INST_VALUES:
-			en61107_uart_send_inst_values();
-			break;
+
+	if (en61107_request_num <= 2) {
+		switch (en61107_uart_state) {
+			case UART_STATE_STANDARD_DATA_2:
+				en61107_uart_send_standard_data_2();
+				break;
+			case UART_STATE_UNKNOWN_1:
+				en61107_uart_send_unknown_1();
+				break;
+			case UART_STATE_UNKNOWN_2:
+				en61107_uart_send_unknown_2();
+				break;
+			case UART_STATE_SERIAL_BYTE_1:
+				en61107_uart_send_serial_byte_1();
+				break;
+			case UART_STATE_SERIAL_BYTE_2:
+				en61107_uart_send_serial_byte_2();
+				break;
+			case UART_STATE_SERIAL_BYTE_3:
+				en61107_uart_send_serial_byte_3();
+				break;
+			case UART_STATE_SERIAL_BYTE_4:
+				en61107_uart_send_serial_byte_4();
+				break;
+			case UART_STATE_SERIAL_BYTE_5:
+				en61107_uart_send_serial_byte_5();	
+				break;
+			case UART_STATE_SERIAL_BYTE_6:
+				en61107_uart_send_serial_byte_6();
+				break;
+			case UART_STATE_UNKNOWN_3:
+				en61107_uart_send_unknown_3();
+				break;
+			case UART_STATE_UNKNOWN_4:
+				en61107_uart_send_unknown_4();
+				break;
+			case UART_STATE_EN61107:
+				en61107_uart_send_en61107();
+				break;
+			case UART_STATE_INST_VALUES:
+				en61107_uart_send_inst_values();
+				break;
+		}
+	}
+	else {
+		// too many errors, wait for meter to be clear and start over
+		os_timer_disarm(&en61107_meter_wake_up_timer);
+		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
+		os_timer_arm(&en61107_meter_wake_up_timer, 60000, 0);         // wait 60 seconds
 	}
 }
 
@@ -310,6 +320,7 @@ static void en61107_received_task(os_event_t *events) {
 
 					// change to last state - idle state
 					en61107_uart_state = UART_STATE_NONE;
+					en61107_request_num = 0;
 				}
 			}
 			break;
@@ -324,6 +335,8 @@ void en61107_request_init() {
 	memset(&response, 0, sizeof(response));	// zero response before use
 
 	en61107_uart_state = UART_STATE_NONE;
+
+	en61107_request_num = 0;
 
 	en61107_etx_received = false;
 	
@@ -369,6 +382,7 @@ inline bool en61107_is_eod_char(uint8_t c) {
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
 #ifndef DEBUG_NO_METER
+	en61107_request_num++;
 	if (en61107_uart_state == UART_STATE_NONE) {
 		// give the meter some time between retransmissions
 		os_timer_disarm(&en61107_meter_wake_up_timer);
@@ -398,7 +412,6 @@ void en61107_request_send() {
 		// if mqtt_client is initialized
 		if (message_l > 1) {
 			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-			led_blink();
 		}
 	}
 

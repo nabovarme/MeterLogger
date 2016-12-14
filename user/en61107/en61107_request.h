@@ -77,5 +77,17 @@ unsigned char en61107_fifo_get(unsigned char *c);
 ICACHE_FLASH_ATTR
 unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos);
 
+
+// private methods
+
+ICACHE_FLASH_ATTR
+void en61107_receive_timeout_timer_func(void *arg);
+
+ICACHE_FLASH_ATTR
+void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings);
+
+ICACHE_FLASH_ATTR
+void en61107_meter_wake_up_timer_func(void *arg);
+
 #endif
 
