@@ -228,30 +228,30 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, 
 				//strncpy(t1, p, EN61107_VALUE_L);	// for later calculation of tdif
 				t1 = atoi(p);
 				divide_str_by_100(p, decimal_str);
-				strncpy(response->t1.value, decimal_str, EN61107_VALUE_L);
-				strncpy(response->t1.unit, "C", EN61107_UNIT_L);
+				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t1.unit, EN61107_VALUE_L, "%s", "C");
 				break;
 			case 1:
 				divide_str_by_100(p, decimal_str);	// t3 resolution of 0.01°C.
-				strncpy(response->t3.value, decimal_str, EN61107_VALUE_L);
-				strncpy(response->t3.unit, "C", EN61107_UNIT_L);
+				tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t3.unit, EN61107_VALUE_L, "%s", "C");
 				break;
 			case 2:
 				//strncpy(t2, p, EN61107_VALUE_L);	// for later calculation of tdif
 				t2 = atoi(p);
 				divide_str_by_100(p, decimal_str);
-				strncpy(response->t2.value, decimal_str, EN61107_VALUE_L);
-				strncpy(response->t2.unit, "C", EN61107_UNIT_L);
+				tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t2.unit, EN61107_VALUE_L, "%s", "C");
 				break;
 			case 5:
 				cleanup_decimal_str(p, decimal_str, strlen(p));
-				strncpy(response->flow1.value, decimal_str, EN61107_VALUE_L);
-				strncpy(response->flow1.unit, "l/h", EN61107_UNIT_L);
+				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->flow1.unit, EN61107_VALUE_L, "%s", "l/h");
 				break;
 			case 7:
 				divide_str_by_10(p, decimal_str);
-				strncpy(response->effect1.value, decimal_str, EN61107_VALUE_L);
-				strncpy(response->effect1.unit, "kW", EN61107_UNIT_L);
+				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->effect1.unit, EN61107_VALUE_L, "%s", "kW");
 				break;
 		}
 		i++;
