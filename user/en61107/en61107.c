@@ -277,15 +277,15 @@ ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
-		strncpy(response->e1.value, value, value_length);
+		tfp_snprintf(response->e1.value, value_length, "%s", value);
 	}
 	else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
-		// volume
-		strncpy(response->v1.value, value, value_length);
+	// volume
+		tfp_snprintf(response->v1.value, value_length, "%s", value);
 	}
 	else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
-		// hours
-		strncpy(response->hr.value, value, value_length);
+	// hours
+		tfp_snprintf(response->hr.value, value_length, "%s", value);
 	}
 }
 
