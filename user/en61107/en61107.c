@@ -280,25 +280,23 @@ void en61107_response_set_value(en61107_response_t *response, char *rid, char *v
 	// make null terminated string
 	memset(value_copy, 0, EN61107_VALUE_L);
 	if (value_length >= EN61107_VALUE_L) {
-		memcpy(value_copy, value, EN61107_VALUE_L - 1);
-		value_copy[EN61107_VALUE_L] = 0;
+		value_length = EN61107_VALUE_L - 1;
+
 	}
-	else {
-		memcpy(value_copy, value, value_length);
-		value_copy[value_length] = 0;
-	}
+	memcpy(value_copy, value, value_length);
+	value_copy[value_length] = 0;
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
-		tfp_snprintf(response->e1.value, EN61107_VALUE_L, "%s", value_copy);
+		tfp_snprintf(response->e1.value, value_length, "%s", value_copy);
 	}
 	else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
 		// volume
-		tfp_snprintf(response->v1.value, EN61107_VALUE_L, "%s", value_copy);
+		tfp_snprintf(response->v1.value, value_length, "%s", value_copy);
 	}
 	else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
 		// hours
-		tfp_snprintf(response->hr.value, EN61107_VALUE_L, "%s", value_copy);
+		tfp_snprintf(response->hr.value, value_length, "%s", value_copy);
 	}
 }
 
@@ -309,25 +307,23 @@ void en61107_response_set_unit(en61107_response_t *response, char *rid, char *un
 	// make null terminated string
 	memset(unit_copy, 0, EN61107_UNIT_L);
 	if (unit_length >= EN61107_UNIT_L) {
-		memcpy(unit_copy, unit, EN61107_UNIT_L - 1);
-		unit_copy[EN61107_UNIT_L] = 0;
+		unit_length = EN61107_UNIT_L - 1;
+
 	}
-	else {
-		memcpy(unit_copy, unit, unit_length);
-		unit_copy[unit_length] = 0;
-	}
+	memcpy(unit_copy, unit, unit_length);
+	unit_copy[unit_length] = 0;
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
-		tfp_snprintf(response->e1.unit, EN61107_UNIT_L, "%s", unit_copy);
+		tfp_snprintf(response->e1.unit, unit_length, "%s", unit_copy);
 	}
 	else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
 		// volume
-		tfp_snprintf(response->v1.unit, EN61107_UNIT_L, "%s", unit_copy);
+		tfp_snprintf(response->v1.unit, unit_length, "%s", unit_copy);
 	}
 	else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
 		// hours
-		tfp_snprintf(response->hr.unit, EN61107_UNIT_L, "%s", unit_copy);
+		tfp_snprintf(response->hr.unit, unit_length, "%s", unit_copy);
 	}
 }
 
