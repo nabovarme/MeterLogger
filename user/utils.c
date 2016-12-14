@@ -132,43 +132,42 @@ ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 }
 
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
-    uint32_t value_int, value_frac;
-    char *pos;
-    uint8_t decimals = 0;
-    uint8_t prepend_zeroes;
-    char zeroes[8];
+	uint32_t value_int, value_frac;
+	char *pos;
+	uint8_t decimals = 0;
+	uint8_t prepend_zeroes;
+	char zeroes[8];
     
-    memset(cleaned_up_str, 0, length);
-    strncpy(cleaned_up_str, decimal_str, length);
-//    cleaned_up_str[length] = 0;	// null terminate
+	memcpy(cleaned_up_str, decimal_str, length);
+	cleaned_up_str[length] = 0;	// null terminate
     
-    pos = strstr(cleaned_up_str, ".");
-    if (pos == NULL) {
-        // non fractional number
-        value_int = atoi(cleaned_up_str);
-        tfp_snprintf(cleaned_up_str, length, "%u", value_int);
-    }
-    else {
-        // parse frac
-        while ((*(pos + 1 + decimals) >= '0') && (*(pos + 1 + decimals) <= '9')) {
-            // count the decimals
-            decimals++;
-        }
-        value_frac = atoi(pos + 1);
-        prepend_zeroes = decimals - decimal_number_length(atoi(pos + 1));
+	pos = strstr(cleaned_up_str, ".");
+	if (pos == NULL) {
+		// non fractional number
+		value_int = atoi(cleaned_up_str);
+		tfp_snprintf(cleaned_up_str, length, "%u", value_int);
+	}
+	else {
+		// parse frac
+		while ((*(pos + 1 + decimals) >= '0') && (*(pos + 1 + decimals) <= '9')) {
+			// count the decimals
+			decimals++;
+		}
+		value_frac = atoi(pos + 1);
+		prepend_zeroes = decimals - decimal_number_length(atoi(pos + 1));
         
-        zeroes[0] = 0;	// null terminate
-        while (prepend_zeroes--) {
-            strcat(zeroes, "0");
-        }
+		zeroes[0] = 0;	// null terminate
+		while (prepend_zeroes--) {
+			strcat(zeroes, "0");
+		}
         
-        // parse int
-        strncpy(cleaned_up_str, decimal_str, (pos - cleaned_up_str));
-        cleaned_up_str[cleaned_up_str - pos] = 0;	// null terminate
-        value_int = atoi(cleaned_up_str);
+		// parse int
+		strncpy(cleaned_up_str, decimal_str, (pos - cleaned_up_str));
+		cleaned_up_str[cleaned_up_str - pos] = 0;	// null terminate
+		value_int = atoi(cleaned_up_str);
         
-        tfp_snprintf(cleaned_up_str, length, "%u.%s%u", value_int, zeroes, value_frac);
-    }
+		tfp_snprintf(cleaned_up_str, length, "%u.%s%u", value_int, zeroes, value_frac);
+	}
 }
 
 ICACHE_FLASH_ATTR
