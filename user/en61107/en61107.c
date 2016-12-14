@@ -277,7 +277,7 @@ ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
 	char value_copy[EN61107_VALUE_L];
 
-	// make null terminated string
+	// make null terminated string - value_length is not including null termination
 	memset(value_copy, 0, EN61107_VALUE_L);
 	if (value_length >= EN61107_VALUE_L) {
 		value_length = EN61107_VALUE_L - 1;
@@ -285,6 +285,7 @@ void en61107_response_set_value(en61107_response_t *response, char *rid, char *v
 	}
 	memcpy(value_copy, value, value_length);
 	value_copy[value_length] = 0;
+	value_length++;
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
@@ -304,7 +305,7 @@ ICACHE_FLASH_ATTR
 void en61107_response_set_unit(en61107_response_t *response, char *rid, char *unit, unsigned int unit_length) {
 	char unit_copy[EN61107_UNIT_L];
 
-	// make null terminated string
+	// make null terminated string - unit_length is not including null termination
 	memset(unit_copy, 0, EN61107_UNIT_L);
 	if (unit_length >= EN61107_UNIT_L) {
 		unit_length = EN61107_UNIT_L - 1;
@@ -312,6 +313,7 @@ void en61107_response_set_unit(en61107_response_t *response, char *rid, char *un
 	}
 	memcpy(unit_copy, unit, unit_length);
 	unit_copy[unit_length] = 0;
+	unit_length++;
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
