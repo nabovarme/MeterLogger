@@ -21,7 +21,7 @@ typedef struct {
 	uint16_t dd;
 	uint8_t e;
 	uint16_t ff;
-	uint16_t gg
+	uint16_t gg;
 } en61107_meter_program_t;
 
 typedef struct {

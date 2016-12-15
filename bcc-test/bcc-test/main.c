@@ -41,7 +41,7 @@ typedef struct {
     uint16_t dd;
     uint8_t e;
     uint16_t ff;
-    uint16_t gg
+    uint16_t gg;
 } en61107_meter_program_t;
 
 typedef struct {
@@ -83,6 +83,9 @@ en61107_response_t en61107_response;
 char data[EN61107_FRAME_L] = "\x2f\x4b\x41\x4d\x20\x4d\x43\x0d\x0a\x02\x30\x2e\x30\x28\x30\x30\x30\x30\x30\x30\x30\x30\x30\x34\x30\x29\x0d\x0a\x36\x2e\x38\x28\x30\x30\x30\x30\x30\x2e\x30\x30\x2a\x4d\x57\x68\x29\x0d\x0a\x36\x2e\x32\x36\x28\x30\x30\x30\x30\x30\x30\x2e\x30\x2a\x6d\x33\x29\x0d\x0a\x36\x2e\x33\x31\x28\x30\x30\x35\x36\x32\x39\x36\x2a\x68\x29\x21\x0d\x0a\x03\x10";
 
 unsigned int data_length = 86;
+
+char data2[] = "0002251 -002735 0001820 0000000 0000000 0000020 0000000 0000000 \r";
+int data2_length = 66;
 
 unsigned int decimal_number_length(int n) {
     int digits;
@@ -132,6 +135,42 @@ void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int l
         
         tfp_snprintf(cleaned_up_str, length, "%u.%s%u", value_int, zeroes, value_frac);
     }
+}
+
+void divide_str_by_10(char *str, char *decimal_str) {
+    int32_t result_int, result_frac;
+    int32_t value_int;
+    
+    value_int = atoi(str);
+    
+    // ...divide by 10 and prepare decimal string
+    result_int = (int32_t)(value_int / 10);
+    if (result_int < 0) {
+        result_frac = -1 * (value_int % 10);
+    }
+    else {
+        result_frac = value_int % 100;
+    }
+    
+    tfp_snprintf(decimal_str, 8, "%d.%01u", result_int, result_frac);
+}
+
+void divide_str_by_100(char *str, char *decimal_str) {
+    int32_t result_int, result_frac;
+    int32_t value_int;
+    
+    value_int = atoi(str);
+    
+    // ...divide by 100 and prepare decimal string
+    result_int = (int32_t)(value_int / 100);
+    if (result_int < 0) {
+        result_frac = -1 * (value_int % 100);
+    }
+    else {
+        result_frac = value_int % 100;
+    }
+    
+    tfp_snprintf(decimal_str, 8, "%d.%02u", result_int, result_frac);
 }
 
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
@@ -335,6 +374,69 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
     return false;
 }
 
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+    char *p;
+    int i = 0;
+    char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
+    
+    // for calculation of tdif
+    int32_t t1 = 0;
+    int32_t t2 = 0;
+    char tdif[EN61107_VALUE_L];
+    int32_t tdif_int;
+    
+    p = strtok(frame, " ");	// returns null terminated string
+    while (p != NULL) {
+        switch (i) {
+            case 0:
+                //strncpy(t1, p, EN61107_VALUE_L);	// for later calculation of tdif
+                t1 = atoi(p);
+                divide_str_by_100(p, decimal_str);
+                tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
+                tfp_snprintf(response->t1.unit, EN61107_UNIT_L, "%s", "C");
+                break;
+            case 1:
+                divide_str_by_100(p, decimal_str);	// t3 resolution of 0.01°C.
+                tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%s", decimal_str);
+                tfp_snprintf(response->t3.unit, EN61107_UNIT_L, "%s", "C");
+                break;
+            case 2:
+                //strncpy(t2, p, EN61107_VALUE_L);	// for later calculation of tdif
+                t2 = atoi(p);
+                divide_str_by_100(p, decimal_str);
+                tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%s", decimal_str);
+                tfp_snprintf(response->t2.unit, EN61107_UNIT_L, "%s", "C");
+                break;
+            case 5:
+                cleanup_decimal_str(p, decimal_str, strlen(p));
+                tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
+                tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
+                break;
+            case 7:
+                divide_str_by_10(p, decimal_str);
+                tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
+                tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
+                break;
+        }
+        i++;
+        p = strtok(NULL, " ");
+    };
+    
+    // calculate tdif
+    tdif_int = t1 - t2;
+    if (tdif_int < 0) {
+        // dont send negative tdif
+        tdif_int = 0;
+    }
+    
+    tfp_snprintf(tdif, EN61107_VALUE_L, "%u", tdif_int);
+    divide_str_by_100(tdif, decimal_str);
+    strncpy(response->tdif.value, decimal_str, EN61107_VALUE_L);
+    strncpy(response->tdif.unit, "C", EN61107_UNIT_L);
+    
+    return true;
+}
+
 int main(int argc, const char * argv[]) {
     if (parse_en61107_frame(&en61107_response, data, data_length)) {
         printf("bcc ok\n");
@@ -348,6 +450,9 @@ int main(int argc, const char * argv[]) {
     else {
         printf("bcc error\n");
     }
+    
+    parse_mc66cde_inst_values_frame(&en61107_response, data2, data2_length);
+    printf("flow1: %s %s\n", en61107_response.flow1.value, en61107_response.flow1.unit);
     return 0;
 }
 

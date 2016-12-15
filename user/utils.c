@@ -106,29 +106,39 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 }
 
 ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str) {
-	int32_t result_int, result_frac;
-	int32_t value_int;
-	
-	value_int = atoi(str);
-	
-	// ...divide by 10 and prepare decimal string
-	result_int = (int32_t)(value_int / 10);
-	result_frac = value_int % 10;
-	
-	tfp_snprintf(decimal_str, 8, "%d.%01u", result_int, result_frac);
+    int32_t result_int, result_frac;
+    int32_t value_int;
+    
+    value_int = atoi(str);
+    
+    // ...divide by 10 and prepare decimal string
+    result_int = (int32_t)(value_int / 10);
+    if (result_int < 0) {
+        result_frac = -1 * (value_int % 10);
+    }
+    else {
+        result_frac = value_int % 100;
+    }
+    
+    tfp_snprintf(decimal_str, 8, "%d.%01u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
-	int32_t result_int, result_frac;
-	int32_t value_int;
-	
-	value_int = atoi(str);
-	
-	// ...divide by 100 and prepare decimal string
-	result_int = (int32_t)(value_int / 100);
-	result_frac = value_int % 100;
-	
-	tfp_snprintf(decimal_str, 8, "%d.%02u", result_int, result_frac);
+    int32_t result_int, result_frac;
+    int32_t value_int;
+    
+    value_int = atoi(str);
+    
+    // ...divide by 100 and prepare decimal string
+    result_int = (int32_t)(value_int / 100);
+    if (result_int < 0) {
+        result_frac = -1 * (value_int % 100);
+    }
+    else {
+        result_frac = value_int % 100;
+    }
+    
+    tfp_snprintf(decimal_str, 8, "%d.%02u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
