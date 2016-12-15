@@ -86,67 +86,67 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">en61107.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="esp8266_8h_source.html">esp8266.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="esp8266_8h_source.html">esp8266.h</a>&gt;</code><br />
+<code>#include &quot;<a class="el" href="utils_8h_source.html">utils.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="led_8h_source.html">led.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="tinyprintf_8h_source.html">tinyprintf.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="en61107_8h_source.html">en61107.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for en61107.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c__incl.svg" width="1440" height="262"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c__incl.svg" width="1440" height="262"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="en61107_8c_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2803841c054552a20f7a6ca0f57e26e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a2803841c054552a20f7a6ca0f57e26e3">en61107_get_type</a> (char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>)</td></tr>
-<tr class="separator:a2803841c054552a20f7a6ca0f57e26e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a021306c69de1b9e611fb94cd2f2e4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a1a021306c69de1b9e611fb94cd2f2e4f">en61107_get_data</a> (char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>)</td></tr>
-<tr class="separator:a1a021306c69de1b9e611fb94cd2f2e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fa621fec2bde13bd3acc7417b4cfb5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a2fa621fec2bde13bd3acc7417b4cfb5d">en61107_set_clock</a> (char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, uint64_t unix_time)</td></tr>
-<tr class="separator:a2fa621fec2bde13bd3acc7417b4cfb5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a644b7692f15bd4b614a144f18debf66c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a644b7692f15bd4b614a144f18debf66c">en61107_get_register</a> (char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, uint16_t *<a class="el" href="kmp__request_8c.html#a33809ee77c69c1ec9846b66655b7de29">register_list</a>, uint16_t register_list_length)</td></tr>
-<tr class="separator:a644b7692f15bd4b614a144f18debf66c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5aa4bf58cee04f8d25af24baa8a3b5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#ab5aa4bf58cee04f8d25af24baa8a3b5a">en61107_decode_frame</a> (char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, unsigned char <a class="el" href="kmp__request_8c.html#af40619d4cbe41f5b9a9fb67b214ad5eb">frame_length</a>, <a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>)</td></tr>
-<tr class="separator:ab5aa4bf58cee04f8d25af24baa8a3b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:abec2435de38f0a2802b73b93caf17405"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#abec2435de38f0a2802b73b93caf17405">en61107_frame</a></td></tr>
-<tr class="separator:abec2435de38f0a2802b73b93caf17405"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab76ee12a92a3cde1fc39c4f27c023582"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#ab76ee12a92a3cde1fc39c4f27c023582">en61107_frame_length</a></td></tr>
-<tr class="separator:ab76ee12a92a3cde1fc39c4f27c023582"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa98cae0ffe5dd483a94d93d420a53d9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#aa98cae0ffe5dd483a94d93d420a53d9b">en61107_response</a></td></tr>
-<tr class="separator:aa98cae0ffe5dd483a94d93d420a53d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cf66dda97eb739b7d65099e019e79b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a1cf66dda97eb739b7d65099e019e79b0">parse_en61107_frame</a> (<a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>, char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, unsigned int <a class="el" href="kmp__request_8c.html#af40619d4cbe41f5b9a9fb67b214ad5eb">frame_length</a>)</td></tr>
+<tr class="separator:a1cf66dda97eb739b7d65099e019e79b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a597998b7b0250e9f613c487315a244e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#a597998b7b0250e9f613c487315a244e1">parse_mc66cde_standard_data_2_frame</a> (<a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>, char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, unsigned int <a class="el" href="kmp__request_8c.html#af40619d4cbe41f5b9a9fb67b214ad5eb">frame_length</a>)</td></tr>
+<tr class="separator:a597998b7b0250e9f613c487315a244e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af624e427f5989ad2a68e1ce0bc4a7358"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#af624e427f5989ad2a68e1ce0bc4a7358">parse_mc66cde_inst_values_frame</a> (<a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>, char *<a class="el" href="kmp__request_8c.html#a60581808c74e91f627ae316fd18f2733">frame</a>, unsigned int <a class="el" href="kmp__request_8c.html#af40619d4cbe41f5b9a9fb67b214ad5eb">frame_length</a>)</td></tr>
+<tr class="separator:af624e427f5989ad2a68e1ce0bc4a7358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa78898864e2b283a56553204fb381ede"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#aa78898864e2b283a56553204fb381ede">en61107_response_set_value</a> (<a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>, char *rid, char *value, unsigned int value_length)</td></tr>
+<tr class="separator:aa78898864e2b283a56553204fb381ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae970a67aa118631b1e9e3b0cc41e7fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107_8c.html#aae970a67aa118631b1e9e3b0cc41e7fc">en61107_response_set_unit</a> (<a class="el" href="structen61107__response__t.html">en61107_response_t</a> *<a class="el" href="kmp__request_8c.html#aaab223979e5acc5d1b09c59622010d6f">response</a>, char *rid, char *unit, unsigned int unit_length)</td></tr>
+<tr class="separator:aae970a67aa118631b1e9e3b0cc41e7fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ab5aa4bf58cee04f8d25af24baa8a3b5a"></a>
+<a class="anchor" id="aae970a67aa118631b1e9e3b0cc41e7fc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> int en61107_decode_frame </td>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_response_set_unit </td>
           <td>(</td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>frame</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&#160;</td>
-          <td class="paramname"><em>frame_length</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td>
-          <td class="paramname"><em>response</em>&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>rid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>unit_length</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -156,117 +156,165 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00040">40</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107_8c_source.html#l00305">305</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
 
+<p>References <a class="el" href="en61107_8h_source.html#l00039">en61107_response_t::e1</a>, <a class="el" href="en61107_8h_source.html#l00006">EN61107_RID_L</a>, <a class="el" href="en61107_8h_source.html#l00007">EN61107_UNIT_L</a>, <a class="el" href="en61107_8h_source.html#l00037">en61107_response_t::hr</a>, <a class="el" href="platform_8h_source.html#l00022">memcpy</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, <a class="el" href="platform_8h_source.html#l00018">strncmp</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="en61107_8h_source.html#l00014">en61107_response_register_t::unit</a>, and <a class="el" href="en61107_8h_source.html#l00038">en61107_response_t::v1</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107_8c_source.html#l00011">parse_en61107_frame()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_aae970a67aa118631b1e9e3b0cc41e7fc_cgraph.svg" width="858" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
-<a class="anchor" id="a1a021306c69de1b9e611fb94cd2f2e4f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int en61107_get_data </td>
-          <td>(</td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>frame</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00016">16</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
-
-<p>References <a class="el" href="en61107_8c_source.html#l00005">en61107_frame</a>, <a class="el" href="en61107_8h_source.html#l00002">EN61107_FRAME_L</a>, <a class="el" href="en61107__request_8c_source.html#l00019">frame</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, and <a class="el" href="platform_8h_source.html#l00016">strncpy</a>.</p>
-
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00102">en61107_get_data_timer_func()</a>.</p>
+</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a1a021306c69de1b9e611fb94cd2f2e4f_icgraph.svg" width="1524" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_aae970a67aa118631b1e9e3b0cc41e7fc_icgraph.svg" width="936" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="a644b7692f15bd4b614a144f18debf66c"></a>
+<a class="anchor" id="aa78898864e2b283a56553204fb381ede"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int en61107_get_register </td>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_response_set_value </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>rid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>value_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107_8c_source.html#l00277">277</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+
+<p>References <a class="el" href="en61107_8h_source.html#l00039">en61107_response_t::e1</a>, <a class="el" href="en61107_8h_source.html#l00006">EN61107_RID_L</a>, <a class="el" href="en61107_8h_source.html#l00008">EN61107_VALUE_L</a>, <a class="el" href="en61107_8h_source.html#l00037">en61107_response_t::hr</a>, <a class="el" href="platform_8h_source.html#l00022">memcpy</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, <a class="el" href="platform_8h_source.html#l00018">strncmp</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="en61107_8h_source.html#l00038">en61107_response_t::v1</a>, and <a class="el" href="en61107_8h_source.html#l00013">en61107_response_register_t::value</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107_8c_source.html#l00011">parse_en61107_frame()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_aa78898864e2b283a56553204fb381ede_cgraph.svg" width="828" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_aa78898864e2b283a56553204fb381ede_icgraph.svg" width="907" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a1cf66dda97eb739b7d65099e019e79b0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool parse_en61107_frame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>frame</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16_t *&#160;</td>
-          <td class="paramname"><em>register_list</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>register_list_length</em>&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>frame_length</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
           <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00033">33</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
-
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00114">en61107_get_register_timer_func()</a>.</p>
-
-<p><div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a644b7692f15bd4b614a144f18debf66c_icgraph.svg" width="1492" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="a2803841c054552a20f7a6ca0f57e26e3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int en61107_get_type </td>
-          <td>(</td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>frame</em></td><td>)</td>
-          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="en61107_8c_source.html#l00011">11</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
 
+<p>References <a class="el" href="utils_8c_source.html#l00144">cleanup_decimal_str()</a>, <a class="el" href="en61107_8h_source.html#l00028">en61107_response_t::customer_no</a>, <a class="el" href="en61107_8h_source.html#l00009">EN61107_CUSTOMER_NO_L</a>, <a class="el" href="en61107_8h_source.html#l00004">EN61107_FRAME_L</a>, <a class="el" href="en61107_8h_source.html#l00010">EN61107_METER_TYPE_L</a>, <a class="el" href="en61107_8h_source.html#l00005">EN61107_REGISTER_L</a>, <a class="el" href="en61107_8c_source.html#l00305">en61107_response_set_unit()</a>, <a class="el" href="en61107_8c_source.html#l00277">en61107_response_set_value()</a>, <a class="el" href="en61107_8h_source.html#l00006">EN61107_RID_L</a>, <a class="el" href="en61107_8h_source.html#l00008">EN61107_VALUE_L</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="platform_8h_source.html#l00022">memcpy</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, <a class="el" href="en61107_8h_source.html#l00029">en61107_response_t::meter_type</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="platform_8h_source.html#l00018">strncmp</a>, and <a class="el" href="platform_8h_source.html#l00024">strstr</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a1cf66dda97eb739b7d65099e019e79b0_cgraph.svg" width="1138" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
-<a class="anchor" id="a2fa621fec2bde13bd3acc7417b4cfb5d"></a>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a1cf66dda97eb739b7d65099e019e79b0_icgraph.svg" width="698" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="af624e427f5989ad2a68e1ce0bc4a7358"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int en61107_set_clock </td>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool parse_mc66cde_inst_values_frame </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">char *&#160;</td>
           <td class="paramname"><em>frame</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>unix_time</em>&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>frame_length</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -276,52 +324,81 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00027">27</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107_8c_source.html#l00213">213</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+
+<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="utils_8c_source.html#l00144">cleanup_decimal_str()</a>, <a class="el" href="utils_8c_source.html#l00108">divide_str_by_10()</a>, <a class="el" href="utils_8c_source.html#l00126">divide_str_by_100()</a>, <a class="el" href="en61107_8h_source.html#l00036">en61107_response_t::effect1</a>, <a class="el" href="en61107_8h_source.html#l00007">EN61107_UNIT_L</a>, <a class="el" href="en61107_8h_source.html#l00008">EN61107_VALUE_L</a>, <a class="el" href="en61107_8h_source.html#l00035">en61107_response_t::flow1</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="platform_8h_source.html#l00016">strncpy</a>, <a class="el" href="en61107_8h_source.html#l00031">en61107_response_t::t1</a>, <a class="el" href="en61107_8h_source.html#l00032">en61107_response_t::t2</a>, <a class="el" href="en61107_8h_source.html#l00033">en61107_response_t::t3</a>, <a class="el" href="en61107_8h_source.html#l00034">en61107_response_t::tdif</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="en61107_8h_source.html#l00014">en61107_response_register_t::unit</a>, and <a class="el" href="en61107_8h_source.html#l00013">en61107_response_register_t::value</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_af624e427f5989ad2a68e1ce0bc4a7358_cgraph.svg" width="1080" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_af624e427f5989ad2a68e1ce0bc4a7358_icgraph.svg" width="687" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
 
 </div>
 </div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="abec2435de38f0a2802b73b93caf17405"></a>
+<a class="anchor" id="a597998b7b0250e9f613c487315a244e1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char* en61107_frame</td>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> bool parse_mc66cde_standard_data_2_frame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structen61107__response__t.html">en61107_response_t</a> *&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
         </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00005">5</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
-
-<p>Referenced by <a class="el" href="en61107_8c_source.html#l00016">en61107_get_data()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ab76ee12a92a3cde1fc39c4f27c023582"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
         <tr>
-          <td class="memname">unsigned int en61107_frame_length</td>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
         </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00006">6</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa98cae0ffe5dd483a94d93d420a53d9b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structen61107__response__t.html">en61107_response_t</a>* en61107_response</td>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>frame_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107_8c_source.html#l00008">8</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107_8c_source.html#l00159">159</a> of file <a class="el" href="en61107_8c_source.html">en61107.c</a>.</p>
+
+<p>References <a class="el" href="en61107_8h_source.html#l00018">en61107_meter_program_t::a</a>, <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="en61107_8h_source.html#l00019">en61107_meter_program_t::b</a>, <a class="el" href="en61107_8h_source.html#l00020">en61107_meter_program_t::ccc</a>, <a class="el" href="en61107_8h_source.html#l00021">en61107_meter_program_t::dd</a>, <a class="el" href="en61107_8h_source.html#l00022">en61107_meter_program_t::e</a>, <a class="el" href="en61107_8h_source.html#l00023">en61107_meter_program_t::ff</a>, <a class="el" href="en61107_8h_source.html#l00024">en61107_meter_program_t::gg</a>, <a class="el" href="platform_8h_source.html#l00022">memcpy</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, and <a class="el" href="en61107_8h_source.html#l00030">en61107_response_t::meter_program</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a597998b7b0250e9f613c487315a244e1_cgraph.svg" width="279" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107_8c_a597998b7b0250e9f613c487315a244e1_icgraph.svg" width="718" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
 
 </div>
 </div>

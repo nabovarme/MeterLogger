@@ -8,6 +8,7 @@ var searchData=
   ['datalen',['dataLen',['../struct_p_r_o_t_o___p_a_r_s_e_r.html#af78569998d39cfaf1b9e4b21390b3e12',1,'PROTO_PARSER']]],
   ['day_5fof_5fmonth',['day_of_month',['../structcron__job__t.html#a905bb87eb1815748f7c512003c40f90f',1,'cron_job_t']]],
   ['day_5fof_5fweek',['day_of_week',['../structcron__job__t.html#a4f4d6593b823e46c61f9a5210dba1e07',1,'cron_job_t']]],
+  ['dd',['dd',['../structen61107__meter__program__t.html#ae4fa479fcbb3c748cad00a1b8be45d66',1,'en61107_meter_program_t']]],
   ['decoder_5finput_5fbuffer_5fsize',['decoder_input_buffer_size',['../structconfig.html#aecd46937ef69467b234c35eaba210f2b',1,'config::decoder_input_buffer_size()'],['../structcfg__info.html#ac23ed38d02bdb1341f3cb339df586559',1,'cfg_info::decoder_input_buffer_size()']]],
   ['decompdata',['decompData',['../struct_esp_fs_file.html#a008bbffc1e736913b79dc69efb3cc660',1,'EspFsFile']]],
   ['decompressor',['decompressor',['../struct_esp_fs_file.html#a61d8adf9f5a09cf96c2cd4ad36fe9428',1,'EspFsFile']]],

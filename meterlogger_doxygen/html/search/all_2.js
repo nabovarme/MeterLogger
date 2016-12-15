@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['b',['b',['../structen61107__meter__program__t.html#a6d8204c43036c6951903a9de87bf392a',1,'en61107_meter_program_t']]],
   ['backlog_5fis_5ffilled',['backlog_is_filled',['../heatshrink__encoder_8c.html#afb59e31aab4a22a8b9640824e9da7426',1,'heatshrink_encoder.c']]],
   ['backlog_5fis_5fpartial',['backlog_is_partial',['../heatshrink__encoder_8c.html#a52bfbd33b20249a9f61813fc28c64e57',1,'heatshrink_encoder.c']]],
   ['backref_5fcount_5fbits',['BACKREF_COUNT_BITS',['../lib_2heatshrink_2heatshrink__decoder_8c.html#a5fe0e091a86c60480335dd5ef5c12421',1,'heatshrink_decoder.c']]],

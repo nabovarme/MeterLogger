@@ -93,10 +93,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">en61107_request.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &quot;<a class="el" href="mqtt_8h_source.html">mqtt.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="en61107_8h_source.html">en61107.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for en61107_request.h:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h__incl.svg" width="1484" height="500"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h__dep__incl.svg" width="170" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h__dep__incl.svg" width="434" height="142"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -117,22 +125,50 @@ Functions</h2></td></tr>
 <tr class="separator:ac6b70ff316d8c3437594acadffb52044"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7573f72305a85d468632092ee8c9e6ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a7573f72305a85d468632092ee8c9e6ec">en61107_get_received_serial</a> ()</td></tr>
 <tr class="separator:a7573f72305a85d468632092ee8c9e6ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b0d746dce87f92833ba6f5b83febe63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a8b0d746dce87f92833ba6f5b83febe63">en61107_get_data_timer_func</a> ()</td></tr>
-<tr class="separator:a8b0d746dce87f92833ba6f5b83febe63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedd9da96373c64f704a80d454b575e51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#aedd9da96373c64f704a80d454b575e51">en61107_get_register_timer_func</a> ()</td></tr>
-<tr class="separator:aedd9da96373c64f704a80d454b575e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6379eaf88ea35baaf2a3ab8a0ae66fdb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a6379eaf88ea35baaf2a3ab8a0ae66fdb">en61107_receive_timeout_timer_func</a> ()</td></tr>
-<tr class="separator:a6379eaf88ea35baaf2a3ab8a0ae66fdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55f8feefc9d9579a91b4303e5f9950f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a55f8feefc9d9579a91b4303e5f9950f2">en61107_is_eod_char</a> (uint8_t c)</td></tr>
+<tr class="separator:a55f8feefc9d9579a91b4303e5f9950f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7384d014eb9e833f64ecf4a9f86f87be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be">en61107_request_send</a> ()</td></tr>
 <tr class="separator:a7384d014eb9e833f64ecf4a9f86f87be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10b80328698f459ae2251fe146cdc375"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a10b80328698f459ae2251fe146cdc375">en61107_uart_send_standard_data_2</a> ()</td></tr>
+<tr class="separator:a10b80328698f459ae2251fe146cdc375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27482c6033d348193c8aa7964782999e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a27482c6033d348193c8aa7964782999e">en61107_uart_send_unknown_1</a> ()</td></tr>
+<tr class="separator:a27482c6033d348193c8aa7964782999e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a6fa988df58ebc5a3f62ad46b74fc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ab6a6fa988df58ebc5a3f62ad46b74fc5">en61107_uart_send_unknown_2</a> ()</td></tr>
+<tr class="separator:ab6a6fa988df58ebc5a3f62ad46b74fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab438159131b07c35aace7c19e5b24f22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ab438159131b07c35aace7c19e5b24f22">en61107_uart_send_serial_byte_1</a> ()</td></tr>
+<tr class="separator:ab438159131b07c35aace7c19e5b24f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8a295e8d067b9108682852b0616c69c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ae8a295e8d067b9108682852b0616c69c">en61107_uart_send_serial_byte_2</a> ()</td></tr>
+<tr class="separator:ae8a295e8d067b9108682852b0616c69c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4c6ba6f896270287149b97c38dc8824"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ab4c6ba6f896270287149b97c38dc8824">en61107_uart_send_serial_byte_3</a> ()</td></tr>
+<tr class="separator:ab4c6ba6f896270287149b97c38dc8824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68e33113f4b610faec2809160402b9ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a68e33113f4b610faec2809160402b9ef">en61107_uart_send_serial_byte_4</a> ()</td></tr>
+<tr class="separator:a68e33113f4b610faec2809160402b9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a192bf33e0cc6e7bcefbcf7485309b700"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a192bf33e0cc6e7bcefbcf7485309b700">en61107_uart_send_serial_byte_5</a> ()</td></tr>
+<tr class="separator:a192bf33e0cc6e7bcefbcf7485309b700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3cd1269237f81b40e4f788e4e6df89a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ae3cd1269237f81b40e4f788e4e6df89a">en61107_uart_send_serial_byte_6</a> ()</td></tr>
+<tr class="separator:ae3cd1269237f81b40e4f788e4e6df89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd56d73dc3063d0463f124c87a5d4802"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#abd56d73dc3063d0463f124c87a5d4802">en61107_uart_send_unknown_3</a> ()</td></tr>
+<tr class="separator:abd56d73dc3063d0463f124c87a5d4802"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae961d250da79b65178151b9dc7f31b61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ae961d250da79b65178151b9dc7f31b61">en61107_uart_send_unknown_4</a> ()</td></tr>
+<tr class="separator:ae961d250da79b65178151b9dc7f31b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b6b61143d95d3af3813f8be1aaf3447"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a8b6b61143d95d3af3813f8be1aaf3447">en61107_uart_send_en61107</a> ()</td></tr>
+<tr class="separator:a8b6b61143d95d3af3813f8be1aaf3447"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c2d949e6bb3b65cdf794a0643dd67d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a74c2d949e6bb3b65cdf794a0643dd67d">en61107_uart_send_inst_values</a> ()</td></tr>
+<tr class="separator:a74c2d949e6bb3b65cdf794a0643dd67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9984f86f367d70ca77edce2accd01c64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a9984f86f367d70ca77edce2accd01c64">en61107_fifo_in_use</a> ()</td></tr>
 <tr class="separator:a9984f86f367d70ca77edce2accd01c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae20bf12760f56ac48afdd0c7952d168b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ae20bf12760f56ac48afdd0c7952d168b">en61107_fifo_put</a> (unsigned char c)</td></tr>
-<tr class="separator:ae20bf12760f56ac48afdd0c7952d168b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad614196da23286f90ffe16126e2b254e"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ad614196da23286f90ffe16126e2b254e">en61107_fifo_put</a> (unsigned char c)</td></tr>
+<tr class="separator:ad614196da23286f90ffe16126e2b254e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0b054d686556739ae5470544e53e6ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#ac0b054d686556739ae5470544e53e6ff">en61107_fifo_get</a> (unsigned char *c)</td></tr>
 <tr class="separator:ac0b054d686556739ae5470544e53e6ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bb388ee3c9e8277f48a76760943800d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a7bb388ee3c9e8277f48a76760943800d">en61107_fifo_snoop</a> (unsigned char *c, unsigned int pos)</td></tr>
 <tr class="separator:a7bb388ee3c9e8277f48a76760943800d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f1fee248eec0eeacf220c69b878a28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a22f1fee248eec0eeacf220c69b878a28">en61107_receive_timeout_timer_func</a> (void *arg)</td></tr>
+<tr class="separator:a22f1fee248eec0eeacf220c69b878a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8376fb3e6dfde4cc59e5fa0574a6e499"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a8376fb3e6dfde4cc59e5fa0574a6e499">en61107_delayed_uart_change_setting_timer_func</a> (<a class="el" href="struct_uart_device.html">UartDevice</a> *<a class="el" href="en61107__request_8c.html#af39ea77f4bb7c42617e48897360d9151">uart_settings</a>)</td></tr>
+<tr class="separator:a8376fb3e6dfde4cc59e5fa0574a6e499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fa4e9967afddae0c1dedbc914dcee36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="en61107__request_8h.html#a2fa4e9967afddae0c1dedbc914dcee36">en61107_meter_wake_up_timer_func</a> (void *arg)</td></tr>
+<tr class="separator:a2fa4e9967afddae0c1dedbc914dcee36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -150,9 +186,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00001">1</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00007">7</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00080">en61107_request_init()</a>, and <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00331">en61107_request_init()</a>, and <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>.</p>
 
 </div>
 </div>
@@ -166,13 +202,51 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00002">2</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00008">8</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00080">en61107_request_init()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00331">en61107_request_init()</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a8376fb3e6dfde4cc59e5fa0574a6e499"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_delayed_uart_change_setting_timer_func </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_uart_device.html">UartDevice</a> *&#160;</td>
+          <td class="paramname"><em>uart_settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00103">103</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, and <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, and <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8376fb3e6dfde4cc59e5fa0574a6e499_cgraph.svg" width="543" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8376fb3e6dfde4cc59e5fa0574a6e499_icgraph.svg" width="2258" height="816"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
 <a class="anchor" id="ac0b054d686556739ae5470544e53e6ff"></a>
 <div class="memitem">
 <div class="memproto">
@@ -187,25 +261,23 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00197">197</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00772">772</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00177">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00016">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00015">fifo_tail</a>, and <a class="el" href="en61107__request_8c_source.html#l00009">QUEUE_SIZE</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00752">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00024">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00023">fifo_tail</a>, and <a class="el" href="en61107__request_8c_source.html#l00015">QUEUE_SIZE</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00037">en61107_received_task()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac0b054d686556739ae5470544e53e6ff_cgraph.svg" width="330" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac0b054d686556739ae5470544e53e6ff_cgraph.svg" width="330" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac0b054d686556739ae5470544e53e6ff_icgraph.svg" width="667" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac0b054d686556739ae5470544e53e6ff_icgraph.svg" width="667" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -224,46 +296,53 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00177">177</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00752">752</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00015">fifo_head</a>, and <a class="el" href="en61107__request_8c_source.html#l00015">fifo_tail</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00023">fifo_head</a>, and <a class="el" href="en61107__request_8c_source.html#l00023">fifo_tail</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00197">en61107_fifo_get()</a>, <a class="el" href="en61107__request_8c_source.html#l00182">en61107_fifo_put()</a>, and <a class="el" href="en61107__request_8c_source.html#l00212">en61107_fifo_snoop()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00772">en61107_fifo_get()</a>, <a class="el" href="en61107__request_8c_source.html#l00757">en61107_fifo_put()</a>, and <a class="el" href="en61107__request_8c_source.html#l00787">en61107_fifo_snoop()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a9984f86f367d70ca77edce2accd01c64_icgraph.svg" width="2274" height="204"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a9984f86f367d70ca77edce2accd01c64_icgraph.svg" width="2274" height="204"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="ae20bf12760f56ac48afdd0c7952d168b"></a>
+<a class="anchor" id="ad614196da23286f90ffe16126e2b254e"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned char en61107_fifo_put </td>
+          <td class="memname">unsigned char en61107_fifo_put </td>
           <td>(</td>
           <td class="paramtype">unsigned char&#160;</td>
           <td class="paramname"><em>c</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00182">182</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00757">757</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00177">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00016">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00015">fifo_head</a>, and <a class="el" href="en61107__request_8c_source.html#l00009">QUEUE_SIZE</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00752">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00024">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00023">fifo_head</a>, and <a class="el" href="en61107__request_8c_source.html#l00015">QUEUE_SIZE</a>.</p>
 
 <p>Referenced by <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae20bf12760f56ac48afdd0c7952d168b_cgraph.svg" width="330" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ad614196da23286f90ffe16126e2b254e_cgraph.svg" width="330" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -271,7 +350,7 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae20bf12760f56ac48afdd0c7952d168b_icgraph.svg" width="1967" height="206"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ad614196da23286f90ffe16126e2b254e_icgraph.svg" width="707" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -302,52 +381,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00212">212</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00787">787</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00177">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00016">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00015">fifo_tail</a>, and <a class="el" href="en61107__request_8c_source.html#l00009">QUEUE_SIZE</a>.</p>
-
-<p><div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7bb388ee3c9e8277f48a76760943800d_cgraph.svg" width="347" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="a8b0d746dce87f92833ba6f5b83febe63"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_get_data_timer_func </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00102">102</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
-
-<p>References <a class="el" href="uart_8h_source.html#l00074">BIT_RATE_300</a>, <a class="el" href="en61107_8c_source.html#l00016">en61107_get_data()</a>, <a class="el" href="en61107__request_8c_source.html#l00019">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00020">frame_length</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, and <a class="el" href="uart_8c_source.html#l00281">uart_init()</a>.</p>
-
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00140">en61107_request_send()</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00752">en61107_fifo_in_use()</a>, <a class="el" href="en61107__request_8c_source.html#l00024">fifo_buffer</a>, <a class="el" href="en61107__request_8c_source.html#l00023">fifo_tail</a>, and <a class="el" href="en61107__request_8c_source.html#l00015">QUEUE_SIZE</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8b0d746dce87f92833ba6f5b83febe63_cgraph.svg" width="1128" height="215"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-</p>
-
-<p><div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8b0d746dce87f92833ba6f5b83febe63_icgraph.svg" width="1343" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7bb388ee3c9e8277f48a76760943800d_cgraph.svg" width="347" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -366,35 +407,84 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00097">97</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00354">354</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00011">en61107_serial</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00017">en61107_serial</a>.</p>
+
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00116">config_mode_timer_func()</a>, <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>, <a class="el" href="user__main_8c_source.html#l00389">mqttDataCb()</a>, and <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7573f72305a85d468632092ee8c9e6ec_icgraph.svg" width="863" height="176"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
 
 </div>
 </div>
-<a class="anchor" id="aedd9da96373c64f704a80d454b575e51"></a>
+<a class="anchor" id="a55f8feefc9d9579a91b4303e5f9950f2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool en61107_is_eod_char </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00359">359</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="en61107__request_8c_source.html#l00043">en61107_eod</a>, and <a class="el" href="en61107__request_8c_source.html#l00044">en61107_etx_received</a>.</p>
+
+<p>Referenced by <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a55f8feefc9d9579a91b4303e5f9950f2_icgraph.svg" width="735" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a2fa4e9967afddae0c1dedbc914dcee36"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_get_register_timer_func </td>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_meter_wake_up_timer_func </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>arg</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00114">114</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00111">111</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107_8c_source.html#l00033">en61107_get_register()</a>, <a class="el" href="en61107__request_8c_source.html#l00019">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00020">frame_length</a>, <a class="el" href="en61107__request_8c_source.html#l00021">register_list</a>, and <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00140">en61107_request_send()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00383">en61107_request_send()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_aedd9da96373c64f704a80d454b575e51_cgraph.svg" width="536" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a2fa4e9967afddae0c1dedbc914dcee36_cgraph.svg" width="1480" height="1678"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -402,36 +492,37 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_aedd9da96373c64f704a80d454b575e51_icgraph.svg" width="1292" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a2fa4e9967afddae0c1dedbc914dcee36_icgraph.svg" width="1407" height="875"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="a6379eaf88ea35baaf2a3ab8a0ae66fdb"></a>
+<a class="anchor" id="a22f1fee248eec0eeacf220c69b878a28"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_receive_timeout_timer_func </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>arg</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00132">132</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00047">47</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00140">en61107_request_send()</a>, and <a class="el" href="en61107__request_8c_source.html#l00033">en61107_requests_sent</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00037">en61107_meter_wake_up_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00111">en61107_meter_wake_up_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00019">en61107_request_num</a>, <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="led_8c_source.html#l00041">led_blink()</a>, <a class="el" href="en61107_8h_source.html#l00055">UART_STATE_EN61107</a>, <a class="el" href="en61107_8h_source.html#l00056">UART_STATE_INST_VALUES</a>, <a class="el" href="en61107_8h_source.html#l00047">UART_STATE_SERIAL_BYTE_1</a>, <a class="el" href="en61107_8h_source.html#l00048">UART_STATE_SERIAL_BYTE_2</a>, <a class="el" href="en61107_8h_source.html#l00049">UART_STATE_SERIAL_BYTE_3</a>, <a class="el" href="en61107_8h_source.html#l00050">UART_STATE_SERIAL_BYTE_4</a>, <a class="el" href="en61107_8h_source.html#l00051">UART_STATE_SERIAL_BYTE_5</a>, <a class="el" href="en61107_8h_source.html#l00052">UART_STATE_SERIAL_BYTE_6</a>, <a class="el" href="en61107_8h_source.html#l00044">UART_STATE_STANDARD_DATA_2</a>, <a class="el" href="en61107_8h_source.html#l00045">UART_STATE_UNKNOWN_1</a>, <a class="el" href="en61107_8h_source.html#l00046">UART_STATE_UNKNOWN_2</a>, <a class="el" href="en61107_8h_source.html#l00053">UART_STATE_UNKNOWN_3</a>, and <a class="el" href="en61107_8h_source.html#l00054">UART_STATE_UNKNOWN_4</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00140">en61107_request_send()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, and <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a6379eaf88ea35baaf2a3ab8a0ae66fdb_cgraph.svg" width="1606" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a22f1fee248eec0eeacf220c69b878a28_cgraph.svg" width="1704" height="1604"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -439,7 +530,7 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a6379eaf88ea35baaf2a3ab8a0ae66fdb_icgraph.svg" width="1275" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a22f1fee248eec0eeacf220c69b878a28_icgraph.svg" width="1772" height="810"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -459,25 +550,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00080">80</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00331">331</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="en61107__request_8c_source.html#l00037">en61107_received_task()</a>, <a class="el" href="en61107__request_8h_source.html#l00001">en61107_received_task_prio</a>, <a class="el" href="en61107__request_8h_source.html#l00004">en61107_received_task_queue</a>, <a class="el" href="en61107__request_8h_source.html#l00002">en61107_received_task_queue_length</a>, <a class="el" href="en61107__request_8c_source.html#l00033">en61107_requests_sent</a>, <a class="el" href="en61107__request_8c_source.html#l00015">fifo_head</a>, and <a class="el" href="en61107__request_8c_source.html#l00015">fifo_tail</a>.</p>
+<p>References <a class="el" href="en61107__request_8c_source.html#l00044">en61107_etx_received</a>, <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>, <a class="el" href="en61107__request_8h_source.html#l00007">en61107_received_task_prio</a>, <a class="el" href="en61107__request_8h_source.html#l00010">en61107_received_task_queue</a>, <a class="el" href="en61107__request_8h_source.html#l00008">en61107_received_task_queue_length</a>, <a class="el" href="en61107__request_8c_source.html#l00019">en61107_request_num</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="en61107__request_8c_source.html#l00023">fifo_head</a>, <a class="el" href="en61107__request_8c_source.html#l00023">fifo_tail</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, and <a class="el" href="en61107_8h_source.html#l00043">UART_STATE_NONE</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00714">user_init()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00742">user_init()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_acd43242675a3f25e7c3b530eac9d8b3a_cgraph.svg" width="1120" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_acd43242675a3f25e7c3b530eac9d8b3a_cgraph.svg" width="1120" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_acd43242675a3f25e7c3b530eac9d8b3a_icgraph.svg" width="282" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_acd43242675a3f25e7c3b530eac9d8b3a_icgraph.svg" width="282" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -496,24 +585,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00140">140</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00383">383</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="user__config_8h_source.html#l00015">DEFAULT_METER_SERIAL</a>, <a class="el" href="en61107_8h_source.html#l00002">EN61107_FRAME_L</a>, <a class="el" href="en61107__request_8c_source.html#l00028">en61107_get_data_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00102">en61107_get_data_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00029">en61107_get_register_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00114">en61107_get_register_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00031">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00132">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00033">en61107_requests_sent</a>, <a class="el" href="en61107__request_8c_source.html#l00011">en61107_serial</a>, <a class="el" href="unix__time_8c_source.html#l00055">get_unix_time()</a>, and <a class="el" href="mqtt_8c_source.html#l00496">MQTT_Publish()</a>.</p>
+<p>References <a class="el" href="en61107_8h_source.html#l00004">EN61107_FRAME_L</a>, <a class="el" href="en61107__request_8c_source.html#l00037">en61107_meter_wake_up_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00111">en61107_meter_wake_up_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00019">en61107_request_num</a>, <a class="el" href="en61107__request_8c_source.html#l00017">en61107_serial</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="crypto_8c_source.html#l00066">encrypt_aes_hmac_combined()</a>, <a class="el" href="unix__time_8c_source.html#l00055">get_unix_time()</a>, <a class="el" href="platform_8h_source.html#l00021">memset</a>, <a class="el" href="mqtt_8c_source.html#l00574">MQTT_Publish()</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, and <a class="el" href="en61107_8h_source.html#l00043">UART_STATE_NONE</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00132">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="user__main_8c_source.html#l00138">sample_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00229">en61107_request_send_timer_func()</a>, and <a class="el" href="user__main_8c_source.html#l00143">sample_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7384d014eb9e833f64ecf4a9f86f87be_cgraph.svg" width="1816" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7384d014eb9e833f64ecf4a9f86f87be_cgraph.svg" width="1816" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7384d014eb9e833f64ecf4a9f86f87be_icgraph.svg" width="1092" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a7384d014eb9e833f64ecf4a9f86f87be_icgraph.svg" width="1084" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -534,14 +622,494 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00091">91</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00348">348</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00277">mqttConnectedCb()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac6b70ff316d8c3437594acadffb52044_icgraph.svg" width="876" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ac6b70ff316d8c3437594acadffb52044_icgraph.svg" width="876" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a8b6b61143d95d3af3813f8be1aaf3447"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_en61107 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00689">689</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00075">BIT_RATE_300</a>, <a class="el" href="en61107__request_8c_source.html#l00036">en61107_delayed_uart_change_setting_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00043">en61107_eod</a>, <a class="el" href="en61107__request_8c_source.html#l00044">en61107_etx_received</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00049">ONE_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00055">UART_STATE_EN61107</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8b6b61143d95d3af3813f8be1aaf3447_cgraph.svg" width="1480" height="1650"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a8b6b61143d95d3af3813f8be1aaf3447_icgraph.svg" width="2020" height="804"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a74c2d949e6bb3b65cdf794a0643dd67d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_inst_values </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00721">721</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00077">BIT_RATE_1200</a>, <a class="el" href="uart_8h_source.html#l00075">BIT_RATE_300</a>, <a class="el" href="en61107__request_8c_source.html#l00036">en61107_delayed_uart_change_setting_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00049">ONE_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00056">UART_STATE_INST_VALUES</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a74c2d949e6bb3b65cdf794a0643dd67d_cgraph.svg" width="1450" height="1650"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a74c2d949e6bb3b65cdf794a0643dd67d_icgraph.svg" width="1990" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab438159131b07c35aace7c19e5b24f22"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_1 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00505">505</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00047">UART_STATE_SERIAL_BYTE_1</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab438159131b07c35aace7c19e5b24f22_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab438159131b07c35aace7c19e5b24f22_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae8a295e8d067b9108682852b0616c69c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00528">528</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00048">UART_STATE_SERIAL_BYTE_2</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae8a295e8d067b9108682852b0616c69c_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae8a295e8d067b9108682852b0616c69c_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab4c6ba6f896270287149b97c38dc8824"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_3 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00551">551</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00049">UART_STATE_SERIAL_BYTE_3</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab4c6ba6f896270287149b97c38dc8824_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab4c6ba6f896270287149b97c38dc8824_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a68e33113f4b610faec2809160402b9ef"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_4 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00574">574</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00050">UART_STATE_SERIAL_BYTE_4</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a68e33113f4b610faec2809160402b9ef_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a68e33113f4b610faec2809160402b9ef_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a192bf33e0cc6e7bcefbcf7485309b700"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_5 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00597">597</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00051">UART_STATE_SERIAL_BYTE_5</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a192bf33e0cc6e7bcefbcf7485309b700_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a192bf33e0cc6e7bcefbcf7485309b700_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae3cd1269237f81b40e4f788e4e6df89a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_serial_byte_6 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00620">620</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00052">UART_STATE_SERIAL_BYTE_6</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae3cd1269237f81b40e4f788e4e6df89a_cgraph.svg" width="1460" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae3cd1269237f81b40e4f788e4e6df89a_icgraph.svg" width="2000" height="791"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a10b80328698f459ae2251fe146cdc375"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_standard_data_2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00422">422</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00077">BIT_RATE_1200</a>, <a class="el" href="uart_8h_source.html#l00075">BIT_RATE_300</a>, <a class="el" href="en61107__request_8c_source.html#l00036">en61107_delayed_uart_change_setting_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00043">en61107_eod</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00049">ONE_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00044">UART_STATE_STANDARD_DATA_2</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00111">en61107_meter_wake_up_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a10b80328698f459ae2251fe146cdc375_cgraph.svg" width="1480" height="1650"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a10b80328698f459ae2251fe146cdc375_icgraph.svg" width="1655" height="800"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a27482c6033d348193c8aa7964782999e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_unknown_1 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00453">453</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00075">BIT_RATE_300</a>, <a class="el" href="en61107__request_8c_source.html#l00036">en61107_delayed_uart_change_setting_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00049">ONE_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00045">UART_STATE_UNKNOWN_1</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a27482c6033d348193c8aa7964782999e_cgraph.svg" width="1496" height="1650"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_a27482c6033d348193c8aa7964782999e_icgraph.svg" width="2036" height="806"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab6a6fa988df58ebc5a3f62ad46b74fc5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_unknown_2 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00482">482</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00077">BIT_RATE_1200</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00049">ONE_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00046">UART_STATE_UNKNOWN_2</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab6a6fa988df58ebc5a3f62ad46b74fc5_cgraph.svg" width="1496" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ab6a6fa988df58ebc5a3f62ad46b74fc5_icgraph.svg" width="2036" height="806"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="abd56d73dc3063d0463f124c87a5d4802"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_unknown_3 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00643">643</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00053">UART_STATE_UNKNOWN_3</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_abd56d73dc3063d0463f124c87a5d4802_cgraph.svg" width="1496" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_abd56d73dc3063d0463f124c87a5d4802_icgraph.svg" width="2036" height="806"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae961d250da79b65178151b9dc7f31b61"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void en61107_uart_send_unknown_4 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="en61107__request_8c_source.html#l00666">666</a> of file <a class="el" href="en61107__request_8c_source.html">en61107_request.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00078">BIT_RATE_2400</a>, <a class="el" href="en61107__request_8c_source.html#l00035">en61107_receive_timeout_timer</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00039">en61107_uart_state</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="en61107__request_8c_source.html#l00027">frame</a>, <a class="el" href="en61107__request_8c_source.html#l00028">frame_length</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="platform_8h_source.html#l00015">strcpy</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00339">uart_set_baudrate()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, and <a class="el" href="en61107_8h_source.html#l00054">UART_STATE_UNKNOWN_4</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, and <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae961d250da79b65178151b9dc7f31b61_cgraph.svg" width="1496" height="1648"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="en61107__request_8h_ae961d250da79b65178151b9dc7f31b61_icgraph.svg" width="2036" height="806"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -559,9 +1127,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00004">4</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
+<p>Definition at line <a class="el" href="en61107__request_8h_source.html#l00010">10</a> of file <a class="el" href="en61107__request_8h_source.html">en61107_request.h</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00080">en61107_request_init()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00331">en61107_request_init()</a>.</p>
 
 </div>
 </div>

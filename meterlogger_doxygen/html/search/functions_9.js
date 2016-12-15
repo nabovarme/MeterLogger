@@ -5,6 +5,7 @@ var searchData=
   ['init_5fmessage',['init_message',['../mqtt__msg_8c.html#aae7c66cc577ac90e9535edac4abc068c',1,'mqtt_msg.c']]],
   ['init_5fprintf',['init_printf',['../tinyprintf_8c.html#a2c5d1dbeb43457f286821ca099904f71',1,'init_printf(void *putp, putcf putf):&#160;tinyprintf.c'],['../tinyprintf_8h.html#afe0fb059329348d7e5054743f1616939',1,'init_printf(void *putp, putcf putf):&#160;tinyprintf.c']]],
   ['init_5funix_5ftime',['init_unix_time',['../unix__time_8c.html#a4423ebd43da9e32c1a8a599e6542c67b',1,'init_unix_time(void):&#160;unix_time.c'],['../unix__time_8h.html#a4423ebd43da9e32c1a8a599e6542c67b',1,'init_unix_time(void):&#160;unix_time.c']]],
+  ['init_5fwatchdog',['init_watchdog',['../watchdog_8c.html#ac6b727da5e9e168d3cb273cde6f1ae4c',1,'init_watchdog():&#160;watchdog.c'],['../watchdog_8h.html#ac6b727da5e9e168d3cb273cde6f1ae4c',1,'init_watchdog():&#160;watchdog.c']]],
   ['int_5fpow',['int_pow',['../utils_8c.html#af7f86262824738791bf4a3328d09aacf',1,'int_pow(int x, int y):&#160;utils.c'],['../utils_8h.html#af7f86262824738791bf4a3328d09aacf',1,'int_pow(int x, int y):&#160;utils.c']]],
   ['invcipher',['InvCipher',['../aes_8c.html#a1c8b8be3915a4ec4ce9d2c0961f07c62',1,'aes.c']]],
   ['invmixcolumns',['InvMixColumns',['../aes_8c.html#a03bd35fb40f0499f4ffbb47bd595c8ab',1,'aes.c']]],

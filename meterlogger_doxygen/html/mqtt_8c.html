@@ -102,8 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for mqtt.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c__incl.svg" width="1467" height="486"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c__incl.svg" width="1467" height="486"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="mqtt_8c_source.html">Go to the source code of this file.</a></p>
@@ -112,7 +111,7 @@ Include dependency graph for mqtt.c:</div>
 Macros</h2></td></tr>
 <tr class="memitem:acc0f1173d9757324d2ec4dd2eb62debd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#acc0f1173d9757324d2ec4dd2eb62debd">MQTT_TASK_PRIO</a>&#160;&#160;&#160;USER_TASK_PRIO_1</td></tr>
 <tr class="separator:acc0f1173d9757324d2ec4dd2eb62debd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30e6a03863c0b5eed10adea9c6085374"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a30e6a03863c0b5eed10adea9c6085374">MQTT_TASK_QUEUE_SIZE</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:a30e6a03863c0b5eed10adea9c6085374"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a30e6a03863c0b5eed10adea9c6085374">MQTT_TASK_QUEUE_SIZE</a>&#160;&#160;&#160;100</td></tr>
 <tr class="separator:a30e6a03863c0b5eed10adea9c6085374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a862c518548c3dde4c93cccb762a5535c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a862c518548c3dde4c93cccb762a5535c">MQTT_SEND_TIMOUT</a>&#160;&#160;&#160;5</td></tr>
 <tr class="separator:a862c518548c3dde4c93cccb762a5535c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,9 +165,9 @@ Functions</h2></td></tr>
 <tr class="memitem:add86222774af01cba1d038efaf8d1a6e"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#add86222774af01cba1d038efaf8d1a6e">MQTT_InitConnection</a> (<a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *mqttClient, uint8_t *host, uint32_t port, uint8_t security)</td></tr>
 <tr class="memdesc:add86222774af01cba1d038efaf8d1a6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">MQTT initialization connection function.  <a href="#add86222774af01cba1d038efaf8d1a6e">More...</a><br /></td></tr>
 <tr class="separator:add86222774af01cba1d038efaf8d1a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82303094af675136988bb2be5e92fc5b"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a82303094af675136988bb2be5e92fc5b">MQTT_InitClient</a> (<a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *mqttClient, uint8_t *client_id, uint8_t *client_user, uint8_t *client_pass, uint32_t keepAliveTime, uint8_t cleanSession)</td></tr>
-<tr class="memdesc:a82303094af675136988bb2be5e92fc5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">MQTT initialization mqtt client function.  <a href="#a82303094af675136988bb2be5e92fc5b">More...</a><br /></td></tr>
-<tr class="separator:a82303094af675136988bb2be5e92fc5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25cb7ac079d1d119250dac075c45acf1"><td class="memItemLeft" align="right" valign="top">BOOL <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1">MQTT_InitClient</a> (<a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *mqttClient, uint8_t *client_id, uint8_t *client_user, uint8_t *client_pass, uint32_t keepAliveTime, uint8_t cleanSession)</td></tr>
+<tr class="memdesc:a25cb7ac079d1d119250dac075c45acf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">MQTT initialization mqtt client function.  <a href="#a25cb7ac079d1d119250dac075c45acf1">More...</a><br /></td></tr>
+<tr class="separator:a25cb7ac079d1d119250dac075c45acf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36df57598a1923a440823dbbb891fc82"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#a36df57598a1923a440823dbbb891fc82">MQTT_InitLWT</a> (<a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *mqttClient, uint8_t *will_topic, uint8_t *will_msg, uint8_t will_qos, uint8_t will_retain)</td></tr>
 <tr class="separator:a36df57598a1923a440823dbbb891fc82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad34b681cb2f7473d8fc786c7ed468db5"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5">MQTT_Connect</a> (<a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *mqttClient)</td></tr>
@@ -215,7 +214,7 @@ Variables</h2></td></tr>
 
 <p>Definition at line <a class="el" href="mqtt_8c_source.html#l00041">41</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00113">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>, and <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00117">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>, and <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>.</p>
 
 </div>
 </div>
@@ -231,7 +230,7 @@ Variables</h2></td></tr>
 
 <p>Definition at line <a class="el" href="mqtt_8c_source.html#l00039">39</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00850">MQTT_DeleteClient()</a>, <a class="el" href="mqtt_8c_source.html#l00842">MQTT_Disconnect()</a>, <a class="el" href="mqtt_8c_source.html#l00055">mqtt_dns_found()</a>, <a class="el" href="mqtt_8c_source.html#l00709">MQTT_InitClient()</a>, <a class="el" href="mqtt_8c_source.html#l00580">MQTT_Ping()</a>, <a class="el" href="mqtt_8c_source.html#l00496">MQTT_Publish()</a>, <a class="el" href="mqtt_8c_source.html#l00113">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00528">MQTT_Subscribe()</a>, <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00403">mqtt_tcpclient_discon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00472">mqtt_tcpclient_recon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00230">mqtt_tcpclient_recv()</a>, <a class="el" href="mqtt_8c_source.html#l00361">mqtt_tcpclient_sent_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00377">mqtt_timer()</a>, and <a class="el" href="mqtt_8c_source.html#l00555">MQTT_UnSubscribe()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00950">MQTT_DeleteClient()</a>, <a class="el" href="mqtt_8c_source.html#l00942">MQTT_Disconnect()</a>, <a class="el" href="mqtt_8c_source.html#l00059">mqtt_dns_found()</a>, <a class="el" href="mqtt_8c_source.html#l00787">MQTT_InitClient()</a>, <a class="el" href="mqtt_8c_source.html#l00658">MQTT_Ping()</a>, <a class="el" href="mqtt_8c_source.html#l00574">MQTT_Publish()</a>, <a class="el" href="mqtt_8c_source.html#l00117">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00606">MQTT_Subscribe()</a>, <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00481">mqtt_tcpclient_discon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00550">mqtt_tcpclient_recon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00279">mqtt_tcpclient_recv()</a>, <a class="el" href="mqtt_8c_source.html#l00439">mqtt_tcpclient_sent_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00455">mqtt_timer()</a>, and <a class="el" href="mqtt_8c_source.html#l00633">MQTT_UnSubscribe()</a>.</p>
 
 </div>
 </div>
@@ -240,14 +239,14 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MQTT_TASK_QUEUE_SIZE&#160;&#160;&#160;1</td>
+          <td class="memname">#define MQTT_TASK_QUEUE_SIZE&#160;&#160;&#160;100</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="mqtt_8c_source.html#l00040">40</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00709">MQTT_InitClient()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00787">MQTT_InitClient()</a>.</p>
 
 </div>
 </div>
@@ -263,7 +262,7 @@ Variables</h2></td></tr>
 
 <p>Definition at line <a class="el" href="mqtt_8c_source.html#l00044">44</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00709">MQTT_InitClient()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00787">MQTT_InitClient()</a>.</p>
 
 </div>
 </div>
@@ -298,25 +297,23 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00098">98</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00102">102</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00040">mqtt_event_data_t::data</a>, <a class="el" href="mqtt_8h_source.html#l00042">mqtt_event_data_t::data_length</a>, <a class="el" href="mqtt_8h_source.html#l00105">MQTT_Client::dataCb</a>, <a class="el" href="mqtt__msg_8c_source.html#l00183">mqtt_get_publish_data()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00154">mqtt_get_publish_topic()</a>, <a class="el" href="mqtt_8h_source.html#l00039">mqtt_event_data_t::topic</a>, and <a class="el" href="mqtt_8h_source.html#l00041">mqtt_event_data_t::topic_length</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00230">mqtt_tcpclient_recv()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00279">mqtt_tcpclient_recv()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aecca483fb1f2313abb9e1a905e54d6ac_cgraph.svg" width="479" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aecca483fb1f2313abb9e1a905e54d6ac_cgraph.svg" width="479" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aecca483fb1f2313abb9e1a905e54d6ac_icgraph.svg" width="1531" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aecca483fb1f2313abb9e1a905e54d6ac_icgraph.svg" width="1531" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -350,25 +347,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00172">172</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00186">186</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00087">mqtt_connect_info::client_id</a>, <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00154">mqtt_tcpclient_delete()</a>, <a class="el" href="espfs_8c_source.html#l00031">os_free</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt__msg_8h_source.html#l00089">mqtt_connect_info::password</a>, <a class="el" href="mqtt_8h_source.html#l00112">MQTT_Client::user_data</a>, <a class="el" href="mqtt__msg_8h_source.html#l00088">mqtt_connect_info::username</a>, <a class="el" href="mqtt__msg_8h_source.html#l00091">mqtt_connect_info::will_message</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00090">mqtt_connect_info::will_topic</a>.</p>
+<p>References <a class="el" href="queue_8h_source.html#l00036">QUEUE::buf</a>, <a class="el" href="mqtt__msg_8h_source.html#l00091">mqtt_connection::buffer</a>, <a class="el" href="mqtt__msg_8h_source.html#l00098">mqtt_connect_info::client_id</a>, <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00101">MQTT_Client::connectedCb</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="mqtt_8h_source.html#l00105">MQTT_Client::dataCb</a>, <a class="el" href="mqtt_8h_source.html#l00102">MQTT_Client::disconnectedCb</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00162">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espfs_8c_source.html#l00031">os_free</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_connect_info::password</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00103">MQTT_Client::publishedCb</a>, <a class="el" href="mqtt_8h_source.html#l00104">MQTT_Client::timeoutCb</a>, <a class="el" href="mqtt_8h_source.html#l00112">MQTT_Client::user_data</a>, <a class="el" href="mqtt__msg_8h_source.html#l00099">mqtt_connect_info::username</a>, <a class="el" href="mqtt_8h_source.html#l00065">WIFI_INIT</a>, <a class="el" href="mqtt__msg_8h_source.html#l00102">mqtt_connect_info::will_message</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00101">mqtt_connect_info::will_topic</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9c9b677c6161329a3c3c6470a7182984_cgraph.svg" width="338" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9c9b677c6161329a3c3c6470a7182984_cgraph.svg" width="338" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9c9b677c6161329a3c3c6470a7182984_icgraph.svg" width="970" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9c9b677c6161329a3c3c6470a7182984_icgraph.svg" width="970" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -402,25 +397,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00778">778</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00878">878</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00098">MQTT_Client::ip</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8c_source.html#l00055">mqtt_dns_found()</a>, <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00154">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00472">mqtt_tcpclient_recon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00377">mqtt_timer()</a>, <a class="el" href="mqtt_8h_source.html#l00106">MQTT_Client::mqttTimer</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00108">MQTT_Client::reconnectTick</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00075">TCP_CONNECTING</a>, and <a class="el" href="mqtt__utils_8c_source.html#l00091">UTILS_StrToIP()</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00098">MQTT_Client::ip</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8c_source.html#l00059">mqtt_dns_found()</a>, <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00162">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00550">mqtt_tcpclient_recon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00455">mqtt_timer()</a>, <a class="el" href="mqtt_8h_source.html#l00106">MQTT_Client::mqttTimer</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00108">MQTT_Client::reconnectTick</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00075">TCP_CONNECTING</a>, and <a class="el" href="mqtt__utils_8c_source.html#l00091">UTILS_StrToIP()</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>, and <a class="el" href="user__main_8c_source.html#l00271">wifi_changed_cb()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>, and <a class="el" href="user__main_8c_source.html#l00266">wifi_changed_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad34b681cb2f7473d8fc786c7ed468db5_cgraph.svg" width="1139" height="696"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad34b681cb2f7473d8fc786c7ed468db5_cgraph.svg" width="1139" height="696"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad34b681cb2f7473d8fc786c7ed468db5_icgraph.svg" width="959" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad34b681cb2f7473d8fc786c7ed468db5_icgraph.svg" width="959" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -440,9 +433,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00850">850</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00950">950</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00086">MQTT_DELETING</a>, and <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00087">MQTT_DELETED</a>, and <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>.</p>
 
 </div>
 </div>
@@ -460,7 +453,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00842">842</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00942">942</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, and <a class="el" href="mqtt_8h_source.html#l00070">TCP_DISCONNECTING</a>.</p>
 
@@ -496,28 +489,27 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00055">55</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00059">59</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00098">MQTT_Client::ip</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="espfs_8c_source.html#l00032">os_memcpy</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00075">TCP_CONNECTING</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a0952c450d8a1ecdb3d4887ddb485fb6a_icgraph.svg" width="1124" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a0952c450d8a1ecdb3d4887ddb485fb6a_icgraph.svg" width="1124" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="a82303094af675136988bb2be5e92fc5b"></a>
+<a class="anchor" id="a25cb7ac079d1d119250dac075c45acf1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> MQTT_InitClient </td>
+          <td class="memname">BOOL <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> MQTT_InitClient </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_m_q_t_t___client.html">MQTT_Client</a> *&#160;</td>
           <td class="paramname"><em>mqttClient</em>, </td>
@@ -578,16 +570,16 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00709">709</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00787">787</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00095">mqtt_connect_info::clean_session</a>, <a class="el" href="mqtt__msg_8h_source.html#l00087">mqtt_connect_info::client_id</a>, <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00053">mqtt_state_t::in_buffer_length</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00092">mqtt_connect_info::keepalive</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00128">mqtt_msg_init()</a>, <a class="el" href="mqtt_8c_source.html#l00052">mqtt_procTaskQueue</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8c_source.html#l00040">MQTT_TASK_QUEUE_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espfs_8c_source.html#l00035">os_strcpy</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00054">mqtt_state_t::out_buffer_length</a>, <a class="el" href="mqtt__msg_8h_source.html#l00089">mqtt_connect_info::password</a>, <a class="el" href="mqtt_8c_source.html#l00044">QUEUE_BUFFER_SIZE</a>, <a class="el" href="queue_8c_source.html#l00034">QUEUE_Init()</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00088">mqtt_connect_info::username</a>.</p>
+<p>References <a class="el" href="mqtt__msg_8h_source.html#l00106">mqtt_connect_info::clean_session</a>, <a class="el" href="mqtt__msg_8h_source.html#l00098">mqtt_connect_info::client_id</a>, <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00053">mqtt_state_t::in_buffer_length</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00103">mqtt_connect_info::keepalive</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00128">mqtt_msg_init()</a>, <a class="el" href="mqtt_8c_source.html#l00052">mqtt_procTaskQueue</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8c_source.html#l00040">MQTT_TASK_QUEUE_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espfs_8c_source.html#l00035">os_strcpy</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00054">mqtt_state_t::out_buffer_length</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_connect_info::password</a>, <a class="el" href="mqtt_8c_source.html#l00044">QUEUE_BUFFER_SIZE</a>, <a class="el" href="queue_8c_source.html#l00039">QUEUE_Init()</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00099">mqtt_connect_info::username</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a82303094af675136988bb2be5e92fc5b_cgraph.svg" width="1463" height="831"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a25cb7ac079d1d119250dac075c45acf1_cgraph.svg" width="1519" height="948"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -595,7 +587,7 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a82303094af675136988bb2be5e92fc5b_icgraph.svg" width="647" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a25cb7ac079d1d119250dac075c45acf1_icgraph.svg" width="647" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -655,17 +647,16 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00685">685</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00763">763</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="espfs_8c_source.html#l00035">os_strcpy</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, and <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_add86222774af01cba1d038efaf8d1a6e_icgraph.svg" width="680" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_add86222774af01cba1d038efaf8d1a6e_icgraph.svg" width="680" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -713,17 +704,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00755">755</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00855">855</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="espfs_8c_source.html#l00035">os_strcpy</a>, <a class="el" href="mqtt__msg_8h_source.html#l00091">mqtt_connect_info::will_message</a>, <a class="el" href="mqtt__msg_8h_source.html#l00093">mqtt_connect_info::will_qos</a>, <a class="el" href="mqtt__msg_8h_source.html#l00094">mqtt_connect_info::will_retain</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00090">mqtt_connect_info::will_topic</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00100">MQTT_Client::connect_info</a>, <a class="el" href="espfs_8c_source.html#l00035">os_strcpy</a>, <a class="el" href="mqtt__msg_8h_source.html#l00102">mqtt_connect_info::will_message</a>, <a class="el" href="mqtt__msg_8h_source.html#l00104">mqtt_connect_info::will_qos</a>, <a class="el" href="mqtt__msg_8h_source.html#l00105">mqtt_connect_info::will_retain</a>, and <a class="el" href="mqtt__msg_8h_source.html#l00101">mqtt_connect_info::will_topic</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36df57598a1923a440823dbbb891fc82_icgraph.svg" width="642" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36df57598a1923a440823dbbb891fc82_icgraph.svg" width="642" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -753,17 +743,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00858">858</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00967">967</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00101">MQTT_Client::connectedCb</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ab3a2a73c00b8820e80e435c2d9f9f4f7_icgraph.svg" width="678" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ab3a2a73c00b8820e80e435c2d9f9f4f7_icgraph.svg" width="678" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -793,17 +782,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00870">870</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00979">979</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00105">MQTT_Client::dataCb</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ac132b96c4e1c0fcee5697be89f7c9e18_icgraph.svg" width="642" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ac132b96c4e1c0fcee5697be89f7c9e18_icgraph.svg" width="642" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -833,17 +821,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00864">864</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00973">973</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00102">MQTT_Client::disconnectedCb</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aa16caa6acf6717adf86d1a5c91581a7d_icgraph.svg" width="694" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aa16caa6acf6717adf86d1a5c91581a7d_icgraph.svg" width="694" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -873,17 +860,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00876">876</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00985">985</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00103">MQTT_Client::publishedCb</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a4233bc48f218edd624b6102d1bddab79_icgraph.svg" width="672" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a4233bc48f218edd624b6102d1bddab79_icgraph.svg" width="672" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -913,17 +899,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00882">882</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00991">991</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00104">MQTT_Client::timeoutCb</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a837d8d92724c1a3ca5bd692ccc8b66bc_icgraph.svg" width="662" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a837d8d92724c1a3ca5bd692ccc8b66bc_icgraph.svg" width="662" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -957,25 +942,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00580">580</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00658">658</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="ringbuf_8h_source.html#l00011">RINGBUF::fill_cnt</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00457">mqtt_msg_pingreq()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="queue_8c_source.html#l00043">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00039">QUEUE_Puts()</a>, <a class="el" href="queue_8h_source.html#l00037">QUEUE::rb</a>, and <a class="el" href="ringbuf_8h_source.html#l00012">RINGBUF::size</a>.</p>
+<p>References <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="ringbuf_8h_source.html#l00011">RINGBUF::fill_cnt</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00471">mqtt_msg_pingreq()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="queue_8c_source.html#l00061">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00044">QUEUE_Puts()</a>, <a class="el" href="queue_8h_source.html#l00037">QUEUE::rb</a>, and <a class="el" href="ringbuf_8h_source.html#l00012">RINGBUF::size</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00138">sample_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00143">sample_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a086502e2dd36681a7fb4d9a9018cfc88_cgraph.svg" width="648" height="215"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a086502e2dd36681a7fb4d9a9018cfc88_cgraph.svg" width="648" height="215"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a086502e2dd36681a7fb4d9a9018cfc88_icgraph.svg" width="982" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a086502e2dd36681a7fb4d9a9018cfc88_icgraph.svg" width="982" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1048,24 +1031,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00496">496</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00574">574</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="ringbuf_8h_source.html#l00011">RINGBUF::fill_cnt</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00363">mqtt_msg_publish()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00043">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00039">QUEUE_Puts()</a>, <a class="el" href="queue_8h_source.html#l00037">QUEUE::rb</a>, and <a class="el" href="ringbuf_8h_source.html#l00012">RINGBUF::size</a>.</p>
+<p>References <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="ringbuf_8h_source.html#l00011">RINGBUF::fill_cnt</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00377">mqtt_msg_publish()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00061">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00044">QUEUE_Puts()</a>, <a class="el" href="queue_8h_source.html#l00037">QUEUE::rb</a>, and <a class="el" href="ringbuf_8h_source.html#l00012">RINGBUF::size</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00037">en61107_received_task()</a>, <a class="el" href="en61107__request_8c_source.html#l00140">en61107_request_send()</a>, <a class="el" href="kmp__request_8c_source.html#l00039">kmp_received_task()</a>, <a class="el" href="kmp__request_8c_source.html#l00220">kmp_request_send()</a>, <a class="el" href="user__main_8c_source.html#l00277">mqttConnectedCb()</a>, <a class="el" href="user__main_8c_source.html#l00389">mqttDataCb()</a>, and <a class="el" href="user__main_8c_source.html#l00138">sample_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00117">en61107_received_task()</a>, <a class="el" href="en61107__request_8c_source.html#l00383">en61107_request_send()</a>, <a class="el" href="kmp__request_8c_source.html#l00039">kmp_received_task()</a>, <a class="el" href="kmp__request_8c_source.html#l00220">kmp_request_send()</a>, <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>, <a class="el" href="user__main_8c_source.html#l00389">mqttDataCb()</a>, and <a class="el" href="user__main_8c_source.html#l00143">sample_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a848a6701c4c7ec3432e38ea57c003aad_cgraph.svg" width="680" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a848a6701c4c7ec3432e38ea57c003aad_cgraph.svg" width="680" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a848a6701c4c7ec3432e38ea57c003aad_icgraph.svg" width="1303" height="400"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a848a6701c4c7ec3432e38ea57c003aad_icgraph.svg" width="1247" height="350"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -1086,25 +1068,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00113">113</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00117">117</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_get_type()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00457">mqtt_msg_pingreq()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00063">MQTT_MSG_TYPE_PINGREQ</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, and <a class="el" href="mqtt_8h_source.html#l00072">TCP_RECONNECT_DISCONNECTING</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00111">mqtt_get_type()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00471">mqtt_msg_pingreq()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00064">MQTT_MSG_TYPE_PINGREQ</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, and <a class="el" href="mqtt_8h_source.html#l00072">TCP_RECONNECT_DISCONNECTING</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad8ba75844d580447adc10eee6aba039d_cgraph.svg" width="494" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad8ba75844d580447adc10eee6aba039d_cgraph.svg" width="494" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad8ba75844d580447adc10eee6aba039d_icgraph.svg" width="987" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ad8ba75844d580447adc10eee6aba039d_icgraph.svg" width="987" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1156,25 +1136,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00528">528</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00606">606</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00421">mqtt_msg_subscribe()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00043">QUEUE_Gets()</a>, and <a class="el" href="queue_8c_source.html#l00039">QUEUE_Puts()</a>.</p>
+<p>References <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00435">mqtt_msg_subscribe()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00061">QUEUE_Gets()</a>, and <a class="el" href="queue_8c_source.html#l00044">QUEUE_Puts()</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00277">mqttConnectedCb()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a86f8adfe29d6ec8bb5070fd030540d2f_cgraph.svg" width="711" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a86f8adfe29d6ec8bb5070fd030540d2f_cgraph.svg" width="711" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a86f8adfe29d6ec8bb5070fd030540d2f_icgraph.svg" width="832" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a86f8adfe29d6ec8bb5070fd030540d2f_icgraph.svg" width="832" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1194,25 +1172,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00602">602</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00680">680</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8c_source.html#l00172">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00087">MQTT_DELETED</a>, <a class="el" href="mqtt_8h_source.html#l00086">MQTT_DELETING</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_get_type()</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt_8c_source.html#l00113">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00154">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="queue_8c_source.html#l00043">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00049">QUEUE_IsEmpty()</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, <a class="el" href="mqtt_8h_source.html#l00075">TCP_CONNECTING</a>, <a class="el" href="mqtt_8h_source.html#l00071">TCP_DISCONNECTED</a>, <a class="el" href="mqtt_8h_source.html#l00070">TCP_DISCONNECTING</a>, <a class="el" href="mqtt_8h_source.html#l00074">TCP_RECONNECT</a>, <a class="el" href="mqtt_8h_source.html#l00072">TCP_RECONNECT_DISCONNECTING</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8c_source.html#l00186">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00087">MQTT_DELETED</a>, <a class="el" href="mqtt_8h_source.html#l00086">MQTT_DELETING</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00111">mqtt_get_type()</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt_8c_source.html#l00117">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00162">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="queue_8c_source.html#l00061">QUEUE_Gets()</a>, <a class="el" href="queue_8c_source.html#l00066">QUEUE_IsEmpty()</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, <a class="el" href="mqtt_8h_source.html#l00075">TCP_CONNECTING</a>, <a class="el" href="mqtt_8h_source.html#l00071">TCP_DISCONNECTED</a>, <a class="el" href="mqtt_8h_source.html#l00070">TCP_DISCONNECTING</a>, <a class="el" href="mqtt_8h_source.html#l00074">TCP_RECONNECT</a>, <a class="el" href="mqtt_8h_source.html#l00072">TCP_RECONNECT_DISCONNECTING</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00709">MQTT_InitClient()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00787">MQTT_InitClient()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9d88fa6efb9163d4dbf9dc750a8d4ed0_cgraph.svg" width="1296" height="950"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9d88fa6efb9163d4dbf9dc750a8d4ed0_cgraph.svg" width="1296" height="950"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9d88fa6efb9163d4dbf9dc750a8d4ed0_icgraph.svg" width="791" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a9d88fa6efb9163d4dbf9dc750a8d4ed0_icgraph.svg" width="791" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1246,25 +1222,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00432">432</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00510">510</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00079">MQTT_CONNECT_SENDING</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_get_type()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00291">mqtt_msg_connect()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00128">mqtt_msg_init()</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8c_source.html#l00403">mqtt_tcpclient_discon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00230">mqtt_tcpclient_recv()</a>, <a class="el" href="mqtt_8c_source.html#l00361">mqtt_tcpclient_sent_cb()</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00054">mqtt_state_t::out_buffer_length</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, and <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00079">MQTT_CONNECT_SENDING</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00111">mqtt_get_type()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00291">mqtt_msg_connect()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00128">mqtt_msg_init()</a>, <a class="el" href="mqtt_8c_source.html#l00041">MQTT_SEND_TIMOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8c_source.html#l00481">mqtt_tcpclient_discon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00279">mqtt_tcpclient_recv()</a>, <a class="el" href="mqtt_8c_source.html#l00439">mqtt_tcpclient_sent_cb()</a>, <a class="el" href="mqtt_8h_source.html#l00052">mqtt_state_t::out_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00054">mqtt_state_t::out_buffer_length</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>, and <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36ecd969af1b9c87856f01be064a98cc_cgraph.svg" width="974" height="620"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36ecd969af1b9c87856f01be064a98cc_cgraph.svg" width="974" height="620"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36ecd969af1b9c87856f01be064a98cc_icgraph.svg" width="1187" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a36ecd969af1b9c87856f01be064a98cc_icgraph.svg" width="1187" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1298,17 +1272,16 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00154">154</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00162">162</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="espfs_8c_source.html#l00031">os_free</a>, and <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00172">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>, and <a class="el" href="mqtt_8c_source.html#l00602">MQTT_Task()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00186">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>, and <a class="el" href="mqtt_8c_source.html#l00680">MQTT_Task()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a21ab01c5c7342eb954bdd128a5f4244b_icgraph.svg" width="1168" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a21ab01c5c7342eb954bdd128a5f4244b_icgraph.svg" width="1168" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1328,17 +1301,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00403">403</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00481">481</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00102">MQTT_Client::disconnectedCb</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00087">MQTT_DELETED</a>, <a class="el" href="mqtt_8h_source.html#l00086">MQTT_DELETING</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00071">TCP_DISCONNECTED</a>, <a class="el" href="mqtt_8h_source.html#l00070">TCP_DISCONNECTING</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a91eaa7f7226c0c2dbe4712557dd5937f_icgraph.svg" width="1407" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a91eaa7f7226c0c2dbe4712557dd5937f_icgraph.svg" width="1407" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1382,17 +1354,16 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00472">472</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00550">550</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
 <p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ae43ebd832a20acdbf50031c3641c2699_icgraph.svg" width="1174" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_ae43ebd832a20acdbf50031c3641c2699_icgraph.svg" width="1174" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1444,25 +1415,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00230">230</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00279">279</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00101">MQTT_Client::connectedCb</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="mqtt_8c_source.html#l00098">deliver_publish()</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00053">mqtt_state_t::in_buffer_length</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00055">mqtt_state_t::message_length</a>, <a class="el" href="mqtt_8h_source.html#l00056">mqtt_state_t::message_length_read</a>, <a class="el" href="mqtt_8h_source.html#l00079">MQTT_CONNECT_SENDING</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00102">mqtt_get_qos()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00135">mqtt_get_total_length()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00100">mqtt_get_type()</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt__msg_8c_source.html#l00463">mqtt_msg_pingresp()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00389">mqtt_msg_puback()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00413">mqtt_msg_pubcomp()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00397">mqtt_msg_pubrec()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00405">mqtt_msg_pubrel()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00053">MQTT_MSG_TYPE_CONNACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00052">MQTT_MSG_TYPE_CONNECT</a>, <a class="el" href="mqtt__msg_8h_source.html#l00063">MQTT_MSG_TYPE_PINGREQ</a>, <a class="el" href="mqtt__msg_8h_source.html#l00064">MQTT_MSG_TYPE_PINGRESP</a>, <a class="el" href="mqtt__msg_8h_source.html#l00055">MQTT_MSG_TYPE_PUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00058">MQTT_MSG_TYPE_PUBCOMP</a>, <a class="el" href="mqtt__msg_8h_source.html#l00054">MQTT_MSG_TYPE_PUBLISH</a>, <a class="el" href="mqtt__msg_8h_source.html#l00056">MQTT_MSG_TYPE_PUBREC</a>, <a class="el" href="mqtt__msg_8h_source.html#l00057">MQTT_MSG_TYPE_PUBREL</a>, <a class="el" href="mqtt__msg_8h_source.html#l00060">MQTT_MSG_TYPE_SUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00059">MQTT_MSG_TYPE_SUBSCRIBE</a>, <a class="el" href="mqtt__msg_8h_source.html#l00062">MQTT_MSG_TYPE_UNSUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00061">MQTT_MSG_TYPE_UNSUBSCRIBE</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espfs_8c_source.html#l00032">os_memcpy</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="queue_8c_source.html#l00039">QUEUE_Puts()</a>, and <a class="el" href="mqtt_8h_source.html#l00072">TCP_RECONNECT_DISCONNECTING</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00101">MQTT_Client::connectedCb</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">CONNECTION_ACCEPTED</a>, <a class="el" href="mqtt__msg_8h_source.html#l00075">CONNECTION_REFUSE_BAD_USERNAME</a>, <a class="el" href="mqtt__msg_8h_source.html#l00076">CONNECTION_REFUSE_NOT_AUTHORIZED</a>, <a class="el" href="mqtt__msg_8h_source.html#l00072">CONNECTION_REFUSE_PROTOCOL</a>, <a class="el" href="mqtt__msg_8h_source.html#l00074">CONNECTION_REFUSE_SERVER_UNAVAILABLE</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="mqtt_8c_source.html#l00102">deliver_publish()</a>, <a class="el" href="mqtt_8h_source.html#l00096">MQTT_Client::host</a>, <a class="el" href="mqtt_8h_source.html#l00051">mqtt_state_t::in_buffer</a>, <a class="el" href="mqtt_8h_source.html#l00053">mqtt_state_t::in_buffer_length</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="mqtt_8h_source.html#l00055">mqtt_state_t::message_length</a>, <a class="el" href="mqtt_8h_source.html#l00056">mqtt_state_t::message_length_read</a>, <a class="el" href="mqtt_8h_source.html#l00079">MQTT_CONNECT_SENDING</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt__msg_8h_source.html#l00112">mqtt_get_connect_return_code()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00229">mqtt_get_id()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00114">mqtt_get_qos()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00135">mqtt_get_total_length()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00111">mqtt_get_type()</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt__msg_8c_source.html#l00477">mqtt_msg_pingresp()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00403">mqtt_msg_puback()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00427">mqtt_msg_pubcomp()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00411">mqtt_msg_pubrec()</a>, <a class="el" href="mqtt__msg_8c_source.html#l00419">mqtt_msg_pubrel()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00054">MQTT_MSG_TYPE_CONNACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00053">MQTT_MSG_TYPE_CONNECT</a>, <a class="el" href="mqtt__msg_8h_source.html#l00064">MQTT_MSG_TYPE_PINGREQ</a>, <a class="el" href="mqtt__msg_8h_source.html#l00065">MQTT_MSG_TYPE_PINGRESP</a>, <a class="el" href="mqtt__msg_8h_source.html#l00056">MQTT_MSG_TYPE_PUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00059">MQTT_MSG_TYPE_PUBCOMP</a>, <a class="el" href="mqtt__msg_8h_source.html#l00055">MQTT_MSG_TYPE_PUBLISH</a>, <a class="el" href="mqtt__msg_8h_source.html#l00057">MQTT_MSG_TYPE_PUBREC</a>, <a class="el" href="mqtt__msg_8h_source.html#l00058">MQTT_MSG_TYPE_PUBREL</a>, <a class="el" href="mqtt__msg_8h_source.html#l00061">MQTT_MSG_TYPE_SUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00060">MQTT_MSG_TYPE_SUBSCRIBE</a>, <a class="el" href="mqtt__msg_8h_source.html#l00063">MQTT_MSG_TYPE_UNSUBACK</a>, <a class="el" href="mqtt__msg_8h_source.html#l00062">MQTT_MSG_TYPE_UNSUBSCRIBE</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="espfs_8c_source.html#l00032">os_memcpy</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00094">MQTT_Client::pCon</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00097">MQTT_Client::port</a>, <a class="el" href="queue_8c_source.html#l00044">QUEUE_Puts()</a>, and <a class="el" href="mqtt_8h_source.html#l00095">MQTT_Client::security</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_af470856972320b9c02da9fcb6f419fd0_cgraph.svg" width="711" height="595"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_af470856972320b9c02da9fcb6f419fd0_cgraph.svg" width="711" height="595"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_af470856972320b9c02da9fcb6f419fd0_icgraph.svg" width="1372" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_af470856972320b9c02da9fcb6f419fd0_icgraph.svg" width="1372" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1496,17 +1465,16 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00361">361</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00439">439</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt__msg_8h_source.html#l00054">MQTT_MSG_TYPE_PUBLISH</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00103">MQTT_Client::publishedCb</a>, and <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="mqtt__msg_8h_source.html#l00055">MQTT_MSG_TYPE_PUBLISH</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00060">mqtt_state_t::pending_msg_type</a>, <a class="el" href="mqtt_8h_source.html#l00103">MQTT_Client::publishedCb</a>, and <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00432">mqtt_tcpclient_connect_cb()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00510">mqtt_tcpclient_connect_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aa5738eea4ea5cc1152e55c28280a8956_icgraph.svg" width="1394" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aa5738eea4ea5cc1152e55c28280a8956_icgraph.svg" width="1394" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1526,17 +1494,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00377">377</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00455">455</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00092">mqtt_connect_info::keepalive</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="user__config_8h_source.html#l00034">MQTT_RECONNECT_TIMEOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00108">MQTT_Client::reconnectTick</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, <a class="el" href="mqtt_8h_source.html#l00074">TCP_RECONNECT</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
+<p>References <a class="el" href="mqtt_8h_source.html#l00050">mqtt_state_t::connect_info</a>, <a class="el" href="mqtt_8h_source.html#l00110">MQTT_Client::connState</a>, <a class="el" href="mqtt__msg_8h_source.html#l00103">mqtt_connect_info::keepalive</a>, <a class="el" href="mqtt_8h_source.html#l00107">MQTT_Client::keepAliveTick</a>, <a class="el" href="mqtt_8h_source.html#l00082">MQTT_DATA</a>, <a class="el" href="mqtt_8h_source.html#l00083">MQTT_KEEPALIVE_SEND</a>, <a class="el" href="user__config_8h_source.html#l00034">MQTT_RECONNECT_TIMEOUT</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00108">MQTT_Client::reconnectTick</a>, <a class="el" href="mqtt_8h_source.html#l00109">MQTT_Client::sendTimeout</a>, <a class="el" href="mqtt_8h_source.html#l00074">TCP_RECONNECT</a>, and <a class="el" href="mqtt_8h_source.html#l00073">TCP_RECONNECT_REQ</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00778">MQTT_Connect()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00878">MQTT_Connect()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aff05121b85e88019a26bff9ed48655aa_icgraph.svg" width="1092" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_aff05121b85e88019a26bff9ed48655aa_icgraph.svg" width="1092" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1581,15 +1548,14 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00555">555</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
+<p>Definition at line <a class="el" href="mqtt_8c_source.html#l00633">633</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>References <a class="el" href="mqtt__msg_8h_source.html#l00070">mqtt_message::data</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00071">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00441">mqtt_msg_unsubscribe()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00043">QUEUE_Gets()</a>, and <a class="el" href="queue_8c_source.html#l00039">QUEUE_Puts()</a>.</p>
+<p>References <a class="el" href="mqtt__msg_8h_source.html#l00081">mqtt_message::data</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="mqtt__msg_8h_source.html#l00082">mqtt_message::length</a>, <a class="el" href="user__config_8h_source.html#l00024">MQTT_BUF_SIZE</a>, <a class="el" href="mqtt_8h_source.html#l00058">mqtt_state_t::mqtt_connection</a>, <a class="el" href="mqtt__msg_8c_source.html#l00455">mqtt_msg_unsubscribe()</a>, <a class="el" href="mqtt_8h_source.html#l00099">MQTT_Client::mqtt_state</a>, <a class="el" href="mqtt_8c_source.html#l00039">MQTT_TASK_PRIO</a>, <a class="el" href="mqtt_8h_source.html#l00111">MQTT_Client::msgQueue</a>, <a class="el" href="mqtt_8h_source.html#l00057">mqtt_state_t::outbound_message</a>, <a class="el" href="mqtt_8h_source.html#l00059">mqtt_state_t::pending_msg_id</a>, <a class="el" href="queue_8c_source.html#l00061">QUEUE_Gets()</a>, and <a class="el" href="queue_8c_source.html#l00044">QUEUE_Puts()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a7f28cd912dae4c1386c10026a267b579_cgraph.svg" width="743" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="mqtt_8c_a7f28cd912dae4c1386c10026a267b579_cgraph.svg" width="743" height="379"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -1664,7 +1630,7 @@ Here is the call graph for this function:</div>
 
 <p>Definition at line <a class="el" href="mqtt_8c_source.html#l00052">52</a> of file <a class="el" href="mqtt_8c_source.html">mqtt.c</a>.</p>
 
-<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00709">MQTT_InitClient()</a>.</p>
+<p>Referenced by <a class="el" href="mqtt_8c_source.html#l00787">MQTT_InitClient()</a>.</p>
 
 </div>
 </div>

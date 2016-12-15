@@ -1,8 +1,9 @@
 <map id="uart_config" name="uart_config">
-<area shape="rect" id="node2" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="141,31,291,57"/>
-<area shape="rect" id="node7" href="$espmissingincludes_8h.html#a1bea1725066e012f8f618d08ed7fee45" title="uart_div_modify" alt="" coords="158,81,274,108"/>
-<area shape="rect" id="node3" href="$en61107__request_8c.html#ae20bf12760f56ac48afdd0c7952d168b" title="en61107_fifo_put" alt="" coords="339,5,464,32"/>
-<area shape="rect" id="node5" href="$kmp__request_8c.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="352,56,451,83"/>
-<area shape="rect" id="node4" href="$en61107__request_8c.html#a9984f86f367d70ca77edce2accd01c64" title="en61107_fifo_in_use" alt="" coords="512,5,657,32"/>
-<area shape="rect" id="node6" href="$kmp__request_8c.html#a50794131d44d1f5c42484104202be6df" title="kmp_fifo_in_use" alt="" coords="525,56,644,83"/>
+<area shape="rect" id="node2" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="141,56,291,83"/>
+<area shape="rect" id="node8" href="$espmissingincludes_8h.html#a1bea1725066e012f8f618d08ed7fee45" title="uart_div_modify" alt="" coords="158,107,274,133"/>
+<area shape="rect" id="node3" href="$en61107__request_8c.html#ad614196da23286f90ffe16126e2b254e" title="en61107_fifo_put" alt="" coords="353,5,478,32"/>
+<area shape="rect" id="node5" href="$en61107__request_8c.html#a55f8feefc9d9579a91b4303e5f9950f2" title="en61107_is_eod_char" alt="" coords="339,56,492,83"/>
+<area shape="rect" id="node6" href="$kmp__request_8c.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="366,107,465,133"/>
+<area shape="rect" id="node4" href="$en61107__request_8c.html#a9984f86f367d70ca77edce2accd01c64" title="en61107_fifo_in_use" alt="" coords="540,5,685,32"/>
+<area shape="rect" id="node7" href="$kmp__request_8c.html#a50794131d44d1f5c42484104202be6df" title="kmp_fifo_in_use" alt="" coords="553,107,672,133"/>
 </map>

@@ -1,5 +1,3 @@
 <map id="user/kamstrup/kmp_request.h" name="user/kamstrup/kmp_request.h">
-<area shape="rect" id="node2" href="$uart_8c.html" title="driver/uart.c" alt="" coords="5,80,97,107"/>
-<area shape="rect" id="node3" href="$kmp__request_8c.html" title="user/kamstrup/kmp_request.c" alt="" coords="122,80,319,107"/>
-<area shape="rect" id="node4" href="$user__main_8c.html" title="user/user_main.c" alt="" coords="344,80,468,107"/>
+<area shape="rect" id="node2" href="$kmp__request_8c.html" title="user/kamstrup/kmp_request.c" alt="" coords="6,80,203,107"/>
 </map>

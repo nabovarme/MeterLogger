@@ -1,12 +1,4 @@
 <map id="uart0_write_char" name="uart0_write_char">
-<area shape="rect" id="node2" href="$uart_8h.html#a1fdfa60721412bedfeb7be0ebc4d1700" title="uart_init" alt="" coords="175,71,244,98"/>
-<area shape="rect" id="node3" href="$uart_8c.html#a15a9e8dca40ebbeea858ce8f081c06cf" title="uart_reattach" alt="" coords="343,21,443,47"/>
-<area shape="rect" id="node4" href="$en61107__request_8h.html#a8b0d746dce87f92833ba6f5b83febe63" title="en61107_get_data_timer_func" alt="" coords="292,71,495,98"/>
-<area shape="rect" id="node11" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1552,97,1624,123"/>
-<area shape="rect" id="node5" href="$en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="543,42,705,69"/>
-<area shape="rect" id="node6" href="$en61107__request_8h.html#a6379eaf88ea35baaf2a3ab8a0ae66fdb" title="en61107_receive_timeout\l_timer_func" alt="" coords="753,5,929,47"/>
-<area shape="rect" id="node7" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="774,71,909,98"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="977,71,1107,98"/>
-<area shape="rect" id="node9" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="1155,71,1331,98"/>
-<area shape="rect" id="node10" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1379,71,1504,98"/>
+<area shape="rect" id="node2" href="$uart_8h.html#a1fdfa60721412bedfeb7be0ebc4d1700" title="uart_init" alt="" coords="175,5,244,32"/>
+<area shape="rect" id="node3" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="292,5,364,32"/>
 </map>

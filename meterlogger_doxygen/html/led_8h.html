@@ -94,8 +94,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h__dep__incl.svg" width="514" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h__dep__incl.svg" width="514" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="led_8h_source.html">Go to the source code of this file.</a></p>
@@ -108,6 +107,8 @@ Functions</h2></td></tr>
 <tr class="separator:a0a23edee5e1db0cd2928c18a42ffe96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ef0b27e501c77cd25b8bb7a2de6d8bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="led_8h.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd">led_off</a> (void)</td></tr>
 <tr class="separator:a7ef0b27e501c77cd25b8bb7a2de6d8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6d361c98a60a68683d2436f7ef9159a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="led_8h.html#af6d361c98a60a68683d2436f7ef9159a">led_blink</a> (void)</td></tr>
+<tr class="separator:af6d361c98a60a68683d2436f7ef9159a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa00afefe8ba48ccd7df635fbc7d4c9fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="led_8h.html#aa00afefe8ba48ccd7df635fbc7d4c9fc">led_pattern_a</a> (void)</td></tr>
 <tr class="separator:aa00afefe8ba48ccd7df635fbc7d4c9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a83b60a5039ca4c8727fc1902630210"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="led_8h.html#a6a83b60a5039ca4c8727fc1902630210">led_pattern_b</a> (void)</td></tr>
@@ -116,6 +117,44 @@ Functions</h2></td></tr>
 <tr class="separator:a7cd1d03b4baad9cb20bf1a43046f61a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="af6d361c98a60a68683d2436f7ef9159a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void led_blink </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="led_8c_source.html#l00041">41</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+
+<p>References <a class="el" href="led_8c_source.html#l00030">led_on()</a>, <a class="el" href="led_8c_source.html#l00006">led_single_blink_off_timer</a>, and <a class="el" href="led_8c_source.html#l00018">led_single_blink_off_timer_func()</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_af6d361c98a60a68683d2436f7ef9159a_cgraph.svg" width="383" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_af6d361c98a60a68683d2436f7ef9159a_icgraph.svg" width="1895" height="810"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
 <a class="anchor" id="adb46268bee8cf59cb933f6ed427d8499"></a>
 <div class="memitem">
 <div class="memproto">
@@ -130,15 +169,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00017">17</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00022">22</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00714">user_init()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00742">user_init()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_adb46268bee8cf59cb933f6ed427d8499_icgraph.svg" width="195" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_adb46268bee8cf59cb933f6ed427d8499_icgraph.svg" width="195" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -158,14 +196,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00030">30</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00035">35</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00051">ac_out_off_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00068">ac_pwm_timer_func()</a>, <a class="el" href="led_8c_source.html#l00007">led_blinker_timer_func()</a>, and <a class="el" href="led_8c_source.html#l00048">led_stop_pattern()</a>.</p>
+<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00051">ac_out_off_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00068">ac_pwm_timer_func()</a>, <a class="el" href="led_8c_source.html#l00008">led_blinker_timer_func()</a>, <a class="el" href="led_8c_source.html#l00018">led_single_blink_off_timer_func()</a>, and <a class="el" href="led_8c_source.html#l00060">led_stop_pattern()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7ef0b27e501c77cd25b8bb7a2de6d8bd_icgraph.svg" width="1563" height="542"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7ef0b27e501c77cd25b8bb7a2de6d8bd_icgraph.svg" width="2294" height="1367"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -186,14 +224,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00025">25</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00030">30</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00068">ac_pwm_timer_func()</a>, and <a class="el" href="led_8c_source.html#l00007">led_blinker_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00068">ac_pwm_timer_func()</a>, <a class="el" href="led_8c_source.html#l00041">led_blink()</a>, <a class="el" href="led_8c_source.html#l00008">led_blinker_timer_func()</a>, and <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a0a23edee5e1db0cd2928c18a42ffe96f_icgraph.svg" width="1540" height="372"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a0a23edee5e1db0cd2928c18a42ffe96f_icgraph.svg" width="2099" height="1223"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -214,25 +252,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00036">36</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00048">48</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00007">led_blinker_timer_func()</a>.</p>
+<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00008">led_blinker_timer_func()</a>.</p>
 
-<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00129">ac_motor_valve_open()</a>, <a class="el" href="ac__out_8c_source.html#l00111">ac_test()</a>, <a class="el" href="ac__out_8c_source.html#l00024">ac_test_timer_func()</a>, and <a class="el" href="ac__out_8c_source.html#l00189">ac_thermo_close()</a>.</p>
+<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00129">ac_motor_valve_open()</a>, <a class="el" href="ac__out_8c_source.html#l00111">ac_test()</a>, <a class="el" href="ac__out_8c_source.html#l00024">ac_test_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00193">ac_thermo_close()</a>, and <a class="el" href="wifi_8c_source.html#l00086">wifi_scan_done_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_aa00afefe8ba48ccd7df635fbc7d4c9fc_cgraph.svg" width="430" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_aa00afefe8ba48ccd7df635fbc7d4c9fc_cgraph.svg" width="430" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_aa00afefe8ba48ccd7df635fbc7d4c9fc_icgraph.svg" width="1186" height="224"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_aa00afefe8ba48ccd7df635fbc7d4c9fc_icgraph.svg" width="1186" height="224"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -252,25 +288,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00042">42</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00054">54</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00007">led_blinker_timer_func()</a>.</p>
+<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00008">led_blinker_timer_func()</a>.</p>
 
-<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00148">ac_motor_valve_close()</a>, <a class="el" href="ac__out_8c_source.html#l00024">ac_test_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00167">ac_thermo_open()</a>, and <a class="el" href="wifi_8c_source.html#l00108">wifi_scan_done_cb()</a>.</p>
+<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00148">ac_motor_valve_close()</a>, <a class="el" href="ac__out_8c_source.html#l00024">ac_test_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00167">ac_thermo_open()</a>, and <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a6a83b60a5039ca4c8727fc1902630210_cgraph.svg" width="430" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a6a83b60a5039ca4c8727fc1902630210_cgraph.svg" width="430" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a6a83b60a5039ca4c8727fc1902630210_icgraph.svg" width="1210" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a6a83b60a5039ca4c8727fc1902630210_icgraph.svg" width="1210" height="190"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -290,25 +324,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="led_8c_source.html#l00048">48</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
+<p>Definition at line <a class="el" href="led_8c_source.html#l00060">60</a> of file <a class="el" href="led_8c_source.html">led.c</a>.</p>
 
-<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00030">led_off()</a>.</p>
+<p>References <a class="el" href="led_8c_source.html#l00005">led_blinker_timer</a>, and <a class="el" href="led_8c_source.html#l00035">led_off()</a>.</p>
 
-<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00051">ac_out_off_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00211">ac_thermo_pwm()</a>, <a class="el" href="wifi_8c_source.html#l00211">wifi_connect()</a>, and <a class="el" href="wifi_8c_source.html#l00108">wifi_scan_done_cb()</a>.</p>
+<p>Referenced by <a class="el" href="ac__out_8c_source.html#l00051">ac_out_off_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00219">ac_thermo_pwm()</a>, <a class="el" href="wifi_8c_source.html#l00172">wifi_connect()</a>, and <a class="el" href="wifi_8c_source.html#l00086">wifi_scan_done_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7cd1d03b4baad9cb20bf1a43046f61a2_cgraph.svg" width="243" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7cd1d03b4baad9cb20bf1a43046f61a2_cgraph.svg" width="243" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7cd1d03b4baad9cb20bf1a43046f61a2_icgraph.svg" width="1248" height="291"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="led_8h_a7cd1d03b4baad9cb20bf1a43046f61a2_icgraph.svg" width="1248" height="291"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 

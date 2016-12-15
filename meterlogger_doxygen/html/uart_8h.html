@@ -100,14 +100,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for uart.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h__incl.svg" width="340" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h__incl.svg" width="340" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h__dep__incl.svg" width="656" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h__dep__incl.svg" width="656" height="127"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="uart_8h_source.html">Go to the source code of this file.</a></p>
@@ -139,6 +137,8 @@ Macros</h2></td></tr>
 <tr class="separator:a85a3415d6eef5615094c591737ac5393"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8de8a20033d2add3b233674704ae0d01"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a8de8a20033d2add3b233674704ae0d01">UART_HW_CTS</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:a8de8a20033d2add3b233674704ae0d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7652c930ed7eb1841c38419905e5eafd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a7652c930ed7eb1841c38419905e5eafd">UART_LINE_INV_MASK</a>&#160;&#160;&#160;(0x3f&lt;&lt;19)</td></tr>
+<tr class="separator:a7652c930ed7eb1841c38419905e5eafd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0508661f121639ffdee7de2353a0def2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a0508661f121639ffdee7de2353a0def2">UART0</a>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:a0508661f121639ffdee7de2353a0def2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d69bf04d07af4fbbab5a8bd291f65ff"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a8d69bf04d07af4fbbab5a8bd291f65ff">UART1</a>&#160;&#160;&#160;1</td></tr>
@@ -254,6 +254,16 @@ Functions</h2></td></tr>
 <tr class="separator:a66498d65854712e438ab711b511e0155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1c8d77bc982d3337fde1ba17c2592b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#ad1c8d77bc982d3337fde1ba17c2592b0">uart0_tx_buffer</a> (uint8 *buf, uint16 len)</td></tr>
 <tr class="separator:ad1c8d77bc982d3337fde1ba17c2592b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6727906afe0321e8ee406028ad41f5e7"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a6727906afe0321e8ee406028ad41f5e7">uart_set_word_length</a> (uint8_t uart_no, <a class="el" href="uart_8h.html#a1a800ab02eb9805becdea40a047e2e25">UartBitsNum4Char</a> len)</td></tr>
+<tr class="separator:a6727906afe0321e8ee406028ad41f5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4db93f371dcd92498db4a4c7b82f3380"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a4db93f371dcd92498db4a4c7b82f3380">uart_set_stop_bits</a> (uint8_t uart_no, <a class="el" href="uart_8h.html#a0ecb1f01cc124cfef8bb7dbfe6c9c1d5">UartStopBitsNum</a> bit_num)</td></tr>
+<tr class="separator:a4db93f371dcd92498db4a4c7b82f3380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f0a2eb7a0babd6ab8768508e53978da"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a8f0a2eb7a0babd6ab8768508e53978da">uart_set_line_inverse</a> (uint8_t uart_no, <a class="el" href="uart_8h.html#ab469271d6668e2a8406727f02a0127b3">UART_LineLevelInverse</a> inverse_mask)</td></tr>
+<tr class="separator:a8f0a2eb7a0babd6ab8768508e53978da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67bf1971cc8eb81c79700658c287c7a4"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a67bf1971cc8eb81c79700658c287c7a4">uart_set_parity</a> (uint8_t uart_no, <a class="el" href="uart_8h.html#acb045cca45821ff8ef1e749914313198">UartParityMode</a> Parity_mode)</td></tr>
+<tr class="separator:a67bf1971cc8eb81c79700658c287c7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a828a91f8fe473a4396dd10e5a024d600"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8h.html#a828a91f8fe473a4396dd10e5a024d600">uart_set_baudrate</a> (uint8_t uart_no, uint32_t baud_rate)</td></tr>
+<tr class="separator:a828a91f8fe473a4396dd10e5a024d600"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a0508661f121639ffdee7de2353a0def2"></a>
@@ -266,9 +276,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00036">36</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00037">37</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
-<p>Referenced by <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>, <a class="el" href="uart_8c_source.html#l00183">uart0_sendStr()</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00145">uart0_write_char()</a>, <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>, and <a class="el" href="uart_8c_source.html#l00281">uart_init()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>, <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>, <a class="el" href="uart_8c_source.html#l00183">uart0_sendStr()</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00145">uart0_write_char()</a>, <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>, and <a class="el" href="uart_8c_source.html#l00275">uart_init()</a>.</p>
 
 </div>
 </div>
@@ -282,9 +292,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00037">37</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00038">38</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
-<p>Referenced by <a class="el" href="uart_8c_source.html#l00128">uart1_write_char()</a>, <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>, and <a class="el" href="uart_8c_source.html#l00281">uart_init()</a>.</p>
+<p>Referenced by <a class="el" href="uart_8c_source.html#l00128">uart1_write_char()</a>, <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>, and <a class="el" href="uart_8c_source.html#l00275">uart_init()</a>.</p>
 
 </div>
 </div>
@@ -312,7 +322,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00152">152</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00153">153</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -341,6 +351,22 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="uart_8h_source.html#l00030">30</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7652c930ed7eb1841c38419905e5eafd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define UART_LINE_INV_MASK&#160;&#160;&#160;(0x3f&lt;&lt;19)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00033">33</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+
+<p>Referenced by <a class="el" href="uart_8c_source.html#l00323">uart_set_line_inverse()</a>.</p>
 
 </div>
 </div>
@@ -396,7 +422,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00153">153</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00154">154</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -419,7 +445,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00105">105</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00106">106</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -445,7 +471,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00125">125</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00126">126</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -465,7 +491,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00176">176</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00177">177</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -489,7 +515,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00098">98</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00099">99</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -515,7 +541,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00064">64</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00065">65</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -563,7 +589,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00073">73</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00074">74</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -587,7 +613,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00040">40</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00041">41</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -607,7 +633,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00059">59</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00060">60</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -629,7 +655,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00092">92</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00093">93</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -651,7 +677,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00053">53</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00054">54</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -673,7 +699,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="uart_8h_source.html#l00047">47</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
+<p>Definition at line <a class="el" href="uart_8h_source.html#l00048">48</a> of file <a class="el" href="uart_8h_source.html">uart.h</a>.</p>
 
 </div>
 </div>
@@ -694,13 +720,12 @@ Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="uart_8c_source.html#l00183">183</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
 
-<p>References <a class="el" href="uart_8h_source.html#l00036">UART0</a>, and <a class="el" href="uart_8c_source.html#l00106">uart_tx_one_char()</a>.</p>
+<p>References <a class="el" href="uart_8h_source.html#l00037">UART0</a>, and <a class="el" href="uart_8c_source.html#l00106">uart_tx_one_char()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ae7dc0cb27255242e5edb37cc6c78702c_cgraph.svg" width="290" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ae7dc0cb27255242e5edb37cc6c78702c_cgraph.svg" width="290" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -732,22 +757,21 @@ Here is the call graph for this function:</div>
 
 <p>Definition at line <a class="el" href="uart_8c_source.html#l00165">165</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
 
-<p>References <a class="el" href="uart_8h_source.html#l00036">UART0</a>, and <a class="el" href="uart_8c_source.html#l00106">uart_tx_one_char()</a>.</p>
+<p>References <a class="el" href="uart_8h_source.html#l00037">UART0</a>, and <a class="el" href="uart_8c_source.html#l00106">uart_tx_one_char()</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00102">en61107_get_data_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00114">en61107_get_register_timer_func()</a>, <a class="el" href="kmp__request_8c_source.html#l00194">kmp_get_register_timer_func()</a>, and <a class="el" href="kmp__request_8c_source.html#l00186">kmp_get_serial_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>, <a class="el" href="kmp__request_8c_source.html#l00194">kmp_get_register_timer_func()</a>, and <a class="el" href="kmp__request_8c_source.html#l00186">kmp_get_serial_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ad1c8d77bc982d3337fde1ba17c2592b0_cgraph.svg" width="296" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ad1c8d77bc982d3337fde1ba17c2592b0_cgraph.svg" width="296" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ad1c8d77bc982d3337fde1ba17c2592b0_icgraph.svg" width="1579" height="207"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_ad1c8d77bc982d3337fde1ba17c2592b0_icgraph.svg" width="2180" height="955"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -809,25 +833,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="uart_8c_source.html#l00281">281</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00275">275</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
 
-<p>References <a class="el" href="uart_8h_source.html#l00134">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00135">UartDevice::data_bits</a>, <a class="el" href="uart_8h_source.html#l00044">EIGHT_BITS</a>, <a class="el" href="uart_8h_source.html#l00056">EVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00136">UartDevice::exist_parity</a>, <a class="el" href="uart_8h_source.html#l00054">NONE_BITS</a>, <a class="el" href="uart_8h_source.html#l00137">UartDevice::parity</a>, <a class="el" href="uart_8h_source.html#l00043">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00060">STICK_PARITY_DIS</a>, <a class="el" href="uart_8h_source.html#l00061">STICK_PARITY_EN</a>, <a class="el" href="uart_8h_source.html#l00138">UartDevice::stop_bits</a>, <a class="el" href="uart_8h_source.html#l00050">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00036">UART0</a>, <a class="el" href="uart_8c_source.html#l00145">uart0_write_char()</a>, <a class="el" href="uart_8h_source.html#l00037">UART1</a>, and <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>.</p>
+<p>References <a class="el" href="uart_8h_source.html#l00135">UartDevice::baut_rate</a>, <a class="el" href="uart_8h_source.html#l00136">UartDevice::data_bits</a>, <a class="el" href="uart_8h_source.html#l00045">EIGHT_BITS</a>, <a class="el" href="uart_8h_source.html#l00057">EVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00137">UartDevice::exist_parity</a>, <a class="el" href="uart_8h_source.html#l00055">NONE_BITS</a>, <a class="el" href="uart_8h_source.html#l00138">UartDevice::parity</a>, <a class="el" href="uart_8h_source.html#l00044">SEVEN_BITS</a>, <a class="el" href="uart_8h_source.html#l00061">STICK_PARITY_DIS</a>, <a class="el" href="uart_8h_source.html#l00062">STICK_PARITY_EN</a>, <a class="el" href="uart_8h_source.html#l00139">UartDevice::stop_bits</a>, <a class="el" href="uart_8h_source.html#l00051">TWO_STOP_BIT</a>, <a class="el" href="uart_8h_source.html#l00037">UART0</a>, <a class="el" href="uart_8c_source.html#l00145">uart0_write_char()</a>, <a class="el" href="uart_8h_source.html#l00038">UART1</a>, and <a class="el" href="uart_8c_source.html#l00041">uart_config()</a>.</p>
 
-<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00102">en61107_get_data_timer_func()</a>, <a class="el" href="uart_8c_source.html#l00319">uart_reattach()</a>, and <a class="el" href="user__main_8c_source.html#l00714">user_init()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00742">user_init()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a1fdfa60721412bedfeb7be0ebc4d1700_cgraph.svg" width="814" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a1fdfa60721412bedfeb7be0ebc4d1700_cgraph.svg" width="842" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a1fdfa60721412bedfeb7be0ebc4d1700_icgraph.svg" width="1460" height="206"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a1fdfa60721412bedfeb7be0ebc4d1700_icgraph.svg" width="1460" height="206"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -865,6 +887,182 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a class="anchor" id="a828a91f8fe473a4396dd10e5a024d600"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uart_set_baudrate </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>baud_rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8f0a2eb7a0babd6ab8768508e53978da"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uart_set_line_inverse </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="uart_8h.html#ab469271d6668e2a8406727f02a0127b3">UART_LineLevelInverse</a>&#160;</td>
+          <td class="paramname"><em>inverse_mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00323">323</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>References <a class="el" href="uart__register_8h_source.html#l00097">UART_CONF0</a>, and <a class="el" href="uart_8h_source.html#l00033">UART_LINE_INV_MASK</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a67bf1971cc8eb81c79700658c287c7a4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uart_set_parity </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="uart_8h.html#acb045cca45821ff8ef1e749914313198">UartParityMode</a>&#160;</td>
+          <td class="paramname"><em>Parity_mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00329">329</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>References <a class="el" href="uart_8h_source.html#l00055">NONE_BITS</a>, <a class="el" href="uart__register_8h_source.html#l00097">UART_CONF0</a>, <a class="el" href="uart__register_8h_source.html#l00124">UART_PARITY</a>, and <a class="el" href="uart__register_8h_source.html#l00121">UART_PARITY_EN</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, and <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a67bf1971cc8eb81c79700658c287c7a4_icgraph.svg" width="2179" height="815"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a4db93f371dcd92498db4a4c7b82f3380"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uart_set_stop_bits </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="uart_8h.html#a0ecb1f01cc124cfef8bb7dbfe6c9c1d5">UartStopBitsNum</a>&#160;</td>
+          <td class="paramname"><em>bit_num</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00318">318</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>References <a class="el" href="uart__register_8h_source.html#l00097">UART_CONF0</a>, <a class="el" href="uart__register_8h_source.html#l00117">UART_STOP_BIT_NUM</a>, and <a class="el" href="uart__register_8h_source.html#l00118">UART_STOP_BIT_NUM_S</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00103">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, and <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a4db93f371dcd92498db4a4c7b82f3380_icgraph.svg" width="2071" height="952"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a6727906afe0321e8ee406028ad41f5e7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uart_set_word_length </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>uart_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="uart_8h.html#a1a800ab02eb9805becdea40a047e2e25">UartBitsNum4Char</a>&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="uart_8c_source.html#l00313">313</a> of file <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>References <a class="el" href="uart__register_8h_source.html#l00119">UART_BIT_NUM</a>, <a class="el" href="uart__register_8h_source.html#l00120">UART_BIT_NUM_S</a>, and <a class="el" href="uart__register_8h_source.html#l00097">UART_CONF0</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107__request_8c_source.html#l00689">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00721">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00505">en61107_uart_send_serial_byte_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00528">en61107_uart_send_serial_byte_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00551">en61107_uart_send_serial_byte_3()</a>, <a class="el" href="en61107__request_8c_source.html#l00574">en61107_uart_send_serial_byte_4()</a>, <a class="el" href="en61107__request_8c_source.html#l00597">en61107_uart_send_serial_byte_5()</a>, <a class="el" href="en61107__request_8c_source.html#l00620">en61107_uart_send_serial_byte_6()</a>, <a class="el" href="en61107__request_8c_source.html#l00422">en61107_uart_send_standard_data_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00453">en61107_uart_send_unknown_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00482">en61107_uart_send_unknown_2()</a>, <a class="el" href="en61107__request_8c_source.html#l00643">en61107_uart_send_unknown_3()</a>, and <a class="el" href="en61107__request_8c_source.html#l00666">en61107_uart_send_unknown_4()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a6727906afe0321e8ee406028ad41f5e7_icgraph.svg" width="2219" height="815"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
 <a class="anchor" id="a40bca7ca9b269f93bc9f17924a38fbe0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -898,7 +1096,7 @@ Here is the caller graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a40bca7ca9b269f93bc9f17924a38fbe0_icgraph.svg" width="1922" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="uart_8h_a40bca7ca9b269f93bc9f17924a38fbe0_icgraph.svg" width="2363" height="954"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>

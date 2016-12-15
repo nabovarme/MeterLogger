@@ -16,7 +16,7 @@ var searchData=
   ['sha256_5fhash',['sha256_hash',['../crypto_8c.html#a77880ff10a489f1b76fe1a9863dac802',1,'crypto.c']]],
   ['sha256_5finitial_5fhash_5fvalue',['sha256_initial_hash_value',['../sha256_8c.html#acbcfac3c0a802f344ee849b1120fde9c',1,'sha256.c']]],
   ['sha2_5fhex_5fdigits',['sha2_hex_digits',['../sha256_8c.html#a52fd0b9746c6baa7e808d02b7587ea65',1,'sha256.c']]],
-  ['si_5fex',['si_ex',['../structen61107__response__register__t.html#a9c77c030d6fd497972048381ba9d7b49',1,'en61107_response_register_t::si_ex()'],['../structkmp__response__register__t.html#ac2271faeb2651849515f7746d6f84e86',1,'kmp_response_register_t::si_ex()']]],
+  ['si_5fex',['si_ex',['../structkmp__response__register__t.html#ac2271faeb2651849515f7746d6f84e86',1,'kmp_response_register_t']]],
   ['sign',['sign',['../structparam.html#a866f7c7f3ea477180daf3d3c706fa6dc',1,'param']]],
   ['size',['size',['../structio__handle.html#a681b3572827da3849bb6b152b0607551',1,'io_handle::size()'],['../strucths__index.html#a6dd74d5891a120bdfaaa7c16188d33b4',1,'hs_index::size()'],['../struct_r_i_n_g_b_u_f.html#a0898823b9d42a6988cb98ddaf594167c',1,'RINGBUF::size()']]],
   ['skipped',['skipped',['../structgreatest__suite__info.html#aff2cb54558482b2ae00fa59894804f5a',1,'greatest_suite_info::skipped()'],['../structgreatest__run__info.html#ace42a34e8d8bbc85824a254f36fb5668',1,'greatest_run_info::skipped()']]],

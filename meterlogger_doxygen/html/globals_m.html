@@ -329,6 +329,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>mqtt_connect_info_t
 : <a class="el" href="mqtt__msg_8h.html#a1e448199ffa793c61462b95825001a7e">mqtt_msg.h</a>
 </li>
+<li>mqtt_connect_return_code
+: <a class="el" href="mqtt__msg_8h.html#a2e8dc8ce6910f4a813aae96e51a00cbe">mqtt_msg.h</a>
+</li>
 <li>MQTT_CONNECT_SEND
 : <a class="el" href="mqtt_8h.html#a48244a0634cc0519bd3b3c63418b04eba309d7edfcded09578652d6f45e127ef2">mqtt.h</a>
 </li>
@@ -397,6 +400,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>MQTT_FLAG_READY
 : <a class="el" href="mqtt_8h.html#a0e3d8834478192950e44884809bd7524">mqtt.h</a>
 </li>
+<li>mqtt_get_connect_return_code()
+: <a class="el" href="mqtt__msg_8h.html#a7f81b05d14bd1ccef30177c02f83d095">mqtt_msg.h</a>
+</li>
 <li>mqtt_get_dup()
 : <a class="el" href="mqtt__msg_8h.html#acad1dcb3e598f14c0c57a1acda71f1c1">mqtt_msg.h</a>
 </li>
@@ -429,8 +435,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="user__config_8h.html#a0b26496e970e561304bd542f701fe223">user_config.h</a>
 </li>
 <li>MQTT_InitClient()
-: <a class="el" href="mqtt_8h.html#a82303094af675136988bb2be5e92fc5b">mqtt.h</a>
-, <a class="el" href="mqtt_8c.html#a82303094af675136988bb2be5e92fc5b">mqtt.c</a>
+: <a class="el" href="mqtt_8h.html#a25cb7ac079d1d119250dac075c45acf1">mqtt.h</a>
+, <a class="el" href="mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1">mqtt.c</a>
 </li>
 <li>MQTT_InitConnection()
 : <a class="el" href="mqtt_8h.html#add86222774af01cba1d038efaf8d1a6e">mqtt.h</a>
@@ -459,16 +465,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="mqtt__msg_8h.html#ac243cf15beb51b2206e36da86c2f95f1">mqtt_msg.h</a>
 </li>
 <li>mqtt_msg_connect()
-: <a class="el" href="mqtt__msg_8c.html#a5e7a532d6f04c0d443701ba44fdf2e2d">mqtt_msg.c</a>
-, <a class="el" href="mqtt__msg_8h.html#a5e7a532d6f04c0d443701ba44fdf2e2d">mqtt_msg.h</a>
+: <a class="el" href="mqtt__msg_8h.html#a5e7a532d6f04c0d443701ba44fdf2e2d">mqtt_msg.h</a>
+, <a class="el" href="mqtt__msg_8c.html#a5e7a532d6f04c0d443701ba44fdf2e2d">mqtt_msg.c</a>
 </li>
 <li>mqtt_msg_disconnect()
-: <a class="el" href="mqtt__msg_8h.html#a73d5196990e37518bc236d279c85f226">mqtt_msg.h</a>
-, <a class="el" href="mqtt__msg_8c.html#a73d5196990e37518bc236d279c85f226">mqtt_msg.c</a>
+: <a class="el" href="mqtt__msg_8c.html#a73d5196990e37518bc236d279c85f226">mqtt_msg.c</a>
+, <a class="el" href="mqtt__msg_8h.html#a73d5196990e37518bc236d279c85f226">mqtt_msg.h</a>
 </li>
 <li>mqtt_msg_init()
-: <a class="el" href="mqtt__msg_8c.html#ad957ce62c72a7be1d0bea7b6be191b70">mqtt_msg.c</a>
-, <a class="el" href="mqtt__msg_8h.html#ad957ce62c72a7be1d0bea7b6be191b70">mqtt_msg.h</a>
+: <a class="el" href="mqtt__msg_8h.html#ad957ce62c72a7be1d0bea7b6be191b70">mqtt_msg.h</a>
+, <a class="el" href="mqtt__msg_8c.html#ad957ce62c72a7be1d0bea7b6be191b70">mqtt_msg.c</a>
 </li>
 <li>mqtt_msg_pingreq()
 : <a class="el" href="mqtt__msg_8h.html#ac73ae82d9f6a21f084802c1b0a8def42">mqtt_msg.h</a>
@@ -610,8 +616,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="mqtt_8h.html#a48244a0634cc0519bd3b3c63418b04ebadfca2648c4acd6f3237fe2bb794ec919">mqtt.h</a>
 </li>
 <li>MQTT_Subscribe()
-: <a class="el" href="mqtt_8c.html#a86f8adfe29d6ec8bb5070fd030540d2f">mqtt.c</a>
-, <a class="el" href="mqtt_8h.html#a86f8adfe29d6ec8bb5070fd030540d2f">mqtt.h</a>
+: <a class="el" href="mqtt_8h.html#a86f8adfe29d6ec8bb5070fd030540d2f">mqtt.h</a>
+, <a class="el" href="mqtt_8c.html#a86f8adfe29d6ec8bb5070fd030540d2f">mqtt.c</a>
 </li>
 <li>MQTT_Task()
 : <a class="el" href="mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0">mqtt.c</a>
@@ -647,11 +653,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="user__config_8h.html#a3569d0330edb7c114ba514a6de8e976c">user_config.h</a>
 </li>
 <li>MQTT_UnSubscribe()
-: <a class="el" href="mqtt_8h.html#a7f28cd912dae4c1386c10026a267b579">mqtt.h</a>
-, <a class="el" href="mqtt_8c.html#a7f28cd912dae4c1386c10026a267b579">mqtt.c</a>
+: <a class="el" href="mqtt_8c.html#a7f28cd912dae4c1386c10026a267b579">mqtt.c</a>
+, <a class="el" href="mqtt_8h.html#a7f28cd912dae4c1386c10026a267b579">mqtt.h</a>
 </li>
 <li>MQTT_USER
 : <a class="el" href="user__config_8h.html#a61322cd056179f03c046357d8415f94c">user_config.h</a>
+</li>
+<li>MQTT_WATCHDOG_ID
+: <a class="el" href="watchdog_8h.html#a63e9b63db435a52cce5a1c2b2245500b">watchdog.h</a>
+</li>
+<li>MQTT_WATCHDOG_TIMEOUT
+: <a class="el" href="watchdog_8h.html#a1761c160518d1f1518925162cd2df94f">watchdog.h</a>
 </li>
 <li>MqttCallback
 : <a class="el" href="mqtt_8h.html#a6bd0c6e0bf7ba973e9cebe705c07038f">mqtt.h</a>
@@ -672,8 +684,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="user__main_8c.html#aea41dd09bf9bb6a90747c15fb3697e1a">user_main.c</a>
 </li>
 <li>mqttPublishedCb()
-: <a class="el" href="user__main_8h.html#a13bcbea62ebe5d16690b7b7316c7eee6">user_main.h</a>
-, <a class="el" href="user__main_8c.html#a13bcbea62ebe5d16690b7b7316c7eee6">user_main.c</a>
+: <a class="el" href="user__main_8c.html#a13bcbea62ebe5d16690b7b7316c7eee6">user_main.c</a>
+, <a class="el" href="user__main_8h.html#a13bcbea62ebe5d16690b7b7316c7eee6">user_main.h</a>
 </li>
 <li>mqttTimeoutCb()
 : <a class="el" href="user__main_8c.html#aba7747a21df738a9a3e33477e1d06595">user_main.c</a>

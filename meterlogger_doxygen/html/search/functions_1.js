@@ -15,6 +15,7 @@ var searchData=
   ['ac_5fthermo_5fpwm',['ac_thermo_pwm',['../ac__out_8c.html#a8a182ab8b40b0d5cf6f696afb0cc0dc5',1,'ac_thermo_pwm(unsigned int duty_cycle):&#160;ac_out.c'],['../ac__out_8h.html#aa3b68ad0802843bd0874e86712d6fef4',1,'ac_thermo_pwm(unsigned int pwm):&#160;ac_out.c']]],
   ['add_5fcron_5fjob_5ffrom_5fquery',['add_cron_job_from_query',['../cron_8c.html#abede8d12ed6e5d5f3412eda37b325d03',1,'add_cron_job_from_query(char *query):&#160;cron.c'],['../cron_8h.html#abede8d12ed6e5d5f3412eda37b325d03',1,'add_cron_job_from_query(char *query):&#160;cron.c']]],
   ['add_5ftag_5fbit',['add_tag_bit',['../heatshrink__encoder_8c.html#a5d06eacaa1ca17bfe5537537dffa9d6e',1,'heatshrink_encoder.c']]],
+  ['add_5fwatchdog',['add_watchdog',['../watchdog_8c.html#ac6f711e66812f004c4ed3d0eef8c252a',1,'add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout):&#160;watchdog.c'],['../watchdog_8h.html#ac6f711e66812f004c4ed3d0eef8c252a',1,'add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout):&#160;watchdog.c']]],
   ['addroundkey',['AddRoundKey',['../aes_8c.html#aada5c94b1e6645a191ed85010b3cce60',1,'aes.c']]],
   ['aes128_5fcbc_5fdecrypt_5fbuffer',['AES128_CBC_decrypt_buffer',['../aes_8h.html#a2b504694eb147287675164058743a930',1,'aes.h']]],
   ['aes128_5fcbc_5fencrypt_5fbuffer',['AES128_CBC_encrypt_buffer',['../aes_8h.html#af510ae0391880687e7ccd2bfdf0c17c3',1,'aes.h']]],

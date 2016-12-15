@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['a',['a',['../structen61107__meter__program__t.html#a22e5777439a0049f628f193793410557',1,'en61107_meter_program_t']]],
   ['a2d',['a2d',['../tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3',1,'tinyprintf.c']]],
   ['a2u',['a2u',['../tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77',1,'tinyprintf.c']]],
   ['a_5fblock_5flink',['A_BLOCK_LINK',['../struct_a___b_l_o_c_k___l_i_n_k.html',1,'']]],
@@ -25,6 +26,7 @@ var searchData=
   ['ac_5fthermo_5fstate',['ac_thermo_state',['../structsyscfg__t.html#aa6618f18278e0f37437e0d76b88a476a',1,'syscfg_t']]],
   ['add_5fcron_5fjob_5ffrom_5fquery',['add_cron_job_from_query',['../cron_8c.html#abede8d12ed6e5d5f3412eda37b325d03',1,'add_cron_job_from_query(char *query):&#160;cron.c'],['../cron_8h.html#abede8d12ed6e5d5f3412eda37b325d03',1,'add_cron_job_from_query(char *query):&#160;cron.c']]],
   ['add_5ftag_5fbit',['add_tag_bit',['../heatshrink__encoder_8c.html#a5d06eacaa1ca17bfe5537537dffa9d6e',1,'heatshrink_encoder.c']]],
+  ['add_5fwatchdog',['add_watchdog',['../watchdog_8c.html#ac6f711e66812f004c4ed3d0eef8c252a',1,'add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout):&#160;watchdog.c'],['../watchdog_8h.html#ac6f711e66812f004c4ed3d0eef8c252a',1,'add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout):&#160;watchdog.c']]],
   ['addinc128',['ADDINC128',['../sha256_8c.html#a32ce6a800376f90c7cee70ac2e7255d6',1,'sha256.c']]],
   ['addroundkey',['AddRoundKey',['../aes_8c.html#aada5c94b1e6645a191ed85010b3cce60',1,'aes.c']]],
   ['aes_2ec',['aes.c',['../aes_8c.html',1,'']]],

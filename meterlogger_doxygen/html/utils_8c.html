@@ -101,8 +101,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for utils.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c__incl.svg" width="1910" height="262"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c__incl.svg" width="1910" height="262"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="utils_8c_source.html">Go to the source code of this file.</a></p>
@@ -115,6 +114,12 @@ Functions</h2></td></tr>
 <tr class="separator:a39c867e4c89519352139d2a416f80046"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84a001f12bbadea0d207701a1dfd63fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#a84a001f12bbadea0d207701a1dfd63fa">kw_to_w_str</a> (char *kw, char *w)</td></tr>
 <tr class="separator:a84a001f12bbadea0d207701a1dfd63fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83488e29965def270a8e27370ee5013a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#a83488e29965def270a8e27370ee5013a">divide_str_by_10</a> (char *str, char *decimal_str)</td></tr>
+<tr class="separator:a83488e29965def270a8e27370ee5013a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7c507f8b417b23e187f267fd8a2adf2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#ae7c507f8b417b23e187f267fd8a2adf2">divide_str_by_100</a> (char *str, char *decimal_str)</td></tr>
+<tr class="separator:ae7c507f8b417b23e187f267fd8a2adf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa76bb225374d144009e05cadce84260b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#aa76bb225374d144009e05cadce84260b">cleanup_decimal_str</a> (char *decimal_str, char *cleaned_up_str, unsigned int length)</td></tr>
+<tr class="separator:aa76bb225374d144009e05cadce84260b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2839f597af170b57af67cfe9a2d8ae71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#a2839f597af170b57af67cfe9a2d8ae71">decimal_number_length</a> (int n)</td></tr>
 <tr class="separator:a2839f597af170b57af67cfe9a2d8ae71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7f86262824738791bf4a3328d09aacf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8c.html#af7f86262824738791bf4a3328d09aacf">int_pow</a> (int x, int y)</td></tr>
@@ -157,7 +162,61 @@ Variables</h2></td></tr>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a3343daa80a622a02e6a039a58cb89c35_icgraph.svg" width="1796" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a3343daa80a622a02e6a039a58cb89c35_icgraph.svg" width="1767" height="514"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aa76bb225374d144009e05cadce84260b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void cleanup_decimal_str </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>decimal_str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>cleaned_up_str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="utils_8c_source.html#l00144">144</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
+
+<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="utils_8c_source.html#l00184">decimal_number_length()</a>, <a class="el" href="platform_8h_source.html#l00022">memcpy</a>, <a class="el" href="platform_8h_source.html#l00023">strcat</a>, <a class="el" href="platform_8h_source.html#l00016">strncpy</a>, <a class="el" href="platform_8h_source.html#l00024">strstr</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107_8c_source.html#l00011">parse_en61107_frame()</a>, and <a class="el" href="en61107_8c_source.html#l00213">parse_mc66cde_inst_values_frame()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_aa76bb225374d144009e05cadce84260b_cgraph.svg" width="887" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_aa76bb225374d144009e05cadce84260b_icgraph.svg" width="890" height="104"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -178,14 +237,109 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="utils_8c_source.html#l00109">109</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
+<p>Definition at line <a class="el" href="utils_8c_source.html#l00184">184</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
 
-<p>Referenced by <a class="el" href="kmp_8c_source.html#l00394">kmp_value_to_string()</a>, and <a class="el" href="user__main_8c_source.html#l00138">sample_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="utils_8c_source.html#l00144">cleanup_decimal_str()</a>, <a class="el" href="kmp_8c_source.html#l00394">kmp_value_to_string()</a>, and <a class="el" href="user__main_8c_source.html#l00143">sample_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a2839f597af170b57af67cfe9a2d8ae71_icgraph.svg" width="1071" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a2839f597af170b57af67cfe9a2d8ae71_icgraph.svg" width="1071" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a83488e29965def270a8e27370ee5013a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void divide_str_by_10 </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>decimal_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="utils_8c_source.html#l00108">108</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
+
+<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107_8c_source.html#l00213">parse_mc66cde_inst_values_frame()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a83488e29965def270a8e27370ee5013a_cgraph.svg" width="790" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a83488e29965def270a8e27370ee5013a_icgraph.svg" width="858" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae7c507f8b417b23e187f267fd8a2adf2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> void divide_str_by_100 </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>str</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>decimal_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="utils_8c_source.html#l00126">126</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
+
+<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
+
+<p>Referenced by <a class="el" href="en61107_8c_source.html#l00213">parse_mc66cde_inst_values_frame()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_ae7c507f8b417b23e187f267fd8a2adf2_cgraph.svg" width="798" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_ae7c507f8b417b23e187f267fd8a2adf2_icgraph.svg" width="866" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -216,15 +370,14 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="utils_8c_source.html#l00121">121</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
+<p>Definition at line <a class="el" href="utils_8c_source.html#l00196">196</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
 
 <p>Referenced by <a class="el" href="kmp_8c_source.html#l00366">kmp_value_to_double()</a>, <a class="el" href="kmp_8c_source.html#l00394">kmp_value_to_string()</a>, and <a class="el" href="utils_8c_source.html#l00070">kw_to_w_str()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_af7f86262824738791bf4a3328d09aacf_icgraph.svg" width="756" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_af7f86262824738791bf4a3328d09aacf_icgraph.svg" width="756" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -256,23 +409,21 @@ Here is the caller graph for this function:</div>
 
 <p>Definition at line <a class="el" href="utils_8c_source.html#l00070">70</a> of file <a class="el" href="utils_8c_source.html">utils.c</a>.</p>
 
-<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="utils_8c_source.html#l00121">int_pow()</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
+<p>References <a class="el" href="espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059">atoi()</a>, <a class="el" href="utils_8c_source.html#l00196">int_pow()</a>, <a class="el" href="platform_8h_source.html#l00025">strlen</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
 
 <p>Referenced by <a class="el" href="cgiwifi_8c_source.html#l00169">cgiSetup()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a84a001f12bbadea0d207701a1dfd63fa_cgraph.svg" width="763" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a84a001f12bbadea0d207701a1dfd63fa_cgraph.svg" width="763" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a84a001f12bbadea0d207701a1dfd63fa_icgraph.svg" width="228" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a84a001f12bbadea0d207701a1dfd63fa_icgraph.svg" width="228" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -311,16 +462,14 @@ Here is the caller graph for this function:</div>
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a39c867e4c89519352139d2a416f80046_cgraph.svg" width="763" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a39c867e4c89519352139d2a416f80046_cgraph.svg" width="763" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a39c867e4c89519352139d2a416f80046_icgraph.svg" width="226" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="utils_8c_a39c867e4c89519352139d2a416f80046_icgraph.svg" width="226" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 

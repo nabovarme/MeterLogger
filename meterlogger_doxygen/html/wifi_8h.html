@@ -95,8 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h__dep__incl.svg" width="264" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h__dep__incl.svg" width="264" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="wifi_8h_source.html">Go to the source code of this file.</a></p>
@@ -120,8 +119,14 @@ Functions</h2></td></tr>
 <tr class="separator:a9c38abb0900e0c7308be77d85dbf09e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79205b29f65bdd821ad9452bdbf0b747"><td class="memItemLeft" align="right" valign="top">sint8_t <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#a79205b29f65bdd821ad9452bdbf0b747">wifi_get_rssi</a> ()</td></tr>
 <tr class="separator:a79205b29f65bdd821ad9452bdbf0b747"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0ad94a82cb6c4d352d56d3b2628e15a"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#ad0ad94a82cb6c4d352d56d3b2628e15a">network_watchdog_clear</a> ()</td></tr>
-<tr class="separator:ad0ad94a82cb6c4d352d56d3b2628e15a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5831b420da0012d53c979c375714d382"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#a5831b420da0012d53c979c375714d382">wifi_start_scan</a> ()</td></tr>
+<tr class="separator:a5831b420da0012d53c979c375714d382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a623e279143c8d4f8ff19766d7450a489"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#a623e279143c8d4f8ff19766d7450a489">wifi_stop_scan</a> ()</td></tr>
+<tr class="separator:a623e279143c8d4f8ff19766d7450a489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa472c6b7c4b18d171792da3df1be502e"><td class="memItemLeft" align="right" valign="top">bool <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#aa472c6b7c4b18d171792da3df1be502e">wifi_scan_is_running</a> ()</td></tr>
+<tr class="separator:aa472c6b7c4b18d171792da3df1be502e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4d8a7c10cbd594bf021a441c5832a34"><td class="memItemLeft" align="right" valign="top">bool <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wifi_8h.html#ae4d8a7c10cbd594bf021a441c5832a34">wifi_fallback_is_present</a> ()</td></tr>
+<tr class="separator:ae4d8a7c10cbd594bf021a441c5832a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="aa6a6ac1cc6a333aadf480ce71ae4f4f1"></a>
@@ -139,35 +144,6 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ad0ad94a82cb6c4d352d56d3b2628e15a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> network_watchdog_clear </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00259">259</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
-
-<p>References <a class="el" href="wifi_8c_source.html#l00030">wifi_interrupted</a>.</p>
-
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00277">mqttConnectedCb()</a>.</p>
-
-<p><div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ad0ad94a82cb6c4d352d56d3b2628e15a_icgraph.svg" width="875" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-</p>
-
-</div>
-</div>
 <a class="anchor" id="a9c38abb0900e0c7308be77d85dbf09e0"></a>
 <div class="memitem">
 <div class="memproto">
@@ -198,25 +174,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00211">211</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00172">172</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="wifi_8c_source.html#l00026">config_pass</a>, <a class="el" href="wifi_8c_source.html#l00025">config_ssid</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="led_8c_source.html#l00048">led_stop_pattern()</a>, <a class="el" href="wifi_8c_source.html#l00016">NETWORK_CHECK_INTERVAL</a>, <a class="el" href="wifi_8c_source.html#l00021">network_watchdog_timer</a>, <a class="el" href="wifi_8c_source.html#l00066">network_watchdog_timer_func()</a>, <a class="el" href="wifi_8c_source.html#l00018">RSSI_CHECK_INTERVAL</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="wifi_8c_source.html#l00024">wifi_cb</a>, <a class="el" href="wifi_8c_source.html#l00022">wifi_get_rssi_timer</a>, <a class="el" href="wifi_8c_source.html#l00085">wifi_get_rssi_timer_func()</a>, <a class="el" href="wifi_8c_source.html#l00038">wifi_handle_event_cb()</a>, <a class="el" href="wifi_8c_source.html#l00020">wifi_scan_timer</a>, and <a class="el" href="wifi_8c_source.html#l00091">wifi_scan_timer_func()</a>.</p>
+<p>References <a class="el" href="wifi_8c_source.html#l00024">config_pass</a>, <a class="el" href="wifi_8c_source.html#l00023">config_ssid</a>, <a class="el" href="debug_8h_source.html#l00017">INFO</a>, <a class="el" href="led_8c_source.html#l00060">led_stop_pattern()</a>, <a class="el" href="wifi_8c_source.html#l00017">RSSI_CHECK_INTERVAL</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="wifi_8c_source.html#l00022">wifi_cb</a>, <a class="el" href="wifi_8c_source.html#l00020">wifi_get_rssi_timer</a>, <a class="el" href="wifi_8c_source.html#l00063">wifi_get_rssi_timer_func()</a>, <a class="el" href="wifi_8c_source.html#l00035">wifi_handle_event_cb()</a>, and <a class="el" href="wifi_8c_source.html#l00213">wifi_start_scan()</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00071">sample_mode_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00068">sample_mode_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a9c38abb0900e0c7308be77d85dbf09e0_cgraph.svg" width="1430" height="631"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a9c38abb0900e0c7308be77d85dbf09e0_cgraph.svg" width="1430" height="631"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a9c38abb0900e0c7308be77d85dbf09e0_icgraph.svg" width="624" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a9c38abb0900e0c7308be77d85dbf09e0_icgraph.svg" width="624" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -235,25 +209,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00159">159</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00131">131</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="wifi_8c_source.html#l00026">config_pass</a>, <a class="el" href="wifi_8c_source.html#l00025">config_ssid</a>, <a class="el" href="wifi_8c_source.html#l00016">NETWORK_CHECK_INTERVAL</a>, <a class="el" href="wifi_8c_source.html#l00021">network_watchdog_timer</a>, <a class="el" href="wifi_8c_source.html#l00066">network_watchdog_timer_func()</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="wifi_8c_source.html#l00018">RSSI_CHECK_INTERVAL</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="wifi_8c_source.html#l00022">wifi_get_rssi_timer</a>, and <a class="el" href="wifi_8c_source.html#l00085">wifi_get_rssi_timer_func()</a>.</p>
+<p>References <a class="el" href="wifi_8c_source.html#l00024">config_pass</a>, <a class="el" href="wifi_8c_source.html#l00023">config_ssid</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="wifi_8c_source.html#l00017">RSSI_CHECK_INTERVAL</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, <a class="el" href="wifi_8c_source.html#l00020">wifi_get_rssi_timer</a>, and <a class="el" href="wifi_8c_source.html#l00063">wifi_get_rssi_timer_func()</a>.</p>
 
-<p>Referenced by <a class="el" href="wifi_8c_source.html#l00108">wifi_scan_done_cb()</a>.</p>
+<p>Referenced by <a class="el" href="wifi_8c_source.html#l00086">wifi_scan_done_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a0be23fd8148c6a3abf21c739359bed52_cgraph.svg" width="871" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a0be23fd8148c6a3abf21c739359bed52_cgraph.svg" width="871" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a0be23fd8148c6a3abf21c739359bed52_icgraph.svg" width="1140" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a0be23fd8148c6a3abf21c739359bed52_icgraph.svg" width="1140" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -272,24 +244,51 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00188">188</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00155">155</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="wifi_8c_source.html#l00021">network_watchdog_timer</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="user__config_8h_source.html#l00058">STA_FALLBACK_PASS</a>, <a class="el" href="user__config_8h_source.html#l00057">STA_FALLBACK_SSID</a>, <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>, and <a class="el" href="wifi_8c_source.html#l00022">wifi_get_rssi_timer</a>.</p>
+<p>References <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="user__config_8h_source.html#l00059">STA_FALLBACK_PASS</a>, <a class="el" href="user__config_8h_source.html#l00058">STA_FALLBACK_SSID</a>, and <a class="el" href="tinyprintf_8c_source.html#l00480">tfp_snprintf()</a>.</p>
 
-<p>Referenced by <a class="el" href="wifi_8c_source.html#l00108">wifi_scan_done_cb()</a>.</p>
+<p>Referenced by <a class="el" href="wifi_8c_source.html#l00086">wifi_scan_done_cb()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ac4389ba687a71cbb616f05b02427eb2a_cgraph.svg" width="760" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ac4389ba687a71cbb616f05b02427eb2a_cgraph.svg" width="760" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ac4389ba687a71cbb616f05b02427eb2a_icgraph.svg" width="1144" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ac4389ba687a71cbb616f05b02427eb2a_icgraph.svg" width="1144" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae4d8a7c10cbd594bf021a441c5832a34"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> wifi_fallback_is_present </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00229">229</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+
+<p>References <a class="el" href="wifi_8c_source.html#l00028">wifi_fallback_present</a>.</p>
+
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00275">mqttConnectedCb()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_ae4d8a7c10cbd594bf021a441c5832a34_icgraph.svg" width="868" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -309,17 +308,16 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00252">252</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00206">206</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="wifi_8c_source.html#l00036">get_rssi_running</a>, and <a class="el" href="wifi_8c_source.html#l00035">rssi</a>.</p>
+<p>References <a class="el" href="wifi_8c_source.html#l00033">get_rssi_running</a>, and <a class="el" href="wifi_8c_source.html#l00032">rssi</a>.</p>
 
-<p>Referenced by <a class="el" href="user__main_8c_source.html#l00389">mqttDataCb()</a>, and <a class="el" href="wifi_8c_source.html#l00091">wifi_scan_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="user__main_8c_source.html#l00389">mqttDataCb()</a>, and <a class="el" href="wifi_8c_source.html#l00069">wifi_scan_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a79205b29f65bdd821ad9452bdbf0b747_icgraph.svg" width="1003" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a79205b29f65bdd821ad9452bdbf0b747_icgraph.svg" width="1003" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -339,25 +337,23 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00038">38</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00035">35</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="wifi_8c_source.html#l00024">wifi_cb</a>, <a class="el" href="wifi_8c_source.html#l00028">wifi_event</a>, and <a class="el" href="wifi_8c_source.html#l00027">wifi_status</a>.</p>
+<p>References <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="wifi_8c_source.html#l00022">wifi_cb</a>, <a class="el" href="wifi_8c_source.html#l00026">wifi_event</a>, and <a class="el" href="wifi_8c_source.html#l00025">wifi_status</a>.</p>
 
-<p>Referenced by <a class="el" href="wifi_8c_source.html#l00211">wifi_connect()</a>.</p>
+<p>Referenced by <a class="el" href="wifi_8c_source.html#l00172">wifi_connect()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_aa87c06c3cbab2aa762551fcec59dc8f0_cgraph.svg" width="283" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_aa87c06c3cbab2aa762551fcec59dc8f0_cgraph.svg" width="283" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_aa87c06c3cbab2aa762551fcec59dc8f0_icgraph.svg" width="823" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_aa87c06c3cbab2aa762551fcec59dc8f0_icgraph.svg" width="823" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </p>
 
@@ -387,16 +383,80 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="wifi_8c_source.html#l00108">108</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00086">86</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
 
-<p>References <a class="el" href="led_8c_source.html#l00042">led_pattern_b()</a>, <a class="el" href="led_8c_source.html#l00048">led_stop_pattern()</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="espfs_8c_source.html#l00033">os_strncmp</a>, <a class="el" href="user__config_8h_source.html#l00057">STA_FALLBACK_SSID</a>, <a class="el" href="config_8h_source.html#l00046">syscfg_t::sta_ssid</a>, <a class="el" href="config_8c_source.html#l00012">sys_cfg</a>, <a class="el" href="wifi_8c_source.html#l00159">wifi_default()</a>, <a class="el" href="wifi_8c_source.html#l00188">wifi_fallback()</a>, <a class="el" href="wifi_8c_source.html#l00032">wifi_fallback_last_present</a>, <a class="el" href="wifi_8c_source.html#l00031">wifi_fallback_present</a>, <a class="el" href="wifi_8c_source.html#l00030">wifi_interrupted</a>, <a class="el" href="wifi_8c_source.html#l00029">wifi_present</a>, <a class="el" href="wifi_8c_source.html#l00017">WIFI_SCAN_INTERVAL</a>, <a class="el" href="wifi_8c_source.html#l00033">wifi_scan_runnning</a>, <a class="el" href="wifi_8c_source.html#l00020">wifi_scan_timer</a>, and <a class="el" href="wifi_8c_source.html#l00091">wifi_scan_timer_func()</a>.</p>
+<p>References <a class="el" href="led_8c_source.html#l00048">led_pattern_a()</a>, <a class="el" href="led_8c_source.html#l00060">led_stop_pattern()</a>, <a class="el" href="espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3">os_printf()</a>, <a class="el" href="espfs_8c_source.html#l00033">os_strncmp</a>, <a class="el" href="user__config_8h_source.html#l00058">STA_FALLBACK_SSID</a>, <a class="el" href="config_8h_source.html#l00046">syscfg_t::sta_ssid</a>, <a class="el" href="config_8c_source.html#l00012">sys_cfg</a>, <a class="el" href="wifi_8c_source.html#l00131">wifi_default()</a>, <a class="el" href="wifi_8c_source.html#l00155">wifi_fallback()</a>, <a class="el" href="wifi_8c_source.html#l00029">wifi_fallback_last_present</a>, <a class="el" href="wifi_8c_source.html#l00028">wifi_fallback_present</a>, <a class="el" href="wifi_8c_source.html#l00027">wifi_present</a>, <a class="el" href="wifi_8c_source.html#l00030">wifi_scan_runnning</a>, and <a class="el" href="wifi_8c_source.html#l00213">wifi_start_scan()</a>.</p>
 
-<p>Referenced by <a class="el" href="wifi_8c_source.html#l00091">wifi_scan_timer_func()</a>.</p>
+<p>Referenced by <a class="el" href="wifi_8c_source.html#l00069">wifi_scan_timer_func()</a>.</p>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a1ef15ecd9e69811f6db10215c7196281_cgraph.svg" width="1466" height="484"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a1ef15ecd9e69811f6db10215c7196281_cgraph.svg" width="1466" height="484"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a1ef15ecd9e69811f6db10215c7196281_icgraph.svg" width="1043" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aa472c6b7c4b18d171792da3df1be502e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> wifi_scan_is_running </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00225">225</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+
+<p>References <a class="el" href="wifi_8c_source.html#l00030">wifi_scan_runnning</a>.</p>
+
+<p>Referenced by <a class="el" href="watchdog_8c_source.html#l00032">wifi_reconnect_timer_func()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_aa472c6b7c4b18d171792da3df1be502e_icgraph.svg" width="859" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a5831b420da0012d53c979c375714d382"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> wifi_start_scan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00213">213</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+
+<p>References <a class="el" href="wifi_8c_source.html#l00016">WIFI_SCAN_INTERVAL</a>, <a class="el" href="wifi_8c_source.html#l00019">wifi_scan_timer</a>, and <a class="el" href="wifi_8c_source.html#l00069">wifi_scan_timer_func()</a>.</p>
+
+<p>Referenced by <a class="el" href="wifi_8c_source.html#l00172">wifi_connect()</a>, <a class="el" href="watchdog_8c_source.html#l00032">wifi_reconnect_timer_func()</a>, and <a class="el" href="wifi_8c_source.html#l00086">wifi_scan_done_cb()</a>.</p>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a5831b420da0012d53c979c375714d382_cgraph.svg" width="1392" height="443"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
@@ -404,7 +464,36 @@ Here is the call graph for this function:</div>
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a1ef15ecd9e69811f6db10215c7196281_icgraph.svg" width="1043" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a5831b420da0012d53c979c375714d382_icgraph.svg" width="1402" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a623e279143c8d4f8ff19766d7450a489"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> wifi_stop_scan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="wifi_8c_source.html#l00220">220</a> of file <a class="el" href="wifi_8c_source.html">wifi.c</a>.</p>
+
+<p>References <a class="el" href="wifi_8c_source.html#l00019">wifi_scan_timer</a>.</p>
+
+<p>Referenced by <a class="el" href="watchdog_8c_source.html#l00052">watchdog_timer_func()</a>.</p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="wifi_8h_a623e279143c8d4f8ff19766d7450a489_icgraph.svg" width="598" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </p>
