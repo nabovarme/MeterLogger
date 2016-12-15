@@ -35,8 +35,19 @@ typedef struct {
 } en61107_response_register_t;
 
 typedef struct {
+    uint8_t a;
+    uint8_t b;
+    uint32_t ccc;
+    uint16_t dd;
+    uint8_t e;
+    uint16_t ff;
+    uint16_t gg
+} en61107_meter_program_t;
+
+typedef struct {
     char customer_no[EN61107_CUSTOMER_NO_L];
     char meter_type[EN61107_METER_TYPE_L];
+    en61107_meter_program_t meter_program;
     en61107_response_register_t t1;
     en61107_response_register_t t2;
     en61107_response_register_t t3;
@@ -47,6 +58,23 @@ typedef struct {
     en61107_response_register_t v1;
     en61107_response_register_t e1;
 } en61107_response_t;
+
+typedef enum {
+    UART_STATE_NONE,
+    UART_STATE_STANDARD_DATA_2,
+    UART_STATE_UNKNOWN_1,
+    UART_STATE_UNKNOWN_2,
+    UART_STATE_SERIAL_BYTE_1,
+    UART_STATE_SERIAL_BYTE_2,
+    UART_STATE_SERIAL_BYTE_3,
+    UART_STATE_SERIAL_BYTE_4,
+    UART_STATE_SERIAL_BYTE_5,
+    UART_STATE_SERIAL_BYTE_6,
+    UART_STATE_UNKNOWN_3,
+    UART_STATE_UNKNOWN_4,
+    UART_STATE_EN61107,
+    UART_STATE_INST_VALUES
+} en61107_uart_state_t;
 
 en61107_response_t en61107_response;
 
@@ -74,9 +102,8 @@ void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int l
     uint8_t prepend_zeroes;
     char zeroes[8];
     
-    memset(cleaned_up_str, 0, length);
-    strncpy(cleaned_up_str, decimal_str, length);
-//    cleaned_up_str[length] = 0;	// null terminate
+    memcpy(cleaned_up_str, decimal_str, length);
+    cleaned_up_str[length] = 0;	// null terminate
     
     pos = strstr(cleaned_up_str, ".");
     if (pos == NULL) {
@@ -108,32 +135,56 @@ void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int l
 }
 
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
+    char value_copy[EN61107_VALUE_L];
+    
+    // make null terminated string - value_length is not including null termination
+    memset(value_copy, 0, EN61107_VALUE_L);
+    if (value_length >= EN61107_VALUE_L) {
+        value_length = EN61107_VALUE_L - 1;
+        
+    }
+    memcpy(value_copy, value, value_length);
+    value_copy[value_length] = 0;
+    value_length++;
+    
     if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
         // energy
-        strncpy(response->e1.value, value, value_length);
+        tfp_snprintf(response->e1.value, value_length, "%s", value_copy);
     }
     else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
         // volume
-        strncpy(response->v1.value, value, value_length);
+        tfp_snprintf(response->v1.value, value_length, "%s", value_copy);
     }
     else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
         // hours
-        strncpy(response->hr.value, value, value_length);
+        tfp_snprintf(response->hr.value, value_length, "%s", value_copy);
     }
 }
 
 void en61107_response_set_unit(en61107_response_t *response, char *rid, char *unit, unsigned int unit_length) {
+    char unit_copy[EN61107_UNIT_L];
+    
+    // make null terminated string - unit_length is not including null termination
+    memset(unit_copy, 0, EN61107_UNIT_L);
+    if (unit_length >= EN61107_UNIT_L) {
+        unit_length = EN61107_UNIT_L - 1;
+        
+    }
+    memcpy(unit_copy, unit, unit_length);
+    unit_copy[unit_length] = 0;
+    unit_length++;
+    
     if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
         // energy
-        strncpy(response->e1.unit, unit, unit_length);
+        tfp_snprintf(response->e1.unit, unit_length, "%s", unit_copy);
     }
     else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
         // volume
-        strncpy(response->v1.unit, unit, unit_length);
+        tfp_snprintf(response->v1.unit, unit_length, "%s", unit_copy);
     }
     else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
         // hours
-        strncpy(response->hr.unit, unit, unit_length);
+        tfp_snprintf(response->hr.unit, unit_length, "%s", unit_copy);
     }
 }
 
@@ -180,7 +231,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
                 if (bcc == calculated_bcc) {
                     // crc ok
                     // parse meter_type
-                    memset(response, 0, sizeof(en61107_response_t));
                     memset(response->meter_type, 0, EN61107_METER_TYPE_L);	// clear meter_type_string (null terminalte)
                     pos = strstr(frame, stx);			   // find position of stx char
                     if (pos != NULL) {							  // if found stx char...
@@ -220,7 +270,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
                             value_string_length = pos - rid_value_unit_string_ptr;
                             cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
                             en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
-                            //en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
                             rid_value_unit_string_ptr += value_string_length + 1;
                         }
                         pos = strstr(rid_value_unit_string_ptr, ")");
@@ -262,7 +311,6 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
                         value_string_length = pos - rid_value_unit_string_ptr;
                         cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
                         en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
-                        //en61107_response_set_value(response, rid, rid_value_unit_string_ptr, value_string_length);
                         rid_value_unit_string_ptr += value_string_length + 1;
                     }
                     pos = strstr(rid_value_unit_string_ptr, ")");
