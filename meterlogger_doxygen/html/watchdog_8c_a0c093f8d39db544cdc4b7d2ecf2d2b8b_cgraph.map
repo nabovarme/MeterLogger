@@ -1,0 +1,4 @@
+<map id="ext_watchdog_timer_func" name="ext_watchdog_timer_func">
+<area shape="rect" id="node2" href="$gpio16_8c.html#ad30b6f9877f9740eec4227c8721b7e07" title="gpio16_input_get" alt="" coords="231,5,355,32"/>
+<area shape="rect" id="node3" href="$gpio16_8c.html#a21984d9e8505ee4f91e4b3b31e2238cb" title="gpio16_output_set" alt="" coords="227,56,359,83"/>
+</map>

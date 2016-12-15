@@ -1,0 +1,4 @@
+<map id="gpio16_output_conf" name="gpio16_output_conf">
+<area shape="rect" id="node2" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="192,5,304,32"/>
+<area shape="rect" id="node3" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="352,5,424,32"/>
+</map>

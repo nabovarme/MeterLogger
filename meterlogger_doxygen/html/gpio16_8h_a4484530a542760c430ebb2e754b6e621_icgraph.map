@@ -1,0 +1,5 @@
+<map id="gpio16_input_get" name="gpio16_input_get">
+<area shape="rect" id="node2" href="$watchdog_8c.html#a0c093f8d39db544cdc4b7d2ecf2d2b8b" title="ext_watchdog_timer_func" alt="" coords="177,5,351,32"/>
+<area shape="rect" id="node3" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="399,5,511,32"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="559,5,631,32"/>
+</map>

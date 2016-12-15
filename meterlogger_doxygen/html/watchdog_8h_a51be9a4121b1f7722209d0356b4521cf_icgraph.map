@@ -1,0 +1,8 @@
+<map id="reset_watchdog" name="reset_watchdog">
+<area shape="rect" id="node2" href="$user__main_8h.html#a13bcbea62ebe5d16690b7b7316c7eee6" title="mqttPublishedCb" alt="" coords="355,5,479,32"/>
+<area shape="rect" id="node6" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="169,56,304,83"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="529,31,705,57"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="753,31,879,57"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="927,31,999,57"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="352,56,481,83"/>
+</map>

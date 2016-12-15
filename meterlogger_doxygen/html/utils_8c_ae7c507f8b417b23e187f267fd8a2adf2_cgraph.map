@@ -1,0 +1,16 @@
+<map id="divide_str_by_100" name="divide_str_by_100">
+<area shape="rect" id="node2" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="206,107,250,133"/>
+<area shape="rect" id="node3" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="184,157,272,184"/>
+<area shape="rect" id="node4" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="320,157,415,184"/>
+<area shape="rect" id="node5" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="463,132,579,159"/>
+<area shape="rect" id="node6" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="479,183,562,209"/>
+<area shape="rect" id="node7" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="637,5,681,32"/>
+<area shape="rect" id="node9" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="639,56,679,83"/>
+<area shape="rect" id="node10" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="742,81,789,108"/>
+<area shape="rect" id="node11" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="637,157,680,184"/>
+<area shape="rect" id="node12" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="740,196,791,223"/>
+<area shape="rect" id="node13" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="636,259,681,285"/>
+<area shape="rect" id="node14" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="739,272,792,299"/>
+<area shape="rect" id="node15" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="627,360,691,387"/>
+<area shape="rect" id="node8" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="743,5,787,32"/>
+</map>

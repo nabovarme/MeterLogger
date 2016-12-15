@@ -1,0 +1,28 @@
+<map id="wifi_start_scan" name="wifi_start_scan">
+<area shape="rect" id="node2" href="$wifi_8c.html#ae7011f25db54676b86fefe2caa450a4a" title="wifi_scan_timer_func" alt="" coords="164,309,311,336"/>
+<area shape="rect" id="node3" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="747,157,821,184"/>
+<area shape="rect" id="node4" href="$wifi_8c.html#a79205b29f65bdd821ad9452bdbf0b747" title="wifi_get_rssi" alt="" coords="379,385,475,412"/>
+<area shape="rect" id="node5" href="$wifi_8c.html#a1ef15ecd9e69811f6db10215c7196281" title="wifi_scan_done_cb" alt="" coords="359,284,495,311"/>
+<area shape="rect" id="node6" href="$wifi_8c.html#ac4389ba687a71cbb616f05b02427eb2a" title="wifi_fallback" alt="" coords="551,208,645,235"/>
+<area shape="rect" id="node20" href="$led_8c.html#aa00afefe8ba48ccd7df635fbc7d4c9fc" title="led_pattern_a" alt="" coords="546,309,650,336"/>
+<area shape="rect" id="node24" href="$wifi_8c.html#a0be23fd8148c6a3abf21c739359bed52" title="wifi_default" alt="" coords="553,259,643,285"/>
+<area shape="rect" id="node26" href="$led_8c.html#a7cd1d03b4baad9cb20bf1a43046f61a2" title="led_stop_pattern" alt="" coords="723,360,845,387"/>
+<area shape="rect" id="node27" href="$wifi_8c.html#a5831b420da0012d53c979c375714d382" title="wifi_start_scan" alt="" coords="543,411,653,437"/>
+<area shape="rect" id="node7" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="740,208,828,235"/>
+<area shape="rect" id="node8" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="915,208,1009,235"/>
+<area shape="rect" id="node9" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="1074,183,1157,209"/>
+<area shape="rect" id="node19" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="1057,233,1173,260"/>
+<area shape="rect" id="node10" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="1231,5,1275,32"/>
+<area shape="rect" id="node12" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="1333,81,1387,108"/>
+<area shape="rect" id="node13" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="1335,196,1385,223"/>
+<area shape="rect" id="node14" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="1337,272,1383,299"/>
+<area shape="rect" id="node15" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="1221,360,1285,387"/>
+<area shape="rect" id="node16" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="1231,107,1276,133"/>
+<area shape="rect" id="node17" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="1232,208,1275,235"/>
+<area shape="rect" id="node18" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="1233,309,1273,336"/>
+<area shape="rect" id="node11" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="1338,5,1382,32"/>
+<area shape="rect" id="node21" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="706,309,862,336"/>
+<area shape="rect" id="node22" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="931,309,993,336"/>
+<area shape="rect" id="node23" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="931,360,993,387"/>
+<area shape="rect" id="node25" href="$wifi_8c.html#a2091cde351b02dbc8bd9d52273488bba" title="wifi_get_rssi_timer_func" alt="" coords="701,259,867,285"/>
+</map>
