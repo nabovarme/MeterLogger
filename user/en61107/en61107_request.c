@@ -428,6 +428,14 @@ void en61107_uart_send_standard_data_2() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
+	// change to next state
+	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
+
 	strcpy(frame, "/#2\r");
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
@@ -439,14 +447,6 @@ void en61107_uart_send_standard_data_2() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
-
-	// change to next state
-	en61107_uart_state = UART_STATE_STANDARD_DATA_2;
-
-	// and start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
 }
 
 ICACHE_FLASH_ATTR
@@ -456,6 +456,14 @@ void en61107_uart_send_unknown_1() {
 	uart_set_word_length(UART0, SEVEN_BITS);
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+	// change to next state
+	en61107_uart_state = UART_STATE_UNKNOWN_1;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 1400, 0);         // 1.4 seconds for UART_STATE_UNKNOWN_1
 
 	strcpy(frame, "/MP1\r");
 	frame_length = strlen(frame);
@@ -468,14 +476,6 @@ void en61107_uart_send_unknown_1() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 200, 0);	// 200 mS
-
-	// change to next state
-	en61107_uart_state = UART_STATE_UNKNOWN_1;
-
-	// and start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 1400, 0);         // 1.4 seconds for UART_STATE_UNKNOWN_1
 }
 
 ICACHE_FLASH_ATTR
@@ -486,12 +486,6 @@ void en61107_uart_send_unknown_2() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, ONE_STOP_BIT);
 	
-	strcpy(frame, "M32\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 1200 bps
-
 	// change to next state
 	en61107_uart_state = UART_STATE_UNKNOWN_2;
 
@@ -499,6 +493,12 @@ void en61107_uart_send_unknown_2() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 80, 0);         // 80 mS for UART_STATE_UNKNOWN_2
+
+	strcpy(frame, "M32\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 1200 bps
 }
 
 ICACHE_FLASH_ATTR
@@ -509,12 +509,6 @@ void en61107_uart_send_serial_byte_1() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-	strcpy(frame, "M200654\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_1;
 
@@ -522,6 +516,12 @@ void en61107_uart_send_serial_byte_1() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_1
+
+	strcpy(frame, "M200654\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -532,12 +532,6 @@ void en61107_uart_send_serial_byte_2() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M200655\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_2;
 
@@ -545,6 +539,12 @@ void en61107_uart_send_serial_byte_2() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_2
+
+	strcpy(frame, "M200655\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -555,12 +555,6 @@ void en61107_uart_send_serial_byte_3() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M200656\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_3;
 
@@ -568,6 +562,12 @@ void en61107_uart_send_serial_byte_3() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_3
+
+	strcpy(frame, "M200656\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -578,12 +578,6 @@ void en61107_uart_send_serial_byte_4() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M200657\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_4;
 
@@ -591,6 +585,12 @@ void en61107_uart_send_serial_byte_4() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_4
+
+	strcpy(frame, "M200657\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -601,12 +601,6 @@ void en61107_uart_send_serial_byte_5() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M200658\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_5;
 
@@ -614,6 +608,12 @@ void en61107_uart_send_serial_byte_5() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_5
+
+	strcpy(frame, "M200658\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -624,12 +624,6 @@ void en61107_uart_send_serial_byte_6() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M200659\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_SERIAL_BYTE_6;
 
@@ -637,6 +631,12 @@ void en61107_uart_send_serial_byte_6() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 200, 0);         // 200 mS for UART_STATE_SERIAL_BYTE_6
+
+	strcpy(frame, "M200659\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -647,12 +647,6 @@ void en61107_uart_send_unknown_3() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "M906540659\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_UNKNOWN_3;
 
@@ -660,6 +654,12 @@ void en61107_uart_send_unknown_3() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 300, 0);         // 300 mS for UART_STATE_UNKNOWN_3
+
+	strcpy(frame, "M906540659\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -670,12 +670,6 @@ void en61107_uart_send_unknown_4() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 	
-	strcpy(frame, "*\r");
-	frame_length = strlen(frame);
-	uart0_tx_buffer(frame, frame_length);     // send request
-
-	// reply is 2400 bps, 7e2
-
 	// change to next state
 	en61107_uart_state = UART_STATE_UNKNOWN_4;
 
@@ -683,6 +677,12 @@ void en61107_uart_send_unknown_4() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
 	os_timer_arm(&en61107_receive_timeout_timer, 40, 0);         // 40 mS for UART_STATE_UNKNOWN_4
+
+	strcpy(frame, "*\r");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 2400 bps, 7e2
 }
 
 ICACHE_FLASH_ATTR
@@ -696,6 +696,14 @@ void en61107_uart_send_en61107() {
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
+	// change to next state
+	en61107_uart_state = UART_STATE_EN61107;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);         // 6 seconds for UART_STATE_EN61107
+
 	strcpy(frame, "/?!\r\n");
 	frame_length = strlen(frame);
 	uart0_tx_buffer(frame, frame_length);     // send request
@@ -707,14 +715,6 @@ void en61107_uart_send_en61107() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 400, 0);	// 400 mS
-
-	// change to next state
-	en61107_uart_state = UART_STATE_EN61107;
-
-	// and start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 6000, 0);         // 6 seconds for UART_STATE_EN61107
 }
 
 ICACHE_FLASH_ATTR
@@ -724,6 +724,14 @@ void en61107_uart_send_inst_values() {
 	uart_set_word_length(UART0, SEVEN_BITS);
 	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+	// change to next state
+	en61107_uart_state = UART_STATE_INST_VALUES;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 3200, 0);         // 3.2 seconds for UART_STATE_INST_VALUES
 
 	strcpy(frame, "/#C");
 	frame_length = strlen(frame);
@@ -736,14 +744,6 @@ void en61107_uart_send_inst_values() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 300, 0);	// 300 mS
-
-	// change to next state
-	en61107_uart_state = UART_STATE_INST_VALUES;
-
-	// and start retransmission timeout timer
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 3200, 0);         // 3.2 seconds for UART_STATE_INST_VALUES
 }
 
 
