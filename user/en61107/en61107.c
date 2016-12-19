@@ -264,6 +264,30 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 	return true;
 }
 
+#ifndef MC_66B
+ICACHE_FLASH_ATTR
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+	char *p;
+	int i = 0;
+	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
+
+	p = strtok(frame, " ");	// returns null terminated string
+	while (p != NULL) {
+		switch (i) {
+			case 1:
+				divide_str_by_100(p, decimal_str);	// t3 resolution of 0.01°C.
+				tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t3.unit, EN61107_UNIT_L, "%s", "C");
+				break;
+		}
+		i++;
+		p = strtok(NULL, " ");
+	};
+
+	return true;
+}
+#endif
+
 ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
 	char value_copy[EN61107_VALUE_L];

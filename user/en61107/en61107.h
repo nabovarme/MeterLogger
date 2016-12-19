@@ -30,7 +30,9 @@ typedef struct {
 	en61107_meter_program_t meter_program;
 	en61107_response_register_t t1;
 	en61107_response_register_t t2;
+#ifndef MC_66B
 	en61107_response_register_t t3;
+#endif
 	en61107_response_register_t tdif;
 	en61107_response_register_t flow1;
 	en61107_response_register_t effect1;
@@ -45,6 +47,9 @@ typedef enum {
 	UART_STATE_STANDARD_DATA_2,
 	UART_STATE_EN61107_IDENT,
 	UART_STATE_EN61107,
+#ifndef MC_66B
+	UART_STATE_INST_VALUES,
+#endif
 } en61107_uart_state_t;
 
 ICACHE_FLASH_ATTR
@@ -58,6 +63,11 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
+
+#ifndef MC_66B
+ICACHE_FLASH_ATTR
+bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
+#endif
 
 ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length);

@@ -56,6 +56,11 @@ void en61107_receive_timeout_timer_func(void *arg) {
 			case UART_STATE_EN61107:
 				en61107_uart_send_en61107_ident();	// restart en61107 request from state UART_STATE_EN61107_IDENT
 				break;
+#ifndef MC_66B
+			case UART_STATE_INST_VALUES:
+				en61107_uart_send_inst_values();
+				break;
+#endif
 			case UART_STATE_STANDARD_DATA_1:
 				en61107_uart_send_standard_data_1();
 				break;
@@ -123,8 +128,30 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_serial = atoi(response.customer_no);
 			en61107_serial_set = true;
 
+#ifndef MC_66B
+			en61107_uart_send_inst_values();
+#else
+			en61107_uart_send_standard_data_1();
+#endif
+			break;
+#ifndef MC_66B
+		case UART_STATE_INST_VALUES:
+			// get message buffer
+			memset(message, 0, sizeof(message));
+			i = 0;
+			while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+				message[i++] = c;
+			}
+			message_l = i;
+
+			if (parse_mc66cde_inst_values_frame(&response, message, message_l) == false) {
+				// timeout if we cant parse response
+				break;
+			}
+
 			en61107_uart_send_standard_data_1();
 			break;
+#endif
 		case UART_STATE_STANDARD_DATA_1:
 			// get message buffer
 			memset(message, 0, sizeof(message));
@@ -187,9 +214,11 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
 					strcat(message, key_value);
 
+#ifndef MC_66B
 					// t3 temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t3=%s %s&", response.t3.value, response.t3.unit);
 					strcat(message, key_value);
+#endif
 
 					// calculated temperature difference
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", response.tdif.value, response.tdif.unit);
@@ -466,6 +495,38 @@ void en61107_uart_send_standard_data_2() {
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
 }
 
+#ifndef MC_66B
+ICACHE_FLASH_ATTR
+void en61107_uart_send_inst_values() {
+	en61107_eod = '\r';
+
+	// 300 bps
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+	// change to next state
+	en61107_uart_state = UART_STATE_INST_VALUES;
+
+	// and start retransmission timeout timer
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+	os_timer_arm(&en61107_receive_timeout_timer, 3200, 0);         // 3.2 seconds for UART_STATE_INST_VALUES
+
+	strcpy(frame, "/#C");
+	frame_length = strlen(frame);
+	uart0_tx_buffer(frame, frame_length);     // send request
+
+	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
+	uart_settings.baut_rate = BIT_RATE_1200;
+	uart_settings.stop_bits = ONE_STOP_BIT;
+	// change uart settings after the data has been sent
+	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
+	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 300, 0);	// 300 mS
+}
+#endif
 
 
 // fifo

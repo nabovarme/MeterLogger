@@ -37,6 +37,10 @@ void en61107_uart_send_standard_data_1();
 ICACHE_FLASH_ATTR
 void en61107_uart_send_standard_data_2();
 
+#ifndef MC_66B
+ICACHE_FLASH_ATTR
+void en61107_uart_send_inst_values();
+#endif
 
 
 // fifo
