@@ -177,6 +177,11 @@ bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *fra
 	p = strtok(frame, " ");	// returns null terminated string
 	while (p != NULL) {
 		switch (i) {
+			case 0:
+				divide_str_by_10(p, decimal_str);
+				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
+				break;
 			case 3:
 				divide_str_by_100(p, decimal_str);
 				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
@@ -196,11 +201,6 @@ bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *fra
 				cleanup_decimal_str(p, decimal_str, strlen(p));
 				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
 				tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
-				break;
-			case 8:
-				divide_str_by_10(p, decimal_str);
-				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
 				break;
 		}
 		i++;
