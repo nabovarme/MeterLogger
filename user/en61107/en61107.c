@@ -157,56 +157,43 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
-/*
 	char *p;
 	int i = 0;
-	char value[4];
+	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
-	p = strtok(frame, " ");
+	p = strtok(frame, " ");	// returns null terminated string
 	while (p != NULL) {
 		switch (i) {
-			case 7:	// ABCCC
-				// A
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2, 1);
-				response->meter_program.a = atoi(value);
-
-				// B
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2 + 1, 1);
-				response->meter_program.b = atoi(value);
-
-				// CCC
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2 + 2, 3);
-				response->meter_program.ccc = atoi(value);
+			case 3:
+				divide_str_by_100(p, decimal_str);
+				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t1.unit, EN61107_UNIT_L, "%s", "C");
 				break;
-			case 8:	// DDEFFGG
-				// DD
-				memset(value, 0, sizeof(value));
-				memcpy(value, p, 2);
-				response->meter_program.dd = atoi(value);
-
-				// E
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2, 1);
-				response->meter_program.e = atoi(value);
-
-				// FF
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 3, 2);
-				response->meter_program.ff = atoi(value);
-
-				// GG
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 5, 2);
-				response->meter_program.gg = atoi(value);
+			case 4:
+				divide_str_by_100(p, decimal_str);
+				tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->t2.unit, EN61107_UNIT_L, "%s", "C");
+				break;
+			case 5:
+				divide_str_by_100(p, decimal_str);
+				tfp_snprintf(response->tdif.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->tdif.unit, EN61107_UNIT_L, "%s", "C");
+				break;
+			case 7:
+				cleanup_decimal_str(p, decimal_str, strlen(p));
+				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
+				break;
+			case 8:
+				divide_str_by_10(p, decimal_str);
+				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
 				break;
 		}
 		i++;
-		p = strtok(NULL, " ");	// returns null terminated string
+		p = strtok(NULL, " ");
 	};
-*/
+
 	return true;
 }
 
@@ -263,71 +250,7 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 
 	return true;
 }
-/*
-ICACHE_FLASH_ATTR
-bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
-	char *p;
-	int i = 0;
-	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
-	// for calculation of tdif
-	int32_t t1 = 0;
-	int32_t t2 = 0;
-	char tdif[EN61107_VALUE_L];
-	int32_t tdif_int;
-
-	p = strtok(frame, " ");	// returns null terminated string
-	while (p != NULL) {
-		switch (i) {
-			case 0:
-				//strncpy(t1, p, EN61107_VALUE_L);	// for later calculation of tdif
-				t1 = atoi(p);
-				divide_str_by_100(p, decimal_str);
-				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->t1.unit, EN61107_UNIT_L, "%s", "C");
-				break;
-			case 1:
-				divide_str_by_100(p, decimal_str);	// t3 resolution of 0.01°C.
-				tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->t3.unit, EN61107_UNIT_L, "%s", "C");
-				break;
-			case 2:
-				//strncpy(t2, p, EN61107_VALUE_L);	// for later calculation of tdif
-				t2 = atoi(p);
-				divide_str_by_100(p, decimal_str);
-				tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->t2.unit, EN61107_UNIT_L, "%s", "C");
-				break;
-			case 5:
-				cleanup_decimal_str(p, decimal_str, strlen(p));
-				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
-				break;
-			case 7:
-				divide_str_by_10(p, decimal_str);
-				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
-				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
-				break;
-		}
-		i++;
-		p = strtok(NULL, " ");
-	};
-
-	// calculate tdif
-	tdif_int = t1 - t2;
-	if (tdif_int < 0) {
-		// dont send negative tdif
-		tdif_int = 0;
-	}
-
-	tfp_snprintf(tdif, EN61107_VALUE_L, "%u", tdif_int);
-	divide_str_by_100(tdif, decimal_str);
-	strncpy(response->tdif.value, decimal_str, EN61107_VALUE_L);
-	strncpy(response->tdif.unit, "C", EN61107_UNIT_L);
-
-	return true;
-}
-*/
 ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
 	char value_copy[EN61107_VALUE_L];

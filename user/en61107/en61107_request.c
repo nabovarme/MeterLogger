@@ -115,6 +115,7 @@ static void en61107_received_task(os_event_t *events) {
 			break;
 		case UART_STATE_EN61107:
 			if (parse_en61107_frame(&response, message, message_l) == false) {
+				// timeout if we cant parse response
 				break;
 			}
 
@@ -124,17 +125,16 @@ static void en61107_received_task(os_event_t *events) {
 			en61107_uart_send_standard_data_1();
 			break;
 		case UART_STATE_STANDARD_DATA_1:
-			//if (parse_mc66cde_standard_data_1_frame(&response, message, message_l)) {
-			//	en61107_serial = (uint64_t)atoi(response.customer_no);
-			//	en61107_serial_set = true;
-			//	en61107_uart_send_en61107();
-			//}
-			parse_mc66cde_standard_data_1_frame(&response, message, message_l);
-			en61107_uart_send_standard_data_2();
+			message[message_l - 2] = 0;		// remove last two chars and null terminate
+			if (parse_mc66cde_standard_data_1_frame(&response, message, message_l)) {
+				// if we can parse, send next request to meter
+				en61107_uart_send_standard_data_2();
+				break;
+			}
+
 			break;
 		case UART_STATE_STANDARD_DATA_2:
 			message[message_l - 2] = 0;		// remove last two chars and null terminate
-
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
 				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
