@@ -26,43 +26,18 @@ void en61107_request_send();
 
 // uart send en61107 commands
 ICACHE_FLASH_ATTR
-void en61107_uart_send_standard_data_2();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_unknown_1();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_unknown_2();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_1();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_2();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_3();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_4();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_5();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_serial_byte_6();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_unknown_3();
-
-ICACHE_FLASH_ATTR
-void en61107_uart_send_unknown_4();
+void en61107_uart_send_en61107_ident();
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_en61107();
 
 ICACHE_FLASH_ATTR
-void en61107_uart_send_inst_values();
+void en61107_uart_send_standard_data_1();
+
+ICACHE_FLASH_ATTR
+void en61107_uart_send_standard_data_2();
+
+
 
 // fifo
 ICACHE_FLASH_ATTR

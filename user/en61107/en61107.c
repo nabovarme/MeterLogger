@@ -156,6 +156,61 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 }
 
 ICACHE_FLASH_ATTR
+bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+/*
+	char *p;
+	int i = 0;
+	char value[4];
+
+	p = strtok(frame, " ");
+	while (p != NULL) {
+		switch (i) {
+			case 7:	// ABCCC
+				// A
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 2, 1);
+				response->meter_program.a = atoi(value);
+
+				// B
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 2 + 1, 1);
+				response->meter_program.b = atoi(value);
+
+				// CCC
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 2 + 2, 3);
+				response->meter_program.ccc = atoi(value);
+				break;
+			case 8:	// DDEFFGG
+				// DD
+				memset(value, 0, sizeof(value));
+				memcpy(value, p, 2);
+				response->meter_program.dd = atoi(value);
+
+				// E
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 2, 1);
+				response->meter_program.e = atoi(value);
+
+				// FF
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 3, 2);
+				response->meter_program.ff = atoi(value);
+
+				// GG
+				memset(value, 0, sizeof(value));
+				memcpy(value, p + 5, 2);
+				response->meter_program.gg = atoi(value);
+				break;
+		}
+		i++;
+		p = strtok(NULL, " ");	// returns null terminated string
+	};
+*/
+	return true;
+}
+
+ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	char *p;
 	int i = 0;
@@ -208,7 +263,7 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 
 	return true;
 }
-
+/*
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	char *p;
@@ -272,7 +327,7 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, 
 
 	return true;
 }
-
+*/
 ICACHE_FLASH_ATTR
 void en61107_response_set_value(en61107_response_t *response, char *rid, char *value, unsigned int value_length) {
 	char value_copy[EN61107_VALUE_L];

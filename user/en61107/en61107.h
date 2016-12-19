@@ -41,23 +41,17 @@ typedef struct {
 
 typedef enum {
 	UART_STATE_NONE,
+	UART_STATE_STANDARD_DATA_1,
 	UART_STATE_STANDARD_DATA_2,
-	UART_STATE_UNKNOWN_1,
-	UART_STATE_UNKNOWN_2,
-	UART_STATE_SERIAL_BYTE_1,
-	UART_STATE_SERIAL_BYTE_2,
-	UART_STATE_SERIAL_BYTE_3,
-	UART_STATE_SERIAL_BYTE_4,
-	UART_STATE_SERIAL_BYTE_5,
-	UART_STATE_SERIAL_BYTE_6,
-	UART_STATE_UNKNOWN_3,
-	UART_STATE_UNKNOWN_4,
+	UART_STATE_EN61107_IDENT,
 	UART_STATE_EN61107,
-	UART_STATE_INST_VALUES
 } en61107_uart_state_t;
 
 ICACHE_FLASH_ATTR
 bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
+
+ICACHE_FLASH_ATTR
+bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
