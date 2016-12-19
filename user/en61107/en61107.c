@@ -12,8 +12,9 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	unsigned int i, j;
 	uint8_t bcc;
 	uint8_t calculated_bcc;
-	
-	const char *separator = "\x0D\x0A";
+
+//	const char *separator = "\x0D\x0A";
+	const char *separator = ")";
 	const char *stx = "\x02";
 	const char *etx = "\x21\x0D\x0A\x03";
 	char rid[EN61107_RID_L];
@@ -27,14 +28,14 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 	size_t value_string_length;
 	size_t unit_string_length;
 	size_t customer_no_string_length;
-	
+
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
-	
+
 	// sanity check
 	if (!frame_length) {
 		return 0;
 	}
-	
+
 	bcc = frame[frame_length - 1];
 	calculated_bcc = 0;
 	for (i = 0; i < frame_length; i++) {
@@ -45,7 +46,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 		else {
 			calculated_bcc += frame[i];
 			calculated_bcc &= 0x7f;  // 7 bit value
-			
+
 			if (frame[i] == 0x03) {
 				// etx
 				if (bcc == calculated_bcc) {
@@ -59,7 +60,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						memcpy(response->meter_type, frame + 1, length - 3);	// DEBUG: check bounds
 						frame += length + 3;
 					}
-					
+
 					// parse to etx and save to register_list_string
 					memset(register_list_string, 0, EN61107_FRAME_L);
 					pos = strstr(frame, etx);			   // find position of etx
@@ -67,16 +68,16 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						length = pos - frame;
 						memcpy(register_list_string, frame, length);
 					}
-					
+
 					// parse values
 					j = 0;
 					register_list_string_ptr = register_list_string;		// force pointer arithmetics
 					while ((pos = strstr(register_list_string_ptr, separator)) != NULL) {
-						length = pos - register_list_string_ptr;
+						length = pos - register_list_string_ptr + 1;	// + 1 becouse we need the last ')' in further parsing
 						memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 						memcpy(rid_value_unit_string, register_list_string_ptr, length);
 						rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
-						
+
 						// parse register number, value and unit unless rid == 0
 						pos = strstr(rid_value_unit_string, "(");
 						if (pos != NULL) {
@@ -104,20 +105,21 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 								unit_string_length = pos - rid_value_unit_string_ptr;
 								en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
 								j++;
-								
+
 							}
 						}
-						
-						register_list_string_ptr += length + 2;
+
+//						register_list_string_ptr += length + 2;
+						register_list_string_ptr += length;		// DEBUG: separator not two chars: 0x0D 0x0A
 					}
-					
-					
+
+/*
 					// handle the last
 					length = strlen(register_list_string_ptr);
 					memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 					memcpy(rid_value_unit_string, register_list_string_ptr, length);
 					rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
-					
+
 					// parse register number, value and unit unless rid == 0
 					pos = strstr(rid_value_unit_string, "(");
 					if (pos != NULL) {
@@ -146,7 +148,8 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 							en61107_response_set_unit(response, rid, rid_value_unit_string_ptr, unit_string_length);
 						}
 					}
-					
+*/
+
 					return true;
 				}
 			}
