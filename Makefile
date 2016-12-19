@@ -164,6 +164,10 @@ ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
     CFLAGS += -DEXT_SPI_RAM_IS_NAND
 endif
 
+ifeq ($(MC_66B), 1)
+    EN61107 = 1
+endif
+
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld

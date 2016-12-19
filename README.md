@@ -15,7 +15,10 @@ EN61107=0
 meter type is KMP (Multical 601)  
   
 EN61107=1  
-meter type is en61107 (Multical 66)  
+meter type is en61107, sub type Multical 66 C  
+  
+MC_66B=1  
+meter type is en61107, sub type Multical 66 B  
   
 THERMO_NO=0  
 thermo actuator is normal closed  
