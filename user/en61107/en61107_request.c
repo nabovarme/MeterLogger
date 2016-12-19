@@ -332,7 +332,7 @@ void en61107_uart_send_en61107_ident() {
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 12000, 0);         // 12 seconds for UART_STATE_EN61107_IDENT
+	os_timer_arm(&en61107_receive_timeout_timer, 2000, 0);         // 2 seconds for UART_STATE_EN61107_IDENT
 
 	strcpy(frame, "/?!\r\n");
 	frame_length = strlen(frame);
@@ -364,7 +364,7 @@ void en61107_uart_send_en61107() {
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 12000, 0);         // 12 seconds for UART_STATE_EN61107
+	os_timer_arm(&en61107_receive_timeout_timer, 8000, 0);         // 8 seconds for UART_STATE_EN61107
 
 	strcpy(frame, "\006000\r\n");
 	frame_length = strlen(frame);
@@ -395,7 +395,7 @@ void en61107_uart_send_standard_data_1() {
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_STANDARD_DATA_1
 
 	strcpy(frame, "/#1\r");
 	frame_length = strlen(frame);
@@ -426,7 +426,7 @@ void en61107_uart_send_standard_data_2() {
 	// and start retransmission timeout timer
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_METER_WAKE_UP
+	os_timer_arm(&en61107_receive_timeout_timer, 3000, 0);         // 3 seconds for UART_STATE_STANDARD_DATA_2
 
 	strcpy(frame, "/#2\r");
 	frame_length = strlen(frame);
