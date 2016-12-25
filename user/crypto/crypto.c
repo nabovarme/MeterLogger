@@ -21,7 +21,7 @@ uint8_t hmac_sha256_key[16];
 
 void init_aes_hmac_combined(uint8_t *key) {
 	unsigned int i;
-	_align_32_bit master_key[16];
+	_align_32_bit uint8_t master_key[16];
 	
 	memcpy(master_key, key, 16);
 	
