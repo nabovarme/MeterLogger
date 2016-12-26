@@ -329,6 +329,7 @@ void en61107_request_send() {
 	unsigned int i;
 
 	// clear message buffer
+	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
 		i++;
 	}
