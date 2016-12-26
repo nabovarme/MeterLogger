@@ -516,7 +516,7 @@ static void XorWithIv(uint8_t* buf)
 }
 
 ICACHE_FLASH_ATTR
-void AES128_CBC_encrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t length, const uint8_t* key, const uint8_t* iv)
+void AES128_CBC_encrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length, const uint8_t* key, uint8_t* iv)
 {
   uintptr_t i;
   uint8_t remainders = length % KEYLEN; /* Remaining bytes in the last non-full block */
@@ -557,7 +557,7 @@ void AES128_CBC_encrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t l
 }
 
 ICACHE_FLASH_ATTR
-void AES128_CBC_decrypt_buffer(uint8_t* output, const uint8_t* input, uint32_t length, const uint8_t* key, const uint8_t* iv)
+void AES128_CBC_decrypt_buffer(uint8_t* output, uint8_t* input, uint32_t length, const uint8_t* key, uint8_t* iv)
 {
   uintptr_t i;
   uint8_t remainders = length % KEYLEN; /* Remaining bytes in the last non-full block */

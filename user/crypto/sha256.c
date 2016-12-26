@@ -285,7 +285,7 @@ void sha256_transform(sha256_ctx_t* context, uint8_t *data) {
 }
 
 ICACHE_FLASH_ATTR
-void sha256_update(sha256_ctx_t *context, const uint8_t *data, size_t len) {
+void sha256_update(sha256_ctx_t *context, uint8_t *data, size_t len) {
 	unsigned int freespace, usedspace;
 
 	if (len == 0) {
@@ -418,7 +418,7 @@ char *sha256_end(sha256_ctx_t *context, char buffer[SHA256_DIGEST_STRING_LENGTH]
 }
 
 ICACHE_FLASH_ATTR
-void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+void sha256_raw(uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
 	sha256_ctx_t context;
 	
 	sha256_init(&context);
@@ -427,7 +427,7 @@ void sha256_raw(const uint8_t* data, size_t len, uint8_t digest[SHA256_DIGEST_LE
 }
 
 ICACHE_FLASH_ATTR
-char* sha256_data(const uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
+char* sha256_data(uint8_t* data, size_t len, char digest[SHA256_DIGEST_STRING_LENGTH]) {
     sha256_ctx_t context;
 
 	sha256_init(&context);
