@@ -305,7 +305,13 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-#ifdef EN61107
+#ifdef MC_66B
+#	ifdef THERMO_NO
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-B-THERMO_NO", system_get_sdk_version(), VERSION);
+#	else	// THERMO_NC
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-B-THERMO_NC", system_get_sdk_version(), VERSION);
+#	endif
+#elif EN61107
 #	ifdef THERMO_NO
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
 #	else	// THERMO_NC
