@@ -52,6 +52,7 @@ static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
+static os_timer_t mqtt_connected_defer_timer;
 #elif defined IMPULSE
 //static os_timer_t kmp_request_send_timer;
 #else
@@ -101,11 +102,11 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #endif
 	MQTT_InitLWT(&mqtt_client, topic, "", 0, 0);
 	
-	MQTT_OnConnected(&mqtt_client, mqttConnectedCb);
-	MQTT_OnDisconnected(&mqtt_client, mqttDisconnectedCb);
-	MQTT_OnPublished(&mqtt_client, mqttPublishedCb);
-	MQTT_OnData(&mqtt_client, mqttDataCb);
-	MQTT_OnTimeout(&mqtt_client, mqttTimeoutCb);
+	MQTT_OnConnected(&mqtt_client, mqtt_connected_cb);
+	MQTT_OnDisconnected(&mqtt_client, mqtt_disconnected_cb);
+	MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
+	MQTT_OnData(&mqtt_client, mqtt_data_cb);
+	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
 	wifi_set_opmode_current(STATION_MODE);
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
@@ -272,11 +273,27 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	}
 }
 
-ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
+#ifdef EN61107
+ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
+	mqtt_connected_cb((uint32_t*)&mqtt_client);
+}
+#endif
+
+ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	unsigned char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+
+#ifdef EN61107
+	if (en61107_get_received_serial() == 0) {
+		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
+		os_timer_disarm(&mqtt_connected_defer_timer);
+		os_timer_setfn(&mqtt_connected_defer_timer, (os_timer_func_t *)mqtt_connected_defer_timer_func, NULL);
+		os_timer_arm(&mqtt_connected_defer_timer, 60000, 0);
+		return;
+	}
+#endif
 
 	// show led status when mqtt is connected via fallback wifi
 	if (wifi_fallback_is_present()) {
@@ -382,17 +399,17 @@ ICACHE_FLASH_ATTR void mqttConnectedCb(uint32_t *args) {
 	os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds
 }
 
-ICACHE_FLASH_ATTR void mqttDisconnectedCb(uint32_t *args) {
+ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 }
 
-ICACHE_FLASH_ATTR void mqttPublishedCb(uint32_t *args) {
+ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
 }
 
-ICACHE_FLASH_ATTR void mqttTimeoutCb(uint32_t *args) {
+ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args) {
 }
 	
-ICACHE_FLASH_ATTR void mqttDataCb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
+ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
