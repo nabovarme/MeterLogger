@@ -22,6 +22,28 @@
 #include "driver/ext_spi_flash.h"
 #include "watchdog.h"
 
+#ifdef MC_66B
+#	ifdef THERMO_NO
+#		define HW_MODEL "MC-B-THERMO_NO"
+#	else	// THERMO_NC
+#		define HW_MODEL "MC-B-THERMO_NC"
+#	endif
+#elif EN61107
+#	ifdef THERMO_NO
+#		define HW_MODEL "MC-THERMO_NO"
+#	else	// THERMO_NC
+#		define HW_MODEL "MC-THERMO_NC"
+#	endif
+#elif defined IMPULSE
+#		define HW_MODEL "IMPULSE"
+#else
+#	ifdef THERMO_NO
+#		define HW_MODEL "THERMO_NO"
+#	else	// THERMO_NC
+#		define HW_MODEL "THERMO_NC"
+#	endif
+#endif
+
 #ifdef EN61107
 #include "en61107_request.h"
 #elif defined IMPULSE
@@ -322,27 +344,8 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-#ifdef MC_66B
-#	ifdef THERMO_NO
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-B-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-B-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#elif EN61107
-#	ifdef THERMO_NO
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#elif defined IMPULSE
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
-#else
-#	ifdef THERMO_NO
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#endif
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), HW_MODEL, VERSION);
+
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -471,21 +474,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-#	ifdef THERMO_NO
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#elif defined IMPULSE
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
-#else
-#	ifdef THERMO_NO
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#endif
+
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), HW_MODEL, VERSION);
+
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -563,21 +554,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-#	ifdef THERMO_NO
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-MC-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#elif defined IMPULSE
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s", system_get_sdk_version(), VERSION);
-#else
-#	ifdef THERMO_NO
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NO", system_get_sdk_version(), VERSION);
-#	else	// THERMO_NC
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-THERMO_NC", system_get_sdk_version(), VERSION);
-#	endif
-#endif
+
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), HW_MODEL, VERSION);
+
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -768,6 +747,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
+	printf("Hardware model: %s\n\r", HW_MODEL);
 
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
