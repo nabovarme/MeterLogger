@@ -54,6 +54,8 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | /config/v1/9999999/uptime                  |                                                                    |
 | /config/v1/9999999/rssi                    |                                                                    |
 | /config/v1/9999999/ssid                    |                                                                    |
+| /config/v1/9999999/set_ssid                | [ssid]                                                             |
+| /config/v1/9999999/set_pwd                 | [pwd]                                                              |
 | /config/v1/9999999/save (only pulse meter) |                                                                    |
 | /config/v1/9999999/mem                     |                                                                    |
 | /config/v1/9999999/reset_reason            |                                                                    |
