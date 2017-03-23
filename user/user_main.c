@@ -506,7 +506,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+	//	if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
@@ -515,10 +515,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-		}
+	//	}
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+	//	if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
@@ -527,7 +527,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-		}
+	//	}
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
