@@ -409,6 +409,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	memcpy(mqtt_message, data, data_len);
 	mqtt_message[data_len] = 0;
 	
+	memset(cleartext, 0, MQTT_MESSAGE_L);	// make sure its null terminated
 	if (decrypt_aes_hmac_combined(cleartext, mqtt_topic, topic_len, mqtt_message, data_len) == 0) {
 #ifdef DEBUG
 		printf("hmac error\n");
@@ -510,7 +511,8 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
-			tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", cleartext);
+			memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
+			strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
 			cfg_save();
 			
 			// cleartext
@@ -522,7 +524,8 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
-			tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", cleartext);
+			memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+			strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
 			cfg_save();
 			
 			// cleartext
