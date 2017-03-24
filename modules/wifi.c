@@ -81,7 +81,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
 	get_rssi_running = true;
-	rssi = wifi_station_get_rssi();
+	if (wifi_default_ok) {	// only get rssi if connected to configured ssid
+		rssi = wifi_station_get_rssi();
+	}
 	get_rssi_running = false;
 }
 
