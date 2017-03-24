@@ -15,6 +15,7 @@ void ICACHE_FLASH_ATTR wifi_default();
 void ICACHE_FLASH_ATTR wifi_fallback();
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb);
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
+bool ICACHE_FLASH_ATTR wifi_get_status();
 void ICACHE_FLASH_ATTR wifi_start_scan();
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();

@@ -31,8 +31,11 @@ volatile bool wifi_scan_runnning = false;
 //volatile bool wifi_reconnect = false;
 volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running = false;
+volatile bool wifi_default_ok = false; 
 
 void wifi_handle_event_cb(System_Event_t *evt) {
+	struct station_config stationConf;
+
 	wifi_status = wifi_station_get_connect_status();
 	wifi_event = evt->event;
 
@@ -41,7 +44,13 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
-			// do nothing
+			// set default network status
+			os_memset(&stationConf, 0, sizeof(struct station_config));
+			wifi_station_get_config(&stationConf);
+		
+			if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+				wifi_default_ok = true;
+			}
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
 #ifdef DEBUG
@@ -50,9 +59,25 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 //			if 	(wifi_reconnect) {
 //				wifi_station_connect();	// reconnect
 //			}
+			// set default network status
+			os_memset(&stationConf, 0, sizeof(struct station_config));
+			wifi_station_get_config(&stationConf);
+			
+    		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+    			wifi_default_ok = false;
+    		}
 			break;
 		case EVENT_STAMODE_GOT_IP:
 //			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
+		
+			// set default network status
+			os_memset(&stationConf, 0, sizeof(struct station_config));
+			wifi_station_get_config(&stationConf);
+			
+    		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+    			wifi_default_ok = true;
+    		}
+		
 			wifi_cb(wifi_status);
 			break;
 		default:
@@ -208,6 +233,10 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 		// wait for lock
 	}
 	return rssi;
+}
+
+bool ICACHE_FLASH_ATTR wifi_get_status() {
+	return wifi_default_ok;
 }
 
 void ICACHE_FLASH_ATTR wifi_start_scan() {

@@ -56,6 +56,7 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | /config/v1/9999999/ssid                    |                                                                    |
 | /config/v1/9999999/set_ssid                | [ssid]                                                             |
 | /config/v1/9999999/set_pwd                 | [pwd]                                                              |
+| /config/v1/9999999/wifi_status             |                                                                    |
 | /config/v1/9999999/save (only pulse meter) |                                                                    |
 | /config/v1/9999999/mem                     |                                                                    |
 | /config/v1/9999999/reset_reason            |                                                                    |
@@ -72,6 +73,7 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 | /uptime/v1/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
 | /rssi/v1/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v1/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
+| /wifi_status/v1/9999999/[unix time]             | [connected or disconnected]                                                                          |
 | /save/v1/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v1/9999999/[unix time]                     | heap=9672&                                                                                           |
 | /reset_reason/v1/9999999/[unix time]            |                                                                                                      |
