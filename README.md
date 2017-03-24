@@ -1,3 +1,28 @@
+To build and flash for KMP type meter (Multical 601):  
+```  
+KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+```  
+  
+To build and flash for en61107, sub type Multical 66 C:  
+```  
+EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+```  
+  
+To build and flash for en61107, sub type Multical 66 B:  
+```  
+MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+```  
+  
+To build and flash for impulse based electricity meter:  
+```  
+IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+```  
+  
+To configure wireless network:  
+```  
+SERIAL=9999999 KEY=ef500c9268cf749016d26d6cbfaaf7bf make wifisetup  
+```  
+  
 **BUILD OPTIONS**  
 DEBUG=1  
 enable serial debugging  
@@ -9,7 +34,7 @@ DEBUG_SHORT_WEB_CONFIG_TIME=1
 dont wait for web config  
   
 IMPULSE=1  
-meter type is impulse based (100 mS) 
+meter type is impulse based (100 mS)  
   
 EN61107=0  
 meter type is KMP (Multical 601)  
@@ -30,7 +55,7 @@ LED_ON_AC=1
 use led to indicate ac state  
 
 SERIAL=9999999  
-serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_99999. Used in wifisetup make target.   
+serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in wifisetup make target.
 
 KEY=ef500c9268cf749016d26d6cbfaaf7bf
 master key for crypto, 16 bytes
@@ -40,43 +65,43 @@ Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains
 
 **MQTT format for messages sent _to_ meter**  
 
-| Topic                                      | Message                                                            |
-| :----------------------------------------- | :----------------------------------------------------------------- |
-| /config/v1/9999999/ping                    |                                                                    |
-| /config/v1/9999999/open                    | [unix time]                                                        |
-| /config/v1/9999999/close                   | [unix time]                                                        |
-| /config/v1/9999999/status                  |                                                                    |
-| /config/v1/9999999/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
-| /config/v1/9999999/cron                    |                                                                    |
-| /config/v1/9999999/clear_cron              | [unix time]                                                        |
-| /config/v1/9999999/ping                    |                                                                    |
-| /config/v1/9999999/version                 |                                                                    |
-| /config/v1/9999999/uptime                  |                                                                    |
-| /config/v1/9999999/rssi                    |                                                                    |
-| /config/v1/9999999/ssid                    |                                                                    |
-| /config/v1/9999999/set_ssid                | [ssid]                                                             |
-| /config/v1/9999999/set_pwd                 | [pwd]                                                              |
-| /config/v1/9999999/wifi_status             |                                                                    |
-| /config/v1/9999999/save (only pulse meter) |                                                                    |
-| /config/v1/9999999/mem                     |                                                                    |
-| /config/v1/9999999/reset_reason            |                                                                    |
+| Topic                                                  | Message                                                            |
+| :----------------------------------------------------- | :----------------------------------------------------------------- |
+| /config/v2/9999999/[unix time]/ping                    |                                                                    |
+| /config/v2/9999999/[unix time]/open                    | [unix time]                                                        |
+| /config/v2/9999999/[unix time]/close                   | [unix time]                                                        |
+| /config/v2/9999999/[unix time]/status                  |                                                                    |
+| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
+| /config/v2/9999999/[unix time]/cron                    |                                                                    |
+| /config/v2/9999999/[unix time]/clear_cron              | [unix time]                                                        |
+| /config/v2/9999999/[unix time]/ping                    |                                                                    |
+| /config/v2/9999999/[unix time]/version                 |                                                                    |
+| /config/v2/9999999/[unix time]/uptime                  |                                                                    |
+| /config/v2/9999999/[unix time]/rssi                    |                                                                    |
+| /config/v2/9999999/[unix time]/ssid                    |                                                                    |
+| /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                             |
+| /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                              |
+| /config/v2/9999999/[unix time]/wifi_status             |                                                                    |
+| /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                    |
+| /config/v2/9999999/[unix time]/mem                     |                                                                    |
+| /config/v2/9999999/[unix time]/reset_reason            |                                                                    |
   
 **MQTT format for messages sent _from_ meter**  
 
 | Topic                                           | Message                                                                                              |
 | :---------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| /sample/v1/9999999/[unix time]                  | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
-| /cron/v1/9999999/[unix time]                    | 12                                                                                                   |
-| /ping/v1/9999999/[unix time]                    |                                                                                                      |
-| /version/v1/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
-| /status/v1/9999999/[unix time]                  | [open|close]                                                                                         |
-| /uptime/v1/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
-| /rssi/v1/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
-| /ssid/v1/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
-| /wifi_status/v1/9999999/[unix time]             | [connected or disconnected]                                                                          |
-| /save/v1/9999999/[unix time] (only pulse meter) | saved                                                                                                |
-| /mem/v1/9999999/[unix time]                     | heap=9672&                                                                                           |
-| /reset_reason/v1/9999999/[unix time]            |                                                                                                      |
+| /sample/v2/9999999/[unix time]                  | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
+| /cron/v2/9999999/[unix time]                    | 12                                                                                                   |
+| /ping/v2/9999999/[unix time]                    |                                                                                                      |
+| /version/v2/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
+| /status/v2/9999999/[unix time]                  | [open|close]                                                                                         |
+| /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
+| /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
+| /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
+| /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
+| /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
+| /mem/v2/9999999/[unix time]                     | heap=9672&                                                                                           |
+| /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
 
 
 
