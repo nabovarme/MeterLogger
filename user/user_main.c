@@ -401,6 +401,8 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	char function_name[FUNCTIONNAME_L];
 
 	uint32_t received_unix_time;
+
+    uint8_t i;
 		
 	// copy and null terminate
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
@@ -421,10 +423,15 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	
 	// parse mqtt topic for function call name
+	i = 0;
 	str = strtok(mqtt_topic, "/");
 	while (str != NULL) {
+		if (i == 3) {	// get unix_time sent via mqtt topic
+			received_unix_time = atoi(str);
+		}
 		strncpy(function_name, str, FUNCTIONNAME_L);   // save last parameter as function_name
 		str = strtok(NULL, "/");
+		i++;
 	}
 	// ..and clear for further use
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
@@ -507,7 +514,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
-	//	if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
@@ -517,10 +524,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-	//	}
+		}
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
-	//	if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
 			// change sta_ssid...
@@ -530,7 +537,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-	//	}
+		}
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {
 		// found uptime
@@ -600,7 +607,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
-		received_unix_time = atoi(cleartext);
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			add_cron_job_from_query(cleartext);
@@ -608,7 +614,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
 		// found clear_cron
-		received_unix_time = atoi(cleartext);
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			clear_cron_jobs();
@@ -629,7 +634,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
-		received_unix_time = atoi(cleartext);
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			//ac_motor_valve_open();
@@ -639,7 +643,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
-		received_unix_time = atoi(cleartext);
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			//ac_motor_valve_close();
 			sys_cfg.ac_thermo_state = 0;
