@@ -400,7 +400,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
-	uint32_t received_unix_time;
+	uint32_t received_unix_time = 0;
 
     uint8_t i;
 		
