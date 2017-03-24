@@ -39,15 +39,15 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_status = wifi_station_get_connect_status();
 	wifi_event = evt->event;
 
+	os_memset(&stationConf, 0, sizeof(struct station_config));
+	wifi_station_get_config(&stationConf);
+
 #ifdef DEBUG
 	os_printf("E%dW%d\n", evt->event, wifi_status);
 #endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
 			// set default network status
-			os_memset(&stationConf, 0, sizeof(struct station_config));
-			wifi_station_get_config(&stationConf);
-		
 			if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 			}
@@ -60,9 +60,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 //				wifi_station_connect();	// reconnect
 //			}
 			// set default network status
-			os_memset(&stationConf, 0, sizeof(struct station_config));
-			wifi_station_get_config(&stationConf);
-			
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
@@ -71,9 +68,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 //			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
 		
 			// set default network status
-			os_memset(&stationConf, 0, sizeof(struct station_config));
-			wifi_station_get_config(&stationConf);
-			
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
