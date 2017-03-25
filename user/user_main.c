@@ -517,10 +517,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_ssid...
-			memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-			strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
-			cfg_save();
+			// change sta_ssid and save if different
+			if (strncmp(sys_cfg.sta_ssid, cleartext, 32 - 1) != 0) {
+				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
+				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
+				cfg_save();
+			}
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
@@ -530,10 +532,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_ssid...
-			memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-			strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
-			cfg_save();
+			// change sta_pwd and save if different
+			if (strncmp(sys_cfg.sta_pwd, cleartext, 64 - 1) != 0) {
+				memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
+				cfg_save();
+			}
 			
 			// cleartext
 			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
