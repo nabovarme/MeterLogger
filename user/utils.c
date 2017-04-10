@@ -44,10 +44,7 @@ const uint16_t ccit_crc16_table[256] = {
 
 // CRC-CCITT (XModem)
 ICACHE_FLASH_ATTR
-uint16_t ccit_crc16(uint8_t *data_p, unsigned int length) {
-	uint16_t crc16;
-	
-	crc16 = 0;
+uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 	while (length--) {
 		crc16 = (crc16 << 8) ^ ccit_crc16_table[((crc16 >> 8) ^ *data_p++) & 0x00FF];
 	}

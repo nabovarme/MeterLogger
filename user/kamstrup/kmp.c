@@ -359,7 +359,7 @@ uint16_t kmp_crc16() {
 	//}
 	//return crc16;
 
-	return ccit_crc16(kmp_frame + KMP_DST_IDX, kmp_data_length);
+	return ccit_crc16(0x0000, kmp_frame + KMP_DST_IDX, kmp_data_length);
 }
 
 ICACHE_FLASH_ATTR

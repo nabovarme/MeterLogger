@@ -36,7 +36,7 @@ cfg_save() {
 		impulse_meter_count_temp = sys_cfg.impulse_meter_count;
 
 		// calculate checksum on sys_cfg struct without ccit_crc16
-		sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
+		sys_cfg.ccit_crc16 = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));	
 		ext_spi_flash_read((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 		                   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	
@@ -68,7 +68,7 @@ cfg_save() {
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
 #else
 	// calculate checksum on sys_cfg struct without ccit_crc16
-	sys_cfg.ccit_crc16 = ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
+	sys_cfg.ccit_crc16 = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
 	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
 #endif	// IMPULSE
 }
@@ -90,7 +90,7 @@ cfg_load() {
 	}
 
 	// if checksum fails...
-	if (sys_cfg.ccit_crc16 != ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
+	if (sys_cfg.ccit_crc16 != ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
 #ifdef DEBUG
 		os_printf("config crc error, default conf loaded\n");
 #endif // DEBUG
@@ -135,7 +135,7 @@ cfg_load() {
 	system_param_load(CFG_LOCATION, 0, &sys_cfg, sizeof(syscfg_t));
 
 	// if checksum fails...
-	if (sys_cfg.ccit_crc16 != ccit_crc16((uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
+	if (sys_cfg.ccit_crc16 != ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
 #ifdef DEBUG
 		os_printf("config crc error, default conf loaded\n");
 #endif // DEBUG
