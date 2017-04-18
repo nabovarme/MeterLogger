@@ -109,7 +109,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnData(&mqtt_client, mqtt_data_cb);
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
+#ifndef AP
 	wifi_set_opmode_current(STATION_MODE);
+#endif
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
@@ -117,6 +119,12 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	struct softap_config ap_conf;
+#ifdef AP
+	struct ip_info info;
+	struct dhcps_lease dhcp_lease;
+	struct netif *nif;
+	ip_addr_t ap_ip;
+#endif
 	
 	wifi_softap_get_config(&ap_conf);
 	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
@@ -137,6 +145,32 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	ap_conf.ssid_hidden = 0;
 
 	wifi_softap_set_config(&ap_conf);
+
+#ifdef AP
+	IP4_ADDR(&ap_ip, 192, 168, 4, 1);	// DEBUG, we should handle this
+
+	// find the netif of the AP (that with num != 0)
+	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
+		// skip
+	}
+	if (nif == NULL) {
+		return;
+	}
+	// if is not 1, set it to 1. 
+	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
+	nif->num = 1;
+
+	wifi_softap_dhcps_stop();
+
+	IP4_ADDR(&info.gw, 192, 168, 4, 1);
+	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
+	wifi_set_ip_info(nif->num, &info);
+
+	IP4_ADDR(&dhcp_lease.start_ip, 192, 168, 4, 2);
+	IP4_ADDR(&dhcp_lease.end_ip, 1, 0, 5, 2);
+	wifi_softap_set_dhcps_lease(&dhcp_lease);
+	wifi_softap_dhcps_start();
+#endif
 
 	captdnsInit();		// start captive dns server
 	httpd_user_init();	// start web server
@@ -226,6 +260,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	kmp_request_send();
 #endif	// EN61107
 }
+
 
 #ifdef EN61107
 ICACHE_FLASH_ATTR void static en61107_request_send_timer_func(void *arg) {
@@ -799,13 +834,13 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(THERMO_NC)\n\r");
 #endif
 
-#ifdef EN61107
 #ifndef DEBUG_NO_METER
+#ifdef EN61107
 	uart_init(BIT_RATE_300, BIT_RATE_300);
-#endif	// DEBUG_NO_METER
 #else
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 #endif
+#endif	// DEBUG_NO_METER
 
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));
@@ -859,7 +894,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	// make sure the device is in AP and STA combined mode
 	wifi_set_opmode_current(STATIONAP_MODE);
-	
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
 }
@@ -869,7 +903,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef DEBUG
 	printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 #endif	// DEBUG
-	
+
 #ifdef IMPULSE
 //	os_timer_disarm(&spi_test_timer);
 //	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);

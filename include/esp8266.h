@@ -12,7 +12,8 @@
 
 #else
 #include <c_types.h>
-#include <ip_addr.h>
+#include <lwip/ip.h>
+#include <lwip/netif.h>
 #include <espconn.h>
 #include <ets_sys.h>
 #include <gpio.h>
