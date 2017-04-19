@@ -30,6 +30,10 @@ static int sockFd;
 
 #define DNS_LEN 512
 
+#ifdef FREERTOS
+static struct espconn conn;
+#endif
+
 typedef struct __attribute__ ((packed)) {
 	uint16_t id;
 	uint8_t flags;
@@ -322,7 +326,6 @@ void captdnsInit(void) {
 #else
 
 void ICACHE_FLASH_ATTR captdnsInit(void) {
-	static struct espconn conn;
 	static esp_udp udpconn;
 	conn.type=ESPCONN_UDP;
 	conn.proto.udp=&udpconn;
