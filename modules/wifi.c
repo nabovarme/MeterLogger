@@ -36,6 +36,8 @@ volatile bool wifi_default_ok = false;
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
+static ip_addr_t dns_ip;
+
 ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
 	os_printf("Got packet from STA, len: %d\r\n", p->len);
 	orig_input_ap (p, inp);
@@ -111,7 +113,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
-		
+			// set dhcp dns to the one supplied from uplink
+			dns_ip = dns_getserver(0);
+			dhcps_set_DNS(&dns_ip);
+
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
@@ -195,8 +200,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 
 void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
-	
-//	wifi_reconnect = false;		// disable wifi_handle_event_cb() from connecting - done here
 
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
@@ -265,6 +268,63 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
 
 	led_stop_pattern();
+}
+
+void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {
+	struct softap_config ap_conf;
+	
+	wifi_softap_get_config(&ap_conf);
+	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
+	memset(ap_conf.password, 0, sizeof(ap_conf.password));
+	tfp_snprintf(ap_conf.ssid, 32, ssid);
+	tfp_snprintf(ap_conf.password, 64, pass);
+	ap_conf.authmode = authmode;
+	ap_conf.ssid_len = 0;
+	ap_conf.beacon_interval = 100;
+	ap_conf.channel = 1;
+	ap_conf.max_connection = 8;
+	ap_conf.ssid_hidden = 0;
+
+	wifi_softap_set_config(&ap_conf);
+}
+
+
+void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
+	struct ip_info info;
+	struct dhcps_lease dhcp_lease;
+	struct netif *nif;
+	ip_addr_t network_addr;
+
+	// find the netif of the AP (that with num != 0)
+	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
+		// skip
+	}
+	if (nif == NULL) {
+		return;
+	}
+	// if is not 1, set it to 1. 
+	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
+	nif->num = 1;
+
+
+    IP4_ADDR(&network_addr, 10, 0, 5, 0);
+
+	wifi_softap_dhcps_stop();
+
+	info.ip = network_addr;
+	ip4_addr4(&info.ip) = 1;
+	info.gw = info.ip;
+	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
+
+	wifi_set_ip_info(nif->num, &info);
+
+	dhcp_lease.start_ip = network_addr;
+	ip4_addr4(&dhcp_lease.start_ip) = 2;
+	dhcp_lease.end_ip = network_addr;
+	ip4_addr4(&dhcp_lease.end_ip) = 254;
+	wifi_softap_set_dhcps_lease(&dhcp_lease);
+
+	wifi_softap_dhcps_start();
 }
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {

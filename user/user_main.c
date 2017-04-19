@@ -68,7 +68,6 @@ static os_timer_t impulse_meter_calculate_timer;
 struct rst_info *rtc_info;
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
-	static ip_addr_t dns_ip;
 	unsigned char topic[MQTT_TOPIC_L];
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
@@ -79,10 +78,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 	// stop captive dns
 	captdnsStop();
-
-	// set dhcp dns to the one supplied from uplink
-	dns_ip.addr = dns_getserver(0);
-	dhcps_set_DNS(&dns_ip);
 
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
@@ -124,64 +119,8 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
-	struct softap_config ap_conf;
-
-	struct ip_info info;
-	struct dhcps_lease dhcp_lease;
-	struct netif *nif;
-	ip_addr_t ap_ip;
-	ip_addr_t network_addr;
-	
-	wifi_softap_get_config(&ap_conf);
-	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
-	memset(ap_conf.password, 0, sizeof(ap_conf.password));
-#ifdef EN61107
-	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, en61107_get_received_serial());
-#elif defined IMPULSE
-	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
-#else
-	tfp_snprintf(ap_conf.ssid, 32, AP_SSID, kmp_get_received_serial());
-#endif
-	tfp_snprintf(ap_conf.password, 64, AP_PASSWORD);
-	ap_conf.authmode = STA_TYPE;
-	ap_conf.ssid_len = 0;
-	ap_conf.beacon_interval = 100;
-	ap_conf.channel = 1;
-	ap_conf.max_connection = 8;
-	ap_conf.ssid_hidden = 0;
-
-	wifi_softap_set_config(&ap_conf);
-
-	// find the netif of the AP (that with num != 0)
-	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
-		// skip
-	}
-	if (nif == NULL) {
-		return;
-	}
-	// if is not 1, set it to 1. 
-	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
-	nif->num = 1;
-
-
-    IP4_ADDR(&network_addr, 10, 0, 5, 0);
-
-	wifi_softap_dhcps_stop();
-
-	info.ip = network_addr;
-	ip4_addr4(&info.ip) = 1;
-	info.gw = info.ip;
-	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
-
-	wifi_set_ip_info(nif->num, &info);
-
-	dhcp_lease.start_ip = network_addr;
-	ip4_addr4(&dhcp_lease.start_ip) = 2;
-	dhcp_lease.end_ip = network_addr;
-	ip4_addr4(&dhcp_lease.end_ip) = 254;
-	wifi_softap_set_dhcps_lease(&dhcp_lease);
-
-	wifi_softap_dhcps_start();
+	wifi_softap_config("esp-mesh", "", AUTH_OPEN);
+	wifi_softap_ip_config();
 
 	captdnsInit();		// start captive dns server
 	httpd_user_init();	// start web server
