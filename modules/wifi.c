@@ -57,7 +57,6 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 	ap_ip = network_addr;
 	ip4_addr4(&ap_ip) = 1;
 	
-	// find the netif of the AP (that with num != 0)
 	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
 		// skip
 	}
