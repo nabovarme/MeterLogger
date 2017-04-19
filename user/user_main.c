@@ -142,7 +142,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	ap_conf.ssid_len = 0;
 	ap_conf.beacon_interval = 100;
 	ap_conf.channel = 1;
-	ap_conf.max_connection = 4;
+	ap_conf.max_connection = 8;
 	ap_conf.ssid_hidden = 0;
 
 	wifi_softap_set_config(&ap_conf);
