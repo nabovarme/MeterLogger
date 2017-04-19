@@ -574,9 +574,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
 				cfg_save();
 			}
-			
-			// cleartext
-			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 		}
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
@@ -589,9 +586,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
 				cfg_save();
 			}
-			
-			// cleartext
-			//wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 		}
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {

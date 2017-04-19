@@ -103,17 +103,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 			os_printf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
-//			if 	(wifi_reconnect) {
-//				wifi_station_connect();	// reconnect
-//			}
 			// set default network status
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
 			break;
-		case EVENT_STAMODE_GOT_IP:
-//			wifi_reconnect = true;	// re-enable wifi_station_connect() in wifi_handle_event_cb()
-		
+		case EVENT_STAMODE_GOT_IP:		
 			// set default network status
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
@@ -123,8 +118,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 #ifdef AP
 		case EVENT_SOFTAPMODE_STACONNECTED:
+#ifdef DEBUG
 			os_sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_connected.mac));
-			os_printf("XXXstation: %s join, AID = %d\n", mac_str, evt->event_info.sta_connected.aid);
+			os_printf("station: %s join, AID = %d\n", mac_str, evt->event_info.sta_connected.aid);
+#endif
 			patch_netif_ap(my_input_ap, my_output_ap, true);
 			break;
 #endif
@@ -146,9 +143,6 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 	
 	if (!wifi_scan_runnning) {
 		// scan for fallback network
-//		os_memset(&config, 0, sizeof(config));
-//		config.ssid = STA_FALLBACK_SSID;
-//		wifi_station_scan(&config, wifi_scan_done_cb);	// scanning for specific ssid does not work in SDK 1.5.2
 		wifi_scan_runnning = true;
 #ifdef DEBUG
 		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
@@ -257,14 +251,14 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	INFO("WIFI_INIT\r\n");
 #ifndef AP
-	wifi_set_opmode_current(STATION_MODE);
+	wifi_set_opmode(STATION_MODE);
 #else
-	wifi_set_opmode_current(STATIONAP_MODE);
+	wifi_set_opmode(STATIONAP_MODE);
 #endif
 	wifi_station_set_auto_connect(false);
 	wifi_cb = cb;
 	config_ssid = ssid;
-	config_pass = pass;
+	config_pass = pass;f
 
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 
@@ -278,7 +272,6 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_start_scan();
 
 	wifi_station_set_auto_connect(true);
-//	wifi_reconnect = true;	// let wifi_handle_event_cb() handle reconnect on disconnect
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
