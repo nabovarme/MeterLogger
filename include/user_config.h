@@ -34,7 +34,7 @@
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
 #ifdef AP
-#define QUEUE_BUFFER_SIZE		 		8192
+#define QUEUE_BUFFER_SIZE		 		4096
 #else
 #ifdef IMPULSE
 #define QUEUE_BUFFER_SIZE		 		20480		// larger queue for impulse meters
