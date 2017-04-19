@@ -76,6 +76,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	// stop http configuration server
 	httpdStop();
 
+	// stop captive dns
+	captdnsStop();
+
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
 	impulse_meter_count_temp = sys_cfg.impulse_meter_count;
