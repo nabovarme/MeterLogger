@@ -68,6 +68,7 @@ static os_timer_t impulse_meter_calculate_timer;
 struct rst_info *rtc_info;
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
+	static ip_addr_t dns_ip;
 	unsigned char topic[MQTT_TOPIC_L];
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
@@ -78,6 +79,10 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 	// stop captive dns
 	captdnsStop();
+
+	IP4_ADDR(&dns_ip, 8, 8, 8, 8);
+	espconn_dns_setserver(0, &dns_ip);
+	dhcps_set_DNS(&dns_ip);
 
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
