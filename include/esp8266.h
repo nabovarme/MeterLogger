@@ -14,6 +14,8 @@
 #include <c_types.h>
 #include <lwip/ip.h>
 #include <lwip/netif.h>
+#include <lwip/lwip_napt.h>
+#include <lwip/opt.h>
 #include <espconn.h>
 #include <ets_sys.h>
 #include <gpio.h>
