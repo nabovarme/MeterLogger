@@ -171,10 +171,6 @@ ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
     CFLAGS += -DEXT_SPI_RAM_IS_NAND
 endif
 
-ifeq ($(AP), 1)
-    CFLAGS += -DAP
-endif
-
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld

@@ -80,10 +80,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	// stop captive dns
 	captdnsStop();
 
-#ifdef AP
+	// set dhcp dns to the one supplied from uplink
 	dns_ip.addr = dns_getserver(0);
 	dhcps_set_DNS(&dns_ip);
-#endif
 
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
@@ -112,15 +111,13 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #endif
 	MQTT_InitLWT(&mqtt_client, topic, "", 0, 0);
 	
+
 	MQTT_OnConnected(&mqtt_client, mqtt_connected_cb);
 	MQTT_OnDisconnected(&mqtt_client, mqtt_disconnected_cb);
 	MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
 	MQTT_OnData(&mqtt_client, mqtt_data_cb);
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
-#ifndef AP
-	wifi_set_opmode_current(STATION_MODE);
-#endif
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
@@ -128,13 +125,12 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	struct softap_config ap_conf;
-#ifdef AP
+
 	struct ip_info info;
 	struct dhcps_lease dhcp_lease;
 	struct netif *nif;
 	ip_addr_t ap_ip;
 	ip_addr_t network_addr;
-#endif
 	
 	wifi_softap_get_config(&ap_conf);
 	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
@@ -156,7 +152,6 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 
 	wifi_softap_set_config(&ap_conf);
 
-#ifdef AP
 	// find the netif of the AP (that with num != 0)
 	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
 		// skip
@@ -187,7 +182,6 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	wifi_softap_set_dhcps_lease(&dhcp_lease);
 
 	wifi_softap_dhcps_start();
-#endif
 
 	captdnsInit();		// start captive dns server
 	httpd_user_init();	// start web server

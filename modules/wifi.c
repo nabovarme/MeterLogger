@@ -33,7 +33,6 @@ volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false; 
 
-#ifdef AP
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
@@ -77,7 +76,6 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 	os_printf("patched!\n");
 #endif
 }
-#endif	// AP
 
 void wifi_handle_event_cb(System_Event_t *evt) {
     uint8_t mac_str[20];
@@ -116,7 +114,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 		
 			wifi_cb(wifi_status);
 			break;
-#ifdef AP
 		case EVENT_SOFTAPMODE_STACONNECTED:
 #ifdef DEBUG
 			os_sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_connected.mac));
@@ -124,7 +121,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 			patch_netif_ap(my_input_ap, my_output_ap, true);
 			break;
-#endif
 		default:
 			break;
 	}
@@ -205,11 +201,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
 	wifi_station_disconnect();
-#ifndef AP
-	wifi_set_opmode_current(STATION_MODE);
-#else
 	wifi_set_opmode_current(STATIONAP_MODE);
-#endif
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
     
@@ -231,11 +223,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
 	wifi_station_disconnect();
-#ifndef AP
-	wifi_set_opmode_current(STATION_MODE);
-#else
 	wifi_set_opmode_current(STATIONAP_MODE);
-#endif
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
@@ -250,11 +238,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
-#ifndef AP
-	wifi_set_opmode(STATION_MODE);
-#else
 	wifi_set_opmode(STATIONAP_MODE);
-#endif
 	wifi_station_set_auto_connect(false);
 	wifi_cb = cb;
 	config_ssid = ssid;
