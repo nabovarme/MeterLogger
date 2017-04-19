@@ -51,8 +51,11 @@ ICACHE_FLASH_ATTR err_t my_output_ap (struct netif *outp, struct pbuf *p) {
 ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutput_fn ofn, bool nat) {
 	struct netif *nif;
 	ip_addr_t ap_ip;
+	ip_addr_t network_addr;
 
-	IP4_ADDR(&ap_ip, 192, 168, 4, 1);	// DEBUG, we should handle this
+    IP4_ADDR(&network_addr, 10, 0, 5, 0);
+	ap_ip = network_addr;
+	ip4_addr4(&ap_ip) = 1;
 	
 	// find the netif of the AP (that with num != 0)
 	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
@@ -62,14 +65,14 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 		return;
 	}
 
-	nif->napt = nat?1:0;
+	nif->napt = nat ? 1 : 0;
 	if (nif->input != ifn) {
-	  orig_input_ap = nif->input;
-	  nif->input = ifn;
+		orig_input_ap = nif->input;
+		nif->input = ifn;
 	}
 	if (nif->linkoutput != ofn) {
-	  orig_output_ap = nif->linkoutput;
-	  nif->linkoutput = ofn;
+		orig_output_ap = nif->linkoutput;
+		nif->linkoutput = ofn;
 	}
 #ifdef DEBUG
 	os_printf("patched!\n");

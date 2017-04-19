@@ -124,6 +124,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	struct dhcps_lease dhcp_lease;
 	struct netif *nif;
 	ip_addr_t ap_ip;
+	ip_addr_t network_addr;
 #endif
 	
 	wifi_softap_get_config(&ap_conf);
@@ -147,10 +148,8 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	wifi_softap_set_config(&ap_conf);
 
 #ifdef AP
-	IP4_ADDR(&ap_ip, 192, 168, 4, 1);	// DEBUG, we should handle this
-
 	// find the netif of the AP (that with num != 0)
-	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
+	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
 		// skip
 	}
 	if (nif == NULL) {
@@ -160,15 +159,24 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
 	nif->num = 1;
 
+
+    IP4_ADDR(&network_addr, 10, 0, 5, 0);
+
 	wifi_softap_dhcps_stop();
 
-	IP4_ADDR(&info.gw, 192, 168, 4, 1);
+	info.ip = network_addr;
+	ip4_addr4(&info.ip) = 1;
+	info.gw = info.ip;
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
+
 	wifi_set_ip_info(nif->num, &info);
 
-	IP4_ADDR(&dhcp_lease.start_ip, 192, 168, 4, 2);
-	IP4_ADDR(&dhcp_lease.end_ip, 1, 0, 5, 2);
+	dhcp_lease.start_ip = network_addr;
+	ip4_addr4(&dhcp_lease.start_ip) = 2;
+	dhcp_lease.end_ip = network_addr;
+	ip4_addr4(&dhcp_lease.end_ip) = 254;
 	wifi_softap_set_dhcps_lease(&dhcp_lease);
+
 	wifi_softap_dhcps_start();
 #endif
 
