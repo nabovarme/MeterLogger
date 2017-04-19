@@ -258,7 +258,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_set_auto_connect(false);
 	wifi_cb = cb;
 	config_ssid = ssid;
-	config_pass = pass;f
+	config_pass = pass;
 
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 
