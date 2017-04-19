@@ -30,7 +30,7 @@ static int sockFd;
 
 #define DNS_LEN 512
 
-#ifdef FREERTOS
+#ifndef FREERTOS
 static struct espconn conn;
 #endif
 
