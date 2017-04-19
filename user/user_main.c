@@ -80,9 +80,10 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	// stop captive dns
 	captdnsStop();
 
-	IP4_ADDR(&dns_ip, 8, 8, 8, 8);
-	espconn_dns_setserver(0, &dns_ip);
+#ifdef AP
+	dns_ip.addr = dns_getserver(0);
 	dhcps_set_DNS(&dns_ip);
+#endif
 
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
