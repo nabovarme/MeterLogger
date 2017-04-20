@@ -128,6 +128,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 			os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
 #endif
+			wifi_softap_ip_config();
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
