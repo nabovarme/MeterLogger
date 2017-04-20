@@ -54,7 +54,8 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 	ip_addr_t ap_ip;
 	ip_addr_t network_addr;
 
-    IP4_ADDR(&network_addr, 10, 0, 5, 0);
+//	UTILS_StrToIP(AP_NETWORK, &network_addr);
+	IP4_ADDR(&network_addr, 10, 0, 6, 0);
 	ap_ip = network_addr;
 	ip4_addr4(&ap_ip) = 1;
 	
@@ -307,7 +308,8 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	nif->num = 1;
 
 	// configure AP dhcp
-    IP4_ADDR(&network_addr, 10, 0, 5, 0);
+//	UTILS_StrToIP(AP_NETWORK, &network_addr);
+	IP4_ADDR(&network_addr, 10, 0, 6, 0);
 
 	wifi_softap_dhcps_stop();
 

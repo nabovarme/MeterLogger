@@ -119,7 +119,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 //	dns_ip = dns_getserver(0);
 //	os_printf("dns:" IPSTR "\n", IP2STR(&dns_ip));
 //	dhcps_set_DNS(&dns_ip);
-	wifi_softap_config("esp-mesh", "", AUTH_OPEN);
+	wifi_softap_config(AP_MESH_SSID, "", AUTH_OPEN);
 	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
