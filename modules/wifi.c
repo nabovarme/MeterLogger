@@ -19,6 +19,7 @@
 
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_get_rssi_timer;
+static os_timer_t wifi_softap_ip_config_timer;
 
 WifiCallback wifi_cb = NULL;
 uint8_t* config_ssid;
@@ -129,7 +130,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 			// set dhcp dns ip to the one supplied from uplink
 			dns_ip = dns_getserver(0);
-			wifi_softap_ip_config();
+
+			// start wifi_softap_ip_config() in a timer
+			os_timer_disarm(&wifi_softap_ip_config_timer); 
+			os_timer_setfn(&wifi_softap_ip_config_timer, wifi_softap_ip_config_timer_func, 0);
+			os_timer_arm(&wifi_softap_ip_config_timer, 1000, 0); 
+
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
@@ -164,6 +170,10 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 		wifi_station_scan(NULL, wifi_scan_done_cb);
 //		os_printf("scan running\n");
 	}
+}
+
+static void ICACHE_FLASH_ATTR wifi_softap_ip_config_timer_func(void *arg) {
+	wifi_softap_ip_config();
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
@@ -320,6 +330,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 
 	// configure AP dhcp
 	wifi_softap_dhcps_stop();
+//	dhcps_stop();
 
 	// if we have not got an ip set ap ip to default
 	if (ap_network_addr.addr == 0) {
@@ -331,7 +342,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 		// Google's DNS as default, as long as we havn't got one from DHCP
 		IP4_ADDR(&dns_ip, 8, 8, 8, 8);
 		dhcps_set_DNS(&dns_ip);
-		espconn_dns_setserver(0, &dns_ip);
+//		espconn_dns_setserver(0, &dns_ip);
 //	}
 #ifdef DEBUG
 	os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
@@ -351,6 +362,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	wifi_softap_set_dhcps_lease(&dhcp_lease);
 
 	wifi_softap_dhcps_start();
+//	dhcps_start(&info);
 }
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
