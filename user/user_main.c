@@ -269,7 +269,7 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
 		MQTT_Connect(&mqtt_client);
 #ifdef DEBUG
-		os_printf("queue size(%d/%d)\n", mqtt_client.msgQueue.rb.fill_cnt, mqtt_client.msgQueue.rb.size);
+		os_printf("queue size(%ld/%ld)\n", mqtt_client.msgQueue.rb.fill_cnt, mqtt_client.msgQueue.rb.size);
 #endif
 	}
 }

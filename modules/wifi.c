@@ -7,6 +7,7 @@
 #include <esp8266.h>
 #include "wifi.h"
 #include "mqtt_msg.h"
+#include "mqtt_utils.h"
 #include "debug.h"
 #include "user_config.h"
 #include "config.h"
@@ -41,13 +42,17 @@ static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
 ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
+	err_t err;
 	os_printf("Got packet from STA, len: %d\r\n", p->len);
-	orig_input_ap (p, inp);
+	err = orig_input_ap (p, inp);
+	return err;
 }
 
 ICACHE_FLASH_ATTR err_t my_output_ap (struct netif *outp, struct pbuf *p) {
+	err_t err;
 	os_printf("Send packet to STA, len: %d\r\n", p->len);
-	orig_output_ap (outp, p);
+	err = orig_output_ap (outp, p);
+	return err;
 }
 
 
@@ -118,13 +123,18 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 			UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
 
-			if (ip_addr_cmp(&sta_network_addr, &ap_network_addr)) {
+			if (sta_network_addr.addr == 0) {
 				ip4_addr3(&ap_network_addr) += 1;
 			}
 
 			// set dhcp dns to the one supplied from uplink
 			dns_ip = dns_getserver(0);
+			if (dns_ip.addr == 0) {
+				// Google's DNS as default, as long as we havn't got one from DHCP
+				IP4_ADDR(&dns_ip, 8, 8, 8, 8);
+			}
 			dhcps_set_DNS(&dns_ip);
+			espconn_dns_setserver(0, &dns_ip);
 #ifdef DEBUG
 			os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
 #endif
@@ -319,6 +329,25 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 
 	// configure AP dhcp
 	wifi_softap_dhcps_stop();
+
+	// if we have not got an ip set ap ip to default
+	if (ap_network_addr.addr == 0) {
+		UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
+#ifdef DEBUG
+		os_printf("defaulting ap_network_addr\n");
+#endif
+	}
+
+	// if we have not got a dns server set to default
+//	if (dns_ip.addr == 0) {
+		// Google's DNS as default, as long as we havn't got one from DHCP
+		IP4_ADDR(&dns_ip, 8, 8, 8, 8);
+		dhcps_set_DNS(&dns_ip);
+		espconn_dns_setserver(0, &dns_ip);
+//	}
+#ifdef DEBUG
+	os_printf("wifi_softap_ip_config() sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
+#endif
 
 	info.ip = ap_network_addr;
 	ip4_addr4(&info.ip) = 1;
