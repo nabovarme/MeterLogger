@@ -119,7 +119,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
 
 			if (ip_addr_cmp(&sta_network_addr, &ap_network_addr)) {
-				ip4_addr3(&sta_network_addr) += 1;
+				ip4_addr3(&ap_network_addr) += 1;
 			}
 
 			// set dhcp dns to the one supplied from uplink
