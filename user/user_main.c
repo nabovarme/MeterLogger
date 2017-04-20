@@ -67,7 +67,7 @@ static os_timer_t impulse_meter_calculate_timer;
 
 struct rst_info *rtc_info;
 
-//static ip_addr_t dns_ip;
+uint8_t mesh_ssid[64];
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
@@ -116,7 +116,8 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-	wifi_softap_config(AP_MESH_SSID, "", AUTH_OPEN);
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, system_get_chip_id());
+	wifi_softap_config(mesh_ssid, "", AUTH_OPEN);
 	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);

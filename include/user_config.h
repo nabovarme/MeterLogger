@@ -61,9 +61,9 @@
 #ifndef AP_PASSWORD
 #define AP_PASSWORD	"aabbccddeeff"
 #endif
-#define AP_NETWORK	"10.0.6.0"
-#define AP_MESH_SSID	"esp-mesh-2"
-#define STA_TYPE AUTH_WPA_WPA2_PSK
+#define AP_NETWORK		"10.0.5.0"
+#define AP_MESH_SSID	"mesh-%08x"
+#define STA_TYPE 		AUTH_WPA_WPA2_PSK
 
 #endif
 
