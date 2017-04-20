@@ -67,6 +67,8 @@ static os_timer_t impulse_meter_calculate_timer;
 
 struct rst_info *rtc_info;
 
+//static ip_addr_t dns_ip;
+
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 #ifdef IMPULSE
@@ -114,16 +116,31 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
+//	dns_ip = dns_getserver(0);
+//	os_printf("dns:" IPSTR "\n", IP2STR(&dns_ip));
+//	dhcps_set_DNS(&dns_ip);
+	wifi_softap_config("esp-mesh", "", AUTH_OPEN);
+	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
 }
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
-	wifi_softap_config("esp-mesh", "", AUTH_OPEN);
-	wifi_softap_ip_config();
+	uint8_t ap_ssid[64];
+	uint8_t ap_password[64];
 
-	captdnsInit();		// start captive dns server
-	httpd_user_init();	// start web server
+#ifdef EN61107
+	tfp_snprintf(ap_ssid, 32, AP_SSID, en61107_get_received_serial());
+#elif defined IMPULSE
+	tfp_snprintf(ap_ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
+#else
+	tfp_snprintf(ap_ssid, 32, AP_SSID, kmp_get_received_serial());
+#endif
+	tfp_snprintf(ap_password, 64, AP_PASSWORD);
+
+	wifi_softap_config(ap_ssid, ap_password, STA_TYPE);	// start AP with default configuration
+	captdnsInit();										// start captive dns server
+	httpd_user_init();									// start web server
 }
 
 ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {

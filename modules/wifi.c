@@ -306,7 +306,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
 	nif->num = 1;
 
-
+	// configure AP dhcp
     IP4_ADDR(&network_addr, 10, 0, 5, 0);
 
 	wifi_softap_dhcps_stop();
