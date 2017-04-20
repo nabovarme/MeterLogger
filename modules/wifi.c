@@ -36,6 +36,8 @@ volatile bool wifi_default_ok = false;
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
+static ip_addr_t sta_network_addr;
+static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
 ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
@@ -52,11 +54,8 @@ ICACHE_FLASH_ATTR err_t my_output_ap (struct netif *outp, struct pbuf *p) {
 ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutput_fn ofn, bool nat) {
 	struct netif *nif;
 	ip_addr_t ap_ip;
-	ip_addr_t network_addr;
 
-//	UTILS_StrToIP(AP_NETWORK, &network_addr);
-	IP4_ADDR(&network_addr, 10, 0, 6, 0);
-	ap_ip = network_addr;
+	ap_ip = ap_network_addr;
 	ip4_addr4(&ap_ip) = 1;
 	
 	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
@@ -114,10 +113,21 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
+			sta_network_addr = evt->event_info.got_ip.ip;
+			ip4_addr4(&sta_network_addr) = 0;
+
+			UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
+
+			if (ip_addr_cmp(&sta_network_addr, &ap_network_addr)) {
+				ip4_addr3(&sta_network_addr) += 1;
+			}
+
 			// set dhcp dns to the one supplied from uplink
 			dns_ip = dns_getserver(0);
 			dhcps_set_DNS(&dns_ip);
-
+#ifdef DEBUG
+			os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
+#endif
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
@@ -294,7 +304,6 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	struct ip_info info;
 	struct dhcps_lease dhcp_lease;
 	struct netif *nif;
-	ip_addr_t network_addr;
 
 	// find the netif of the AP (that with num != 0)
 	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
@@ -308,21 +317,18 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	nif->num = 1;
 
 	// configure AP dhcp
-//	UTILS_StrToIP(AP_NETWORK, &network_addr);
-	IP4_ADDR(&network_addr, 10, 0, 6, 0);
-
 	wifi_softap_dhcps_stop();
 
-	info.ip = network_addr;
+	info.ip = ap_network_addr;
 	ip4_addr4(&info.ip) = 1;
 	info.gw = info.ip;
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
 
 	wifi_set_ip_info(nif->num, &info);
 
-	dhcp_lease.start_ip = network_addr;
+	dhcp_lease.start_ip = ap_network_addr;
 	ip4_addr4(&dhcp_lease.start_ip) = 2;
-	dhcp_lease.end_ip = network_addr;
+	dhcp_lease.end_ip = ap_network_addr;
 	ip4_addr4(&dhcp_lease.end_ip) = 254;
 	wifi_softap_set_dhcps_lease(&dhcp_lease);
 

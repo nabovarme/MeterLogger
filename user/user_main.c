@@ -116,9 +116,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
-//	dns_ip = dns_getserver(0);
-//	os_printf("dns:" IPSTR "\n", IP2STR(&dns_ip));
-//	dhcps_set_DNS(&dns_ip);
 	wifi_softap_config(AP_MESH_SSID, "", AUTH_OPEN);
 	wifi_softap_ip_config();
 
