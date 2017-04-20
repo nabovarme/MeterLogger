@@ -118,26 +118,17 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
+
+			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
 			ip4_addr4(&sta_network_addr) = 0;
-
 			UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
-
 			if (sta_network_addr.addr == 0) {
 				ip4_addr3(&ap_network_addr) += 1;
 			}
 
-			// set dhcp dns to the one supplied from uplink
+			// set dhcp dns ip to the one supplied from uplink
 			dns_ip = dns_getserver(0);
-			if (dns_ip.addr == 0) {
-				// Google's DNS as default, as long as we havn't got one from DHCP
-				IP4_ADDR(&dns_ip, 8, 8, 8, 8);
-			}
-			dhcps_set_DNS(&dns_ip);
-			espconn_dns_setserver(0, &dns_ip);
-#ifdef DEBUG
-			os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
-#endif
 			wifi_softap_ip_config();
 			wifi_cb(wifi_status);
 			break;
@@ -333,9 +324,6 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	// if we have not got an ip set ap ip to default
 	if (ap_network_addr.addr == 0) {
 		UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
-#ifdef DEBUG
-		os_printf("defaulting ap_network_addr\n");
-#endif
 	}
 
 	// if we have not got a dns server set to default
@@ -346,7 +334,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 		espconn_dns_setserver(0, &dns_ip);
 //	}
 #ifdef DEBUG
-	os_printf("wifi_softap_ip_config() sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
+	os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
 #endif
 
 	info.ip = ap_network_addr;
