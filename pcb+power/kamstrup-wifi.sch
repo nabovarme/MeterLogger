@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.6.0">
+<eagle version="8.1.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.005" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
@@ -8204,6 +8204,8 @@ at 30/07/2012 11:22:31</description>
 <part name="GND7" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="SUPPLY5" library="SparkFun-Aesthetics" deviceset="3.3V" device=""/>
 <part name="R11" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
+<part name="R12" library="rcl" deviceset="R-EU_" device="R0805" value="10k"/>
+<part name="GND9" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -8224,7 +8226,7 @@ at 30/07/2012 11:22:31</description>
 <attribute name="VALUE" x="180.34" y="50.8" size="1.778" layer="96" rot="MR0"/>
 <attribute name="NAME" x="180.34" y="61.722" size="1.778" layer="95" rot="MR0"/>
 </instance>
-<instance part="GND5" gate="1" x="165.1" y="27.94"/>
+<instance part="GND5" gate="1" x="165.1" y="22.86"/>
 <instance part="R1" gate="G$1" x="165.1" y="46.99" rot="R90"/>
 <instance part="OK2" gate="-1" x="46.99" y="-31.75"/>
 <instance part="GND6" gate="1" x="31.75" y="-41.91"/>
@@ -8246,16 +8248,18 @@ at 30/07/2012 11:22:31</description>
 <instance part="T1" gate="G$1" x="80.01" y="-72.39"/>
 <instance part="T2" gate="G$1" x="80.01" y="-31.75"/>
 <instance part="U1" gate="G$1" x="106.68" y="53.34"/>
-<instance part="GND8" gate="1" x="137.16" y="27.94"/>
+<instance part="GND8" gate="1" x="137.16" y="22.86"/>
 <instance part="SUPPLY2" gate="G$1" x="78.74" y="71.12"/>
 <instance part="SUPPLY7" gate="G$1" x="78.74" y="45.72"/>
 <instance part="U2" gate="A" x="40.64" y="35.56" rot="MR0"/>
 <instance part="R2" gate="G$1" x="147.32" y="41.91" rot="R90"/>
-<instance part="GND3" gate="1" x="147.32" y="27.94"/>
+<instance part="GND3" gate="1" x="147.32" y="22.86"/>
 <instance part="SUPPLY3" gate="G$1" x="60.96" y="40.64"/>
 <instance part="GND7" gate="1" x="60.96" y="20.32"/>
 <instance part="SUPPLY5" gate="G$1" x="154.94" y="53.34"/>
 <instance part="R11" gate="G$1" x="146.05" y="53.34" rot="R180"/>
+<instance part="R12" gate="G$1" x="83.82" y="31.75" rot="R90"/>
+<instance part="GND9" gate="1" x="83.82" y="22.86"/>
 </instances>
 <busses>
 </busses>
@@ -8275,7 +8279,7 @@ at 30/07/2012 11:22:31</description>
 <segment>
 <pinref part="GND5" gate="1" pin="GND"/>
 <pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="165.1" y1="30.48" x2="165.1" y2="41.91" width="0.1524" layer="91"/>
+<wire x1="165.1" y1="25.4" x2="165.1" y2="41.91" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="OK2" gate="-1" pin="C"/>
@@ -8293,18 +8297,23 @@ at 30/07/2012 11:22:31</description>
 <pinref part="U1" gate="G$1" pin="GND"/>
 <pinref part="GND8" gate="1" pin="GND"/>
 <wire x1="132.08" y1="43.18" x2="137.16" y2="43.18" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="43.18" x2="137.16" y2="30.48" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="43.18" x2="137.16" y2="25.4" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
 <pinref part="R2" gate="G$1" pin="1"/>
-<wire x1="147.32" y1="30.48" x2="147.32" y2="36.83" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="25.4" x2="147.32" y2="36.83" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="VSS"/>
 <pinref part="GND7" gate="1" pin="GND"/>
 <wire x1="58.42" y1="25.4" x2="60.96" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="60.96" y1="25.4" x2="60.96" y2="22.86" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND9" gate="1" pin="GND"/>
+<pinref part="R12" gate="G$1" pin="1"/>
+<wire x1="83.82" y1="25.4" x2="83.82" y2="26.67" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -8520,13 +8529,18 @@ at 30/07/2012 11:22:31</description>
 </net>
 <net name="N$11" class="0">
 <segment>
-<wire x1="76.2" y1="-5.08" x2="76.2" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="-5.08" x2="76.2" y2="38.1" width="0.1524" layer="91"/>
 <pinref part="U1" gate="G$1" pin="GPIO14"/>
+<wire x1="76.2" y1="38.1" x2="76.2" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="58.42" x2="86.36" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="-5.08" x2="8.89" y2="-5.08" width="0.1524" layer="91"/>
 <wire x1="8.89" y1="-5.08" x2="8.89" y2="-67.31" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="1"/>
 <wire x1="8.89" y1="-67.31" x2="19.05" y2="-67.31" width="0.1524" layer="91"/>
+<pinref part="R12" gate="G$1" pin="2"/>
+<wire x1="83.82" y1="36.83" x2="83.82" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="38.1" x2="76.2" y2="38.1" width="0.1524" layer="91"/>
+<junction x="76.2" y="38.1"/>
 </segment>
 </net>
 <net name="N$16" class="0">
