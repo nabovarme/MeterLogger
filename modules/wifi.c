@@ -123,18 +123,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
 			ip4_addr4(&sta_network_addr) = 0;
-			UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
-			if (sta_network_addr.addr == 0) {
-				ip4_addr3(&ap_network_addr) += 1;
-			}
 
 			// set dhcp dns ip to the one supplied from uplink
 			dns_ip = dns_getserver(0);
-
-			// start wifi_softap_ip_config() in a timer
-			os_timer_disarm(&wifi_softap_ip_config_timer); 
-			os_timer_setfn(&wifi_softap_ip_config_timer, wifi_softap_ip_config_timer_func, 0);
-			os_timer_arm(&wifi_softap_ip_config_timer, 1000, 0); 
+			dhcps_set_DNS(&dns_ip);
 
 			wifi_cb(wifi_status);
 			break;
@@ -173,7 +165,60 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 }
 
 static void ICACHE_FLASH_ATTR wifi_softap_ip_config_timer_func(void *arg) {
-	wifi_softap_ip_config();
+	struct ip_info info;
+	struct dhcps_lease dhcp_lease;
+	struct netif *nif;
+
+	// find the netif of the AP (that with num != 0)
+	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
+		// skip
+	}
+	if (nif == NULL) {
+		return;
+	}
+	// if is not 1, set it to 1. 
+	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
+	nif->num = 1;
+
+	// configure AP dhcp
+	wifi_softap_dhcps_stop();
+//	dhcps_stop();
+
+	// if we have not got an ip set ap ip to default
+	if (ap_network_addr.addr == 0) {
+		UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
+	}
+	// increment sta_network_addr if same as sta_network_addr
+	if (ip_addr_cmp(&sta_network_addr, &ap_network_addr)) {
+		ip4_addr3(&ap_network_addr) += 1;
+	}
+
+	// if we have not got a dns server set to default
+//	if (dns_ip.addr == 0) {
+		// Google's DNS as default, as long as we havn't got one from DHCP
+		IP4_ADDR(&dns_ip, 8, 8, 8, 8);
+		dhcps_set_DNS(&dns_ip);
+//		espconn_dns_setserver(0, &dns_ip);
+//	}
+#ifdef DEBUG
+	os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
+#endif
+
+	info.ip = ap_network_addr;
+	ip4_addr4(&info.ip) = 1;
+	info.gw = info.ip;
+	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
+
+	wifi_set_ip_info(nif->num, &info);
+
+	dhcp_lease.start_ip = ap_network_addr;
+	ip4_addr4(&dhcp_lease.start_ip) = 2;
+	dhcp_lease.end_ip = ap_network_addr;
+	ip4_addr4(&dhcp_lease.end_ip) = 254;
+	wifi_softap_set_dhcps_lease(&dhcp_lease);
+
+	wifi_softap_dhcps_start();
+//	dhcps_start(&info);
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
@@ -313,56 +358,10 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 
 
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
-	struct ip_info info;
-	struct dhcps_lease dhcp_lease;
-	struct netif *nif;
-
-	// find the netif of the AP (that with num != 0)
-	for (nif = netif_list; nif != NULL && nif->num == 0; nif = nif->next) {
-		// skip
-	}
-	if (nif == NULL) {
-		return;
-	}
-	// if is not 1, set it to 1. 
-	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
-	nif->num = 1;
-
-	// configure AP dhcp
-	wifi_softap_dhcps_stop();
-//	dhcps_stop();
-
-	// if we have not got an ip set ap ip to default
-	if (ap_network_addr.addr == 0) {
-		UTILS_StrToIP(AP_NETWORK, &ap_network_addr);
-	}
-
-	// if we have not got a dns server set to default
-//	if (dns_ip.addr == 0) {
-		// Google's DNS as default, as long as we havn't got one from DHCP
-		IP4_ADDR(&dns_ip, 8, 8, 8, 8);
-		dhcps_set_DNS(&dns_ip);
-//		espconn_dns_setserver(0, &dns_ip);
-//	}
-#ifdef DEBUG
-	os_printf("sta net:" IPSTR ",ap net:" IPSTR ",dns:" IPSTR "\n", IP2STR(&sta_network_addr), IP2STR(&ap_network_addr), IP2STR(&dns_ip));
-#endif
-
-	info.ip = ap_network_addr;
-	ip4_addr4(&info.ip) = 1;
-	info.gw = info.ip;
-	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
-
-	wifi_set_ip_info(nif->num, &info);
-
-	dhcp_lease.start_ip = ap_network_addr;
-	ip4_addr4(&dhcp_lease.start_ip) = 2;
-	dhcp_lease.end_ip = ap_network_addr;
-	ip4_addr4(&dhcp_lease.end_ip) = 254;
-	wifi_softap_set_dhcps_lease(&dhcp_lease);
-
-	wifi_softap_dhcps_start();
-//	dhcps_start(&info);
+	// start wifi_softap_ip_config() in a timer
+	os_timer_disarm(&wifi_softap_ip_config_timer); 
+	os_timer_setfn(&wifi_softap_ip_config_timer, wifi_softap_ip_config_timer_func, 0);
+	os_timer_arm(&wifi_softap_ip_config_timer, 1000, 0); 
 }
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
