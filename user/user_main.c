@@ -402,18 +402,29 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 
 	uint32_t received_unix_time = 0;
 
-    uint8_t i;
-		
+	uint8_t i;
+
+#ifdef DEBUG
 	os_printf("topic_len: %d, data_len: %d\n", topic_len, data_len);
+#endif
+	if (topic_len == 0 || topic_len >= MQTT_TOPIC_L || data_len == 0 || data_len >= MQTT_MESSAGE_L) {
+#ifdef DEBUG
+		os_printf("data length error\n");
+#endif
+		return;
+	}
+	
 	// copy and null terminate
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
-	if (topic_len) {// dont memcpy 0 bytes
+	if (topic_len < MQTT_TOPIC_L && topic_len > 0) {	// dont memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_topic, topic, topic_len);
+//		os_printf("memcpy(mqtt_topic, topic, topic_len);\n");
 		mqtt_topic[topic_len] = 0;
 	}
 
-	if (data_len) {	// dont memcpy 0 bytes
+	if (data_len < MQTT_MESSAGE_L && data_len > 0) {	// dont memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_message, data, data_len);
+//		os_printf("memcpy(mqtt_message, data, data_len);\n");
 		mqtt_message[data_len] = 0;
 	}
 	

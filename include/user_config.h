@@ -21,7 +21,7 @@
 #define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
 //#define MQTT_HOST			"10.0.1.3"
 #define MQTT_PORT			1883
-#define MQTT_BUF_SIZE		1024
+#define MQTT_BUF_SIZE		2048
 #define MQTT_KEEPALIVE		60	 /*second*/
 
 #define MQTT_CLIENT_ID		"ESP_%08X"
