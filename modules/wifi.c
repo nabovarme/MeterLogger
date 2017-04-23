@@ -50,6 +50,7 @@ ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
 	}
 	else {
 		pbuf_free(p);
+		return ERR_ABRT;
 	}
 	return err;
 }
