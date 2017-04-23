@@ -34,6 +34,7 @@ volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false; 
 
+#ifdef AP
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
@@ -166,6 +167,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	// default allow everything else
     return true;
 }
+#endif	// AP
 
 void wifi_handle_event_cb(System_Event_t *evt) {
     uint8_t mac_str[20];
@@ -202,13 +204,14 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     			wifi_default_ok = true;
     		}
 
+#ifdef AP
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
 			sta_network_mask = evt->event_info.got_ip.mask;
 			sta_network_addr.addr &= sta_network_mask.addr;
 
 			wifi_softap_ip_config();
-
+#endif	// AP
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_SOFTAPMODE_STACONNECTED:
@@ -216,7 +219,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			os_sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_connected.mac));
 			os_printf("station: %s join, AID = %d\n", mac_str, evt->event_info.sta_connected.aid);
 #endif
+#ifdef AP
 			patch_netif_ap(my_input_ap, my_output_ap, true);
+#endif	// AP
 			break;
 		default:
 			break;
@@ -380,6 +385,7 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 	wifi_softap_set_config(&ap_conf);
 }
 
+#ifdef AP
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	struct ip_info info;
 	struct dhcps_lease dhcp_lease;
@@ -435,6 +441,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 
 	wifi_softap_dhcps_start();
 }
+#endif	// AP
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 	while (get_rssi_running == true) {
