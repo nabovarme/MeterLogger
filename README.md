@@ -63,6 +63,7 @@ Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key i
 
 AP=1
 enable wireless extender; wireless AP
+enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set
 
 Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
 
