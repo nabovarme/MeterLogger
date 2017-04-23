@@ -12,6 +12,7 @@
 
 #else
 #include <c_types.h>
+#ifdef AP
 #include <lwip/ip.h>
 #include <lwip/udp.h>
 #include <lwip/tcp_impl.h>
@@ -21,6 +22,9 @@
 #include <lwip/dns.h>
 #include <lwip/app/dhcpserver.h>
 #include <lwip/opt.h>
+#else
+#include <ip_addr.h>
+#endif	// AP
 #include <espconn.h>
 #include <ets_sys.h>
 #include <gpio.h>
