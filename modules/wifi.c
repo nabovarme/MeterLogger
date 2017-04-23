@@ -155,9 +155,11 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	
 	// deny connections to hosts on uplink network
 	if ((ip_h->dest.addr & sta_network_mask.addr) == sta_network_addr.addr) {
-		INFO("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n", 
+#ifdef DEBUG
+		os_printf("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n", 
 			IP2STR(&ip_h->src), IP2STR(&ip_h->dest), 
 			proto == IP_PROTO_TCP ? "TCP" : proto == IP_PROTO_UDP ? "UDP" : "IP4", src_port, dest_port);
+#endif
 		return false;
 	}
 
@@ -176,7 +178,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_station_get_config(&stationConf);
 
 #ifdef DEBUG
-	os_printf("E%dW%d\n", evt->event, wifi_status);
+//	os_printf("E%dW%d\n", evt->event, wifi_status);
 #endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
