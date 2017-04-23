@@ -38,12 +38,19 @@ static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
 static ip_addr_t sta_network_addr;
+static ip_addr_t sta_network_mask;
 static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
 ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
 	err_t err;
-	err = orig_input_ap (p, inp);
+	
+	if (acl_check_packet(p)) {
+		err = orig_input_ap (p, inp);
+	}
+	else {
+		pbuf_free(p);
+	}
 	return err;
 }
 
@@ -80,6 +87,74 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 #ifdef DEBUG
 	os_printf("patched!\n");
 #endif
+}
+
+bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
+	struct eth_hdr *mac_h;
+	struct ip_hdr *ip_h;
+	uint8_t proto;
+	struct udp_hdr *udp_h;
+	struct tcp_hdr *tcp_h;
+	uint16_t src_port, dest_port;
+	uint8_t *packet;
+	int i;
+	
+	if (p->len < sizeof(struct eth_hdr)) {
+		return false;
+	}
+
+	mac_h = (struct eth_hdr *)p->payload;
+
+	// Allow ARP
+	if (ntohs(mac_h->type) == ETHTYPE_ARP) {
+		 return true;
+	}
+
+	// Drop anything else if not IPv4
+	if (ntohs(mac_h->type) != ETHTYPE_IP) {
+		return false;
+	}
+   
+	if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)) {
+		return false;
+	}
+
+	packet = (uint8_t*)p->payload;
+	ip_h = (struct ip_hdr *)&packet[sizeof(struct eth_hdr)];
+	proto = IPH_PROTO(ip_h);
+
+	switch (proto) {
+		case IP_PROTO_UDP:
+			if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct udp_hdr)) {
+				return false;
+			}
+			udp_h = (struct udp_hdr *)&packet[sizeof(struct eth_hdr)+sizeof(struct ip_hdr)];
+			src_port = ntohs(udp_h->src);
+			dest_port = ntohs(udp_h->dest);
+			break;
+
+		case IP_PROTO_TCP:
+			if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct tcp_hdr)) {
+				return false;
+			}
+			tcp_h = (struct tcp_hdr *)&packet[sizeof(struct eth_hdr)+sizeof(struct ip_hdr)];
+			src_port = ntohs(tcp_h->src);
+			dest_port = ntohs(tcp_h->dest);
+			break;
+
+		case IP_PROTO_ICMP:
+			src_port = dest_port = 0;
+			break;
+	}
+
+	if ((ip_h->dest.addr & sta_network_mask.addr) == sta_network_addr.addr) {
+		INFO("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n", 
+			IP2STR(&ip_h->src), IP2STR(&ip_h->dest), 
+			proto == IP_PROTO_TCP ? "TCP" : proto == IP_PROTO_UDP ? "UDP" : "IP4", src_port, dest_port);
+		return false;
+	}
+
+    return true;
 }
 
 void wifi_handle_event_cb(System_Event_t *evt) {
@@ -119,7 +194,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
-			ip4_addr4(&sta_network_addr) = 0;
+			sta_network_mask = evt->event_info.got_ip.mask;
+			sta_network_addr.addr &= sta_network_mask.addr;
 
 			wifi_softap_ip_config();
 

@@ -12,6 +12,8 @@ typedef void (*WifiCallback)(uint8_t);
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 
+bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p);
+
 void wifi_handle_event_cb(System_Event_t *evt);
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);
 void ICACHE_FLASH_ATTR wifi_default();

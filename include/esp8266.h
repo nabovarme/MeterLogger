@@ -13,6 +13,9 @@
 #else
 #include <c_types.h>
 #include <lwip/ip.h>
+#include <lwip/udp.h>
+#include <lwip/tcp_impl.h>
+#include <netif/etharp.h>
 #include <lwip/netif.h>
 #include <lwip/lwip_napt.h>
 #include <lwip/dns.h>
