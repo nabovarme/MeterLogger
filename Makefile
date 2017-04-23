@@ -141,7 +141,7 @@ ifeq ($(DEBUG), 1)
 endif
 
 ifdef SERIAL
-    CFLAGS += -DDEFAULT_METER_SERIAL="$(SERIAL)"
+    CFLAGS += -DDEFAULT_METER_SERIAL=\"$(SERIAL)\"
 endif
 
 ifeq ($(DEBUG_NO_METER), 1)
