@@ -147,6 +147,12 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 			break;
 	}
 
+	// allow dns requests to nameserver on uplink network
+	if ((ip_h->dest.addr == dns_ip.addr) && (dest_port == 53)) {
+		return true;
+	}
+	
+	// deny connections to hosts on uplink network
 	if ((ip_h->dest.addr & sta_network_mask.addr) == sta_network_addr.addr) {
 		INFO("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n", 
 			IP2STR(&ip_h->src), IP2STR(&ip_h->dest), 
@@ -154,6 +160,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 		return false;
 	}
 
+	// default allow everything else
     return true;
 }
 
