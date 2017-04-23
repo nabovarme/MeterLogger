@@ -140,6 +140,10 @@ ifeq ($(DEBUG), 1)
 	DEBUG_SPEED = 115200
 endif
 
+ifdef SERIAL
+    CFLAGS += -DDEFAULT_METER_SERIAL=$(SERIAL)
+endif
+
 ifeq ($(DEBUG_NO_METER), 1)
     CFLAGS += -DDEBUG_NO_METER
 endif

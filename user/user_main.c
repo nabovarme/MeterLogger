@@ -120,7 +120,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 #ifdef AP
 	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, system_get_chip_id());
-	wifi_softap_config(mesh_ssid, "", AUTH_OPEN);
+	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
 	wifi_softap_ip_config();
 #else
 	wifi_set_opmode_current(STATION_MODE);

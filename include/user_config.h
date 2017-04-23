@@ -12,7 +12,9 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
+#ifndef DEFAULT_METER_SERIAL
 #define DEFAULT_METER_SERIAL	"9999999"
+#endif
 
 // MQTT
 #define MQTT_TOPIC_L (128)
@@ -70,8 +72,12 @@
 #define AP_PASSWORD	"aabbccddeeff"
 #endif
 #define AP_NETWORK		"10.0.5.0"
-#define AP_MESH_SSID	"mesh-%08x"
+
 #define STA_TYPE 		AUTH_WPA_WPA2_PSK
+
+#define AP_MESH_SSID	"mesh-%08x"
+#define AP_MESH_PASS	"w1reless"
+#define AP_MESH_TYPE	AUTH_WPA_WPA2_PSK
 
 #endif
 
