@@ -43,14 +43,12 @@ static ip_addr_t dns_ip;
 
 ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
 	err_t err;
-	os_printf("Got packet from STA, len: %d\r\n", p->len);
 	err = orig_input_ap (p, inp);
 	return err;
 }
 
 ICACHE_FLASH_ATTR err_t my_output_ap (struct netif *outp, struct pbuf *p) {
 	err_t err;
-	os_printf("Send packet to STA, len: %d\r\n", p->len);
 	err = orig_output_ap (outp, p);
 	return err;
 }
