@@ -4,7 +4,7 @@
 <area shape="rect" id="node4" href="$watchdog_8c.html#a47b6861ffbed37fef88aa644f10ba917" title="wifi_reconnect_timer_func" alt="" coords="203,56,380,83"/>
 <area shape="rect" id="node32" href="$wifi_8h.html#a623e279143c8d4f8ff19766d7450a489" title="wifi_stop_scan" alt="" coords="237,157,346,184"/>
 <area shape="rect" id="node5" href="$wifi_8h.html#aa472c6b7c4b18d171792da3df1be502e" title="wifi_scan_is_running" alt="" coords="428,56,573,83"/>
-<area shape="rect" id="node6" href="$wifi_8h.html#a5831b420da0012d53c979c375714d382" title="wifi_start_scan" alt="" coords="445,196,556,223"/>
+<area shape="rect" id="node6" href="$wifi_8h.html#a5831b420da0012d53c979c375714d382" title="wifi_start_scan" alt="" coords="445,208,556,235"/>
 <area shape="rect" id="node7" href="$wifi_8c.html#ae7011f25db54676b86fefe2caa450a4a" title="wifi_scan_timer_func" alt="" coords="621,233,768,260"/>
 <area shape="rect" id="node8" href="$wifi_8c.html#a79205b29f65bdd821ad9452bdbf0b747" title="wifi_get_rssi" alt="" coords="836,233,932,260"/>
 <area shape="rect" id="node9" href="$wifi_8c.html#a1ef15ecd9e69811f6db10215c7196281" title="wifi_scan_done_cb" alt="" coords="816,309,952,336"/>
@@ -25,9 +25,9 @@
 <area shape="rect" id="node22" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="1691,157,1731,184"/>
 <area shape="rect" id="node23" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="1794,183,1841,209"/>
 <area shape="rect" id="node24" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="1689,259,1732,285"/>
-<area shape="rect" id="node25" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="1792,297,1843,324"/>
+<area shape="rect" id="node25" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="1792,284,1843,311"/>
 <area shape="rect" id="node26" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="1688,360,1733,387"/>
-<area shape="rect" id="node27" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="1791,373,1844,400"/>
+<area shape="rect" id="node27" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="1791,385,1844,412"/>
 <area shape="rect" id="node28" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="1679,461,1743,488"/>
 <area shape="rect" id="node21" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="1795,107,1839,133"/>
 </map>

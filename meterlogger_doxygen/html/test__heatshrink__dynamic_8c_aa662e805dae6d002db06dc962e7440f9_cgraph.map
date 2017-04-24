@@ -17,7 +17,7 @@
 <area shape="rect" id="node12" href="$heatshrink__encoder_8c.html#a5016697d0c014235c56cfc3c7131a604" title="has_literal" alt="" coords="845,173,927,199"/>
 <area shape="rect" id="node13" href="$heatshrink__encoder_8c.html#a323caf30937d6e75e99789f797957f0c" title="is_finishing" alt="" coords="842,223,930,250"/>
 <area shape="rect" id="node14" href="$heatshrink__encoder_8c.html#a20f6276833bfa75c34ca574dc4fac9b8" title="save_backlog" alt="" coords="834,122,938,149"/>
-<area shape="rect" id="node15" href="$heatshrink__encoder_8c.html#a52bfbd33b20249a9f61813fc28c64e57" title="backlog_is_partial" alt="" coords="1014,375,1143,402"/>
+<area shape="rect" id="node15" href="$heatshrink__encoder_8c.html#a52bfbd33b20249a9f61813fc28c64e57" title="backlog_is_partial" alt="" coords="1014,274,1143,301"/>
 <area shape="rect" id="node17" href="$heatshrink__encoder_8c.html#afb59e31aab4a22a8b9640824e9da7426" title="backlog_is_filled" alt="" coords="826,426,946,453"/>
 <area shape="rect" id="node18" href="$heatshrink__encoder_8c.html#a48adb993f0964026473c63b9667f8191" title="find_longest_match" alt="" coords="817,477,955,503"/>
 <area shape="rect" id="node19" href="$heatshrink__encoder_8c.html#a69da5fdbae8296d5c7190ab953de134d" title="get_lookahead_size" alt="" coords="816,274,956,301"/>

@@ -10,6 +10,8 @@ var searchData=
   ['op_5fdec',['OP_DEC',['../heatshrink_8c.html#aa8f137f19095e0bdcf4f521e901f88bbad022ef91f3f987e6e62eea93b58474e6',1,'heatshrink.c']]],
   ['op_5fenc',['OP_ENC',['../heatshrink_8c.html#aa8f137f19095e0bdcf4f521e901f88bba576f6b0aeeb9dab31733e0753c95d2f0',1,'heatshrink.c']]],
   ['operation',['Operation',['../heatshrink_8c.html#aa8f137f19095e0bdcf4f521e901f88bb',1,'heatshrink.c']]],
+  ['orig_5finput_5fap',['orig_input_ap',['../wifi_8c.html#aebbe2941cca05f0398066ec2b9ac73f2',1,'wifi.c']]],
+  ['orig_5foutput_5fap',['orig_output_ap',['../wifi_8c.html#aac1e2b6ef36a82a4c47f9a9b238bea6d',1,'wifi.c']]],
   ['os_5ffree',['os_free',['../espfs_8c.html#a5521e9f51556da61a057517c0e379db4',1,'espfs.c']]],
   ['os_5fmalloc',['os_malloc',['../espfs_8c.html#ab5bd4ba214011254e942752390f4be00',1,'espfs.c']]],
   ['os_5fmemcpy',['os_memcpy',['../espfs_8c.html#ac5c79bf463c8eba708ea34fccc8ec7c1',1,'espfs.c']]],

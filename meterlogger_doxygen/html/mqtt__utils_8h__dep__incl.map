@@ -1,3 +1,5 @@
 <map id="mqtt/include/mqtt_utils.h" name="mqtt/include/mqtt_utils.h">
-<area shape="rect" id="node2" href="$mqtt__utils_8c.html" title="mqtt/mqtt_utils.c" alt="" coords="29,80,147,107"/>
+<area shape="rect" id="node2" href="$wifi_8c.html" title="modules/wifi.c" alt="" coords="5,80,111,107"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html" title="mqtt/mqtt.c" alt="" coords="135,80,223,107"/>
+<area shape="rect" id="node4" href="$mqtt__utils_8c.html" title="mqtt/mqtt_utils.c" alt="" coords="248,80,367,107"/>
 </map>

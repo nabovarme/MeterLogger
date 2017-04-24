@@ -1,7 +1,9 @@
 <map id="mqtt_msg_subscribe" name="mqtt_msg_subscribe">
-<area shape="rect" id="node2" href="$mqtt_8c.html#a86f8adfe29d6ec8bb5070fd030540d2f" title="MQTT subscibe function. " alt="" coords="199,5,325,32"/>
-<area shape="rect" id="node3" href="$user__main_8h.html#a06f2b383d99fcad9d0f37d1ca2224898" title="mqttConnectedCb" alt="" coords="373,5,503,32"/>
-<area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="551,5,727,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="775,5,900,32"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="948,5,1020,32"/>
+<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="205,5,319,32"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html#a86f8adfe29d6ec8bb5070fd030540d2f" title="MQTT subscibe function. " alt="" coords="199,56,325,83"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#ad6eb800c4d7f9c79df52949d88a18d06" title="mqtt_connected_cb" alt="" coords="373,56,512,83"/>
+<area shape="rect" id="node5" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="729,56,905,83"/>
+<area shape="rect" id="node8" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="560,81,681,108"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="953,56,1079,83"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1127,56,1199,83"/>
 </map>

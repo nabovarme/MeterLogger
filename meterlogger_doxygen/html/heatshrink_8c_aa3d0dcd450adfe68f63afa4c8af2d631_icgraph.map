@@ -1,6 +1,9 @@
 <map id="report" name="report">
-<area shape="rect" id="node2" href="$heatshrink_8c.html#ab458cc219445a92b0d1ba2bdbc4d5d6f" title="close_and_report" alt="" coords="111,31,236,57"/>
-<area shape="rect" id="node3" href="$heatshrink_8c.html#a92d9515cb2f33eea4832becaa17c11bb" title="decode" alt="" coords="284,5,349,32"/>
-<area shape="rect" id="node5" href="$heatshrink_8c.html#a37f19023beced8a782d3051bfd7a0bcb" title="encode" alt="" coords="284,56,349,83"/>
-<area shape="rect" id="node4" href="$heatshrink_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="397,31,448,57"/>
+<area shape="rect" id="node2" href="$heatshrink_8c.html#ab458cc219445a92b0d1ba2bdbc4d5d6f" title="close_and_report" alt="" coords="204,157,329,183"/>
+<area shape="rect" id="node6" href="$heatshrink_8c.html#aae61ded03fcf9a4c3adfcd9937810266" title="die" alt="" coords="111,69,151,95"/>
+<area shape="rect" id="node3" href="$heatshrink_8c.html#a92d9515cb2f33eea4832becaa17c11bb" title="decode" alt="" coords="383,55,448,82"/>
+<area shape="rect" id="node5" href="$heatshrink_8c.html#a37f19023beced8a782d3051bfd7a0bcb" title="encode" alt="" coords="383,131,448,158"/>
+<area shape="rect" id="node4" href="$heatshrink_8c.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="496,55,547,82"/>
+<area shape="rect" id="node7" href="$heatshrink_8c.html#a3f2b305cf4f4bf560265d00373a78bdd" title="decoder_sink_read" alt="" coords="199,55,335,82"/>
+<area shape="rect" id="node8" href="$heatshrink_8c.html#a593e86bba4eca0be280740fcf509bc12" title="encoder_sink_read" alt="" coords="199,207,335,234"/>
 </map>

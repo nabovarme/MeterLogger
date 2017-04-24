@@ -31,5 +31,6 @@ var searchData=
   ['httpd_5fcgi_5fmore',['HTTPD_CGI_MORE',['../httpd_8h.html#a9d775865661536b9b6e88e2eca410bd2',1,'httpd.h']]],
   ['httpd_5fcgi_5fnotfound',['HTTPD_CGI_NOTFOUND',['../httpd_8h.html#a06a64d8948f470a6ed04d626832a3b04',1,'httpd.h']]],
   ['httpd_5fprintf',['httpd_printf',['../platform_8h.html#a255a4fdd0c8ccd829a2e17ccfa58b295',1,'platform.h']]],
-  ['httpdver',['HTTPDVER',['../httpd_8h.html#a9770b745be5373d20c319b5173a16c5f',1,'httpd.h']]]
+  ['httpdver',['HTTPDVER',['../httpd_8h.html#a9770b745be5373d20c319b5173a16c5f',1,'httpd.h']]],
+  ['hw_5fmodel',['HW_MODEL',['../version_8h.html#ae6af540bd4b1c1fb33256d890922c6d5',1,'version.h']]]
 ];

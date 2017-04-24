@@ -1,5 +1,3 @@
 <map id="user/en61107/en61107_request.h" name="user/en61107/en61107_request.h">
-<area shape="rect" id="node2" href="$uart_8c.html" title="driver/uart.c" alt="" coords="5,102,97,129"/>
-<area shape="rect" id="node3" href="$en61107__request_8c.html" title="user/en61107/en61107\l_request.c" alt="" coords="121,95,280,136"/>
-<area shape="rect" id="node4" href="$user__main_8c.html" title="user/user_main.c" alt="" coords="304,102,428,129"/>
+<area shape="rect" id="node2" href="$en61107__request_8c.html" title="user/en61107/en61107\l_request.c" alt="" coords="5,95,164,136"/>
 </map>

@@ -1,5 +1,5 @@
 <map id="cfg_save" name="cfg_save">
-<area shape="rect" id="node2" href="$utils_8c.html#a3343daa80a622a02e6a039a58cb89c35" title="ccit_crc16" alt="" coords="158,5,241,32"/>
+<area shape="rect" id="node2" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="158,5,241,32"/>
 <area shape="rect" id="node3" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="129,57,269,98"/>
 <area shape="rect" id="node5" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="133,123,266,149"/>
 <area shape="rect" id="node6" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="131,173,267,200"/>

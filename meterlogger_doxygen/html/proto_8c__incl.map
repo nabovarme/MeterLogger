@@ -1,8 +1,8 @@
 <map id="mqtt/proto.c" name="mqtt/proto.c">
-<area shape="rect" id="node2" href="$proto_8h.html" title="proto.h" alt="" coords="352,80,416,107"/>
-<area shape="rect" id="node5" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="421,155,494,181"/>
-<area shape="rect" id="node4" href="$typedef_8h.html" title="typedef.h" alt="" coords="381,229,459,256"/>
-<area shape="rect" id="node6" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="609,229,693,256"/>
-<area shape="rect" id="node19" href="$platform_8h.html" title="platform.h" alt="" coords="1087,304,1169,331"/>
-<area shape="rect" id="node20" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="195,304,344,331"/>
+<area shape="rect" id="node2" href="$proto_8h.html" title="proto.h" alt="" coords="577,80,641,107"/>
+<area shape="rect" id="node5" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="645,155,718,181"/>
+<area shape="rect" id="node4" href="$typedef_8h.html" title="typedef.h" alt="" coords="612,229,689,256"/>
+<area shape="rect" id="node6" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1149,229,1233,256"/>
+<area shape="rect" id="node27" href="$platform_8h.html" title="platform.h" alt="" coords="2082,304,2163,331"/>
+<area shape="rect" id="node28" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="195,304,344,331"/>
 </map>

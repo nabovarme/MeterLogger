@@ -1,5 +1,5 @@
 <map id="heatshrink_encoder_reset" name="heatshrink_encoder_reset">
-<area shape="rect" id="node2" href="$test__heatshrink__static_8c.html#ad91c71c6eff9ca114f5aa677545287d6" title="compress_and_expand\l_and_check" alt="" coords="192,213,352,255"/>
+<area shape="rect" id="node2" href="$test__heatshrink__static_8c.html#ad91c71c6eff9ca114f5aa677545287d6" title="compress_and_expand\l_and_check" alt="" coords="192,233,352,275"/>
 <area shape="rect" id="node5" href="$heatshrink__encoder_8h.html#a2e8cab0e929cb612c25e434a16b6f6c0" title="heatshrink_encoder\l_alloc" alt="" coords="203,527,341,568"/>
 <area shape="rect" id="node3" href="$test__heatshrink__static_8c.html#a86042f6d987dc3b4e874c55b994eca3d" title="pseudorandom_data_should\l_match" alt="" coords="403,5,594,47"/>
 <area shape="rect" id="node4" href="$test__heatshrink__static_8c.html#a2f157eb23cb17a496326c14e12933b3b" title="SUITE" alt="" coords="737,13,798,39"/>

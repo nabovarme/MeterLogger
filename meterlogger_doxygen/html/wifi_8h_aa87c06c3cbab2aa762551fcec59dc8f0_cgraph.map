@@ -1,3 +1,9 @@
 <map id="wifi_handle_event_cb" name="wifi_handle_event_cb">
-<area shape="rect" id="node2" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="204,5,277,32"/>
+<area shape="rect" id="node2" href="$wifi_8c.html#a3cea38a15b267ddabc1e6d5cf72b5ae8" title="my_input_ap" alt="" coords="227,5,326,32"/>
+<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="573,81,647,108"/>
+<area shape="rect" id="node5" href="$wifi_8c.html#ae8f820b5b6007cf5c17793a964ee3f90" title="my_output_ap" alt="" coords="223,107,330,133"/>
+<area shape="rect" id="node6" href="$wifi_8c.html#a069085a17bc69a26e3fbb08406b0f306" title="patch_netif_ap" alt="" coords="407,107,516,133"/>
+<area shape="rect" id="node7" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="204,208,349,235"/>
+<area shape="rect" id="node3" href="$wifi_8c.html#a0d197abbbedf42c0522e20b43884c920" title="acl_check_packet" alt="" coords="397,5,525,32"/>
+<area shape="rect" id="node8" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="405,208,517,235"/>
 </map>

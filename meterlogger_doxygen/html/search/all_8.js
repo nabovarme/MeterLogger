@@ -20,8 +20,7 @@ var searchData=
   ['heatshrink_5fconfig_5fhttpd_2eh',['heatshrink_config_httpd.h',['../heatshrink__config__httpd_8h.html',1,'']]],
   ['heatshrink_5fdebugging_5flogs',['HEATSHRINK_DEBUGGING_LOGS',['../heatshrink__config_8h.html#a1df48e8624583ecdb2146de38aea1e4d',1,'HEATSHRINK_DEBUGGING_LOGS():&#160;heatshrink_config.h'],['../heatshrink__config__httpd_8h.html#a1df48e8624583ecdb2146de38aea1e4d',1,'HEATSHRINK_DEBUGGING_LOGS():&#160;heatshrink_config_httpd.h']]],
   ['heatshrink_5fdecoder',['heatshrink_decoder',['../structheatshrink__decoder.html',1,'']]],
-  ['heatshrink_5fdecoder_2ec',['heatshrink_decoder.c',['../lib_2heatshrink_2heatshrink__decoder_8c.html',1,'']]],
-  ['heatshrink_5fdecoder_2ec',['heatshrink_decoder.c',['../user_2heatshrink__decoder_8c.html',1,'']]],
+  ['heatshrink_5fdecoder_2ec',['heatshrink_decoder.c',['../lib_2heatshrink_2heatshrink__decoder_8c.html',1,'(Global Namespace)'],['../user_2heatshrink__decoder_8c.html',1,'(Global Namespace)']]],
   ['heatshrink_5fdecoder_2eh',['heatshrink_decoder.h',['../heatshrink__decoder_8h.html',1,'']]],
   ['heatshrink_5fdecoder_5falloc',['heatshrink_decoder_alloc',['../lib_2heatshrink_2heatshrink__decoder_8c.html#aa25b6d55bcbe6a892bad39734cd06a93',1,'heatshrink_decoder_alloc(uint16_t input_buffer_size, uint8_t window_sz2, uint8_t lookahead_sz2):&#160;heatshrink_decoder.c'],['../heatshrink__decoder_8h.html#af45ef0e47f657a2148256f9027a491bf',1,'heatshrink_decoder_alloc(uint16_t input_buffer_size, uint8_t expansion_buffer_sz2, uint8_t lookahead_sz2):&#160;heatshrink_decoder.c']]],
   ['heatshrink_5fdecoder_5ffinish',['heatshrink_decoder_finish',['../lib_2heatshrink_2heatshrink__decoder_8c.html#aac3da3fb98517f7f6121711b0c995616',1,'heatshrink_decoder_finish(heatshrink_decoder *hsd):&#160;heatshrink_decoder.c'],['../heatshrink__decoder_8h.html#aac3da3fb98517f7f6121711b0c995616',1,'heatshrink_decoder_finish(heatshrink_decoder *hsd):&#160;heatshrink_decoder.c']]],
@@ -165,5 +164,6 @@ var searchData=
   ['httpdurldecode',['httpdUrlDecode',['../httpd_8c.html#a45e5cfc52bcba530447be34fd5bae705',1,'httpdUrlDecode(char *val, int valLen, char *ret, int retLen):&#160;httpd.c'],['../httpd_8h.html#a45e5cfc52bcba530447be34fd5bae705',1,'httpdUrlDecode(char *val, int valLen, char *ret, int retLen):&#160;httpd.c']]],
   ['httpdver',['HTTPDVER',['../httpd_8h.html#a9770b745be5373d20c319b5173a16c5f',1,'httpd.h']]],
   ['httpnotfoundheader',['httpNotFoundHeader',['../httpd_8c.html#ae61ad535633520f7aad4e53f386be64a',1,'httpd.c']]],
+  ['hw_5fmodel',['HW_MODEL',['../version_8h.html#ae6af540bd4b1c1fb33256d890922c6d5',1,'version.h']]],
   ['heatshrink',['heatshrink',['../md_lib_heatshrink__r_e_a_d_m_e.html',1,'']]]
 ];

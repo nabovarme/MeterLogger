@@ -1,9 +1,12 @@
 <map id="UTILS_StrToIP" name="UTILS_StrToIP">
-<area shape="rect" id="node2" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="165,31,283,57"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="331,5,427,32"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="475,56,596,83"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a82303094af675136988bb2be5e92fc5b" title="MQTT initialization mqtt client function. " alt="" coords="476,5,595,32"/>
-<area shape="rect" id="node5" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="644,31,820,57"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="868,31,993,57"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1041,31,1113,57"/>
+<area shape="rect" id="node2" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="179,56,297,83"/>
+<area shape="rect" id="node9" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="165,107,311,133"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="386,5,482,32"/>
+<area shape="rect" id="node8" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="557,56,679,83"/>
+<area shape="rect" id="node4" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="559,5,677,32"/>
+<area shape="rect" id="node5" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="727,81,903,108"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="951,81,1076,108"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1124,81,1196,108"/>
+<area shape="rect" id="node10" href="$wifi_8c.html#aa87c06c3cbab2aa762551fcec59dc8f0" title="wifi_handle_event_cb" alt="" coords="359,157,509,184"/>
+<area shape="rect" id="node11" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="570,157,666,184"/>
 </map>

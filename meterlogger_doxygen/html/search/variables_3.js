@@ -20,6 +20,7 @@ var searchData=
   ['dest_5fcapacity',['dest_capacity',['../struct__vsnprintf__putcf__data.html#af6da1fef506d12dc70cc8259dbfab668',1,'_vsnprintf_putcf_data']]],
   ['device_5fid',['device_id',['../structsyscfg__t.html#a5addd32748a1864e81d52d4c1d1bf928',1,'syscfg_t']]],
   ['disconnectedcb',['disconnectedCb',['../struct_m_q_t_t___client.html#a21b06edd69799bc891dd85201f56698f',1,'MQTT_Client']]],
+  ['dns_5fip',['dns_ip',['../wifi_8c.html#a9802e917dd3f0c3c096411dd0b1cb295',1,'wifi.c']]],
   ['dnsheader',['DnsHeader',['../captdns_8c.html#a43123036321354db8c5a5ee5eb3e19a2',1,'captdns.c']]],
   ['dnslabel',['DnsLabel',['../captdns_8c.html#a3c5913789c2f46752baa880646bba11d',1,'captdns.c']]],
   ['dnsquestionfooter',['DnsQuestionFooter',['../captdns_8c.html#a35a1b1d68789477988c78a6a94c7d52d',1,'captdns.c']]],

@@ -5,7 +5,7 @@
 <area shape="rect" id="node11" href="$cron_8h.html#ad014b7bf4eab144ea9fc5669d896714b" title="clear_cron_jobs" alt="" coords="212,203,328,230"/>
 <area shape="rect" id="node3" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="407,51,539,78"/>
 <area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="984,76,1056,103"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a53fca5688835df983e3ff1a91d387618" title="mqttDataCb" alt="" coords="426,152,519,179"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="421,152,524,179"/>
 <area shape="rect" id="node4" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="837,51,909,78"/>
 <area shape="rect" id="node7" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="587,152,763,179"/>
 <area shape="rect" id="node8" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="811,152,936,179"/>

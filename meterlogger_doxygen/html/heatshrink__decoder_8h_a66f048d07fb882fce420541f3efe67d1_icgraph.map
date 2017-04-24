@@ -1,14 +1,14 @@
 <map id="heatshrink_decoder_reset" name="heatshrink_decoder_reset">
 <area shape="rect" id="node2" href="$test__heatshrink__static_8c.html#ad91c71c6eff9ca114f5aa677545287d6" title="compress_and_expand\l_and_check" alt="" coords="192,16,352,57"/>
 <area shape="rect" id="node5" href="$test__heatshrink__dynamic_8c.html#aeefae364c6a09c82a0228b02adf67236" title="decoder_should_not\l_get_stuck_with_finish\l_yielding_MORE_but_0_bytes\l_output_from_poll" alt="" coords="421,71,624,141"/>
-<area shape="rect" id="node7" href="$heatshrink__decoder_8h.html#af45ef0e47f657a2148256f9027a491bf" title="heatshrink_decoder\l_alloc" alt="" coords="203,904,341,945"/>
+<area shape="rect" id="node7" href="$heatshrink__decoder_8h.html#af45ef0e47f657a2148256f9027a491bf" title="heatshrink_decoder\l_alloc" alt="" coords="203,903,341,944"/>
 <area shape="rect" id="node3" href="$test__heatshrink__static_8c.html#a86042f6d987dc3b4e874c55b994eca3d" title="pseudorandom_data_should\l_match" alt="" coords="427,5,618,47"/>
 <area shape="rect" id="node4" href="$test__heatshrink__static_8c.html#a2f157eb23cb17a496326c14e12933b3b" title="SUITE" alt="" coords="785,13,846,39"/>
 <area shape="rect" id="node6" href="$test__heatshrink__dynamic_8c.html#adc66afa12a5eaae0cd12d5cc497f0f67" title="SUITE" alt="" coords="785,754,846,781"/>
 <area shape="rect" id="node8" href="$test__heatshrink__dynamic_8c.html#ab9096be17a9dc8f301673949558e5bd6" title="compress_and_expand\l_and_check" alt="" coords="443,1472,603,1513"/>
 <area shape="rect" id="node17" href="$test__heatshrink__dynamic_8c.html#acd64db79d79999a7c5436d35b74a7f40" title="data_with_simple_repetition\l_should_match_with_absurdly\l_tiny_buffers" alt="" coords="715,1581,916,1637"/>
 <area shape="rect" id="node18" href="$test__heatshrink__dynamic_8c.html#a9a102029b8375d4050406a2814f390ac" title="data_without_duplication\l_should_match_with_absurdly\l_tiny_buffers" alt="" coords="715,1661,916,1717"/>
-<area shape="rect" id="node19" href="$heatshrink_8c.html#a92d9515cb2f33eea4832becaa17c11bb" title="decode" alt="" coords="490,1719,555,1746"/>
+<area shape="rect" id="node19" href="$heatshrink_8c.html#a92d9515cb2f33eea4832becaa17c11bb" title="decode" alt="" coords="490,1734,555,1761"/>
 <area shape="rect" id="node21" href="$test__heatshrink__dynamic_8c.html#a40a7afa6380f2399add58090c53615ad" title="decoder_alloc_should\l_reject_excessively_small\l_window" alt="" coords="435,166,611,222"/>
 <area shape="rect" id="node22" href="$test__heatshrink__dynamic_8c.html#a1b6fdeadbd0a956477d67210a8ec6c4b" title="decoder_alloc_should\l_reject_zero_byte_input\l_buffer" alt="" coords="441,246,605,302"/>
 <area shape="rect" id="node23" href="$test__heatshrink__dynamic_8c.html#a1f5bd6590b5a6d8ae285c99739e59839" title="decoder_finish_should\l_note_when_done" alt="" coords="445,327,601,368"/>

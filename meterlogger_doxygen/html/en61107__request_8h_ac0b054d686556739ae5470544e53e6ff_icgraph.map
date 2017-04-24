@@ -1,5 +1,11 @@
 <map id="en61107_fifo_get" name="en61107_fifo_get">
 <area shape="rect" id="node2" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="179,5,343,32"/>
-<area shape="rect" id="node3" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="391,5,541,32"/>
-<area shape="rect" id="node4" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="589,5,661,32"/>
+<area shape="rect" id="node5" href="$en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="179,56,342,83"/>
+<area shape="rect" id="node3" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="573,5,724,32"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1339,31,1411,57"/>
+<area shape="rect" id="node6" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="391,56,525,83"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#ad6eb800c4d7f9c79df52949d88a18d06" title="mqtt_connected_cb" alt="" coords="579,56,718,83"/>
+<area shape="rect" id="node8" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="941,56,1117,83"/>
+<area shape="rect" id="node10" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="772,107,893,133"/>
+<area shape="rect" id="node9" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1165,56,1291,83"/>
 </map>

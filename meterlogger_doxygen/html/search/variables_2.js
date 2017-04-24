@@ -20,7 +20,7 @@ var searchData=
   ['config_5fsave_5ftimer',['config_save_timer',['../config_8c.html#a9bde0bd9d22769b4e4fdf1a7b94af90b',1,'config.c']]],
   ['config_5fsave_5ftimer_5frunning',['config_save_timer_running',['../config_8c.html#a7b4ac714d46a7a621f5691619c36e65e',1,'config.c']]],
   ['config_5fssid',['config_ssid',['../wifi_8c.html#a92dcbc2fd87003b2e7c0c6a8ae5d3ec9',1,'wifi.c']]],
-  ['conn',['conn',['../struct_httpd_conn_data.html#ac96df26b7d51a12b647d990564e069d3',1,'HttpdConnData']]],
+  ['conn',['conn',['../struct_httpd_conn_data.html#ac96df26b7d51a12b647d990564e069d3',1,'HttpdConnData::conn()'],['../captdns_8c.html#a8ac405da3aa7e2e078859dd8214cc5a1',1,'conn():&#160;captdns.c']]],
   ['conndata',['connData',['../httpd_8c.html#a55ec243aeb98bdc3493054c3dbe465f5',1,'httpd.c']]],
   ['connect_5finfo',['connect_info',['../structmqtt__state__t.html#aff5d5e70c2736c4708fc2d3820c3a63d',1,'mqtt_state_t::connect_info()'],['../struct_m_q_t_t___client.html#afde2ac8675b992f44394ee12a409096f',1,'MQTT_Client::connect_info()']]],
   ['connectedcb',['connectedCb',['../struct_m_q_t_t___client.html#ad95275b8b95ef6868ad3a80e12e2b472',1,'MQTT_Client']]],

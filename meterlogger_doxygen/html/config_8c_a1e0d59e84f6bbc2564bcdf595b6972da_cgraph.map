@@ -1,6 +1,6 @@
 <map id="config_save_timer_func" name="config_save_timer_func">
 <area shape="rect" id="node2" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="216,93,292,120"/>
-<area shape="rect" id="node3" href="$utils_8c.html#a3343daa80a622a02e6a039a58cb89c35" title="ccit_crc16" alt="" coords="369,5,451,32"/>
+<area shape="rect" id="node3" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="369,5,451,32"/>
 <area shape="rect" id="node4" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="340,57,480,98"/>
 <area shape="rect" id="node6" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="343,123,477,149"/>
 <area shape="rect" id="node7" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="342,173,478,200"/>

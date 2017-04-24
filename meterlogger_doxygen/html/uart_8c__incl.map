@@ -1,15 +1,14 @@
 <map id="driver/uart.c" name="driver/uart.c">
-<area shape="rect" id="node4" href="$uart_8h.html" title="driver/uart.h" alt="" coords="1541,80,1635,107"/>
-<area shape="rect" id="node5" href="$uart__register_8h.html" title="uart_register.h" alt="" coords="1651,155,1759,181"/>
-<area shape="rect" id="node9" href="$en61107__request_8h.html" title="en61107_request.h" alt="" coords="1282,80,1419,107"/>
-<area shape="rect" id="node10" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="1321,155,1380,181"/>
-<area shape="rect" id="node30" href="$en61107_8h.html" title="en61107.h" alt="" coords="1212,155,1297,181"/>
-<area shape="rect" id="node11" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="1291,229,1383,256"/>
-<area shape="rect" id="node13" href="$queue_8h.html" title="queue.h" alt="" coords="1106,229,1177,256"/>
-<area shape="rect" id="node12" href="$user__config_8h.html" title="user_config.h" alt="" coords="1230,304,1333,331"/>
-<area shape="rect" id="node15" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="957,304,1030,331"/>
-<area shape="rect" id="node16" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="766,379,850,405"/>
-<area shape="rect" id="node29" href="$typedef_8h.html" title="typedef.h" alt="" coords="955,379,1032,405"/>
-<area shape="rect" id="node26" href="$platform_8h.html" title="platform.h" alt="" coords="571,453,653,480"/>
-<area shape="rect" id="node27" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="677,453,827,480"/>
+<area shape="rect" id="node4" href="$uart_8h.html" title="driver/uart.h" alt="" coords="2525,80,2618,107"/>
+<area shape="rect" id="node5" href="$uart__register_8h.html" title="uart_register.h" alt="" coords="2646,155,2754,181"/>
+<area shape="rect" id="node9" href="$kmp__request_8h.html" title="kmp_request.h" alt="" coords="1044,80,1155,107"/>
+<area shape="rect" id="node10" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="1268,155,1326,181"/>
+<area shape="rect" id="node11" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="1903,229,1995,256"/>
+<area shape="rect" id="node13" href="$queue_8h.html" title="queue.h" alt="" coords="1280,229,1351,256"/>
+<area shape="rect" id="node12" href="$user__config_8h.html" title="user_config.h" alt="" coords="1898,304,2000,331"/>
+<area shape="rect" id="node15" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="1279,304,1352,331"/>
+<area shape="rect" id="node16" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1274,379,1358,405"/>
+<area shape="rect" id="node37" href="$typedef_8h.html" title="typedef.h" alt="" coords="1382,379,1460,405"/>
+<area shape="rect" id="node34" href="$platform_8h.html" title="platform.h" alt="" coords="1714,453,1795,480"/>
+<area shape="rect" id="node35" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1820,453,1969,480"/>
 </map>

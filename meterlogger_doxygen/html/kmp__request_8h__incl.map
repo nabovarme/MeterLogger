@@ -1,10 +1,11 @@
 <map id="user/kamstrup/kmp_request.h" name="user/kamstrup/kmp_request.h">
-<area shape="rect" id="node2" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="1348,80,1407,107"/>
-<area shape="rect" id="node3" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="1421,155,1513,181"/>
-<area shape="rect" id="node6" href="$queue_8h.html" title="queue.h" alt="" coords="1066,155,1137,181"/>
-<area shape="rect" id="node8" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="913,229,986,256"/>
-<area shape="rect" id="node9" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="703,304,787,331"/>
-<area shape="rect" id="node25" href="$typedef_8h.html" title="typedef.h" alt="" coords="911,304,988,331"/>
-<area shape="rect" id="node21" href="$platform_8h.html" title="platform.h" alt="" coords="762,379,843,405"/>
-<area shape="rect" id="node22" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="868,379,1017,405"/>
+<area shape="rect" id="node2" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="2259,80,2317,107"/>
+<area shape="rect" id="node3" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="2331,155,2423,181"/>
+<area shape="rect" id="node7" href="$queue_8h.html" title="queue.h" alt="" coords="2017,155,2087,181"/>
+<area shape="rect" id="node4" href="$user__config_8h.html" title="user_config.h" alt="" coords="2326,229,2429,256"/>
+<area shape="rect" id="node9" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="1597,229,1670,256"/>
+<area shape="rect" id="node10" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1327,304,1411,331"/>
+<area shape="rect" id="node34" href="$typedef_8h.html" title="typedef.h" alt="" coords="1595,304,1672,331"/>
+<area shape="rect" id="node30" href="$platform_8h.html" title="platform.h" alt="" coords="1755,379,1837,405"/>
+<area shape="rect" id="node31" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1861,379,2011,405"/>
 </map>

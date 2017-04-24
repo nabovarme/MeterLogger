@@ -23,6 +23,8 @@ var searchData=
   ['sntp_5fcheck_5ftimer',['sntp_check_timer',['../unix__time_8c.html#a084584fc45b86f43975e73c27b93cceb',1,'unix_time.c']]],
   ['space',['Space',['../struct_uart_buffer.html#a905b671e9d0249dfcad2d5169d08a95a',1,'UartBuffer::Space()'],['../struct_uart_rx_buff.html#a50761864547d5c720e284dfdbb6a80f8',1,'UartRxBuff::Space()']]],
   ['ssid',['ssid',['../struct_ap_data.html#ad2ed5d81f6407b4a867abc51acc485d9',1,'ApData']]],
+  ['sta_5fnetwork_5faddr',['sta_network_addr',['../wifi_8c.html#a06d92ce1ff1597b7b98e1c3ed5c7a9c3',1,'wifi.c']]],
+  ['sta_5fnetwork_5fmask',['sta_network_mask',['../wifi_8c.html#a6387de75cbd7ce2c901288b72df565f1',1,'wifi.c']]],
   ['sta_5fpwd',['sta_pwd',['../structsyscfg__t.html#a30a7a11e227a1c6bcc2a9f0872fc0128',1,'syscfg_t']]],
   ['sta_5fssid',['sta_ssid',['../structsyscfg__t.html#a0b489fb8f67591adc5d78b0d4600fdf3',1,'syscfg_t']]],
   ['sta_5ftype',['sta_type',['../structsyscfg__t.html#a049712c7c9f00c3b143f4bb822bb30a1',1,'syscfg_t']]],

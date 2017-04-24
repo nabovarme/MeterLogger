@@ -1,4 +1,5 @@
 <map id="getSBoxInvert" name="getSBoxInvert">
 <area shape="rect" id="node2" href="$aes_8c.html#a29daa1322d4129a0e3cc325bb12d772a" title="InvSubBytes" alt="" coords="159,5,256,32"/>
 <area shape="rect" id="node3" href="$aes_8c.html#a1c8b8be3915a4ec4ce9d2c0961f07c62" title="InvCipher" alt="" coords="304,5,383,32"/>
+<area shape="rect" id="node4" href="$aes_8c.html#a4762f23548a6ee2e4c1ca5f5ce43c4a4" title="BlockCopy" alt="" coords="431,5,516,32"/>
 </map>

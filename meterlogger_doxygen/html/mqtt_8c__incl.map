@@ -1,12 +1,13 @@
 <map id="mqtt/mqtt.c" name="mqtt/mqtt.c">
-<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="659,304,743,331"/>
-<area shape="rect" id="node20" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="533,155,625,181"/>
-<area shape="rect" id="node21" href="$debug_8h.html" title="debug.h" alt="" coords="784,80,855,107"/>
-<area shape="rect" id="node22" href="$user__config_8h.html" title="user_config.h" alt="" coords="879,80,981,107"/>
-<area shape="rect" id="node23" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="701,80,759,107"/>
-<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="660,379,741,405"/>
-<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1119,379,1269,405"/>
-<area shape="rect" id="node24" href="$queue_8h.html" title="queue.h" alt="" coords="705,155,776,181"/>
-<area shape="rect" id="node26" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="805,229,879,256"/>
-<area shape="rect" id="node27" href="$typedef_8h.html" title="typedef.h" alt="" coords="803,304,881,331"/>
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1301,304,1385,331"/>
+<area shape="rect" id="node28" href="$mqtt__msg_8h.html" title="mqtt_msg.h" alt="" coords="2383,155,2475,181"/>
+<area shape="rect" id="node29" href="$user__config_8h.html" title="user_config.h" alt="" coords="2467,229,2569,256"/>
+<area shape="rect" id="node30" href="$debug_8h.html" title="debug.h" alt="" coords="2601,80,2672,107"/>
+<area shape="rect" id="node31" href="$mqtt_8h.html" title="mqtt.h" alt="" coords="2330,80,2389,107"/>
+<area shape="rect" id="node36" href="$mqtt__utils_8h.html" title="mqtt_utils.h" alt="" coords="2555,155,2646,181"/>
+<area shape="rect" id="node24" href="$platform_8h.html" title="platform.h" alt="" coords="1596,379,1677,405"/>
+<area shape="rect" id="node25" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1965,379,2114,405"/>
+<area shape="rect" id="node32" href="$queue_8h.html" title="queue.h" alt="" coords="2135,155,2205,181"/>
+<area shape="rect" id="node34" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="1847,229,1920,256"/>
+<area shape="rect" id="node35" href="$typedef_8h.html" title="typedef.h" alt="" coords="1845,304,1922,331"/>
 </map>

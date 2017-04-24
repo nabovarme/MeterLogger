@@ -1,7 +1,7 @@
 <map id="MQTT_Connect" name="MQTT_Connect">
 <area shape="rect" id="node2" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="171,5,267,32"/>
 <area shape="rect" id="node7" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="315,56,436,83"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a82303094af675136988bb2be5e92fc5b" title="MQTT initialization mqtt client function. " alt="" coords="316,5,435,32"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="316,5,435,32"/>
 <area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="484,31,660,57"/>
 <area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="708,31,833,57"/>
 <area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="881,31,953,57"/>

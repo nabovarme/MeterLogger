@@ -5,6 +5,7 @@ var searchData=
   ['watchdog_5ftimer',['watchdog_timer',['../watchdog_8c.html#a94f0a8bf5457e1071a36159774307681',1,'watchdog.c']]],
   ['width',['width',['../structgreatest__run__info.html#a1cf7b8325569d74e6e8e07dcc7a58e36',1,'greatest_run_info::width()'],['../structparam.html#a059f9d4f5cb0e99d403498cd68da2dba',1,'param::width()']]],
   ['wifi_5fcb',['wifi_cb',['../wifi_8c.html#a177a7486538900b465ef205ffe5f29c9',1,'wifi.c']]],
+  ['wifi_5fdefault_5fok',['wifi_default_ok',['../wifi_8c.html#a56c0dbcf0a563a62f0037e5aedfa971a',1,'wifi.c']]],
   ['wifi_5fevent',['wifi_event',['../wifi_8c.html#aeaa6c86df7d0c506437403f695387b56',1,'wifi.c']]],
   ['wifi_5ffallback_5flast_5fpresent',['wifi_fallback_last_present',['../wifi_8c.html#a00890a9d7e80fd113e9f93fd957c42f5',1,'wifi.c']]],
   ['wifi_5ffallback_5fpresent',['wifi_fallback_present',['../wifi_8c.html#a08d1348a0489cca4d7ac49a6d8c2bdae',1,'wifi.c']]],

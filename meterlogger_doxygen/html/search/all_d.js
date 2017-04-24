@@ -2,13 +2,10 @@ var searchData=
 [
   ['n',['n',['../structcron__jobs__t.html#a19859346934a6689b94da0438ef47c9e',1,'cron_jobs_t']]],
   ['nb',['Nb',['../aes_8c.html#a1ae104196f1fc7af4751c5b9e07b1610',1,'aes.c']]],
-  ['netif_5fdebug',['NETIF_DEBUG',['../lwipopts_8h.html#a2dfad02b075a7f9a8791a66fe40864a4',1,'lwipopts.h']]],
   ['network_5frestart',['NETWORK_RESTART',['../watchdog_8h.html#ac3bef904ac288d561a5ab06c69f83583a276f4e7b3a5fd8528e3946dcb480c455',1,'watchdog.h']]],
   ['nextbuff',['nextBuff',['../struct_uart_buffer.html#a8edcf6d122aeec35c88681435ba9c35d',1,'UartBuffer']]],
   ['nk',['Nk',['../aes_8c.html#a7b1938df390b1afe917e8baa663c22af',1,'aes.c']]],
   ['no_5fbits',['NO_BITS',['../lib_2heatshrink_2heatshrink__decoder_8c.html#a32978f006f6d66afa1e8198dc0d3bf6e',1,'heatshrink_decoder.c']]],
-  ['no_5fsys',['NO_SYS',['../lwipopts_8h.html#ae00ba99de94a5bf84d832be8976df59b',1,'lwipopts.h']]],
-  ['no_5fsys_5fno_5ftimers',['NO_SYS_NO_TIMERS',['../lwipopts_8h.html#a576dfdb593d10f3be17eaf499a439201',1,'lwipopts.h']]],
   ['noaps',['noAps',['../struct_scan_result_data.html#a2aabd947f21f617c87a5a411ac364cd9',1,'ScanResultData']]],
   ['none_5fbits',['NONE_BITS',['../uart_8h.html#acb045cca45821ff8ef1e749914313198a5a1ab0777b7aa1690bc8c53bcd0cf3b4',1,'uart.h']]],
   ['none_5fctrl',['NONE_CTRL',['../uart_8h.html#aff0a69149faf310849a6748bc73d73acafced12ec19bf4bd8a81c268bab9b038b',1,'uart.h']]],

@@ -1,8 +1,8 @@
 <map id="user/httpdespfs.c" name="user/httpdespfs.c">
-<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="516,80,600,107"/>
-<area shape="rect" id="node20" href="$httpd_8h.html" title="httpd.h" alt="" coords="1176,155,1239,181"/>
-<area shape="rect" id="node21" href="$espfs_8h.html" title="espfs.h" alt="" coords="1437,155,1503,181"/>
-<area shape="rect" id="node22" href="$httpdespfs_8h.html" title="httpdespfs.h" alt="" coords="1245,80,1340,107"/>
-<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="1071,155,1152,181"/>
-<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1263,155,1413,181"/>
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1242,229,1326,256"/>
+<area shape="rect" id="node28" href="$httpd_8h.html" title="httpd.h" alt="" coords="1354,155,1417,181"/>
+<area shape="rect" id="node29" href="$espfs_8h.html" title="espfs.h" alt="" coords="1457,155,1522,181"/>
+<area shape="rect" id="node30" href="$httpdespfs_8h.html" title="httpdespfs.h" alt="" coords="1373,80,1467,107"/>
+<area shape="rect" id="node24" href="$platform_8h.html" title="platform.h" alt="" coords="2207,304,2289,331"/>
+<area shape="rect" id="node25" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1525,304,1675,331"/>
 </map>

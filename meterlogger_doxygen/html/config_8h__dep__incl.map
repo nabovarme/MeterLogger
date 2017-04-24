@@ -1,10 +1,11 @@
 <map id="modules/include/config.h" name="modules/include/config.h">
-<area shape="rect" id="node2" href="$config_8c.html" title="modules/config.c" alt="" coords="5,80,128,107"/>
-<area shape="rect" id="node3" href="$wifi_8c.html" title="modules/wifi.c" alt="" coords="153,80,258,107"/>
-<area shape="rect" id="node4" href="$ac__out_8c.html" title="user/ac/ac_out.c" alt="" coords="283,80,403,107"/>
-<area shape="rect" id="node5" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="427,80,525,107"/>
-<area shape="rect" id="node6" href="$cron_8c.html" title="user/cron/cron.c" alt="" coords="549,80,667,107"/>
-<area shape="rect" id="node7" href="$kmp__request_8c.html" title="user/kamstrup/kmp_request.c" alt="" coords="691,80,888,107"/>
-<area shape="rect" id="node8" href="$user__main_8c.html" title="user/user_main.c" alt="" coords="913,80,1037,107"/>
-<area shape="rect" id="node9" href="$utils_8c.html" title="user/utils.c" alt="" coords="1061,80,1147,107"/>
+<area shape="rect" id="node2" href="$config_8c.html" title="modules/config.c" alt="" coords="5,87,128,114"/>
+<area shape="rect" id="node3" href="$wifi_8c.html" title="modules/wifi.c" alt="" coords="153,87,258,114"/>
+<area shape="rect" id="node4" href="$ac__out_8c.html" title="user/ac/ac_out.c" alt="" coords="283,87,403,114"/>
+<area shape="rect" id="node5" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="427,87,525,114"/>
+<area shape="rect" id="node6" href="$cron_8c.html" title="user/cron/cron.c" alt="" coords="549,87,667,114"/>
+<area shape="rect" id="node7" href="$en61107__request_8c.html" title="user/en61107/en61107\l_request.c" alt="" coords="691,80,850,121"/>
+<area shape="rect" id="node8" href="$kmp__request_8c.html" title="user/kamstrup/kmp_request.c" alt="" coords="875,87,1072,114"/>
+<area shape="rect" id="node9" href="$user__main_8c.html" title="user/user_main.c" alt="" coords="1097,87,1221,114"/>
+<area shape="rect" id="node10" href="$utils_8c.html" title="user/utils.c" alt="" coords="1245,87,1331,114"/>
 </map>

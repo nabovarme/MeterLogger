@@ -1,13 +1,13 @@
 <map id="user/httpd_user_init.c" name="user/httpd_user_init.c">
-<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="756,80,840,107"/>
-<area shape="rect" id="node20" href="$httpd_8h.html" title="httpd.h" alt="" coords="95,155,157,181"/>
-<area shape="rect" id="node21" href="$httpdespfs_8h.html" title="httpdespfs.h" alt="" coords="35,80,129,107"/>
-<area shape="rect" id="node23" href="$cgi_8h.html" title="cgi.h" alt="" coords="298,80,349,107"/>
-<area shape="rect" id="node24" href="$cgiwifi_8h.html" title="cgiwifi.h" alt="" coords="154,80,223,107"/>
-<area shape="rect" id="node25" href="$auth_8h.html" title="auth.h" alt="" coords="865,80,923,107"/>
-<area shape="rect" id="node27" href="$debug_8h.html" title="debug.h" alt="" coords="948,80,1019,107"/>
-<area shape="rect" id="node16" href="$platform_8h.html" title="platform.h" alt="" coords="572,155,653,181"/>
-<area shape="rect" id="node17" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1183,155,1333,181"/>
-<area shape="rect" id="node22" href="$espfs_8h.html" title="espfs.h" alt="" coords="5,155,71,181"/>
-<area shape="rect" id="node26" href="$httpdconfig_8h.html" title="httpdconfig.h" alt="" coords="1527,155,1626,181"/>
+<area shape="rect" id="node2" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="1241,229,1325,256"/>
+<area shape="rect" id="node28" href="$httpd_8h.html" title="httpd.h" alt="" coords="1433,155,1495,181"/>
+<area shape="rect" id="node29" href="$httpdespfs_8h.html" title="httpdespfs.h" alt="" coords="1539,80,1634,107"/>
+<area shape="rect" id="node31" href="$cgi_8h.html" title="cgi.h" alt="" coords="1320,80,1371,107"/>
+<area shape="rect" id="node32" href="$cgiwifi_8h.html" title="cgiwifi.h" alt="" coords="1395,80,1464,107"/>
+<area shape="rect" id="node33" href="$auth_8h.html" title="auth.h" alt="" coords="1659,80,1717,107"/>
+<area shape="rect" id="node35" href="$debug_8h.html" title="debug.h" alt="" coords="1742,80,1813,107"/>
+<area shape="rect" id="node24" href="$platform_8h.html" title="platform.h" alt="" coords="2207,304,2289,331"/>
+<area shape="rect" id="node25" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1525,304,1675,331"/>
+<area shape="rect" id="node30" href="$espfs_8h.html" title="espfs.h" alt="" coords="1551,155,1617,181"/>
+<area shape="rect" id="node34" href="$httpdconfig_8h.html" title="httpdconfig.h" alt="" coords="1641,155,1740,181"/>
 </map>

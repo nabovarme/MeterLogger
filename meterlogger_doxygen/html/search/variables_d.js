@@ -1,6 +1,8 @@
 var searchData=
 [
   ['o_5fkey_5fpad',['o_key_pad',['../structhmac__sha256__ctx__t.html#a3c85eb7b9787ace203122be24f1f79ec',1,'hmac_sha256_ctx_t']]],
+  ['orig_5finput_5fap',['orig_input_ap',['../wifi_8c.html#aebbe2941cca05f0398066ec2b9ac73f2',1,'wifi.c']]],
+  ['orig_5foutput_5fap',['orig_output_ap',['../wifi_8c.html#aac1e2b6ef36a82a4c47f9a9b238bea6d',1,'wifi.c']]],
   ['out',['out',['../structconfig.html#a0783cd5de4e4f51966d9727f60282700',1,'config']]],
   ['out_5fbuffer',['out_buffer',['../structmqtt__state__t.html#a71dd0e1dad9579de47c8d5bbf71da4b6',1,'mqtt_state_t']]],
   ['out_5fbuffer_5flength',['out_buffer_length',['../structmqtt__state__t.html#a3bfc8fb0ae66cdd519ab974412f3127b',1,'mqtt_state_t']]],
