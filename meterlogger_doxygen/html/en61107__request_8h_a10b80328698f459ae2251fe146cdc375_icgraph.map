@@ -1,17 +1,11 @@
 <map id="en61107_uart_send_standard_data_2" name="en61107_uart_send_standard_data_2">
-<area shape="rect" id="node2" href="$en61107__request_8h.html#a22f1fee248eec0eeacf220c69b878a28" title="en61107_receive_timeout\l_timer_func" alt="" coords="253,156,429,197"/>
-<area shape="rect" id="node4" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="725,163,889,190"/>
-<area shape="rect" id="node3" href="$en61107__request_8h.html#a8b6b61143d95d3af3813f8be1aaf3447" title="en61107_uart_send_en61107" alt="" coords="477,105,677,131"/>
-<area shape="rect" id="node7" href="$en61107__request_8h.html#a353102f2f89ad4ed996501752c0ac59c" title="en61107_uart_send_en61107\l_ident" alt="" coords="477,39,677,80"/>
-<area shape="rect" id="node15" href="$en61107__request_8h.html#a74c2d949e6bb3b65cdf794a0643dd67d" title="en61107_uart_send_inst\l_values" alt="" coords="493,156,662,197"/>
-<area shape="rect" id="node16" href="$en61107__request_8h.html#afdb1795bdd4212fc7e028a9e5668fab4" title="en61107_uart_send_standard\l_data_1" alt="" coords="477,221,677,263"/>
-<area shape="rect" id="node5" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="1148,151,1299,178"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="2100,125,2172,151"/>
-<area shape="rect" id="node8" href="$en61107__request_8h.html#a2fa4e9967afddae0c1dedbc914dcee36" title="en61107_meter_wake\l_up_timer_func" alt="" coords="731,39,884,80"/>
-<area shape="rect" id="node9" href="$en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="937,47,1100,74"/>
-<area shape="rect" id="node10" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="1156,47,1291,74"/>
-<area shape="rect" id="node11" href="$user__main_8h.html#ad6eb800c4d7f9c79df52949d88a18d06" title="mqtt_connected_cb" alt="" coords="1347,47,1485,74"/>
-<area shape="rect" id="node12" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="1703,98,1879,125"/>
-<area shape="rect" id="node14" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="1533,47,1655,74"/>
-<area shape="rect" id="node13" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1927,98,2052,125"/>
+<area shape="rect" id="node2" href="$en61107__request_8h.html#a22f1fee248eec0eeacf220c69b878a28" title="en61107_receive_timeout\l_timer_func" alt="" coords="253,161,429,203"/>
+<area shape="rect" id="node4" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="725,201,889,227"/>
+<area shape="rect" id="node3" href="$en61107__request_8h.html#a8b6b61143d95d3af3813f8be1aaf3447" title="en61107_uart_send_en61107" alt="" coords="477,110,677,137"/>
+<area shape="rect" id="node6" href="$en61107__request_8h.html#a353102f2f89ad4ed996501752c0ac59c" title="en61107_uart_send_en61107\l_ident" alt="" coords="477,44,677,85"/>
+<area shape="rect" id="node9" href="$en61107__request_8h.html#a74c2d949e6bb3b65cdf794a0643dd67d" title="en61107_uart_send_inst\l_values" alt="" coords="493,161,662,203"/>
+<area shape="rect" id="node10" href="$en61107__request_8h.html#afdb1795bdd4212fc7e028a9e5668fab4" title="en61107_uart_send_standard\l_data_1" alt="" coords="477,227,677,268"/>
+<area shape="rect" id="node5" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="943,201,1094,227"/>
+<area shape="rect" id="node7" href="$en61107__request_8h.html#a2fa4e9967afddae0c1dedbc914dcee36" title="en61107_meter_wake\l_up_timer_func" alt="" coords="731,15,884,56"/>
+<area shape="rect" id="node8" href="$en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="937,22,1100,49"/>
 </map>

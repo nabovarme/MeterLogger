@@ -1,5 +1,7 @@
 <map id="httpdSentCb" name="httpdSentCb">
-<area shape="rect" id="node2" href="$httpd_8c.html#afd1e497b9cd5f6934acaf57679bc21f8" title="httpdFindConnData" alt="" coords="149,5,287,32"/>
-<area shape="rect" id="node3" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="159,56,277,83"/>
-<area shape="rect" id="node4" href="$httpd_8c.html#a4638d3f885add9276ca7eaeca3ec67a9" title="xmitSendBuff" alt="" coords="167,107,269,133"/>
+<area shape="rect" id="node2" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a9969873c3b8ee86a34496a5166cf8bfc" title="espconn_disconnect" alt="" coords="149,5,293,32"/>
+<area shape="rect" id="node3" href="$httpd_8c.html#afd1e497b9cd5f6934acaf57679bc21f8" title="httpdFindConnData" alt="" coords="153,56,290,83"/>
+<area shape="rect" id="node4" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="162,107,281,133"/>
+<area shape="rect" id="node5" href="$httpd_8c.html#a4638d3f885add9276ca7eaeca3ec67a9" title="xmitSendBuff" alt="" coords="171,157,272,184"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a579e4f1c62f7c33be01398931617e988" title="espconn_sent" alt="" coords="341,157,447,184"/>
 </map>

@@ -1,4 +1,8 @@
 <map id="init_unix_time" name="init_unix_time">
 <area shape="rect" id="node2" href="$unix__time_8c.html#a802f78ed855d6c422974b9c116443c2c" title="ntp_offline_second\l_counter_timer_func" alt="" coords="165,5,309,47"/>
 <area shape="rect" id="node3" href="$unix__time_8c.html#a0fc8c49b1d5626fd003a49270cd23bc9" title="sntp_check_timer_func" alt="" coords="157,71,316,98"/>
+<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a9b300c6616de60524c85ea40bf70e2ba" title="sntp_init" alt="" coords="201,122,273,149"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#abdbe5ed580b63547553ded66ce2e6302" title="sntp_set_timezone" alt="" coords="170,173,303,199"/>
+<area shape="rect" id="node7" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a2da77545ece23ff7077d740072559425" title="sntp_setservername" alt="" coords="165,223,308,250"/>
+<area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7" title="sntp_get_current_timestamp" alt="" coords="364,71,555,98"/>
 </map>

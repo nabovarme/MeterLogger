@@ -3,6 +3,7 @@
 <area shape="rect" id="node3" href="$httpd_8c.html#afbbd7e804f055b233604a4a6e6fe5cee" title="httpdParseHeader" alt="" coords="155,56,286,83"/>
 <area shape="rect" id="node5" href="$httpd_8c.html#a5aa7652c21a5a543311463ab0566ccc9" title="httpdSendResp" alt="" coords="164,107,277,133"/>
 <area shape="rect" id="node7" href="$httpd_8c.html#a4638d3f885add9276ca7eaeca3ec67a9" title="xmitSendBuff" alt="" coords="170,157,271,184"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="357,56,401,83"/>
-<area shape="rect" id="node6" href="$httpd_8c.html#a1a143f6c427d66e2561895cf193fc535" title="httpdSend" alt="" coords="337,107,420,133"/>
+<area shape="rect" id="node4" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="368,56,412,83"/>
+<area shape="rect" id="node6" href="$httpd_8c.html#a1a143f6c427d66e2561895cf193fc535" title="httpdSend" alt="" coords="349,107,431,133"/>
+<area shape="rect" id="node8" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a579e4f1c62f7c33be01398931617e988" title="espconn_sent" alt="" coords="337,157,443,184"/>
 </map>

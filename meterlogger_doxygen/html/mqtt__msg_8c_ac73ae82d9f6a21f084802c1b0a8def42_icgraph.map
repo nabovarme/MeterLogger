@@ -1,13 +1,7 @@
 <map id="mqtt_msg_pingreq" name="mqtt_msg_pingreq">
-<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="185,5,300,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a086502e2dd36681a7fb4d9a9018cfc88" title="MQTT ping function. " alt="" coords="196,56,289,83"/>
-<area shape="rect" id="node10" href="$mqtt_8c.html#ad8ba75844d580447adc10eee6aba039d" title="mqtt_send_keepalive" alt="" coords="348,107,496,133"/>
-<area shape="rect" id="node4" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="355,56,489,83"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#ad6eb800c4d7f9c79df52949d88a18d06" title="mqtt_connected_cb" alt="" coords="544,56,683,83"/>
-<area shape="rect" id="node6" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="900,56,1076,83"/>
-<area shape="rect" id="node9" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="731,56,852,83"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1124,56,1249,83"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1297,56,1369,83"/>
-<area shape="rect" id="node11" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="565,107,661,133"/>
-<area shape="rect" id="node12" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="732,107,851,133"/>
+<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="202,5,317,32"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html#a086502e2dd36681a7fb4d9a9018cfc88" title="MQTT ping function. " alt="" coords="213,56,306,83"/>
+<area shape="rect" id="node4" href="$mqtt_8c.html#ad8ba75844d580447adc10eee6aba039d" title="mqtt_send_keepalive" alt="" coords="185,107,333,133"/>
+<area shape="rect" id="node5" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="381,107,477,133"/>
+<area shape="rect" id="node6" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="525,107,644,133"/>
 </map>

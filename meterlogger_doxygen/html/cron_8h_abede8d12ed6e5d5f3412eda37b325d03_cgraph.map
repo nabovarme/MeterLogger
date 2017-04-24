@@ -1,11 +1,12 @@
 <map id="add_cron_job_from_query" name="add_cron_job_from_query">
-<area shape="rect" id="node2" href="$config_8c.html#ab4af9f95b39f096bb0fa8d73eb5a342e" title="cfg_save_defered" alt="" coords="231,93,359,120"/>
-<area shape="rect" id="node10" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="258,144,331,171"/>
-<area shape="rect" id="node3" href="$config_8c.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="407,93,569,120"/>
-<area shape="rect" id="node4" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="617,93,693,120"/>
-<area shape="rect" id="node5" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="770,5,853,32"/>
-<area shape="rect" id="node6" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="741,57,881,98"/>
-<area shape="rect" id="node8" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="745,123,878,149"/>
-<area shape="rect" id="node9" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="743,173,879,200"/>
-<area shape="rect" id="node7" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="929,123,1041,149"/>
+<area shape="rect" id="node2" href="$config_8c.html#ab4af9f95b39f096bb0fa8d73eb5a342e" title="cfg_save_defered" alt="" coords="231,123,359,149"/>
+<area shape="rect" id="node11" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="258,173,331,200"/>
+<area shape="rect" id="node3" href="$config_8c.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="407,123,569,149"/>
+<area shape="rect" id="node4" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="617,123,693,149"/>
+<area shape="rect" id="node5" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="788,5,871,32"/>
+<area shape="rect" id="node6" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="759,57,899,98"/>
+<area shape="rect" id="node8" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="763,123,896,149"/>
+<area shape="rect" id="node9" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="761,173,897,200"/>
+<area shape="rect" id="node10" href="$user__interface_8h.html#ae68a7b6345630e42fde3e827108571e0" title="system_param_save_with\l_protect" alt="" coords="741,225,917,266"/>
+<area shape="rect" id="node7" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="965,123,1077,149"/>
 </map>

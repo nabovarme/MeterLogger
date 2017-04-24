@@ -1,6 +1,8 @@
 var searchData=
 [
+  ['h',['h',['../structsys__timeo.html#a483e9c13d60e0adf6731869daa3e8b4d',1,'sys_timeo']]],
   ['handle_5fclose',['handle_close',['../heatshrink_8c.html#a380a7d5e663e6f16a9cf9927f0eeebe6',1,'heatshrink.c']]],
+  ['handle_5fdhcp',['handle_dhcp',['../dhcpserver_8c.html#a11489c1fab4206e65914c4c46850d183',1,'dhcpserver.c']]],
   ['handle_5fdrop',['handle_drop',['../heatshrink_8c.html#aa08e5b5aa13b339b363f7c1ad89cc62c',1,'heatshrink.c']]],
   ['handle_5fopen',['handle_open',['../heatshrink_8c.html#a00ddc249f498ff55772e9804308bdea2',1,'heatshrink.c']]],
   ['handle_5fread',['handle_read',['../heatshrink_8c.html#a3e5db3312d645d2f93246a5df7361bf1',1,'heatshrink.c']]],
@@ -56,6 +58,7 @@ var searchData=
   ['heatshrink_5fversion_5fminor',['HEATSHRINK_VERSION_MINOR',['../heatshrink__common_8h.html#a41e3a5db49649fa5bbea716c4b74291b',1,'heatshrink_common.h']]],
   ['heatshrink_5fversion_5fpatch',['HEATSHRINK_VERSION_PATCH',['../heatshrink__common_8h.html#a52926e520b047fbe371f24423b801a48',1,'heatshrink_common.h']]],
   ['hitcounter',['hitCounter',['../cgi_8c.html#ab684c06cb38b9279ce690b4055173369',1,'cgi.c']]],
+  ['hlen',['hlen',['../structdhcps__msg.html#a66ad803d7d8b515703eb1eccc78e1169',1,'dhcps_msg']]],
   ['hmac_2dsha256_2ec',['hmac-sha256.c',['../hmac-sha256_8c.html',1,'']]],
   ['hmac_2dsha256_2eh',['hmac-sha256.h',['../hmac-sha256_8h.html',1,'']]],
   ['hmac_5fsha256',['hmac_sha256',['../hmac-sha256_8c.html#acdadc130fbf78b5f98339c203a057796',1,'hmac_sha256(uint8_t *key, uint32_t keylen, uint8_t *msg, uint32_t msglen, uint8_t *hmac):&#160;hmac-sha256.c'],['../hmac-sha256_8h.html#acdadc130fbf78b5f98339c203a057796',1,'hmac_sha256(uint8_t *key, uint32_t keylen, uint8_t *msg, uint32_t msglen, uint8_t *hmac):&#160;hmac-sha256.c']]],
@@ -64,10 +67,13 @@ var searchData=
   ['hmac_5fsha256_5finit',['hmac_sha256_init',['../hmac-sha256_8c.html#a553a08d76959d7d64d25927fa418af1f',1,'hmac_sha256_init(hmac_sha256_ctx_t *hctx, uint8_t *key, uint32_t keylen):&#160;hmac-sha256.c'],['../hmac-sha256_8h.html#a553a08d76959d7d64d25927fa418af1f',1,'hmac_sha256_init(hmac_sha256_ctx_t *hctx, uint8_t *key, uint32_t keylen):&#160;hmac-sha256.c']]],
   ['hmac_5fsha256_5fkey',['hmac_sha256_key',['../crypto_8c.html#a8353f31b6848bd3f3efa8eea93f5854a',1,'crypto.c']]],
   ['hmac_5fsha256_5fupdate',['hmac_sha256_update',['../hmac-sha256_8c.html#a604cda5243425d008a47d89401e7c987',1,'hmac_sha256_update(hmac_sha256_ctx_t *hctx, uint8_t *msg, uint32_t msglen):&#160;hmac-sha256.c'],['../hmac-sha256_8h.html#a604cda5243425d008a47d89401e7c987',1,'hmac_sha256_update(hmac_sha256_ctx_t *hctx, uint8_t *msg, uint32_t msglen):&#160;hmac-sha256.c']]],
+  ['hops',['hops',['../structdhcps__msg.html#a38e1eaffaf9c0704575326c682463962',1,'dhcps_msg']]],
   ['host',['host',['../struct_m_q_t_t___client.html#af5a8cff2d17cc1fd1f65bb8fbcc95b42',1,'MQTT_Client']]],
+  ['host_5fname',['host_name',['../structmdns__info.html#ad763ac9253d15e95a5fadc9b4fde449c',1,'mdns_info']]],
   ['hour',['hour',['../structcron__job__t.html#a9a5ceff7ec4273ad941b2957bdc3b47d',1,'cron_job_t']]],
   ['hr',['hr',['../structen61107__response__t.html#ae43a09a8d496f941d997a64838f0a4c1',1,'en61107_response_t']]],
   ['hs_5findex',['hs_index',['../strucths__index.html',1,'']]],
+  ['hs_5fstatus',['hs_status',['../struct__espconn__msg.html#aaa47e05ba266ede96d2ec6442203d784',1,'_espconn_msg']]],
   ['hsd',['hsd',['../test__heatshrink__static_8c.html#a7b0324a3c40bfbb3973c5ba184da8c6b',1,'test_heatshrink_static.c']]],
   ['hsd_5ffinish_5fres',['HSD_finish_res',['../heatshrink__decoder_8h.html#a053a01631612e6c96c669e0431f996ce',1,'heatshrink_decoder.h']]],
   ['hsd_5fpoll_5fres',['HSD_poll_res',['../heatshrink__decoder_8h.html#abd574439da270fe6682c4011a8e4a27a',1,'heatshrink_decoder.h']]],
@@ -118,6 +124,8 @@ var searchData=
   ['hses_5fyield_5fliteral',['HSES_YIELD_LITERAL',['../heatshrink__encoder_8c.html#a180d4b5353efdf4e6af9d890996cdd34aaa9d67488a0284ee65ac64e3e5ead2f3',1,'heatshrink_encoder.c']]],
   ['hses_5fyield_5ftag_5fbit',['HSES_YIELD_TAG_BIT',['../heatshrink__encoder_8c.html#a180d4b5353efdf4e6af9d890996cdd34aa8fec0e8f86d225cf065665e318f1bd8',1,'heatshrink_encoder.c']]],
   ['hspi',['HSPI',['../spi_8h.html#a22bd615ece7185b5f635eae8facd0994',1,'spi.h']]],
+  ['htonl',['htonl',['../def_8h.html#ae4027a6ad07f13aa12eab285a1b46019',1,'def.h']]],
+  ['htons',['htons',['../def_8h.html#a51799f5ebb4c7228ef7e95c247030f42',1,'def.h']]],
   ['http_5fauth_5frealm',['HTTP_AUTH_REALM',['../auth_8h.html#a6ad0dd6f352b0b57b0ba3acdd42087d4',1,'auth.h']]],
   ['httpd_2ec',['httpd.c',['../httpd_8c.html',1,'']]],
   ['httpd_2eh',['httpd.h',['../httpd_8h.html',1,'']]],
@@ -164,6 +172,8 @@ var searchData=
   ['httpdurldecode',['httpdUrlDecode',['../httpd_8c.html#a45e5cfc52bcba530447be34fd5bae705',1,'httpdUrlDecode(char *val, int valLen, char *ret, int retLen):&#160;httpd.c'],['../httpd_8h.html#a45e5cfc52bcba530447be34fd5bae705',1,'httpdUrlDecode(char *val, int valLen, char *ret, int retLen):&#160;httpd.c']]],
   ['httpdver',['HTTPDVER',['../httpd_8h.html#a9770b745be5373d20c319b5173a16c5f',1,'httpd.h']]],
   ['httpnotfoundheader',['httpNotFoundHeader',['../httpd_8c.html#ae61ad535633520f7aad4e53f386be64a',1,'httpd.c']]],
+  ['htype',['htype',['../structdhcps__msg.html#a7a2065a67b9490d40ba2150582e5b7fe',1,'dhcps_msg']]],
   ['hw_5fmodel',['HW_MODEL',['../version_8h.html#ae6af540bd4b1c1fb33256d890922c6d5',1,'version.h']]],
-  ['heatshrink',['heatshrink',['../md_lib_heatshrink__r_e_a_d_m_e.html',1,'']]]
+  ['hwaddr',['hwaddr',['../structnetif.html#ab91f76223d5a7f1a64f03ac9dd7113a4',1,'netif']]],
+  ['hwaddr_5flen',['hwaddr_len',['../structnetif.html#afe1181561cb16241f3cb5ed01e567d42',1,'netif']]]
 ];

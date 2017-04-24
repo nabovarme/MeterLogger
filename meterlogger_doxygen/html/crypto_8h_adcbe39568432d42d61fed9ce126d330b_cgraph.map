@@ -1,7 +1,9 @@
 <map id="init_aes_hmac_combined" name="init_aes_hmac_combined">
-<area shape="rect" id="node2" href="$sha256_8c.html#a7f22a0894ca55160852ddcdff7a1f2fc" title="sha256_raw" alt="" coords="227,56,321,83"/>
-<area shape="rect" id="node3" href="$sha256_8c.html#ad1c794b2d7e8eba243628e45cb69ef94" title="sha256_init" alt="" coords="381,5,471,32"/>
-<area shape="rect" id="node4" href="$sha256_8c.html#a00647246fd4532c27d1aafd709d5973d" title="sha256_update" alt="" coords="369,56,483,83"/>
-<area shape="rect" id="node6" href="$sha256_8c.html#a28a4e37e67f8b97b374c49d8b83d8167" title="sha256_final" alt="" coords="377,107,475,133"/>
-<area shape="rect" id="node5" href="$sha256_8c.html#a97b828e7b6479297e92fb5ffc5225ee3" title="sha256_transform" alt="" coords="531,81,660,108"/>
+<area shape="rect" id="node2" href="$sha256_8c.html#a7f22a0894ca55160852ddcdff7a1f2fc" title="sha256_raw" alt="" coords="263,56,357,83"/>
+<area shape="rect" id="node7" href="$user__interface_8h.html#ab04830012b6818505fb8bc7ef76f9ab6" title="system_soft_wdt_restart" alt="" coords="227,107,393,133"/>
+<area shape="rect" id="node8" href="$user__interface_8h.html#a2f47f7ff2f650c014808dcc3b652f15a" title="system_soft_wdt_stop" alt="" coords="233,157,387,184"/>
+<area shape="rect" id="node3" href="$sha256_8c.html#ad1c794b2d7e8eba243628e45cb69ef94" title="sha256_init" alt="" coords="453,5,543,32"/>
+<area shape="rect" id="node4" href="$sha256_8c.html#a00647246fd4532c27d1aafd709d5973d" title="sha256_update" alt="" coords="441,56,555,83"/>
+<area shape="rect" id="node6" href="$sha256_8c.html#a28a4e37e67f8b97b374c49d8b83d8167" title="sha256_final" alt="" coords="449,107,547,133"/>
+<area shape="rect" id="node5" href="$sha256_8c.html#a97b828e7b6479297e92fb5ffc5225ee3" title="sha256_transform" alt="" coords="603,81,732,108"/>
 </map>

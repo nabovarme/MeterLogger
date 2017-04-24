@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['uartbuffer',['UartBuffer',['../struct_uart_buffer.html',1,'']]],
-  ['uartdevice',['UartDevice',['../struct_uart_device.html',1,'']]],
-  ['uartrxbuff',['UartRxBuff',['../struct_uart_rx_buff.html',1,'']]]
+  ['os_5ftime',['os_time',['../structos__time.html',1,'']]],
+  ['output_5finfo',['output_info',['../structoutput__info.html',1,'']]]
 ];

@@ -1,10 +1,6 @@
 <map id="mqtt_tcpclient_sent_cb" name="mqtt_tcpclient_sent_cb">
-<area shape="rect" id="node2" href="$mqtt_8c.html#a36ecd969af1b9c87856f01be064a98cc" title="Tcp client connect success callback function. " alt="" coords="212,31,392,57"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="440,31,557,57"/>
+<area shape="rect" id="node2" href="$mqtt_8c.html#a36ecd969af1b9c87856f01be064a98cc" title="Tcp client connect success callback function. " alt="" coords="212,5,392,32"/>
+<area shape="rect" id="node3" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="440,5,557,32"/>
 <area shape="rect" id="node4" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="605,5,701,32"/>
-<area shape="rect" id="node9" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="749,56,871,83"/>
-<area shape="rect" id="node5" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="751,5,869,32"/>
-<area shape="rect" id="node6" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="919,31,1095,57"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1143,31,1268,57"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1316,31,1388,57"/>
+<area shape="rect" id="node5" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="749,5,868,32"/>
 </map>

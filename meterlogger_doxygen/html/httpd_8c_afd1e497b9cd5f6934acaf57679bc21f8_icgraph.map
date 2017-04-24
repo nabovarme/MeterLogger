@@ -1,12 +1,9 @@
 <map id="httpdFindConnData" name="httpdFindConnData">
 <area shape="rect" id="node2" href="$httpd_8c.html#a3a1968ecb0fa46d0cbeb07e9983494f4" title="httpdDisconCb" alt="" coords="191,5,300,32"/>
-<area shape="rect" id="node9" href="$httpd_8c.html#aa93c97e6f6126a95a462afad3d3651ce" title="httpdReconCb" alt="" coords="192,56,299,83"/>
-<area shape="rect" id="node10" href="$httpd_8c.html#ad4f8c0a86c445f2f52156e8a328613e4" title="httpdRecvCb" alt="" coords="196,107,295,133"/>
-<area shape="rect" id="node11" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="197,157,293,184"/>
+<area shape="rect" id="node6" href="$httpd_8c.html#aa93c97e6f6126a95a462afad3d3651ce" title="httpdReconCb" alt="" coords="192,56,299,83"/>
+<area shape="rect" id="node7" href="$httpd_8c.html#ad4f8c0a86c445f2f52156e8a328613e4" title="httpdRecvCb" alt="" coords="196,107,295,133"/>
+<area shape="rect" id="node8" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="197,157,293,184"/>
 <area shape="rect" id="node3" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="348,81,467,108"/>
 <area shape="rect" id="node4" href="$httpd_8h.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="515,81,584,108"/>
 <area shape="rect" id="node5" href="$httpd__user__init_8h.html#a6abf56883c8e03334f42bfb79aa8b095" title="httpd_user_init" alt="" coords="632,81,741,108"/>
-<area shape="rect" id="node6" href="$user__main_8c.html#aca4c3403260c8a02d8a445795842f53e" title="config_mode_timer_func" alt="" coords="789,81,957,108"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1005,81,1131,108"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1179,81,1251,108"/>
 </map>

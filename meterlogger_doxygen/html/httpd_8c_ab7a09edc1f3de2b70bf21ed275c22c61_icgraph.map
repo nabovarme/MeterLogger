@@ -1,13 +1,9 @@
 <map id="httpdRetireConn" name="httpdRetireConn">
 <area shape="rect" id="node2" href="$httpd_8c.html#a3a1968ecb0fa46d0cbeb07e9983494f4" title="httpdDisconCb" alt="" coords="172,5,281,32"/>
-<area shape="rect" id="node9" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="179,56,275,83"/>
-<area shape="rect" id="node10" href="$httpd_8h.html#afec8778692d2ecc547295eb197fa6fcd" title="httpdStop" alt="" coords="187,107,266,133"/>
-<area shape="rect" id="node3" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="361,56,479,83"/>
-<area shape="rect" id="node4" href="$httpd_8h.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="612,59,681,85"/>
-<area shape="rect" id="node5" href="$httpd__user__init_8h.html#a6abf56883c8e03334f42bfb79aa8b095" title="httpd_user_init" alt="" coords="783,60,892,87"/>
-<area shape="rect" id="node6" href="$user__main_8c.html#aca4c3403260c8a02d8a445795842f53e" title="config_mode_timer_func" alt="" coords="940,63,1108,89"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1156,95,1281,121"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1329,95,1401,121"/>
-<area shape="rect" id="node11" href="$httpd_8c.html#aecb06813eefe322c349651aa5e1316f5" title="httpdDisconnectTimerFunc" alt="" coords="329,107,511,133"/>
-<area shape="rect" id="node12" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="559,132,735,159"/>
+<area shape="rect" id="node6" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="179,56,275,83"/>
+<area shape="rect" id="node7" href="$httpd_8h.html#afec8778692d2ecc547295eb197fa6fcd" title="httpdStop" alt="" coords="187,107,266,133"/>
+<area shape="rect" id="node3" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="361,31,479,57"/>
+<area shape="rect" id="node4" href="$httpd_8h.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="559,31,628,57"/>
+<area shape="rect" id="node5" href="$httpd__user__init_8h.html#a6abf56883c8e03334f42bfb79aa8b095" title="httpd_user_init" alt="" coords="676,31,785,57"/>
+<area shape="rect" id="node8" href="$httpd_8c.html#aecb06813eefe322c349651aa5e1316f5" title="httpdDisconnectTimerFunc" alt="" coords="329,107,511,133"/>
 </map>

@@ -1,15 +1,23 @@
 <map id="httpd_user_init" name="httpd_user_init">
-<area shape="rect" id="node2" href="$httpd_8c.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="163,81,232,108"/>
-<area shape="rect" id="node3" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="280,81,399,108"/>
-<area shape="rect" id="node4" href="$httpd_8c.html#a3a1968ecb0fa46d0cbeb07e9983494f4" title="httpdDisconCb" alt="" coords="447,5,556,32"/>
-<area shape="rect" id="node7" href="$httpd_8c.html#aa93c97e6f6126a95a462afad3d3651ce" title="httpdReconCb" alt="" coords="448,56,555,83"/>
-<area shape="rect" id="node8" href="$httpd_8c.html#ad4f8c0a86c445f2f52156e8a328613e4" title="httpdRecvCb" alt="" coords="452,157,551,184"/>
-<area shape="rect" id="node14" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="453,107,549,133"/>
-<area shape="rect" id="node5" href="$httpd_8c.html#afd1e497b9cd5f6934acaf57679bc21f8" title="httpdFindConnData" alt="" coords="604,56,741,83"/>
-<area shape="rect" id="node6" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="613,5,732,32"/>
-<area shape="rect" id="node9" href="$httpd_8c.html#afbbd7e804f055b233604a4a6e6fe5cee" title="httpdParseHeader" alt="" coords="607,208,738,235"/>
-<area shape="rect" id="node11" href="$httpd_8c.html#a5aa7652c21a5a543311463ab0566ccc9" title="httpdSendResp" alt="" coords="616,157,729,184"/>
-<area shape="rect" id="node13" href="$httpd_8c.html#a4638d3f885add9276ca7eaeca3ec67a9" title="xmitSendBuff" alt="" coords="622,107,723,133"/>
-<area shape="rect" id="node10" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="809,208,853,235"/>
-<area shape="rect" id="node12" href="$httpd_8c.html#a1a143f6c427d66e2561895cf193fc535" title="httpdSend" alt="" coords="789,157,872,184"/>
+<area shape="rect" id="node2" href="$httpd_8c.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="163,163,232,190"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#abd44446e3fc4a61fdef77d473deb678b" title="espconn_accept" alt="" coords="311,113,429,139"/>
+<area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a233874487e43ccdacf772e47bcd9b976" title="espconn_regist_connectcb" alt="" coords="280,163,460,190"/>
+<area shape="rect" id="node5" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="311,214,429,241"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a9969873c3b8ee86a34496a5166cf8bfc" title="espconn_disconnect" alt="" coords="728,11,872,38"/>
+<area shape="rect" id="node7" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#af43c93f2f0cc14a1c1e95c38e9469b9f" title="espconn_regist_disconcb" alt="" coords="508,265,680,291"/>
+<area shape="rect" id="node8" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a771463177734012911e42931a10ee7a2" title="espconn_regist_reconcb" alt="" coords="511,315,677,342"/>
+<area shape="rect" id="node9" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a56d063a430d96d20b4ea5e28ba41011c" title="espconn_regist_recvcb" alt="" coords="515,366,673,393"/>
+<area shape="rect" id="node10" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a438ded04b3f8a70948fcf8c551bce179" title="espconn_regist_sentcb" alt="" coords="515,417,673,443"/>
+<area shape="rect" id="node11" href="$httpd_8c.html#a3a1968ecb0fa46d0cbeb07e9983494f4" title="httpdDisconCb" alt="" coords="539,62,649,89"/>
+<area shape="rect" id="node14" href="$httpd_8c.html#aa93c97e6f6126a95a462afad3d3651ce" title="httpdReconCb" alt="" coords="541,163,647,190"/>
+<area shape="rect" id="node15" href="$httpd_8c.html#ad4f8c0a86c445f2f52156e8a328613e4" title="httpdRecvCb" alt="" coords="545,214,643,241"/>
+<area shape="rect" id="node22" href="$httpd_8c.html#a51c1039375e19643be3aaac1e8a1c937" title="httpdSentCb" alt="" coords="546,113,642,139"/>
+<area shape="rect" id="node12" href="$httpd_8c.html#afd1e497b9cd5f6934acaf57679bc21f8" title="httpdFindConnData" alt="" coords="731,113,869,139"/>
+<area shape="rect" id="node13" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="741,62,859,89"/>
+<area shape="rect" id="node16" href="$httpd_8c.html#afbbd7e804f055b233604a4a6e6fe5cee" title="httpdParseHeader" alt="" coords="735,265,865,291"/>
+<area shape="rect" id="node18" href="$httpd_8c.html#a5aa7652c21a5a543311463ab0566ccc9" title="httpdSendResp" alt="" coords="743,214,857,241"/>
+<area shape="rect" id="node20" href="$httpd_8c.html#a4638d3f885add9276ca7eaeca3ec67a9" title="xmitSendBuff" alt="" coords="749,163,851,190"/>
+<area shape="rect" id="node17" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="951,265,995,291"/>
+<area shape="rect" id="node19" href="$httpd_8c.html#a1a143f6c427d66e2561895cf193fc535" title="httpdSend" alt="" coords="931,214,1014,241"/>
+<area shape="rect" id="node21" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a579e4f1c62f7c33be01398931617e988" title="espconn_sent" alt="" coords="920,163,1025,190"/>
 </map>

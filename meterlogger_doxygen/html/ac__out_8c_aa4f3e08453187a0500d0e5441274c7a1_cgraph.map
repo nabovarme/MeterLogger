@@ -1,7 +1,8 @@
 <map id="ac_test_timer_func" name="ac_test_timer_func">
-<area shape="rect" id="node2" href="$led_8c.html#aa00afefe8ba48ccd7df635fbc7d4c9fc" title="led_pattern_a" alt="" coords="188,5,292,32"/>
-<area shape="rect" id="node6" href="$led_8c.html#a6a83b60a5039ca4c8727fc1902630210" title="led_pattern_b" alt="" coords="188,56,292,83"/>
-<area shape="rect" id="node3" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="340,31,496,57"/>
-<area shape="rect" id="node4" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="544,5,607,32"/>
-<area shape="rect" id="node5" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="544,56,607,83"/>
+<area shape="rect" id="node2" href="$gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718" title="gpio_output_set" alt="" coords="655,33,772,60"/>
+<area shape="rect" id="node3" href="$led_8c.html#aa00afefe8ba48ccd7df635fbc7d4c9fc" title="led_pattern_a" alt="" coords="188,33,292,60"/>
+<area shape="rect" id="node7" href="$led_8c.html#a6a83b60a5039ca4c8727fc1902630210" title="led_pattern_b" alt="" coords="188,84,292,110"/>
+<area shape="rect" id="node4" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="340,58,496,85"/>
+<area shape="rect" id="node5" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="544,33,607,60"/>
+<area shape="rect" id="node6" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="544,84,607,110"/>
 </map>

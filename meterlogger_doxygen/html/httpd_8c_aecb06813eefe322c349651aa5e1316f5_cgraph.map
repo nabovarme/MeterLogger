@@ -1,4 +1,6 @@
 <map id="httpdDisconnectTimerFunc" name="httpdDisconnectTimerFunc">
-<area shape="rect" id="node2" href="$httpd_8c.html#afec8778692d2ecc547295eb197fa6fcd" title="httpdStop" alt="" coords="235,5,313,32"/>
-<area shape="rect" id="node3" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="361,5,480,32"/>
+<area shape="rect" id="node2" href="$httpd_8c.html#afec8778692d2ecc547295eb197fa6fcd" title="httpdStop" alt="" coords="235,56,313,83"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a63d15dda14dfcd8da278c31f048910c3" title="espconn_delete" alt="" coords="375,5,491,32"/>
+<area shape="rect" id="node4" href="$httpd_8c.html#ab7a09edc1f3de2b70bf21ed275c22c61" title="httpdRetireConn" alt="" coords="374,56,493,83"/>
+<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a9969873c3b8ee86a34496a5166cf8bfc" title="espconn_disconnect" alt="" coords="361,107,505,133"/>
 </map>

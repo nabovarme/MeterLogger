@@ -1,4 +1,5 @@
 <map id="led_blinker_timer_func" name="led_blinker_timer_func">
 <area shape="rect" id="node2" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="209,5,272,32"/>
-<area shape="rect" id="node3" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="209,56,272,83"/>
+<area shape="rect" id="node4" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="209,56,272,83"/>
+<area shape="rect" id="node3" href="$gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718" title="gpio_output_set" alt="" coords="320,31,437,57"/>
 </map>

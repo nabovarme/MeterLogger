@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['kmp_5fresponse_5fregister_5ft',['kmp_response_register_t',['../structkmp__response__register__t.html',1,'']]],
-  ['kmp_5fresponse_5ft',['kmp_response_t',['../structkmp__response__t.html',1,'']]]
+  ['greatest_5frun_5finfo',['greatest_run_info',['../structgreatest__run__info.html',1,'']]],
+  ['greatest_5fsuite_5finfo',['greatest_suite_info',['../structgreatest__suite__info.html',1,'']]]
 ];

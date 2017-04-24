@@ -1,3 +1,5 @@
 <map id="include/driver/uart.h" name="include/driver/uart.h">
 <area shape="rect" id="node2" href="$uart__register_8h.html" title="uart_register.h" alt="" coords="5,80,113,107"/>
+<area shape="rect" id="node3" href="$eagle__soc_8h.html" title="eagle_soc.h" alt="" coords="138,80,231,107"/>
+<area shape="rect" id="node4" href="$c__types_8h.html" title="c_types.h" alt="" coords="256,80,335,107"/>
 </map>

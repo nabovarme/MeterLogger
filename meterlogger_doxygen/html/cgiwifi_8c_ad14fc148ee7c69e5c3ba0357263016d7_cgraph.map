@@ -1,3 +1,4 @@
 <map id="wifiStartScan" name="wifiStartScan">
-<area shape="rect" id="node2" href="$cgiwifi_8c.html#a3accef2e486fb95241d855b6e4f5b88b" title="wifiScanDoneCb" alt="" coords="153,5,273,32"/>
+<area shape="rect" id="node2" href="$user__interface_8h.html#ac80b0607b1cb20c161c681581c998626" title="wifi_station_scan" alt="" coords="153,5,277,32"/>
+<area shape="rect" id="node3" href="$cgiwifi_8c.html#a3accef2e486fb95241d855b6e4f5b88b" title="wifiScanDoneCb" alt="" coords="155,56,275,83"/>
 </map>

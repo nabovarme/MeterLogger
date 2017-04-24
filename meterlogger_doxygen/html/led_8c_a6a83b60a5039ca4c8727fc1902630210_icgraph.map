@@ -1,14 +1,8 @@
 <map id="led_pattern_b" name="led_pattern_b">
 <area shape="rect" id="node2" href="$ac__out_8h.html#a483eac71fafd6926d6e16c08b87530ef" title="ac_motor_valve_close" alt="" coords="157,5,312,32"/>
-<area shape="rect" id="node3" href="$ac__out_8c.html#aa4f3e08453187a0500d0e5441274c7a1" title="ac_test_timer_func" alt="" coords="167,107,302,133"/>
-<area shape="rect" id="node11" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="368,56,491,83"/>
-<area shape="rect" id="node12" href="$user__main_8h.html#ad6eb800c4d7f9c79df52949d88a18d06" title="mqtt_connected_cb" alt="" coords="360,157,499,184"/>
-<area shape="rect" id="node4" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="397,107,462,133"/>
-<area shape="rect" id="node5" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="547,56,679,83"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="561,107,664,133"/>
-<area shape="rect" id="node6" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="977,56,1049,83"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1124,56,1196,83"/>
-<area shape="rect" id="node9" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="727,145,903,172"/>
-<area shape="rect" id="node10" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="951,132,1076,159"/>
-<area shape="rect" id="node13" href="$user__main_8h.html#a7a3bf0cc09d98adc72f4e34d26ce3fa1" title="wifi_changed_cb" alt="" coords="552,208,673,235"/>
+<area shape="rect" id="node3" href="$ac__out_8c.html#aa4f3e08453187a0500d0e5441274c7a1" title="ac_test_timer_func" alt="" coords="167,56,302,83"/>
+<area shape="rect" id="node7" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="360,107,483,133"/>
+<area shape="rect" id="node4" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="389,56,454,83"/>
+<area shape="rect" id="node5" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="531,81,663,108"/>
+<area shape="rect" id="node6" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="711,81,783,108"/>
 </map>

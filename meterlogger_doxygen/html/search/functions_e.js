@@ -1,7 +1,28 @@
 var searchData=
 [
-  ['on_5ffinal_5fliteral',['on_final_literal',['../heatshrink__encoder_8c.html#a3609038125fab3c5b7a5914490d82fa2',1,'heatshrink_encoder.c']]],
-  ['os_5fprintf',['os_printf',['../espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3',1,'espmissingincludes.h']]],
-  ['os_5fprintf_5fplus',['os_printf_plus',['../espmissingincludes_8h.html#a75ef15608226077b032e3b2fa3be28fc',1,'espmissingincludes.h']]],
-  ['os_5fsnprintf',['os_snprintf',['../espmissingincludes_8h.html#ae27fa0bb797a88d1e66abff3654dc228',1,'espmissingincludes.h']]]
+  ['netbuf_5falloc',['netbuf_alloc',['../netbuf_8h.html#ae8b65c3486a6fc3394e4606bbcad12ab',1,'netbuf.h']]],
+  ['netbuf_5fchain',['netbuf_chain',['../netbuf_8h.html#a821fffd766e880eb89ac21ffec8e99d0',1,'netbuf.h']]],
+  ['netbuf_5fdata',['netbuf_data',['../netbuf_8h.html#ae7bdc4dd632deee49c48198eecf0e584',1,'netbuf.h']]],
+  ['netbuf_5fdelete',['netbuf_delete',['../netbuf_8h.html#ad0cee401e7a03a3825f574704d366329',1,'netbuf.h']]],
+  ['netbuf_5ffirst',['netbuf_first',['../netbuf_8h.html#a51c51e1af794b6e6792e33527c94bb75',1,'netbuf.h']]],
+  ['netbuf_5ffree',['netbuf_free',['../netbuf_8h.html#a7de90f052ed91149d01b5d67cbd1340e',1,'netbuf.h']]],
+  ['netbuf_5fnew',['netbuf_new',['../netbuf_8h.html#a36b26fff2af163224268435245994971',1,'netbuf.h']]],
+  ['netbuf_5fnext',['netbuf_next',['../netbuf_8h.html#a7a3daa536fff365794e6840ca6c9acf9',1,'netbuf.h']]],
+  ['netbuf_5fref',['netbuf_ref',['../netbuf_8h.html#a6ff89cf9fc32ee67e1fddad81bbd45d2',1,'netbuf.h']]],
+  ['netif_5fadd',['netif_add',['../netif_8h.html#a31f162ebf8884aced6e232961fd118c9',1,'netif_add(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask, ip_addr_t *gw, void *state, netif_init_fn init, netif_input_fn input) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#aaaa8066c47023b576a5f403c3ba82597',1,'netif_add(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask, ip_addr_t *gw, void *state, netif_init_fn init, netif_input_fn input):&#160;netif.c']]],
+  ['netif_5ffind',['netif_find',['../netif_8h.html#acae09155f49de171f45235493081ad90',1,'netif_find(char *name) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a4b744acecfae7ee43e1df3ed7c6f8832',1,'netif_find(char *name):&#160;netif.c']]],
+  ['netif_5finit',['netif_init',['../netif_8h.html#a5a3c524ae434ce8e996e18746e9977fc',1,'netif_init(void) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a0f4a53e47c840904f824a2a1c0d4ebf4',1,'netif_init(void):&#160;netif.c']]],
+  ['netif_5fremove',['netif_remove',['../netif_8h.html#a466eba613f29f50006edf9dc3516251a',1,'netif_remove(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a9c6e541f0c184e1ea61a5cd8afe3e979',1,'netif_remove(struct netif *netif):&#160;netif.c']]],
+  ['netif_5fset_5faddr',['netif_set_addr',['../netif_8h.html#ae0e5a59956a622faf2e6bca1bb493908',1,'netif_set_addr(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask, ip_addr_t *gw) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a383f97a67057d0f3cd8bfff0534973fc',1,'netif_set_addr(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask, ip_addr_t *gw):&#160;netif.c']]],
+  ['netif_5fset_5fdefault',['netif_set_default',['../netif_8h.html#adf60dd30848a63ce3a1339c98c098acc',1,'netif_set_default(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#ac90f290edd005238d62aa94c4ac9dea3',1,'netif_set_default(struct netif *netif):&#160;netif.c']]],
+  ['netif_5fset_5fdown',['netif_set_down',['../netif_8h.html#a297a0142115df40842a496ba2f0d6134',1,'netif_set_down(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a641d07ed8c31fe5306bc01605a6790cf',1,'netif_set_down(struct netif *netif):&#160;netif.c']]],
+  ['netif_5fset_5fgw',['netif_set_gw',['../netif_8h.html#a4b8127f9fc2dc46876508af3c3f16fad',1,'netif_set_gw(struct netif *netif, ip_addr_t *gw) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#aa6db00ff3e674d3ff8580c82f5215f4e',1,'netif_set_gw(struct netif *netif, ip_addr_t *gw):&#160;netif.c']]],
+  ['netif_5fset_5fipaddr',['netif_set_ipaddr',['../netif_8h.html#a7d102aa2f0e43c60b219f8da1880d990',1,'netif_set_ipaddr(struct netif *netif, ip_addr_t *ipaddr) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#ae495c5439172c15c703a84cb33806236',1,'netif_set_ipaddr(struct netif *netif, ip_addr_t *ipaddr):&#160;netif.c']]],
+  ['netif_5fset_5flink_5fdown',['netif_set_link_down',['../netif_8h.html#a0cd5a43c53bb16cdd3932d87cfd1ef15',1,'netif_set_link_down(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a34e37a1e8e358760dc1c43887922c7db',1,'netif_set_link_down(struct netif *netif):&#160;netif.c']]],
+  ['netif_5fset_5flink_5fup',['netif_set_link_up',['../netif_8h.html#a58f2d9abefc1b3583203f897abceba82',1,'netif_set_link_up(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#ae0d2975f189277990e9d5276fdd9e9ea',1,'netif_set_link_up(struct netif *netif):&#160;netif.c']]],
+  ['netif_5fset_5fnetmask',['netif_set_netmask',['../netif_8h.html#a8206bc3c7798b0fb5d526e51aa26049e',1,'netif_set_netmask(struct netif *netif, ip_addr_t *netmask) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#a19b1df3b0b78d7505e3c4c196730ad91',1,'netif_set_netmask(struct netif *netif, ip_addr_t *netmask):&#160;netif.c']]],
+  ['netif_5fset_5fup',['netif_set_up',['../netif_8h.html#aa51f31eb68fa9ca6f0e9e3fbd06b3945',1,'netif_set_up(struct netif *netif) ICACHE_FLASH_ATTR:&#160;netif.c'],['../netif_8c.html#af19693be401a265a52d2a56c65753121',1,'netif_set_up(struct netif *netif):&#160;netif.c']]],
+  ['node_5finsert_5fto_5flist',['node_insert_to_list',['../dhcpserver_8c.html#a6575d1e13274b93e442ed73730c88e60',1,'dhcpserver.c']]],
+  ['node_5fremove_5ffrom_5flist',['node_remove_from_list',['../dhcpserver_8c.html#a5189bbf95d6eed2474f4dac72c68d7b3',1,'dhcpserver.c']]],
+  ['ntp_5foffline_5fsecond_5fcounter_5ftimer_5ffunc',['ntp_offline_second_counter_timer_func',['../unix__time_8c.html#a802f78ed855d6c422974b9c116443c2c',1,'unix_time.c']]]
 ];

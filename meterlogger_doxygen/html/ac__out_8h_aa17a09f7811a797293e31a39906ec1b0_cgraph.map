@@ -1,10 +1,11 @@
 <map id="ac_motor_valve_open" name="ac_motor_valve_open">
-<area shape="rect" id="node2" href="$ac__out_8c.html#aaa0444bb417d9a634d5304b267f4fcda" title="ac_off" alt="" coords="229,5,288,32"/>
-<area shape="rect" id="node3" href="$ac__out_8c.html#a07e9d906599f62767ef1efb99d8fce11" title="ac_out_off_timer_func" alt="" coords="360,56,513,83"/>
-<area shape="rect" id="node6" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="587,107,660,133"/>
-<area shape="rect" id="node7" href="$led_8c.html#aa00afefe8ba48ccd7df635fbc7d4c9fc" title="led_pattern_a" alt="" coords="207,157,311,184"/>
-<area shape="rect" id="node4" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="732,56,795,83"/>
-<area shape="rect" id="node5" href="$led_8c.html#a7cd1d03b4baad9cb20bf1a43046f61a2" title="led_stop_pattern" alt="" coords="563,56,684,83"/>
-<area shape="rect" id="node8" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="359,157,515,184"/>
-<area shape="rect" id="node9" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="592,208,655,235"/>
+<area shape="rect" id="node2" href="$ac__out_8c.html#aaa0444bb417d9a634d5304b267f4fcda" title="ac_off" alt="" coords="229,93,288,120"/>
+<area shape="rect" id="node3" href="$ac__out_8c.html#a07e9d906599f62767ef1efb99d8fce11" title="ac_out_off_timer_func" alt="" coords="359,119,512,145"/>
+<area shape="rect" id="node4" href="$gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718" title="gpio_output_set" alt="" coords="875,93,992,120"/>
+<area shape="rect" id="node7" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="601,195,675,221"/>
+<area shape="rect" id="node8" href="$led_8c.html#aa00afefe8ba48ccd7df635fbc7d4c9fc" title="led_pattern_a" alt="" coords="207,245,311,272"/>
+<area shape="rect" id="node5" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="764,119,827,145"/>
+<area shape="rect" id="node6" href="$led_8c.html#a7cd1d03b4baad9cb20bf1a43046f61a2" title="led_stop_pattern" alt="" coords="577,144,699,171"/>
+<area shape="rect" id="node9" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="560,245,716,272"/>
+<area shape="rect" id="node10" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="764,220,827,247"/>
 </map>

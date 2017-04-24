@@ -1,5 +1,4 @@
 <map id="uart0_rx_intr_handler" name="uart0_rx_intr_handler">
 <area shape="rect" id="node2" href="$uart_8c.html#a489b77b74dfee22fd4f0c5323ab44da6" title="uart_config" alt="" coords="203,5,291,32"/>
 <area shape="rect" id="node3" href="$uart_8h.html#a1fdfa60721412bedfeb7be0ebc4d1700" title="uart_init" alt="" coords="339,5,408,32"/>
-<area shape="rect" id="node4" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="456,5,528,32"/>
 </map>

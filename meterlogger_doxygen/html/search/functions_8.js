@@ -1,6 +1,7 @@
 var searchData=
 [
   ['handle_5fclose',['handle_close',['../heatshrink_8c.html#a380a7d5e663e6f16a9cf9927f0eeebe6',1,'heatshrink.c']]],
+  ['handle_5fdhcp',['handle_dhcp',['../dhcpserver_8c.html#a11489c1fab4206e65914c4c46850d183',1,'dhcpserver.c']]],
   ['handle_5fdrop',['handle_drop',['../heatshrink_8c.html#aa08e5b5aa13b339b363f7c1ad89cc62c',1,'heatshrink.c']]],
   ['handle_5fopen',['handle_open',['../heatshrink_8c.html#a00ddc249f498ff55772e9804308bdea2',1,'heatshrink.c']]],
   ['handle_5fread',['handle_read',['../heatshrink_8c.html#a3e5db3312d645d2f93246a5df7361bf1',1,'heatshrink.c']]],

@@ -1,9 +1,5 @@
 <map id="ac_test_timer_func" name="ac_test_timer_func">
-<area shape="rect" id="node2" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="188,31,253,57"/>
+<area shape="rect" id="node2" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="188,5,253,32"/>
 <area shape="rect" id="node3" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="301,5,433,32"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="316,56,419,83"/>
-<area shape="rect" id="node4" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="732,5,804,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="879,31,951,57"/>
-<area shape="rect" id="node7" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="481,56,657,83"/>
-<area shape="rect" id="node8" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="705,56,831,83"/>
+<area shape="rect" id="node4" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="481,5,553,32"/>
 </map>

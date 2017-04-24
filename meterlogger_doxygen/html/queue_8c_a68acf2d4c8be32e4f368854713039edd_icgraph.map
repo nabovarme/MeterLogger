@@ -1,7 +1,4 @@
 <map id="QUEUE_IsEmpty" name="QUEUE_IsEmpty">
 <area shape="rect" id="node2" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="179,5,275,32"/>
 <area shape="rect" id="node3" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="323,5,441,32"/>
-<area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="489,5,665,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="713,5,839,32"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="887,5,959,32"/>
 </map>

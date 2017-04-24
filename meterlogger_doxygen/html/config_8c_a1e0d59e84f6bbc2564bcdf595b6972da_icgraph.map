@@ -1,14 +1,10 @@
 <map id="config_save_timer_func" name="config_save_timer_func">
-<area shape="rect" id="node2" href="$config_8h.html#ab4af9f95b39f096bb0fa8d73eb5a342e" title="cfg_save_defered" alt="" coords="427,127,555,154"/>
-<area shape="rect" id="node13" href="$config_8h.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="216,164,379,191"/>
-<area shape="rect" id="node3" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="630,51,753,78"/>
-<area shape="rect" id="node10" href="$ac__out_8h.html#a3bc674b019d5e2e4d15e7abe7c69029f" title="ac_thermo_close" alt="" coords="629,102,753,128"/>
-<area shape="rect" id="node11" href="$cron_8h.html#abede8d12ed6e5d5f3412eda37b325d03" title="add_cron_job_from_query" alt="" coords="603,152,780,179"/>
-<area shape="rect" id="node12" href="$cron_8h.html#ad014b7bf4eab144ea9fc5669d896714b" title="clear_cron_jobs" alt="" coords="633,203,749,230"/>
-<area shape="rect" id="node4" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="828,51,960,78"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1405,76,1477,103"/>
-<area shape="rect" id="node7" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="843,152,945,179"/>
-<area shape="rect" id="node5" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="1259,51,1331,78"/>
-<area shape="rect" id="node8" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="1008,152,1184,179"/>
-<area shape="rect" id="node9" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="1232,152,1357,179"/>
+<area shape="rect" id="node2" href="$config_8h.html#ab4af9f95b39f096bb0fa8d73eb5a342e" title="cfg_save_defered" alt="" coords="427,81,555,108"/>
+<area shape="rect" id="node9" href="$config_8h.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="216,119,379,145"/>
+<area shape="rect" id="node3" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="630,5,753,32"/>
+<area shape="rect" id="node6" href="$ac__out_8h.html#a3bc674b019d5e2e4d15e7abe7c69029f" title="ac_thermo_close" alt="" coords="629,56,753,83"/>
+<area shape="rect" id="node7" href="$cron_8h.html#abede8d12ed6e5d5f3412eda37b325d03" title="add_cron_job_from_query" alt="" coords="603,107,780,133"/>
+<area shape="rect" id="node8" href="$cron_8h.html#ad014b7bf4eab144ea9fc5669d896714b" title="clear_cron_jobs" alt="" coords="633,157,749,184"/>
+<area shape="rect" id="node4" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="828,31,960,57"/>
+<area shape="rect" id="node5" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="1008,31,1080,57"/>
 </map>

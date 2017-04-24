@@ -1,4 +1,7 @@
 <map id="HttpdBuiltInUrl" name="HttpdBuiltInUrl">
-<area shape="rect" id="node2" href="$struct_httpd_conn_data.html" title="{HttpdConnData\n|+ conn\l+ url\l+ getArgs\l+ cgiArg\l+ cgiData\l+ postLen\l+ postBuff\l|}" alt="" coords="5,204,119,369"/>
-<area shape="rect" id="node3" href="$struct_httpd_priv.html" title="{HttpdPriv\n|+ head\l+ headPos\l+ postPos\l+ sendBuff\l+ sendBuffLen\l|}" alt="" coords="8,5,116,141"/>
+<area shape="rect" id="node2" href="$struct_httpd_conn_data.html" title="{HttpdConnData\n|+ url\l+ getArgs\l+ cgiArg\l+ cgiData\l+ postLen\l+ postBuff\l|}" alt="" coords="35,491,148,641"/>
+<area shape="rect" id="node3" href="$struct_httpd_priv.html" title="{HttpdPriv\n|+ head\l+ headPos\l+ postPos\l+ sendBuff\l+ sendBuffLen\l|}" alt="" coords="5,270,113,406"/>
+<area shape="rect" id="node4" href="$structespconn.html" title="{espconn\n|+ type\l+ state\l+ proto\l+ recv_callback\l+ sent_callback\l+ link_cnt\l+ reverse\l+ proto\l|}" alt="" coords="138,248,253,428"/>
+<area shape="rect" id="node5" href="$struct__esp__udp.html" title="{_esp_udp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l|}" alt="" coords="67,35,172,156"/>
+<area shape="rect" id="node6" href="$struct__esp__tcp.html" title="{_esp_tcp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l+ connect_callback\l+ reconnect_callback\l+ disconnect_callback\l+ write_finish_fn\l|}" alt="" coords="196,5,349,185"/>
 </map>

@@ -1,9 +1,24 @@
 <map id="wifi_handle_event_cb" name="wifi_handle_event_cb">
-<area shape="rect" id="node2" href="$wifi_8c.html#a3cea38a15b267ddabc1e6d5cf72b5ae8" title="my_input_ap" alt="" coords="227,5,326,32"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="573,81,647,108"/>
-<area shape="rect" id="node5" href="$wifi_8c.html#ae8f820b5b6007cf5c17793a964ee3f90" title="my_output_ap" alt="" coords="223,107,330,133"/>
-<area shape="rect" id="node6" href="$wifi_8c.html#a069085a17bc69a26e3fbb08406b0f306" title="patch_netif_ap" alt="" coords="407,107,516,133"/>
-<area shape="rect" id="node7" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="204,208,349,235"/>
-<area shape="rect" id="node3" href="$wifi_8c.html#a0d197abbbedf42c0522e20b43884c920" title="acl_check_packet" alt="" coords="397,5,525,32"/>
-<area shape="rect" id="node8" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="405,208,517,235"/>
+<area shape="rect" id="node2" href="$wifi_8c.html#a3cea38a15b267ddabc1e6d5cf72b5ae8" title="my_input_ap" alt="" coords="239,81,337,108"/>
+<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="681,157,754,184"/>
+<area shape="rect" id="node9" href="$wifi_8c.html#ae8f820b5b6007cf5c17793a964ee3f90" title="my_output_ap" alt="" coords="235,208,341,235"/>
+<area shape="rect" id="node10" href="$wifi_8c.html#a069085a17bc69a26e3fbb08406b0f306" title="patch_netif_ap" alt="" coords="233,259,343,285"/>
+<area shape="rect" id="node11" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="215,335,361,361"/>
+<area shape="rect" id="node22" href="$user__interface_8h.html#a1f0be53caaf81058292a1e6559bdaa36" title="wifi_station_get_config" alt="" coords="209,385,367,412"/>
+<area shape="rect" id="node23" href="$user__interface_8h.html#ad61f32757e670d1a2feb7e445992fd1a" title="wifi_station_get_connect\l_status" alt="" coords="204,437,372,478"/>
+<area shape="rect" id="node3" href="$wifi_8c.html#a0d197abbbedf42c0522e20b43884c920" title="acl_check_packet" alt="" coords="438,81,566,108"/>
+<area shape="rect" id="node5" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="463,31,541,57"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="676,5,759,32"/>
+<area shape="rect" id="node8" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="673,56,762,83"/>
+<area shape="rect" id="node7" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="851,5,937,32"/>
+<area shape="rect" id="node12" href="$user__interface_8h.html#adc4b55015e0a64892d33a7d79a7627d6" title="wifi_softap_dhcps_stop" alt="" coords="422,503,582,529"/>
+<area shape="rect" id="node13" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="446,553,558,580"/>
+<area shape="rect" id="node14" href="$dhcpserver_8h.html#afcc7be4bef36be1a00bf656ecfbe2435" title="dhcps_set_DNS" alt="" coords="443,604,561,631"/>
+<area shape="rect" id="node15" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a14648bc9f2440272f29e0d9156c53429" title="espconn_dns_setserver" alt="" coords="420,233,584,260"/>
+<area shape="rect" id="node16" href="$user__interface_8h.html#ab48707f54ae5b1c7a10ad6801feaf2b8" title="wifi_set_ip_info" alt="" coords="445,284,559,311"/>
+<area shape="rect" id="node17" href="$dhcpserver_8c.html#ad756f0dfc02120d651d6fc42fc8728bf" title="wifi_softap_set_dhcps\l_lease" alt="" coords="425,386,579,427"/>
+<area shape="rect" id="node21" href="$user__interface_8h.html#a3955db3d72e1669492143e64f7b32775" title="wifi_softap_dhcps_start" alt="" coords="421,452,583,479"/>
+<area shape="rect" id="node18" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="661,343,774,369"/>
+<area shape="rect" id="node19" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="656,393,779,420"/>
+<area shape="rect" id="node20" href="$user__interface_8h.html#a0fd4c4454b23c6532a8dcbfbcbaa4e13" title="wifi_softap_dhcps_status" alt="" coords="632,444,803,471"/>
 </map>

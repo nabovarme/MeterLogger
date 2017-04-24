@@ -62,7 +62,76 @@ $(function() {
 <div class="title">MeterLogger Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+<div class="textblock"><p>To build and flash for KMP type meter (Multical 601): </p><div class="fragment"><div class="line">KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  </div></div><!-- fragment --><p>To build and flash for en61107, sub type Multical 66 C: </p><div class="fragment"><div class="line">EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  </div></div><!-- fragment --><p>To build and flash for en61107, sub type Multical 66 B: </p><div class="fragment"><div class="line">MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  </div></div><!-- fragment --><p>To build and flash for impulse based electricity meter: </p><div class="fragment"><div class="line">IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  </div></div><!-- fragment --><p>To configure wireless network: </p><div class="fragment"><div class="line">SERIAL=9999999 KEY=ef500c9268cf749016d26d6cbfaaf7bf make wifisetup  </div></div><!-- fragment --><p><b>BUILD OPTIONS</b> DEBUG=1 enable serial debugging</p>
+<p>DEBUG_NO_METER=1 dont wait for meter to answer</p>
+<p>DEBUG_SHORT_WEB_CONFIG_TIME=1 dont wait for web config</p>
+<p>IMPULSE=1 meter type is impulse based (100 mS)</p>
+<p>EN61107=0 meter type is KMP (Multical 601)</p>
+<p>EN61107=1 meter type is en61107, sub type Multical 66 C</p>
+<p>MC_66B=1 meter type is en61107, sub type Multical 66 B</p>
+<p>THERMO_NO=0 thermo actuator is normal closed</p>
+<p>THERMO_NO=1 thermo actuator is normal open</p>
+<p>LED_ON_AC=1 use led to indicate ac state</p>
+<p>SERIAL=9999999 serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1</p>
+<p>KEY=ef500c9268cf749016d26d6cbfaaf7bf master key for crypto, 16 bytes Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first first 16 bytes is aes key and last 16 bytes is hmac sha256 key.</p>
+<p>Crypto is applies on mqtt packages like: first 32 bytes of <a class="el" href="structmqtt__message.html">mqtt_message</a> contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data</p>
+<p>AP=1 enable wireless extender; wireless AP enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set.</p>
+<p><b>MQTT format for messages sent <em>to</em> meter</b></p>
+<table class="doxtable">
+<tr>
+<th align="left">Topic </th><th align="left">Message  </th></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/ping </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/open </td><td align="left">[unix time] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/close </td><td align="left">[unix time] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/status </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/set_cron </td><td align="left">minute=30&amp;hour=*&amp;day_of_month=*&amp;month=*&amp;day_of_week=*&amp;command=open </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/cron </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/clear_cron </td><td align="left">[unix time] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/ping </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/version </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/uptime </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/rssi </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/ssid </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/set_ssid </td><td align="left">[ssid] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/set_pwd </td><td align="left">[pwd] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/wifi_status </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/save (only pulse meter) </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/mem </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/reset_reason </td><td align="left"></td></tr>
+</table>
+<p><b>MQTT format for messages sent <em>from</em> meter</b></p>
+<table class="doxtable">
+<tr>
+<th align="left">Topic </th><th align="left">Message  </th></tr>
+<tr>
+<td align="left">/sample/v2/9999999/[unix time] </td><td align="left">heap=20000&amp;t1=25.00 C&amp;t2=15.00 C&amp;tdif=10.00 K&amp;flow1=0 l/h&amp;effect1=0.0 kW&amp;hr=0 h&amp;v1=0.00 m3&amp;e1=0 kWh&amp; </td></tr>
+<tr>
+<td align="left">/cron/v2/9999999/[unix time] </td><td align="left">12 </td></tr>
+<tr>
+<td align="left">/ping/v2/9999999/[unix time] </td><td align="left"></td></tr>
+<tr>
+<td align="left">/version/v2/9999999/[unix time] </td><td align="left">[sdk version]-[git version] </td></tr>
+</table>
+<p>| /status/v2/9999999/[unix time] | [open|close] | | /uptime/v2/9999999/[unix time] | [uptime in seconds] | | /rssi/v2/9999999/[unix time] | [rssi of the wifi it is connected to (in dBm, 31 if fail)] | | /ssid/v2/9999999/[unix time] | [ssid of the wifi it is connected to] | | /wifi_status/v2/9999999/[unix time] | [connected or disconnected] | | /save/v2/9999999/[unix time] (only pulse meter) | saved | | /mem/v2/9999999/[unix time] | heap=9672&amp; | | /reset_reason/v2/9999999/[unix time] | | </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

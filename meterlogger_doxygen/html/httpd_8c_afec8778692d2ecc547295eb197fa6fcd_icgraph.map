@@ -1,7 +1,4 @@
 <map id="httpdStop" name="httpdStop">
 <area shape="rect" id="node2" href="$httpd_8c.html#aecb06813eefe322c349651aa5e1316f5" title="httpdDisconnectTimerFunc" alt="" coords="132,5,313,32"/>
-<area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="488,31,664,57"/>
 <area shape="rect" id="node3" href="$httpd_8h.html#afec8778692d2ecc547295eb197fa6fcd" title="httpdStop" alt="" coords="361,5,440,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="712,31,837,57"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="885,31,957,57"/>
 </map>

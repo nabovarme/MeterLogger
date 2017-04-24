@@ -1,9 +1,10 @@
 <map id="cfg_save_defered" name="cfg_save_defered">
-<area shape="rect" id="node2" href="$config_8c.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="181,93,344,120"/>
-<area shape="rect" id="node3" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="392,93,468,120"/>
-<area shape="rect" id="node4" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="545,5,627,32"/>
-<area shape="rect" id="node5" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="516,57,656,98"/>
-<area shape="rect" id="node7" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="519,123,653,149"/>
-<area shape="rect" id="node8" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="518,173,654,200"/>
-<area shape="rect" id="node6" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="704,123,816,149"/>
+<area shape="rect" id="node2" href="$config_8c.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="181,123,344,149"/>
+<area shape="rect" id="node3" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="392,123,468,149"/>
+<area shape="rect" id="node4" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="563,5,645,32"/>
+<area shape="rect" id="node5" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="534,57,674,98"/>
+<area shape="rect" id="node7" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="537,123,671,149"/>
+<area shape="rect" id="node8" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="536,173,672,200"/>
+<area shape="rect" id="node9" href="$user__interface_8h.html#ae68a7b6345630e42fde3e827108571e0" title="system_param_save_with\l_protect" alt="" coords="516,225,692,266"/>
+<area shape="rect" id="node6" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="740,123,852,149"/>
 </map>

@@ -1,7 +1,4 @@
 <map id="RINGBUF_Init" name="RINGBUF_Init">
 <area shape="rect" id="node2" href="$queue_8c.html#ac7898fb87a3f4d3e916dc778637732d9" title="QUEUE_Init" alt="" coords="160,5,255,32"/>
 <area shape="rect" id="node3" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="303,5,421,32"/>
-<area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="469,5,645,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="693,5,819,32"/>
-<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="867,5,939,32"/>
 </map>

@@ -1,8 +1,13 @@
 <map id="MQTT_Client" name="MQTT_Client">
-<area shape="rect" id="node2" href="$structmqtt__state__t.html" title="{mqtt_state_t\n|+ port\l+ auto_reconnect\l+ in_buffer\l+ out_buffer\l+ in_buffer_length\l+ out_buffer_length\l+ message_length\l+ message_length_read\l+ pending_msg_id\l+ pending_msg_type\l+ pending_publish_qos\l|}" alt="" coords="160,417,325,641"/>
-<area shape="rect" id="node3" href="$structmqtt__message.html" title="{mqtt_message\n|+ data\l+ length\l|}" alt="" coords="25,5,134,97"/>
-<area shape="rect" id="node5" href="$structmqtt__connection.html" title="{mqtt_connection\n|+ message_id\l+ buffer\l+ buffer_length\l|}" alt="" coords="169,204,289,311"/>
-<area shape="rect" id="node4" href="$structmqtt__connect__info.html" title="{mqtt_connect_info\n|+ client_id\l+ username\l+ password\l+ will_topic\l+ will_message\l+ keepalive\l+ will_qos\l+ will_retain\l+ clean_session\l|}" alt="" coords="362,160,493,355"/>
-<area shape="rect" id="node6" href="$struct_q_u_e_u_e.html" title="{QUEUE\n|+ buf\l|}" alt="" coords="564,491,633,568"/>
-<area shape="rect" id="node7" href="$struct_r_i_n_g_b_u_f.html" title="{RINGBUF\n|+ p_o\l+ p_r\l+ p_w\l+ fill_cnt\l+ size\l|}" alt="" coords="558,189,639,325"/>
+<area shape="rect" id="node2" href="$structmqtt__state__t.html" title="{mqtt_state_t\n|+ port\l+ auto_reconnect\l+ in_buffer\l+ out_buffer\l+ in_buffer_length\l+ out_buffer_length\l+ message_length\l+ message_length_read\l+ pending_msg_id\l+ pending_msg_type\l+ pending_publish_qos\l|}" alt="" coords="203,417,368,641"/>
+<area shape="rect" id="node3" href="$structmqtt__message.html" title="{mqtt_message\n|+ data\l+ length\l|}" alt="" coords="5,5,115,97"/>
+<area shape="rect" id="node5" href="$structmqtt__connection.html" title="{mqtt_connection\n|+ message_id\l+ buffer\l+ buffer_length\l|}" alt="" coords="192,204,312,311"/>
+<area shape="rect" id="node4" href="$structmqtt__connect__info.html" title="{mqtt_connect_info\n|+ client_id\l+ username\l+ password\l+ will_topic\l+ will_message\l+ keepalive\l+ will_qos\l+ will_retain\l+ clean_session\l|}" alt="" coords="385,160,516,355"/>
+<area shape="rect" id="node6" href="$structip__addr.html" title="{ip_addr\n|+ addr\l+ addr\l|}" alt="" coords="587,483,653,575"/>
+<area shape="rect" id="node7" href="$struct___e_t_s_t_i_m_e_r__.html" title="{_ETSTIMER_\n|+ timer_expire\l+ timer_period\l+ timer_func\l+ timer_arg\l|}" alt="" coords="678,469,786,590"/>
+<area shape="rect" id="node8" href="$struct_q_u_e_u_e.html" title="{QUEUE\n|+ buf\l|}" alt="" coords="909,491,979,568"/>
+<area shape="rect" id="node9" href="$struct_r_i_n_g_b_u_f.html" title="{RINGBUF\n|+ p_o\l+ p_r\l+ p_w\l+ fill_cnt\l+ size\l|}" alt="" coords="902,189,983,325"/>
+<area shape="rect" id="node10" href="$structespconn.html" title="{espconn\n|+ type\l+ state\l+ proto\l+ recv_callback\l+ sent_callback\l+ link_cnt\l+ reverse\l+ proto\l|}" alt="" coords="1003,439,1117,619"/>
+<area shape="rect" id="node11" href="$struct__esp__udp.html" title="{_esp_udp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l|}" alt="" coords="1007,197,1113,318"/>
+<area shape="rect" id="node12" href="$struct__esp__tcp.html" title="{_esp_tcp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l+ connect_callback\l+ reconnect_callback\l+ disconnect_callback\l+ write_finish_fn\l|}" alt="" coords="1137,167,1290,347"/>
 </map>

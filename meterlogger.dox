@@ -1,5 +1,7 @@
 # Doxyfile 1.8.10
 
+#ESP_OPEN_SDK_ROOT=/Users/loppen/Documents/stoffer/esp8266/esp-open-sdk
+#METER_LOGGER_ROOT=/Users/loppen/Documents/stoffer/esp8266/MeterLogger
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
@@ -18,8 +20,8 @@ ABBREVIATE_BRIEF       =
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        =
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_PATH        = $(ESP_OPEN_SDK_ROOT) $(METER_LOGGER_ROOT)
+STRIP_FROM_INC_PATH    = $(ESP_OPEN_SDK_ROOT) $(METER_LOGGER_ROOT)
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 QT_AUTOBRIEF           = NO
@@ -100,7 +102,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = driver include lib modules mqtt user
+INPUT                  = $(METER_LOGGER_ROOT)/README.md $(METER_LOGGER_ROOT)/driver $(METER_LOGGER_ROOT)/include $(METER_LOGGER_ROOT)/lib $(METER_LOGGER_ROOT)/modules $(METER_LOGGER_ROOT)/mqtt $(METER_LOGGER_ROOT)/user $(ESP_OPEN_SDK_ROOT)/esp-open-lwip $(ESP_OPEN_SDK_ROOT)/sdk/include $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/include $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/include/arch $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/include/lwip $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/include/lwip/app $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/include/netif $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip/api $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip/app $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip/core $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip/core/ipv4 $(ESP_OPEN_SDK_ROOT)/esp-open-lwip/lwip/netif
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = YES
@@ -116,7 +118,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE =
+USE_MDFILE_AS_MAINPAGE = README.md
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
 #---------------------------------------------------------------------------
@@ -261,9 +263,9 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = NO
 EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
-INCLUDE_PATH           = ../esp-open-sdk/sdk/include
+INCLUDE_PATH           = $(ESP_OPEN_SDK_ROOT)/sdk/include
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = AP=1
+PREDEFINED             = AP=1 LWIP_OPEN_SRC=1
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 <area shape="rect" id="node3" href="$hmac-sha256_8c.html#a7fad664b062689148a6b1ee5d4bc790d" title="hmac_sha256_final" alt="" coords="467,122,604,149"/>
 <area shape="rect" id="node8" href="$hmac-sha256_8c.html#a553a08d76959d7d64d25927fa418af1f" title="hmac_sha256_init" alt="" coords="267,173,397,199"/>
 <area shape="rect" id="node10" href="$hmac-sha256_8c.html#a604cda5243425d008a47d89401e7c987" title="hmac_sha256_update" alt="" coords="459,21,612,47"/>
+<area shape="rect" id="node11" href="$osapi_8h.html#a266983148ba59f7bac481c76b7540da2" title="os_get_random" alt="" coords="275,223,389,250"/>
 <area shape="rect" id="node4" href="$sha256_8c.html#a28a4e37e67f8b97b374c49d8b83d8167" title="sha256_final" alt="" coords="668,122,765,149"/>
 <area shape="rect" id="node6" href="$sha256_8c.html#ad1c794b2d7e8eba243628e45cb69ef94" title="sha256_init" alt="" coords="671,173,762,199"/>
 <area shape="rect" id="node7" href="$sha256_8c.html#a00647246fd4532c27d1aafd709d5973d" title="sha256_update" alt="" coords="660,71,773,98"/>

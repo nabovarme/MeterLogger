@@ -1,3 +1,7 @@
 <map id="driver/gpio16.c" name="driver/gpio16.c">
-<area shape="rect" id="node4" href="$gpio16_8h.html" title="driver/gpio16.h" alt="" coords="197,80,308,107"/>
+<area shape="rect" id="node2" href="$ets__sys_8h.html" title="ets_sys.h" alt="" coords="156,80,235,107"/>
+<area shape="rect" id="node7" href="$osapi_8h.html" title="osapi.h" alt="" coords="267,80,332,107"/>
+<area shape="rect" id="node10" href="$gpio16_8h.html" title="driver/gpio16.h" alt="" coords="356,80,467,107"/>
+<area shape="rect" id="node3" href="$c__types_8h.html" title="c_types.h" alt="" coords="45,155,124,181"/>
+<area shape="rect" id="node6" href="$eagle__soc_8h.html" title="eagle_soc.h" alt="" coords="149,155,242,181"/>
 </map>

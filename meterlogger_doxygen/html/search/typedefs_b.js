@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['u16',['U16',['../typedef_8h.html#adf928e51a60dba0df29d615401cc55a8',1,'typedef.h']]],
-  ['u32',['U32',['../typedef_8h.html#a811024d35b9b8a41095b1f583b649e56',1,'typedef.h']]],
-  ['u64',['U64',['../typedef_8h.html#a24c386d3758eba951eb7532fdbb45804',1,'typedef.h']]],
-  ['u8',['U8',['../typedef_8h.html#a3cb25ca6f51f003950f9625ff05536fc',1,'typedef.h']]]
+  ['netif_5figmp_5fmac_5ffilter_5ffn',['netif_igmp_mac_filter_fn',['../netif_8h.html#aedb338bb61f7a6131a0205910064c27e',1,'netif.h']]],
+  ['netif_5finit_5ffn',['netif_init_fn',['../netif_8h.html#a2b02a78a8769925ff8e4f83d34e5e1f5',1,'netif.h']]],
+  ['netif_5finput_5ffn',['netif_input_fn',['../netif_8h.html#ab2302b1b64ac7b95f24c6bab754a575e',1,'netif.h']]],
+  ['netif_5flinkoutput_5ffn',['netif_linkoutput_fn',['../netif_8h.html#ab75e9d808bc1b788bea84213e6a111ed',1,'netif.h']]],
+  ['netif_5foutput_5ffn',['netif_output_fn',['../netif_8h.html#a48cd3ab5195a014bf6b837d166663f7b',1,'netif.h']]],
+  ['netif_5fstatus_5fcallback_5ffn',['netif_status_callback_fn',['../netif_8h.html#a447d0a7e7c6e2396557c287b8b8c9436',1,'netif.h']]]
 ];

@@ -1,11 +1,10 @@
 <map id="kmp_fifo_in_use" name="kmp_fifo_in_use">
 <area shape="rect" id="node2" href="$kmp__request_8h.html#a13b1b48eb777f4193939e0556b92275c" title="kmp_fifo_get" alt="" coords="181,5,279,32"/>
-<area shape="rect" id="node6" href="$kmp__request_8h.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="181,56,279,83"/>
-<area shape="rect" id="node10" href="$kmp__request_8h.html#a01576352a0a99985a969131fd3322c66" title="kmp_fifo_snoop" alt="" coords="172,107,288,133"/>
+<area shape="rect" id="node5" href="$kmp__request_8h.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="181,56,279,83"/>
+<area shape="rect" id="node9" href="$kmp__request_8h.html#a01576352a0a99985a969131fd3322c66" title="kmp_fifo_snoop" alt="" coords="172,107,288,133"/>
 <area shape="rect" id="node3" href="$kmp__request_8c.html#a3f6b790a06b933b78f40ade5e9a16131" title="kmp_received_task" alt="" coords="342,5,479,32"/>
-<area shape="rect" id="node4" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="669,5,793,32"/>
-<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="841,31,913,57"/>
-<area shape="rect" id="node7" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="336,56,485,83"/>
-<area shape="rect" id="node8" href="$uart_8c.html#a489b77b74dfee22fd4f0c5323ab44da6" title="uart_config" alt="" coords="533,56,621,83"/>
-<area shape="rect" id="node9" href="$uart_8h.html#a1fdfa60721412bedfeb7be0ebc4d1700" title="uart_init" alt="" coords="697,56,766,83"/>
+<area shape="rect" id="node4" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="533,5,657,32"/>
+<area shape="rect" id="node6" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="336,56,485,83"/>
+<area shape="rect" id="node7" href="$uart_8c.html#a489b77b74dfee22fd4f0c5323ab44da6" title="uart_config" alt="" coords="551,56,639,83"/>
+<area shape="rect" id="node8" href="$uart_8h.html#a1fdfa60721412bedfeb7be0ebc4d1700" title="uart_init" alt="" coords="705,56,775,83"/>
 </map>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['httpdconndata',['HttpdConnData',['../httpd_8h.html#a03503b7044d11fe0c91e065cd717e472',1,'httpd.h']]],
-  ['httpdpriv',['HttpdPriv',['../httpd_8h.html#afad35892f1788f1dc72d8cf3da44f69c',1,'httpd.h']]]
+  ['fpm_5fwakeup_5fcb',['fpm_wakeup_cb',['../user__interface_8h.html#ae5abca4a52b032d19ba1a411eaaa487a',1,'user_interface.h']]],
+  ['freedom_5foutside_5fcb_5ft',['freedom_outside_cb_t',['../user__interface_8h.html#ae90568b8d2cdc0aeeb78ec34843e5c04',1,'user_interface.h']]]
 ];

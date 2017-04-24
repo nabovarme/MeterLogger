@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['proto_5fparse_5fcallback',['PROTO_PARSE_CALLBACK',['../proto_8h.html#a12ea6790e03cbc172073ff4a4634a0d8',1,'proto.h']]],
-  ['putcf',['putcf',['../tinyprintf_8h.html#aba592532448439e7a961d146a8c03843',1,'tinyprintf.h']]]
+  ['kmp_5fresponse_5fregister_5flist_5ft',['kmp_response_register_list_t',['../kmp_8h.html#aa58045963e96cc955f778b33665dd7ee',1,'kmp.h']]]
 ];

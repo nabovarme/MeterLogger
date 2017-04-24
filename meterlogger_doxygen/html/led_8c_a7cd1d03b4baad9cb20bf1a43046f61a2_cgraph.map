@@ -1,3 +1,4 @@
 <map id="led_stop_pattern" name="led_stop_pattern">
 <area shape="rect" id="node2" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="175,5,237,32"/>
+<area shape="rect" id="node3" href="$gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718" title="gpio_output_set" alt="" coords="285,5,403,32"/>
 </map>

@@ -23,6 +23,8 @@ var searchData=
   ['heatshrink_5fversion_5fminor',['HEATSHRINK_VERSION_MINOR',['../heatshrink__common_8h.html#a41e3a5db49649fa5bbea716c4b74291b',1,'heatshrink_common.h']]],
   ['heatshrink_5fversion_5fpatch',['HEATSHRINK_VERSION_PATCH',['../heatshrink__common_8h.html#a52926e520b047fbe371f24423b801a48',1,'heatshrink_common.h']]],
   ['hspi',['HSPI',['../spi_8h.html#a22bd615ece7185b5f635eae8facd0994',1,'spi.h']]],
+  ['htonl',['htonl',['../def_8h.html#ae4027a6ad07f13aa12eab285a1b46019',1,'def.h']]],
+  ['htons',['htons',['../def_8h.html#a51799f5ebb4c7228ef7e95c247030f42',1,'def.h']]],
   ['http_5fauth_5frealm',['HTTP_AUTH_REALM',['../auth_8h.html#a6ad0dd6f352b0b57b0ba3acdd42087d4',1,'auth.h']]],
   ['httpd_5fauth_5fcallback',['HTTPD_AUTH_CALLBACK',['../auth_8h.html#af05740ade824b5171a91a7f6cc4165cc',1,'auth.h']]],
   ['httpd_5fauth_5fsingle',['HTTPD_AUTH_SINGLE',['../auth_8h.html#a7e6f44c7adadd334dc507765af9ef470',1,'auth.h']]],

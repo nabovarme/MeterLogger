@@ -1,5 +1,6 @@
 <map id="ac_out_off_timer_func" name="ac_out_off_timer_func">
-<area shape="rect" id="node2" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="376,5,439,32"/>
-<area shape="rect" id="node3" href="$led_8c.html#a7cd1d03b4baad9cb20bf1a43046f61a2" title="led_stop_pattern" alt="" coords="207,31,328,57"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="231,81,304,108"/>
+<area shape="rect" id="node2" href="$gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718" title="gpio_output_set" alt="" coords="487,5,604,32"/>
+<area shape="rect" id="node3" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="376,31,439,57"/>
+<area shape="rect" id="node4" href="$led_8c.html#a7cd1d03b4baad9cb20bf1a43046f61a2" title="led_stop_pattern" alt="" coords="207,81,328,108"/>
+<area shape="rect" id="node5" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="231,132,304,159"/>
 </map>
