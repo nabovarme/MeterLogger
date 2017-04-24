@@ -358,7 +358,6 @@ var searchData=
   ['espfs_2eh',['espfs.h',['../espfs_8h.html',1,'']]],
   ['espfs_5fpos',['ESPFS_POS',['../httpdconfig_8h.html#af70bb4066820e596acc4d946512bba09',1,'httpdconfig.h']]],
   ['espfsclose',['espFsClose',['../espfs_8c.html#a9a28fa9c30a0a3c202cd8486be5b577b',1,'espFsClose(EspFsFile *fh):&#160;espfs.c'],['../espfs_8h.html#acfd5ee28c0dc286c6647c4f20ce89e5e',1,'espFsClose(EspFsFile *fh):&#160;espfs.c']]],
-  ['espfsdata',['espFsData',['../espfs_8c.html#a278dc97299367a52693396b818176c7e',1,'espfs.c']]],
   ['espfsfile',['EspFsFile',['../struct_esp_fs_file.html',1,'EspFsFile'],['../espfs_8h.html#a6cdfb9e394b0411e98b4e7858175ea7b',1,'EspFsFile():&#160;espfs.h']]],
   ['espfsopen',['espFsOpen',['../espfs_8c.html#a7c6b4638a736eb461cff1b8517fc0a0d',1,'espFsOpen(char *fileName):&#160;espfs.c'],['../espfs_8h.html#ae6edcb33f9a0ffa8cbf40ddccecc3d86',1,'espFsOpen(char *fileName):&#160;espfs.c']]],
   ['espfsread',['espFsRead',['../espfs_8c.html#a27bea06ac01a064006a155117d1493c5',1,'espFsRead(EspFsFile *fh, char *buff, int len):&#160;espfs.c'],['../espfs_8h.html#adb43e859351bc07f175ccc5e29ee6950',1,'espFsRead(EspFsFile *fh, char *buff, int len):&#160;espfs.c']]],

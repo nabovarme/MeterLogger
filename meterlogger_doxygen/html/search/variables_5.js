@@ -26,7 +26,6 @@ var searchData=
   ['esp_5fmesh_5fie',['esp_mesh_ie',['../structbss__info.html#a52a71ac8dc96f996d5659946aca6da2a',1,'bss_info']]],
   ['espconn_5fopt',['espconn_opt',['../struct__comon__pkt.html#ab9161f8c626c6cc3d3df00216b24f2eb',1,'_comon_pkt']]],
   ['espconn_5ftaskqueue',['espconn_TaskQueue',['../espconn__tcp_8c.html#a58a8cb9f6a32b366941c480c84343f27',1,'espconn_tcp.c']]],
-  ['espfsdata',['espFsData',['../espfs_8c.html#a278dc97299367a52693396b818176c7e',1,'espfs.c']]],
   ['ether_5ftype',['ether_type',['../structllc.html#a09465bd9eba973097d977e59072d7e6c',1,'llc']]],
   ['event',['event',['../struct__esp__event.html#a296c57751e4931d407bf8ef20ec06b90',1,'_esp_event']]],
   ['event_5finfo',['event_info',['../struct__esp__event.html#a21cd38cb45eed7ee5d14494a8831bfe5',1,'_esp_event']]],

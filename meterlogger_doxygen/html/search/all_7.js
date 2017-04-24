@@ -45,7 +45,7 @@ var searchData=
   ['gpio_5fout_5fw1tc_5faddress',['GPIO_OUT_W1TC_ADDRESS',['../eagle__soc_8h.html#a638d423fed31827ac7def2b84ae1af75',1,'eagle_soc.h']]],
   ['gpio_5fout_5fw1tc_5fdata_5fmask',['GPIO_OUT_W1TC_DATA_MASK',['../eagle__soc_8h.html#a6a18f89ac92e6ca5fb4df4546b825331',1,'eagle_soc.h']]],
   ['gpio_5fout_5fw1ts_5faddress',['GPIO_OUT_W1TS_ADDRESS',['../eagle__soc_8h.html#a0f5296870aa422fa74ee24e4d115ae2b',1,'eagle_soc.h']]],
-  ['gpio_5foutput_5fset',['gpio_output_set',['../gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718',1,'gpio_output_set(uint32 set_mask, uint32 clear_mask, uint32 enable_mask, uint32 disable_mask):&#160;gpio.h'],['../gpio_8h.html#a2cc3f29ed0d46de6cbd2f013281881a6',1,'GPIO_OUTPUT_SET():&#160;gpio.h']]],
+  ['gpio_5foutput_5fset',['GPIO_OUTPUT_SET',['../gpio_8h.html#a2cc3f29ed0d46de6cbd2f013281881a6',1,'GPIO_OUTPUT_SET():&#160;gpio.h'],['../gpio_8h.html#a83bac74ff5b2158e0c86da73ada29718',1,'gpio_output_set(uint32 set_mask, uint32 clear_mask, uint32 enable_mask, uint32 disable_mask):&#160;gpio.h']]],
   ['gpio_5fpad_5fdriver_5fdisable',['GPIO_PAD_DRIVER_DISABLE',['../eagle__soc_8h.html#a460a2f20474db259508bdcdbf65d32c7',1,'eagle_soc.h']]],
   ['gpio_5fpad_5fdriver_5fenable',['GPIO_PAD_DRIVER_ENABLE',['../eagle__soc_8h.html#a82976cb56b996a7de7c334f7a75da63f',1,'eagle_soc.h']]],
   ['gpio_5fpin0_5faddress',['GPIO_PIN0_ADDRESS',['../eagle__soc_8h.html#adb9d1804a7af19e3814edf0cda94375c',1,'eagle_soc.h']]],

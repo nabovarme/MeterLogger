@@ -64,23 +64,20 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">espfs.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &lt;stdlib.h&gt;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="esp8266_8h_source.html">esp8266.h</a>&gt;</code><br />
+<code>#include &quot;debug.h&quot;</code><br />
 <code>#include &quot;../mkespfsimage/espfsformat.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="espfs_8h_source.html">espfs.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="httpdconfig_8h_source.html">httpdconfig.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for espfs.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="espfs_8c__incl.svg" width="691" height="112"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="espfs_8c__incl.svg" width="2240" height="934"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -90,25 +87,6 @@ Include dependency graph for espfs.c:</div>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_esp_fs_file.html">EspFsFile</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ab5bd4ba214011254e942752390f4be00"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#ab5bd4ba214011254e942752390f4be00">os_malloc</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#a5046e1cbf958143f3bf7aded35204202">malloc</a></td></tr>
-<tr class="separator:ab5bd4ba214011254e942752390f4be00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5521e9f51556da61a057517c0e379db4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#a5521e9f51556da61a057517c0e379db4">os_free</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#affb9fc32698fab7f7b36e0cf8e64c83e">free</a></td></tr>
-<tr class="separator:a5521e9f51556da61a057517c0e379db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5c79bf463c8eba708ea34fccc8ec7c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#ac5c79bf463c8eba708ea34fccc8ec7c1">os_memcpy</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#aeb7afd790e1a4e35c5cfd3129b053854">memcpy</a></td></tr>
-<tr class="separator:ac5c79bf463c8eba708ea34fccc8ec7c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5567490f4ca060aa27400faea1ddb7a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#af5567490f4ca060aa27400faea1ddb7a">os_strncmp</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#acde58ed2feaee8080b163031ddae5341">strncmp</a></td></tr>
-<tr class="separator:af5567490f4ca060aa27400faea1ddb7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2acd19ca3f1d0a5b718744c983a93826"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#a2acd19ca3f1d0a5b718744c983a93826">os_strcmp</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#a978291994bbfca497ad8b734632a93fe">strcmp</a></td></tr>
-<tr class="separator:a2acd19ca3f1d0a5b718744c983a93826"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcc327e94b95863c13a4d749ade2c86c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#adcc327e94b95863c13a4d749ade2c86c">os_strcpy</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#a059de531cc5ef2245ad8537ead4e2abf">strcpy</a></td></tr>
-<tr class="separator:adcc327e94b95863c13a4d749ade2c86c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a751d204d0c7e166a527475d79e803454"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#a751d204d0c7e166a527475d79e803454">os_printf</a>&#160;&#160;&#160;<a class="el" href="platform_8h.html#ad2eb277496af160238e7306fff780ad2">printf</a></td></tr>
-<tr class="separator:a751d204d0c7e166a527475d79e803454"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afebd45c0d36db732504450393777ce5c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a></td></tr>
-<tr class="separator:afebd45c0d36db732504450393777ce5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -120,155 +98,7 @@ Functions</h2></td></tr>
 <tr class="separator:a27bea06ac01a064006a155117d1493c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a28fa9c30a0a3c202cd8486be5b577b"><td class="memItemLeft" align="right" valign="top">void <a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#a9a28fa9c30a0a3c202cd8486be5b577b">espFsClose</a> (<a class="el" href="struct_esp_fs_file.html">EspFsFile</a> *fh)</td></tr>
 <tr class="separator:a9a28fa9c30a0a3c202cd8486be5b577b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a278dc97299367a52693396b818176c7e"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="espfs_8c.html#a278dc97299367a52693396b818176c7e">espFsData</a></td></tr>
-<tr class="separator:a278dc97299367a52693396b818176c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="afebd45c0d36db732504450393777ce5c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afebd45c0d36db732504450393777ce5c">&#9670;&nbsp;</a></span>ICACHE_FLASH_ATTR</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define ICACHE_FLASH_ATTR</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00037">37</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="ac__out_8c_source.html#l00148">ac_motor_valve_close()</a>, <a class="el" href="ac__out_8c_source.html#l00129">ac_motor_valve_open()</a>, <a class="el" href="ac__out_8c_source.html#l00017">ac_out_init()</a>, <a class="el" href="ac__out_8c_source.html#l00068">ac_pwm_timer_func()</a>, <a class="el" href="ac__out_8c_source.html#l00111">ac_test()</a>, <a class="el" href="ac__out_8c_source.html#l00193">ac_thermo_close()</a>, <a class="el" href="ac__out_8c_source.html#l00167">ac_thermo_open()</a>, <a class="el" href="ac__out_8c_source.html#l00219">ac_thermo_pwm()</a>, <a class="el" href="cron_8c_source.html#l00226">add_cron_job_from_query()</a>, <a class="el" href="aes_8c_source.html#l00228">AddRoundKey()</a>, <a class="el" href="aes_8c_source.html#l00453">BlockCopy()</a>, <a class="el" href="captdns_8c_source.html#l00176">captdnsRecv()</a>, <a class="el" href="config_8c_source.html#l00077">cfg_load()</a>, <a class="el" href="config_8c_source.html#l00028">cfg_save()</a>, <a class="el" href="config_8c_source.html#l00176">cfg_save_defered()</a>, <a class="el" href="httpd_8c_source.html#l00240">cgiRedirect()</a>, <a class="el" href="aes_8c_source.html#l00401">Cipher()</a>, <a class="el" href="utils_8c_source.html#l00141">cleanup_decimal_str()</a>, <a class="el" href="cron_8c_source.html#l00212">cron_init()</a>, <a class="el" href="utils_8c_source.html#l00181">decimal_number_length()</a>, <a class="el" href="mqtt_8c_source.html#l00103">deliver_publish()</a>, <a class="el" href="en61107__request_8c_source.html#l00081">en61107_delayed_uart_change_setting_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00555">en61107_fifo_get()</a>, <a class="el" href="en61107__request_8c_source.html#l00540">en61107_fifo_put()</a>, <a class="el" href="en61107__request_8c_source.html#l00302">en61107_is_eod_char()</a>, <a class="el" href="en61107__request_8c_source.html#l00089">en61107_meter_wake_up_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00047">en61107_receive_timeout_timer_func()</a>, <a class="el" href="en61107__request_8c_source.html#l00096">en61107_received_task()</a>, <a class="el" href="en61107__request_8c_source.html#l00274">en61107_request_init()</a>, <a class="el" href="en61107__request_8c_source.html#l00326">en61107_request_send()</a>, <a class="el" href="en61107_8c_source.html#l00292">en61107_response_set_value()</a>, <a class="el" href="en61107__request_8c_source.html#l00291">en61107_set_mqtt_client()</a>, <a class="el" href="en61107__request_8c_source.html#l00406">en61107_uart_send_en61107()</a>, <a class="el" href="en61107__request_8c_source.html#l00374">en61107_uart_send_en61107_ident()</a>, <a class="el" href="en61107__request_8c_source.html#l00501">en61107_uart_send_inst_values()</a>, <a class="el" href="en61107__request_8c_source.html#l00438">en61107_uart_send_standard_data_1()</a>, <a class="el" href="en61107__request_8c_source.html#l00469">en61107_uart_send_standard_data_2()</a>, <a class="el" href="crypto_8c_source.html#l00068">encrypt_aes_hmac_combined()</a>, <a class="el" href="espconn_8c_source.html#l00972">espconn_abort()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00520">espconn_client_close()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00826">espconn_client_connect()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00761">espconn_client_err()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00738">espconn_client_sent()</a>, <a class="el" href="espconn_8c_source.html#l00260">espconn_connect()</a>, <a class="el" href="espconn_8c_source.html#l00334">espconn_create()</a>, <a class="el" href="espconn__udp_8c_source.html#l00047">espconn_data_sent()</a>, <a class="el" href="espconn_8c_source.html#l01217">espconn_delete()</a>, <a class="el" href="espconn_8c_source.html#l00942">espconn_disconnect()</a>, <a class="el" href="espconn_8c_source.html#l00186">espconn_find_connection()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00185">espconn_find_current_pcb()</a>, <a class="el" href="espconn_8c_source.html#l00239">espconn_get_acticve_num()</a>, <a class="el" href="espconn_8c_source.html#l00825">espconn_get_connection_info()</a>, <a class="el" href="espconn_8c_source.html#l01173">espconn_get_keepalive()</a>, <a class="el" href="espconn_8c_source.html#l01004">espconn_get_packet_info()</a>, <a class="el" href="espconn_8c_source.html#l01288">espconn_gethostbyname()</a>, <a class="el" href="espconn__udp_8c_source.html#l00396">espconn_igmp_leave()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00119">espconn_mdns_close()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00037">espconn_mdns_disable()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00025">espconn_mdns_enable()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00063">espconn_mdns_get_hostname()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00085">espconn_mdns_get_servername()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00096">espconn_mdns_server_register()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00107">espconn_mdns_server_unregister()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00050">espconn_mdns_set_hostname()</a>, <a class="el" href="espconn__mdns_8c_source.html#l00074">espconn_mdns_set_servername()</a>, <a class="el" href="espconn_8c_source.html#l01245">espconn_port()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00549">espconn_recv_hold()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00574">espconn_recv_unhold()</a>, <a class="el" href="espconn_8c_source.html#l00751">espconn_regist_connectcb()</a>, <a class="el" href="espconn_8c_source.html#l00807">espconn_regist_disconcb()</a>, <a class="el" href="espconn_8c_source.html#l00789">espconn_regist_reconcb()</a>, <a class="el" href="espconn_8c_source.html#l00770">espconn_regist_recvcb()</a>, <a class="el" href="espconn_8c_source.html#l00712">espconn_regist_sentcb()</a>, <a class="el" href="espconn_8c_source.html#l00905">espconn_regist_time()</a>, <a class="el" href="espconn_8c_source.html#l00732">espconn_regist_write_finish()</a>, <a class="el" href="espconn_8c_source.html#l00368">espconn_sent()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00950">espconn_server_close()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01079">espconn_server_poll()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00988">espconn_server_recv()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01052">espconn_server_sent()</a>, <a class="el" href="espconn_8c_source.html#l01056">espconn_set_opt()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00388">espconn_Task()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01199">espconn_tcp_accept()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00878">espconn_tcp_client()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00498">espconn_tcp_disconnect()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00287">espconn_tcp_disconnect_successful()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00700">espconn_tcp_finish()</a>, <a class="el" href="espconn_8c_source.html#l00689">espconn_tcp_get_buf_count()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00229">espconn_tcp_reconnect()</a>, <a class="el" href="espconn__udp_8c_source.html#l00338">espconn_udp_disconnect()</a>, <a class="el" href="espconn__udp_8c_source.html#l00183">espconn_udp_sendto()</a>, <a class="el" href="espconn__udp_8c_source.html#l00081">espconn_udp_sent()</a>, <a class="el" href="espconn__udp_8c_source.html#l00363">espconn_udp_server()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01132">esponn_server_err()</a>, <a class="el" href="ext__spi__flash_8c_source.html#l00033">ext_spi_flash_erase_sector()</a>, <a class="el" href="ext__spi__flash_8c_source.html#l00028">ext_spi_flash_id()</a>, <a class="el" href="ext__spi__flash_8c_source.html#l00046">ext_spi_flash_read()</a>, <a class="el" href="ext__spi__flash_8c_source.html#l00077">ext_spi_flash_write()</a>, <a class="el" href="ext__spi__flash_8c_source.html#l00007">ext_spi_init()</a>, <a class="el" href="aes_8c_source.html#l00153">getSBoxInvert()</a>, <a class="el" href="aes_8c_source.html#l00147">getSBoxValue()</a>, <a class="el" href="gpio16_8c_source.html#l00026">gpio16_input_conf()</a>, <a class="el" href="gpio16_8c_source.html#l00006">gpio16_output_conf()</a>, <a class="el" href="gpio16_8c_source.html#l00019">gpio16_output_set()</a>, <a class="el" href="hmac-sha256_8c_source.html#l00054">hmac_sha256_final()</a>, <a class="el" href="hmac-sha256_8c_source.html#l00030">hmac_sha256_init()</a>, <a class="el" href="hmac-sha256_8c_source.html#l00049">hmac_sha256_update()</a>, <a class="el" href="httpd_8c_source.html#l00467">httpdConnectCb()</a>, <a class="el" href="httpd_8c_source.html#l00438">httpdDisconCb()</a>, <a class="el" href="httpd_8c_source.html#l00511">httpdDisconnectTimerFunc()</a>, <a class="el" href="httpd_8c_source.html#l00224">httpdEndHeaders()</a>, <a class="el" href="httpd_8c_source.html#l00151">httpdFindArg()</a>, <a class="el" href="httpd_8c_source.html#l00091">httpdFindConnData()</a>, <a class="el" href="httpd_8c_source.html#l00173">httpdGetHeader()</a>, <a class="el" href="httpd_8c_source.html#l00077">httpdGetMimetype()</a>, <a class="el" href="httpd_8c_source.html#l00213">httpdHeader()</a>, <a class="el" href="httpd_8c_source.html#l00493">httpdInit()</a>, <a class="el" href="httpd_8c_source.html#l00334">httpdParseHeader()</a>, <a class="el" href="httpd_8c_source.html#l00430">httpdReconCb()</a>, <a class="el" href="httpd_8c_source.html#l00378">httpdRecvCb()</a>, <a class="el" href="httpd_8c_source.html#l00230">httpdRedirect()</a>, <a class="el" href="httpd_8c_source.html#l00254">httpdSend()</a>, <a class="el" href="httpd_8c_source.html#l00303">httpdSendResp()</a>, <a class="el" href="httpd_8c_source.html#l00203">httpdStartResponse()</a>, <a class="el" href="httpd_8c_source.html#l00121">httpdUrlDecode()</a>, <a class="el" href="crypto_8c_source.html#l00022">init_aes_hmac_combined()</a>, <a class="el" href="aes_8c_source.html#l00427">InvCipher()</a>, <a class="el" href="aes_8c_source.html#l00335">InvMixColumns()</a>, <a class="el" href="aes_8c_source.html#l00370">InvShiftRows()</a>, <a class="el" href="aes_8c_source.html#l00357">InvSubBytes()</a>, <a class="el" href="ip_8c_source.html#l00125">ip_route()</a>, <a class="el" href="ip_8c_source.html#l00170">ip_router()</a>, <a class="el" href="aes_8c_source.html#l00160">KeyExpansion()</a>, <a class="el" href="kmp_8c_source.html#l00580">kmp_byte_stuff()</a>, <a class="el" href="kmp_8c_source.html#l00352">kmp_crc16()</a>, <a class="el" href="kmp_8c_source.html#l00239">kmp_decode_frame()</a>, <a class="el" href="kmp__request_8c_source.html#l00181">kmp_get_received_serial()</a>, <a class="el" href="kmp_8c_source.html#l00181">kmp_get_register()</a>, <a class="el" href="kmp__request_8c_source.html#l00194">kmp_get_register_timer_func()</a>, <a class="el" href="kmp_8c_source.html#l00139">kmp_get_serial()</a>, <a class="el" href="kmp__request_8c_source.html#l00186">kmp_get_serial_timer_func()</a>, <a class="el" href="kmp_8c_source.html#l00103">kmp_get_type()</a>, <a class="el" href="kmp__request_8c_source.html#l00212">kmp_receive_timeout_timer_func()</a>, <a class="el" href="kmp__request_8c_source.html#l00039">kmp_received_task()</a>, <a class="el" href="kmp__request_8c_source.html#l00164">kmp_request_init()</a>, <a class="el" href="kmp_8c_source.html#l00175">kmp_set_clock()</a>, <a class="el" href="kmp__request_8c_source.html#l00175">kmp_set_mqtt_client()</a>, <a class="el" href="kmp_8c_source.html#l00442">kmp_unit_to_string()</a>, <a class="el" href="kmp_8c_source.html#l00366">kmp_value_to_double()</a>, <a class="el" href="kmp_8c_source.html#l00394">kmp_value_to_string()</a>, <a class="el" href="inet__chksum_8c_source.html#l00135">lwip_standard_chksum()</a>, <a class="el" href="cron_8c_source.html#l00013">minute_timer_func()</a>, <a class="el" href="aes_8c_source.html#l00295">MixColumns()</a>, <a class="el" href="mqtt_8c_source.html#l00187">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00879">MQTT_Connect()</a>, <a class="el" href="mqtt_8c_source.html#l00951">MQTT_DeleteClient()</a>, <a class="el" href="mqtt_8c_source.html#l00943">MQTT_Disconnect()</a>, <a class="el" href="mqtt_8c_source.html#l00060">mqtt_dns_found()</a>, <a class="el" href="mqtt__msg_8h_source.html#l00115">mqtt_get_retain()</a>, <a class="el" href="mqtt_8c_source.html#l00788">MQTT_InitClient()</a>, <a class="el" href="mqtt_8c_source.html#l00764">MQTT_InitConnection()</a>, <a class="el" href="mqtt_8c_source.html#l00856">MQTT_InitLWT()</a>, <a class="el" href="mqtt_8c_source.html#l00968">MQTT_OnConnected()</a>, <a class="el" href="mqtt_8c_source.html#l00980">MQTT_OnData()</a>, <a class="el" href="mqtt_8c_source.html#l00974">MQTT_OnDisconnected()</a>, <a class="el" href="mqtt_8c_source.html#l00986">MQTT_OnPublished()</a>, <a class="el" href="mqtt_8c_source.html#l00659">MQTT_Ping()</a>, <a class="el" href="mqtt_8c_source.html#l00575">MQTT_Publish()</a>, <a class="el" href="mqtt_8c_source.html#l00118">mqtt_send_keepalive()</a>, <a class="el" href="mqtt_8c_source.html#l00607">MQTT_Subscribe()</a>, <a class="el" href="mqtt_8c_source.html#l00681">MQTT_Task()</a>, <a class="el" href="mqtt_8c_source.html#l00511">mqtt_tcpclient_connect_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00163">mqtt_tcpclient_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00482">mqtt_tcpclient_discon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00551">mqtt_tcpclient_recon_cb()</a>, <a class="el" href="mqtt_8c_source.html#l00280">mqtt_tcpclient_recv()</a>, <a class="el" href="mqtt_8c_source.html#l00456">mqtt_timer()</a>, <a class="el" href="mqtt_8c_source.html#l00634">MQTT_UnSubscribe()</a>, <a class="el" href="en61107_8c_source.html#l00011">parse_en61107_frame()</a>, <a class="el" href="en61107_8c_source.html#l00269">parse_mc66cde_inst_values_frame()</a>, <a class="el" href="en61107_8c_source.html#l00172">parse_mc66cde_standard_data_1_frame()</a>, <a class="el" href="en61107_8c_source.html#l00214">parse_mc66cde_standard_data_2_frame()</a>, <a class="el" href="sha256_8c_source.html#l00399">sha256_end()</a>, <a class="el" href="sha256_8c_source.html#l00334">sha256_final()</a>, <a class="el" href="sha256_8c_source.html#l00196">sha256_init()</a>, <a class="el" href="sha256_8c_source.html#l00421">sha256_raw()</a>, <a class="el" href="sha256_8c_source.html#l00206">sha256_transform()</a>, <a class="el" href="sha256_8c_source.html#l00288">sha256_update()</a>, <a class="el" href="aes_8c_source.html#l00259">ShiftRows()</a>, <a class="el" href="spi_8c_source.html#l00136">spi_clock()</a>, <a class="el" href="spi_8c_source.html#l00038">spi_init()</a>, <a class="el" href="spi_8c_source.html#l00097">spi_init_gpio()</a>, <a class="el" href="spi_8c_source.html#l00067">spi_mode()</a>, <a class="el" href="spi_8c_source.html#l00207">spi_rx_byte_order()</a>, <a class="el" href="spi_8c_source.html#l00176">spi_tx_byte_order()</a>, <a class="el" href="aes_8c_source.html#l00243">SubBytes()</a>, <a class="el" href="sys_8h_source.html#l00235">sys_now()</a>, <a class="el" href="uart_8c_source.html#l00201">uart0_rx_intr_handler()</a>, <a class="el" href="uart_8c_source.html#l00165">uart0_tx_buffer()</a>, <a class="el" href="uart_8c_source.html#l00145">uart0_write_char()</a>, <a class="el" href="uart_8c_source.html#l00128">uart1_write_char()</a>, <a class="el" href="uart_8c_source.html#l00275">uart_init()</a>, <a class="el" href="uart_8c_source.html#l00323">uart_set_line_inverse()</a>, <a class="el" href="uart_8c_source.html#l00329">uart_set_parity()</a>, <a class="el" href="uart_8c_source.html#l00318">uart_set_stop_bits()</a>, <a class="el" href="uart_8c_source.html#l00313">uart_set_word_length()</a>, <a class="el" href="uart_8c_source.html#l00106">uart_tx_one_char()</a>, <a class="el" href="httpd_8c_source.html#l00264">xmitSendBuff()</a>, and <a class="el" href="aes_8c_source.html#l00288">xtime()</a>.</p>
-
-</div>
-</div>
-<a id="a5521e9f51556da61a057517c0e379db4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5521e9f51556da61a057517c0e379db4">&#9670;&nbsp;</a></span>os_free</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_free&#160;&#160;&#160;<a class="el" href="platform_8h.html#affb9fc32698fab7f7b36e0cf8e64c83e">free</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00031">31</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="httpdespfs_8c_source.html#l00073">cgiEspFsTemplate()</a>, <a class="el" href="dhcpserver_8c_source.html#l01066">dhcps_coarse_tmr()</a>, <a class="el" href="dhcpserver_8c_source.html#l00919">dhcps_stop()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00613">espconn_client_recv()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00988">espconn_server_recv()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00878">espconn_tcp_client()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01335">espconn_tcp_delete()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00287">espconn_tcp_disconnect_successful()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00700">espconn_tcp_finish()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00229">espconn_tcp_reconnect()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01281">espconn_tcp_server()</a>, <a class="el" href="espconn__udp_8c_source.html#l00338">espconn_udp_disconnect()</a>, <a class="el" href="espconn__udp_8c_source.html#l00283">espconn_udp_recv()</a>, <a class="el" href="espfs_8c_source.html#l00214">espFsClose()</a>, <a class="el" href="dhcpserver_8c_source.html#l00744">handle_dhcp()</a>, <a class="el" href="httpd_8c_source.html#l00102">httpdRetireConn()</a>, <a class="el" href="dhcpserver_8c_source.html#l01040">kill_oldest_dhcps_pool()</a>, <a class="el" href="mqtt_8c_source.html#l00187">mqtt_client_delete()</a>, <a class="el" href="mqtt_8c_source.html#l00163">mqtt_tcpclient_delete()</a>, <a class="el" href="dhcpserver_8c_source.html#l00578">parse_msg()</a>, and <a class="el" href="cgiwifi_8c_source.html#l00048">wifiScanDoneCb()</a>.</p>
-
-</div>
-</div>
-<a id="ab5bd4ba214011254e942752390f4be00"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5bd4ba214011254e942752390f4be00">&#9670;&nbsp;</a></span>os_malloc</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_malloc&#160;&#160;&#160;<a class="el" href="platform_8h.html#a5046e1cbf958143f3bf7aded35204202">malloc</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00030">30</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="httpdespfs_8c_source.html#l00073">cgiEspFsTemplate()</a>, <a class="el" href="espfs_8c_source.html#l00097">espFsOpen()</a>, <a class="el" href="httpd_8c_source.html#l00334">httpdParseHeader()</a>, and <a class="el" href="cgiwifi_8c_source.html#l00048">wifiScanDoneCb()</a>.</p>
-
-</div>
-</div>
-<a id="ac5c79bf463c8eba708ea34fccc8ec7c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5c79bf463c8eba708ea34fccc8ec7c1">&#9670;&nbsp;</a></span>os_memcpy</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_memcpy&#160;&#160;&#160;<a class="el" href="platform_8h.html#aeb7afd790e1a4e35c5cfd3129b053854">memcpy</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00032">32</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="dhcpserver_8c_source.html#l00250">create_msg()</a>, <a class="el" href="dhcpserver_8c_source.html#l01170">dhcps_set_mapping()</a>, <a class="el" href="espconn_8c_source.html#l00046">espconn_copy_partial()</a>, <a class="el" href="espconn_8c_source.html#l00825">espconn_get_connection_info()</a>, <a class="el" href="espconn_8c_source.html#l01004">espconn_get_packet_info()</a>, <a class="el" href="espconn__tcp_8c_source.html#l01199">espconn_tcp_accept()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00287">espconn_tcp_disconnect_successful()</a>, <a class="el" href="espconn__tcp_8c_source.html#l00229">espconn_tcp_reconnect()</a>, <a class="el" href="espfs_8c_source.html#l00097">espFsOpen()</a>, <a class="el" href="httpd_8c_source.html#l00254">httpdSend()</a>, <a class="el" href="mqtt_8c_source.html#l00060">mqtt_dns_found()</a>, <a class="el" href="mqtt_8c_source.html#l00280">mqtt_tcpclient_recv()</a>, and <a class="el" href="dhcpserver_8c_source.html#l00578">parse_msg()</a>.</p>
-
-</div>
-</div>
-<a id="a751d204d0c7e166a527475d79e803454"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a751d204d0c7e166a527475d79e803454">&#9670;&nbsp;</a></span>os_printf</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_printf&#160;&#160;&#160;<a class="el" href="platform_8h.html#ad2eb277496af160238e7306fff780ad2">printf</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00036">36</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-</div>
-</div>
-<a id="a2acd19ca3f1d0a5b718744c983a93826"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2acd19ca3f1d0a5b718744c983a93826">&#9670;&nbsp;</a></span>os_strcmp</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_strcmp&#160;&#160;&#160;<a class="el" href="platform_8h.html#a978291994bbfca497ad8b734632a93fe">strcmp</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00034">34</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="auth_8c_source.html#l00021">authBasic()</a>, <a class="el" href="espfs_8c_source.html#l00097">espFsOpen()</a>, <a class="el" href="httpd_8c_source.html#l00077">httpdGetMimetype()</a>, <a class="el" href="httpd_8c_source.html#l00303">httpdSendResp()</a>, <a class="el" href="cgi_8c_source.html#l00067">tplCounter()</a>, <a class="el" href="cgi_8c_source.html#l00049">tplLed()</a>, and <a class="el" href="cgiwifi_8c_source.html#l00248">tplSetup()</a>.</p>
-
-</div>
-</div>
-<a id="adcc327e94b95863c13a4d749ade2c86c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcc327e94b95863c13a4d749ade2c86c">&#9670;&nbsp;</a></span>os_strcpy</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_strcpy&#160;&#160;&#160;<a class="el" href="platform_8h.html#a059de531cc5ef2245ad8537ead4e2abf">strcpy</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00035">35</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="mqtt_8c_source.html#l00788">MQTT_InitClient()</a>, <a class="el" href="mqtt_8c_source.html#l00764">MQTT_InitConnection()</a>, <a class="el" href="mqtt_8c_source.html#l00856">MQTT_InitLWT()</a>, <a class="el" href="httpd__user__init_8c_source.html#l00025">myPassFn()</a>, <a class="el" href="cgi_8c_source.html#l00049">tplLed()</a>, and <a class="el" href="cgiwifi_8c_source.html#l00248">tplSetup()</a>.</p>
-
-</div>
-</div>
-<a id="af5567490f4ca060aa27400faea1ddb7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5567490f4ca060aa27400faea1ddb7a">&#9670;&nbsp;</a></span>os_strncmp</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define os_strncmp&#160;&#160;&#160;<a class="el" href="platform_8h.html#acde58ed2feaee8080b163031ddae5341">strncmp</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00033">33</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="auth_8c_source.html#l00021">authBasic()</a>, <a class="el" href="httpd_8c_source.html#l00151">httpdFindArg()</a>, <a class="el" href="httpd_8c_source.html#l00173">httpdGetHeader()</a>, <a class="el" href="httpd_8c_source.html#l00334">httpdParseHeader()</a>, <a class="el" href="httpd_8c_source.html#l00303">httpdSendResp()</a>, <a class="el" href="wifi_8c_source.html#l00172">wifi_handle_event_cb()</a>, and <a class="el" href="wifi_8c_source.html#l00253">wifi_scan_done_cb()</a>.</p>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a9a28fa9c30a0a3c202cd8486be5b577b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a28fa9c30a0a3c202cd8486be5b577b">&#9670;&nbsp;</a></span>espFsClose()</h2>
@@ -288,7 +118,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00214">214</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
 
-<p class="reference">References <a class="el" href="espfs_8c_source.html#l00057">EspFsFile::decompData</a>, <a class="el" href="espfs_8c_source.html#l00053">EspFsFile::decompressor</a>, <a class="el" href="lib_2heatshrink_2heatshrink__decoder_8c_source.html#l00074">heatshrink_decoder_free()</a>, <a class="el" href="def_8h_source.html#l00047">NULL</a>, and <a class="el" href="espfs_8c_source.html#l00031">os_free</a>.</p>
+<p class="reference">References <a class="el" href="espfs_8c_source.html#l00057">EspFsFile::decompData</a>, <a class="el" href="espfs_8c_source.html#l00053">EspFsFile::decompressor</a>, <a class="el" href="lib_2heatshrink_2heatshrink__decoder_8c_source.html#l00074">heatshrink_decoder_free()</a>, <a class="el" href="def_8h_source.html#l00047">NULL</a>, and <a class="el" href="sdk_2include_2mem_8h_source.html#l00040">os_free</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="httpdespfs_8c_source.html#l00024">cgiEspFsHook()</a>, and <a class="el" href="httpdespfs_8c_source.html#l00073">cgiEspFsTemplate()</a>.</p>
 <div class="dynheader">
@@ -322,7 +152,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="espfs_8c_source.html#l00097">97</a> of file <a class="el" href="espfs_8c_source.html">espfs.c</a>.</p>
 
-<p class="reference">References <a class="el" href="espfs_8c_source.html#l00057">EspFsFile::decompData</a>, <a class="el" href="espfs_8c_source.html#l00053">EspFsFile::decompressor</a>, <a class="el" href="httpdconfig_8h_source.html#l00006">ESPFS_POS</a>, <a class="el" href="espfs_8c.html#a278dc97299367a52693396b818176c7e">espFsData</a>, <a class="el" href="espfs_8c_source.html#l00052">EspFsFile::header</a>, <a class="el" href="lib_2heatshrink_2heatshrink__decoder_8c_source.html#l00051">heatshrink_decoder_alloc()</a>, <a class="el" href="_meter_logger_2mqtt_2include_2debug_8h_source.html#l00017">INFO</a>, <a class="el" href="espfs_8c_source.html#l00081">memcpyAligned()</a>, <a class="el" href="def_8h_source.html#l00047">NULL</a>, <a class="el" href="espfs_8c_source.html#l00030">os_malloc</a>, <a class="el" href="espfs_8c_source.html#l00032">os_memcpy</a>, <a class="el" href="espfs_8c_source.html#l00034">os_strcmp</a>, <a class="el" href="espfs_8c_source.html#l00056">EspFsFile::posComp</a>, <a class="el" href="espfs_8c_source.html#l00054">EspFsFile::posDecomp</a>, and <a class="el" href="espfs_8c_source.html#l00055">EspFsFile::posStart</a>.</p>
+<p class="reference">References <a class="el" href="espfs_8c_source.html#l00057">EspFsFile::decompData</a>, <a class="el" href="espfs_8c_source.html#l00053">EspFsFile::decompressor</a>, <a class="el" href="httpdconfig_8h_source.html#l00006">ESPFS_POS</a>, <a class="el" href="espfs_8c_source.html#l00052">EspFsFile::header</a>, <a class="el" href="lib_2heatshrink_2heatshrink__decoder_8c_source.html#l00051">heatshrink_decoder_alloc()</a>, <a class="el" href="_meter_logger_2mqtt_2include_2debug_8h_source.html#l00017">INFO</a>, <a class="el" href="espfs_8c_source.html#l00081">memcpyAligned()</a>, <a class="el" href="def_8h_source.html#l00047">NULL</a>, <a class="el" href="sdk_2include_2mem_8h_source.html#l00041">os_malloc</a>, <a class="el" href="osapi_8h_source.html#l00036">os_memcpy</a>, <a class="el" href="osapi_8h_source.html#l00041">os_strcmp</a>, <a class="el" href="espfs_8c_source.html#l00056">EspFsFile::posComp</a>, <a class="el" href="espfs_8c_source.html#l00054">EspFsFile::posDecomp</a>, and <a class="el" href="espfs_8c_source.html#l00055">EspFsFile::posStart</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="httpdespfs_8c_source.html#l00024">cgiEspFsHook()</a>, and <a class="el" href="httpdespfs_8c_source.html#l00073">cgiEspFsTemplate()</a>.</p>
 <div class="dynheader">
@@ -428,23 +258,6 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="espfs_8c_af183a6b770c7047c47a3c8dc0466d9bf_icgraph.svg" width="447" height="88"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a278dc97299367a52693396b818176c7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a278dc97299367a52693396b818176c7e">&#9670;&nbsp;</a></span>espFsData</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">char* espFsData</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="reference">Referenced by <a class="el" href="espfs_8c_source.html#l00097">espFsOpen()</a>.</p>
 
 </div>
 </div>
