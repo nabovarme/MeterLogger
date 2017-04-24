@@ -55,17 +55,17 @@ LED_ON_AC=1
 use led to indicate ac state  
 
 SERIAL=9999999  
-serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in wifisetup make target.
+serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1 
 
 KEY=ef500c9268cf749016d26d6cbfaaf7bf
 master key for crypto, 16 bytes
 Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
 
+Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
+
 AP=1
 enable wireless extender; wireless AP
-enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set
-
-Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
+enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set. 
 
 **MQTT format for messages sent _to_ meter**  
 
