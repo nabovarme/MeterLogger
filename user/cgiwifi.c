@@ -14,7 +14,6 @@ Cgi/template routines for the /wifi url.
 
 #include <esp8266.h>
 #include "httpd.h"
-#include "cgi.h"
 #include "config.h"
 #include "debug.h"
 

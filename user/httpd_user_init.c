@@ -14,7 +14,6 @@
 
 #include "httpd.h"
 #include "httpdespfs.h"
-#include "cgi.h"
 #include "cgiwifi.h"
 #include "auth.h"
 #include "debug.h"
@@ -49,10 +48,7 @@ should be placed above the URLs they protect.
 */
 HttpdBuiltInUrl builtInUrls[]={
 	{"/", cgiRedirect, "/index.tpl"},
-	{"/flash.bin", cgiReadFlash, NULL},
-	{"/led.tpl", cgiEspFsTemplate, tplLed},
-	{"/index.tpl", cgiEspFsTemplate, tplCounter},
-	{"/led.cgi", cgiLed, NULL},
+	{"/index.tpl", cgiEspFsTemplate, tplSetup},
 
 	//Routines to make the /wifi URL and everything beneath it work.
 
@@ -69,7 +65,6 @@ HttpdBuiltInUrl builtInUrls[]={
 #endif
 	{"/wifi/setup.cgi", cgiSetup, NULL},
 	{"/wifi/wifiscan.cgi", cgiWiFiScan, NULL},
-	{"/wifi/setmode.cgi", cgiWifiSetMode, NULL},
 
 	{"*", cgiEspFsHook, NULL}, //Catch-all cgi function for the filesystem
 	{NULL, NULL, NULL}

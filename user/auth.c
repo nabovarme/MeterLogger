@@ -14,7 +14,6 @@ HTTP auth implementation. Only does basic authentication for now.
 
 #include <esp8266.h>
 #include "httpd.h"
-#include "cgi.h"
 #include "auth.h"
 #include "base64.h"
 
