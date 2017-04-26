@@ -75,6 +75,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
+#else
+	// temp var for serial string
+	char meter_serial_temp[METER_SERIAL_LEN];	// DEBUG: 16 should be a #define...
 #endif // IMPULSE
 	
 	// stop http configuration server
@@ -120,7 +123,19 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 #ifdef AP
 	// use crc 16 of the serial number in ap ssid
+#ifdef EN61107
+	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, meter_serial_temp, strlen(meter_serial_temp)));
+#elif defined IMPULSE
 	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, sys_cfg.impulse_meter_serial, strlen(sys_cfg.impulse_meter_serial)));
+#else
+	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, meter_serial_temp, strlen(meter_serial_temp)));
+#endif
+	
+	
+	
+	
 	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
 	wifi_softap_ip_config();
 #else

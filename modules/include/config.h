@@ -35,6 +35,8 @@
 
 #ifdef IMPULSE
 #define IMPULSE_METER_SERIAL_LEN	13
+#else
+#define METER_SERIAL_LEN			8
 #endif
 
 static const char key[] = KEY;
