@@ -62,7 +62,7 @@ static HttpdPriv connPrivData[MAX_CONN];
 static HttpdConnData connData[MAX_CONN];
 
 //Listening connection data
-static struct espconn httpdConn;
+static struct espconn httpdConn = (struct espconn){ 0 };
 static esp_tcp httpdTcp;
 
 //Struct to keep extension->mime data in
@@ -529,18 +529,20 @@ void static httpdDisconnectTimerFunc(void *arg) {
 
 ICACHE_FLASH_ATTR
 void httpdStop() {
-	INFO("Httpd stopping\n");
+	INFO("Httpd stopping, state=%d conn=%p\n", httpdConn.state, &httpdConn);
 	
-	if (espconn_delete(&httpdConn) == 0) {
-	    os_timer_disarm(&httpdDisconnectTimer);
-		httpdRetireConn(connData);
-		INFO("Httpd stopped\n");
-	}
-	else {
-		espconn_disconnect(&httpdConn);
-	    os_timer_disarm(&httpdDisconnectTimer);
-	    os_timer_setfn(&httpdDisconnectTimer, (os_timer_func_t *)httpdDisconnectTimerFunc, NULL);
-	    os_timer_arm(&httpdDisconnectTimer, 1000, 0);
-		INFO("Httpd still running rescheduling httpdStop\n");
+	if (httpdConn.state != ESPCONN_NONE) {
+		if (espconn_delete(&httpdConn) == 0) {
+		    os_timer_disarm(&httpdDisconnectTimer);
+			httpdRetireConn(connData);
+			INFO("Httpd stopped\n");
+		}
+		else {
+			espconn_disconnect(&httpdConn);
+		    os_timer_disarm(&httpdDisconnectTimer);
+		    os_timer_setfn(&httpdDisconnectTimer, (os_timer_func_t *)httpdDisconnectTimerFunc, NULL);
+		    os_timer_arm(&httpdDisconnectTimer, 1000, 0);
+			INFO("Httpd still running rescheduling httpdStop\n");
+		}
 	}
 }
