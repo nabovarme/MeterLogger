@@ -12,6 +12,21 @@ Connector to let httpd use the espfs filesystem to serve the files in it.
  */
 
 #include <esp8266.h>
+// open lwip networking
+#ifdef AP
+#include <lwip/ip.h>
+#include <lwip/udp.h>
+#include <lwip/tcp_impl.h>
+#include <netif/etharp.h>
+#include <lwip/netif.h>
+#include <lwip/lwip_napt.h>
+#include <lwip/dns.h>
+#include <lwip/app/dhcpserver.h>
+#include <lwip/opt.h>
+#else
+#include <ip_addr.h>
+#endif  // AP
+#include <espconn.h>
 
 #include "httpd.h"
 #include "espfs.h"

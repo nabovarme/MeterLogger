@@ -115,7 +115,6 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	struct tcp_hdr *tcp_h;
 	uint16_t src_port, dest_port;
 	uint8_t *packet;
-	int i;
 	
 	if (p->len < sizeof(struct eth_hdr)) {
 		return false;
