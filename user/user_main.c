@@ -125,12 +125,12 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	// use crc 16 of the serial number in ap ssid
 #ifdef EN61107
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, meter_serial_temp, strlen(meter_serial_temp)));
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
 #elif defined IMPULSE
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, sys_cfg.impulse_meter_serial, strlen(sys_cfg.impulse_meter_serial)));
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, ccit_crc16(0xffff, meter_serial_temp, strlen(meter_serial_temp)));
+	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
 #endif
 	
 	
