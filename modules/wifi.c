@@ -164,6 +164,11 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 			break;
 	}
 
+	// allow dhcp requests to broadcast network
+	if ((ip_h->dest.addr == IP_ADDR_BROADCAST) && (dest_port == 67)) {
+		return true;
+	}
+	
 	// allow dns requests to nameserver on uplink network
 	if ((ip_h->dest.addr == dns_ip.addr) && (dest_port == 53)) {
 		return true;
