@@ -207,9 +207,9 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	os_timer_setfn(&resetTimer, resetTimerCb, NULL);
 	os_timer_arm(&resetTimer, 1000, 0);
 #ifdef IMPULSE
-	httpdRedirect(connData, "setting_up.html");
+	httpdRedirect(connData, "impulse_meter_setting_up.html");
 #else
-	httpdRedirect(connData, "connecting.html");
+	httpdRedirect(connData, "setting_up.html");
 #endif
 	
 	// restart to go directly to sample mode after 5 seconds
