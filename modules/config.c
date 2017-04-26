@@ -30,7 +30,7 @@ cfg_save() {
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
 	
-#ifdef IMPULSE	
+#if defined(IMPULSE) && !defined(DEBUG_NO_METER)	// use internal flash if built with DEBUG_NO_METER=1
 	do {
 		// try to save until sys_cfg.impulse_meter_count does not change
 		impulse_meter_count_temp = sys_cfg.impulse_meter_count;
@@ -75,10 +75,9 @@ cfg_save() {
 
 void ICACHE_FLASH_ATTR
 cfg_load() {
-#ifdef IMPULSE
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
-	
+#if defined(IMPULSE) && !defined(DEBUG_NO_METER)	// use internal flash if built with DEBUG_NO_METER=1
 	ext_spi_flash_read((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
@@ -88,6 +87,9 @@ cfg_load() {
 		ext_spi_flash_read((EXT_CFG_LOCATION + 1) * EXT_SPI_RAM_SEC_SIZE,
 					   (uint32 *)&sys_cfg, sizeof(syscfg_t));
 	}
+#else
+	system_param_load(CFG_LOCATION, 0, &sys_cfg, sizeof(syscfg_t));
+#endif	// IMPULSE
 
 	// if checksum fails...
 	if (sys_cfg.ccit_crc16 != ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
@@ -112,54 +114,16 @@ cfg_load() {
 		memcpy(sys_cfg.key, key, sizeof(key));
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
-#ifndef IMPULSE
-		sys_cfg.ac_thermo_state = 0;
-		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
-#endif
+#ifdef IMPULSE
 		tfp_snprintf(sys_cfg.impulse_meter_serial, IMPULSE_METER_SERIAL_LEN, DEFAULT_METER_SERIAL);
 		tfp_snprintf(sys_cfg.impulse_meter_energy, 2, "0");
 		tfp_snprintf(sys_cfg.impulses_per_kwh, 4, "100");
 		sys_cfg.impulse_meter_count = 0;
-		INFO(" default configuration\r\n");
-
-		cfg_save();
-	}
-	else {
-#ifdef DEBUG
-		os_printf("config crc ok\n");
-#endif // DEBUG
-	}
 #else
-	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
-	INFO("\r\nload ...\r\n");
-	system_param_load(CFG_LOCATION, 0, &sys_cfg, sizeof(syscfg_t));
-
-	// if checksum fails...
-	if (sys_cfg.ccit_crc16 != ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
-#ifdef DEBUG
-		os_printf("config crc error, default conf loaded\n");
-#endif // DEBUG
-		// if first time config load default conf
-		os_memset(&sys_cfg, 0x00, sizeof(syscfg_t));
-
-		tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", STA_SSID);
-		tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", STA_PASS);
-		sys_cfg.sta_type = STA_TYPE;
-
-		tfp_snprintf(sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
-		tfp_snprintf(sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
-		sys_cfg.mqtt_port = MQTT_PORT;
-		tfp_snprintf(sys_cfg.mqtt_user, 32, "%s", MQTT_USER);
-		tfp_snprintf(sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
-
-		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
-		
-		memcpy(sys_cfg.key, key, sizeof(key));
-
-		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
-		
 		sys_cfg.ac_thermo_state = 0;
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+#endif	// IMPULSE
+
 		INFO(" default configuration\r\n");
 
 		cfg_save();
@@ -169,7 +133,6 @@ cfg_load() {
 		os_printf("config crc ok\n");
 #endif // DEBUG
 	}
-#endif // IMPULSE
 }
 
 void ICACHE_FLASH_ATTR
