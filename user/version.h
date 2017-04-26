@@ -4,13 +4,13 @@
 #	else	// THERMO_NC
 #		define HW_MODEL "MC-B-THERMO_NC"
 #	endif
-#elif EN61107
+#elif defined(EN61107)
 #	ifdef THERMO_NO
 #		define HW_MODEL "MC-THERMO_NO"
 #	else	// THERMO_NC
 #		define HW_MODEL "MC-THERMO_NC"
 #	endif
-#elif defined IMPULSE
+#elif defined(IMPULSE)
 #		define HW_MODEL "IMPULSE"
 #else
 #	ifdef THERMO_NO
