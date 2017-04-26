@@ -49,13 +49,15 @@ should be placed above the URLs they protect.
 HttpdBuiltInUrl builtInUrls[]={
 //Routines to make the /wifi URL and everything beneath it work.
 #ifdef IMPULSE
-	{"/generate_204", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},	// iOS captive portal pop up web config
+	{"/generate_204", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},		// iOS captive portal pop up web config
+	{"/hotspot-detect.html", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},	// android captive portal pop up web config
 	{"/", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
 	{"/wifi", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
 	{"/wifi/", cgiRedirect, "/wifi/impulse-meter-setup.tpl"},
 	{"/wifi/impulse-meter-setup.tpl", cgiEspFsTemplate, tplSetup},
 #else
-	{"/hotspot-detect.html", cgiRedirect, "/wifi/wifi-setup.tpl"},	// iOS captive portal pop up web config
+	{"/generate_204", cgiRedirect, "/wifi/wifi-setup.tpl"},					// iOS captive portal pop up web config
+	{"/hotspot-detect.html", cgiRedirect, "/wifi/wifi-setup.tpl"},			// android captive portal pop up web config
 	{"/", cgiRedirect, "/wifi/wifi-setup.tpl"},
 	{"/wifi", cgiRedirect, "/wifi/wifi-setup.tpl"},
 	{"/wifi/", cgiRedirect, "/wifi/wifi-setup.tpl"},
