@@ -75,7 +75,7 @@
 
 #define STA_TYPE 		AUTH_WPA_WPA2_PSK
 
-#define AP_MESH_SSID	"mesh-%08x"
+#define AP_MESH_SSID	"mesh-%04x"
 #define AP_MESH_PASS	"w1reless"
 #define AP_MESH_TYPE	AUTH_WPA_WPA2_PSK
 
