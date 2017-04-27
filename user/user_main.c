@@ -896,7 +896,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	}
 #endif // IMPULSE
 	
-	// make sure the device is in AP and STA combined mode
+	// make sure the device is in AP mode
 	wifi_set_opmode_current(STATIONAP_MODE);
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
