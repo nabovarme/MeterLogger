@@ -55,6 +55,7 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 		case 3:
 			led_off();
 
+			os_timer_disarm(&led_sub_pattern_timer);
 			led_sub_pattern_state = 0;
 			break;
 	}
@@ -107,6 +108,7 @@ ICACHE_FLASH_ATTR void led_pattern_c(void) {
 
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 	os_timer_disarm(&led_blinker_timer);
+	os_timer_disarm(&led_double_blink_timer);
 	led_off();
 }
 
