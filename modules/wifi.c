@@ -165,7 +165,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	}
 
 	// allow dhcp requests to broadcast network
-	if ((ip_h->dest.addr == IP_ADDR_BROADCAST) && (dest_port == 67)) {
+	if ((ip_h->dest.addr == IPADDR_BROADCAST) && (dest_port == 67)) {
 		return true;
 	}
 	
