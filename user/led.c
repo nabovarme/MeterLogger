@@ -6,7 +6,8 @@ static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
 
 static os_timer_t led_double_blink_timer;
-static uint8_t led_double_blink_state = 0;
+static os_timer_t led_sub_pattern_timer;
+static uint8_t led_sub_pattern_state = 0;
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
 	// do blinky stuff
@@ -31,30 +32,24 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 		led_off();
 	}
 	
-	switch (led_double_blink_state) {
+	switch (led_sub_pattern_state) {
 		case 0:
-			led_double_blink_state++;	
-			os_timer_disarm(&led_double_blink_timer);
-			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
-			os_timer_arm(&led_double_blink_timer, 100, 0);
+			led_sub_pattern_state++;	
+			os_timer_disarm(&led_sub_pattern_timer);
+			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_sub_pattern_timer, 100, 0);
 			break;
 		case 1:
-			led_double_blink_state++;	
-			os_timer_disarm(&led_double_blink_timer);
-			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
-			os_timer_arm(&led_double_blink_timer, 100, 0);
+			led_sub_pattern_state++;	
+			os_timer_disarm(&led_sub_pattern_timer);
+			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_sub_pattern_timer, 100, 0);
 			break;
 		case 2:
-			led_double_blink_state++;	
-			os_timer_disarm(&led_double_blink_timer);
-			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
-			os_timer_arm(&led_double_blink_timer, 100, 0);
-			break;
-		case 3:
-			led_double_blink_state = 0;	
-			os_timer_disarm(&led_double_blink_timer);
-			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
-			os_timer_arm(&led_double_blink_timer, 100, 0);
+			led_sub_pattern_state = 0;	
+			os_timer_disarm(&led_sub_pattern_timer);
+			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_sub_pattern_timer, 100, 0);
 			break;
 	}
 }
