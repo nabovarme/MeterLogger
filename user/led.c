@@ -25,31 +25,37 @@ ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
 	
 ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 	// blink fast two times
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
-		led_on();
-	}
-	else {
 		led_off();
-	}
 	
 	switch (led_sub_pattern_state) {
 		case 0:
-			led_sub_pattern_state++;	
+			led_on();
+
+			led_sub_pattern_state++;			
 			os_timer_disarm(&led_sub_pattern_timer);
 			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
 			os_timer_arm(&led_sub_pattern_timer, 100, 0);
 			break;
 		case 1:
-			led_sub_pattern_state++;	
+			led_off();
+
+			led_sub_pattern_state++;
 			os_timer_disarm(&led_sub_pattern_timer);
 			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
 			os_timer_arm(&led_sub_pattern_timer, 100, 0);
 			break;
 		case 2:
-			led_sub_pattern_state = 0;	
+			led_on();
+
+			led_sub_pattern_state++;
 			os_timer_disarm(&led_sub_pattern_timer);
 			os_timer_setfn(&led_sub_pattern_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
 			os_timer_arm(&led_sub_pattern_timer, 100, 0);
+			break;
+		case 3:
+			led_off();
+
+			led_sub_pattern_state = 0;
 			break;
 	}
 }
