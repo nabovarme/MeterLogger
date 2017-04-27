@@ -5,6 +5,9 @@
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
 
+static os_timer_t led_double_blink_timer;
+static uint8_t led_double_blink_state = 0;
+
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
 	// do blinky stuff
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
@@ -19,6 +22,43 @@ ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
 	led_off();
 }
 	
+ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
+	// blink fast two times
+	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
+		led_on();
+	}
+	else {
+		led_off();
+	}
+	
+	switch (led_double_blink_state) {
+		case 0:
+			led_double_blink_state++;	
+			os_timer_disarm(&led_double_blink_timer);
+			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_double_blink_timer, 100, 0);
+			break;
+		case 1:
+			led_double_blink_state++;	
+			os_timer_disarm(&led_double_blink_timer);
+			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_double_blink_timer, 100, 0);
+			break;
+		case 2:
+			led_double_blink_state++;	
+			os_timer_disarm(&led_double_blink_timer);
+			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_double_blink_timer, 100, 0);
+			break;
+		case 3:
+			led_double_blink_state = 0;	
+			os_timer_disarm(&led_double_blink_timer);
+			os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+			os_timer_arm(&led_double_blink_timer, 100, 0);
+			break;
+	}
+}
+
 ICACHE_FLASH_ATTR void led_init(void) {
 	//Set GPIO2 to output mode
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
@@ -55,6 +95,13 @@ ICACHE_FLASH_ATTR void led_pattern_b(void) {
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
 	os_timer_arm(&led_blinker_timer, 200, 1);
+}
+
+ICACHE_FLASH_ATTR void led_pattern_c(void) {
+	// blink fast two times every 5th second
+	os_timer_disarm(&led_double_blink_timer);
+	os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+	os_timer_arm(&led_double_blink_timer, 5000, 1);
 }
 
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {

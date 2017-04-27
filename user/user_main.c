@@ -149,6 +149,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	uint8_t ap_ssid[64];
 	uint8_t ap_password[64];
 
+	led_pattern_c();	// indicate config mode mode with led
 #ifdef EN61107
 	tfp_snprintf(ap_ssid, 32, AP_SSID, en61107_get_received_serial());
 #elif defined IMPULSE
@@ -184,6 +185,8 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
 
+	led_stop_pattern();	// stop indicating config mode mode with led
+	
 	// clear data
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
