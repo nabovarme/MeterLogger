@@ -541,7 +541,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "ssid", FUNCTIONNAME_L) == 0) {
-		// found uptime
+		// found ssid
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -556,33 +556,39 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
+		// found set_ssid
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_ssid, save if different and restart network
+			// change sta_ssid, save if different
 			if (strncmp(sys_cfg.sta_ssid, cleartext, 32 - 1) != 0) {
 				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
 				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
 				cfg_save();
-				// reconnect to new ssid
-				MQTT_Disconnect(&mqtt_client);
-				wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 			}
 		}
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
+		// found set_pwd
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_pwd, save if different and restart network
+			// change sta_pwd, save if different
 			if (strncmp(sys_cfg.sta_pwd, cleartext, 64 - 1) != 0) {
 				memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
 				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
 				cfg_save();
-				// reconnect with new password
-				MQTT_Disconnect(&mqtt_client);
-				wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 			}
+		}
+	}
+	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
+		// found reconnect
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+
+			// reconnect with new password
+			MQTT_Disconnect(&mqtt_client);
+			wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 		}
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {

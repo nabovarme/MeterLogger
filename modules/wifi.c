@@ -242,9 +242,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_softap_ip_config();
 
 			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
-#ifdef DEBUG
-			os_printf("wifi_handle_event_cb auto connect: %s\n", (wifi_station_get_auto_connect() != 0 ? "yes" : "no"));
-#endif
 #endif	// AP
 			wifi_cb(wifi_status);
 			break;
