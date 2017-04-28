@@ -103,7 +103,7 @@ ICACHE_FLASH_ATTR void led_pattern_c(void) {
 	// blink fast two times every 5th second
 	os_timer_disarm(&led_double_blink_timer);
 	os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
-	os_timer_arm(&led_double_blink_timer, 5000, 1);
+	os_timer_arm(&led_double_blink_timer, 3000, 1);
 }
 
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {
