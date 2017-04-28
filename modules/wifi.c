@@ -231,6 +231,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			sta_network_addr.addr &= sta_network_mask.addr;
 
 			wifi_softap_ip_config();
+
+			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
+#ifdef DEBUG
+			os_printf("wifi_handle_event_cb auto connect: %s\n", (wifi_station_get_auto_connect() != 0 ? "yes" : "no"));
+#endif
 #endif	// AP
 			wifi_cb(wifi_status);
 			break;
@@ -329,6 +334,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	tfp_snprintf(stationConf.password, 64, "%s", config_pass);
     
 	wifi_station_set_config_current(&stationConf);
+
+	os_printf("wifi_station_get_connect_status: %u\n", wifi_station_get_connect_status());
 	wifi_station_connect();
 	
 	// start wifi rssi timer

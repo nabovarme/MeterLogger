@@ -897,13 +897,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	// dont enable wireless before we have configured ssid
 	wifi_set_opmode_current(NULL_MODE);
-
-	// disable auto connect, it interfers with ap
-	wifi_station_set_auto_connect(0);	// DEBUG: it appears it does not work?!
-#ifdef DEBUG
-	os_printf("user_init auto connect: %s\n", (wifi_station_get_auto_connect() != 0 ? "yes" : "no"));
-#endif
 	wifi_station_disconnect();
+
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
 }
