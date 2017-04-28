@@ -59,6 +59,7 @@
 
 #define STA_SSID			"Loppen Public"
 #define STA_PASS			""
+#define STA_TYPE			AUTH_OPEN
 #define STA_FALLBACK_SSID	"stofferFon"
 #define STA_FALLBACK_PASS	"w1reless"
 
