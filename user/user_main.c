@@ -132,10 +132,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
 	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
 #endif
-	
-	
-	
-	
+
 	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
 	wifi_softap_ip_config();
 #else
@@ -150,6 +147,8 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	uint8_t ap_password[64];
 
 	led_pattern_c();	// indicate config mode mode with led
+	// make sure the device is in AP and STA combined mode; otherwise we cant scan
+	wifi_set_opmode_current(STATIONAP_MODE);
 #ifdef EN61107
 	tfp_snprintf(ap_ssid, 32, AP_SSID, en61107_get_received_serial());
 #elif defined IMPULSE
@@ -896,8 +895,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	}
 #endif // IMPULSE
 	
-	// make sure the device is in AP and STA combined mode; otherwise we cant scan
-	wifi_set_opmode_current(STATIONAP_MODE);
+	// dont enable wireless before we have configured ssid
+	wifi_set_opmode_current(NULL_MODE);
 	wifi_station_set_auto_connect(false);
 #ifdef DEBUG
 	os_printf("auto connect: %s\n", (wifi_station_get_auto_connect() ? "yes" : "no"));
