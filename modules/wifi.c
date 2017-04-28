@@ -312,8 +312,10 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		
 		wifi_fallback_last_present = wifi_fallback_present;
 #ifdef DEBUG
+		uint8_t s;
+		s = wifi_station_get_connect_status();
 		os_printf("wifi present: %s\n", (wifi_present ? "yes" : "no"));
-		os_printf("wifi status: %s\n", (wifi_station_get_connect_status() == STATION_GOT_IP) ? "connected" : "not connected");
+		os_printf("wifi status: %s (%u)\n", (s == STATION_GOT_IP) ? "connected" : "not connected", s);
 #endif
 	}
 	
