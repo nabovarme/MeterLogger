@@ -41,6 +41,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 	}
 	else {
 		os_timer_disarm(&wifi_reconnect_timer);
+		set_my_auto_connect(true);
 		wifi_station_connect();
 		wifi_start_scan();
 #ifdef DEBUG
@@ -74,6 +75,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 						// DEBUG: hack to get it to reconnect on weak wifi
 						// force reconnect to wireless
 						wifi_stop_scan();
+						set_my_auto_connect(false);
 						wifi_station_disconnect();
 #ifdef DEBUG
 						os_printf("stopped wifi and wifi scanner\n");

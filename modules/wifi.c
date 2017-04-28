@@ -48,7 +48,8 @@ volatile bool wifi_scan_runnning = false;
 //volatile bool wifi_reconnect = false;
 volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running = false;
-volatile bool wifi_default_ok = false; 
+volatile bool wifi_default_ok = false;
+volatile bool my_auto_connect = true;
 
 #ifdef AP
 static netif_input_fn orig_input_ap;
@@ -220,7 +221,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 			os_printf("reconnect via wifi event handler\n");
 #endif
-			wifi_station_connect();	// reconnect on disconnect
+			if (my_auto_connect) {
+#ifdef DEBUG
+				os_printf("my_auto_connect: %s\n", my_auto_connect ? "true" : "false");
+#endif
+				wifi_station_connect();	// reconnect on disconnect
+			}
 			break;
 		case EVENT_STAMODE_GOT_IP:		
 			// set default network status
@@ -381,6 +387,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	tfp_snprintf(stationConf.ssid, 32, "%s", ssid);
 	tfp_snprintf(stationConf.password, 64, "%s", pass);
 
+	my_auto_connect = false;	// disable wifi wifi_handle_event_cb() based auto connect
 	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);
 
@@ -388,6 +395,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_start_scan();
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
+	my_auto_connect = true;		// enable wifi wifi_handle_event_cb() based auto connect
 
 	wifi_station_connect();
 	
@@ -504,5 +512,9 @@ bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
 
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
 	return wifi_fallback_present;
+}
+
+void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
+	my_auto_connect = enabled;
 }
 
