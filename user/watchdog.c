@@ -51,12 +51,14 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 	uint32_t i;
-	uint32_t unix_time;
+	uint32_t uptime;
 	
-	unix_time = get_unix_time();
-	if (unix_time) {	// only run watchdog if we have unix time
+	uptime = get_uptime();
+//	if (uptime) {	// only run watchdog if we have unix time
 		for (i = 0; i < WATCHDOG_MAX; i++) {
-			if ((watchdog_list[i].type != NOT_ENABLED) && (watchdog_list[i].last_reset) && (watchdog_list[i].last_reset < unix_time - watchdog_list[i].timeout)) {
+			if ((watchdog_list[i].type != NOT_ENABLED) && 
+				(watchdog_list[i].last_reset) && 
+				((int32_t)watchdog_list[i].last_reset < (int32_t)(uptime - watchdog_list[i].timeout))) {
 #ifdef DEBUG
 				os_printf("watchdog timeout, id: %d\n", watchdog_list[i].id);
 #endif			
@@ -93,10 +95,10 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 #endif	
 						break;
 				}
-				watchdog_list[i].last_reset = get_unix_time();
+				watchdog_list[i].last_reset = get_uptime();
 			}
 		}
-	}
+//	}
 }
 
 ICACHE_FLASH_ATTR void init_watchdog() {
@@ -137,7 +139,7 @@ ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t 
 		watchdog_list[watchdog_list_len].id = id;
 		watchdog_list[watchdog_list_len].type = type;
 		watchdog_list[watchdog_list_len].timeout = timeout;
-		watchdog_list[watchdog_list_len].last_reset = get_unix_time();
+		watchdog_list[watchdog_list_len].last_reset = get_uptime();
 		watchdog_list_len++;
 		return true;
 	}
@@ -176,7 +178,7 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 #endif			
 	for (i = 0; i < WATCHDOG_MAX; i++) {
 		if (watchdog_list[i].id == id) {
-			watchdog_list[i].last_reset = get_unix_time();
+			watchdog_list[i].last_reset = get_uptime();
 		}
 	}
 }

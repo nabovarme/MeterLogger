@@ -190,7 +190,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-	if (impulse_time > (uptime() - 60)) {	// only send mqtt if impulse received last minute
+	if (impulse_time > (get_uptime() - 60)) {	// only send mqtt if impulse received last minute
 		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
 	
 		// for acc_energy...
@@ -270,7 +270,7 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 
 	cfg_save();
 	
-	impulse_time = uptime();
+	impulse_time = get_uptime();
 	impulse_time_diff = impulse_time - last_impulse_time;
 	
 	impulse_meter_count_diff = sys_cfg.impulse_meter_count - last_impulse_meter_count;
@@ -366,7 +366,7 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -520,7 +520,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", uptime());
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -801,7 +801,7 @@ void impulse_meter_init(void) {
 		impulses_per_kwh = 100;		// if not set set to some default != 0
 	}
 	
-	impulse_time = uptime();
+	impulse_time = get_uptime();
 	last_impulse_time = 0;
 	
 	last_impulse_meter_count = sys_cfg.impulse_meter_count;
