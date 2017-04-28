@@ -899,6 +899,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// make sure the device is in AP and STA combined mode; otherwise we cant scan
 	wifi_set_opmode_current(STATIONAP_MODE);
 	wifi_station_set_auto_connect(false);
+#ifdef DEBUG
+	os_printf("auto connect: %s\n", (wifi_station_get_auto_connect() ? "yes" : "no"));
+#endif
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
 }
