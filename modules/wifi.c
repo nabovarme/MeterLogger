@@ -218,12 +218,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
-#ifdef DEBUG
-			os_printf("will reconnect via wifi event handler\n");
-#endif
 			if (my_auto_connect) {
 #ifdef DEBUG
-				os_printf("my_auto_connect: %s\n", my_auto_connect ? "true" : "false");
+				os_printf("reconnecting on disconnect\n");
 #endif
 				wifi_station_connect();	// reconnect on disconnect
 			}
