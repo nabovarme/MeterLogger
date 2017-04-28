@@ -36,7 +36,7 @@
 #define MQTT_RECONNECT_TIMEOUT 	5	/*second*/
 
 #ifdef AP
-#define QUEUE_BUFFER_SIZE		 		4096
+#define QUEUE_BUFFER_SIZE		 		8192
 #else
 #ifdef IMPULSE
 #define QUEUE_BUFFER_SIZE				20480	// larger queue for impulse meters
@@ -57,11 +57,10 @@
 #define KEY { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c }
 #endif
 
-#define STA_SSID			"stofferFonen"
-#define STA_PASS			"w1reless"
+#define STA_SSID			"Loppen Public"
+#define STA_PASS			""
 #define STA_FALLBACK_SSID	"stofferFon"
 #define STA_FALLBACK_PASS	"w1reless"
-#define STA_TYPE			AUTH_WPA_WPA2_PSK
 
 #ifdef IMPULSE
 #define AP_SSID				"EL_%s"
@@ -71,8 +70,9 @@
 #ifndef AP_PASSWORD
 #define AP_PASSWORD			"aabbccddeeff"
 #endif
-#define AP_NETWORK			"10.0.5.0"
+#define AP_TYPE				AUTH_WPA_WPA2_PSK
 
+#define AP_NETWORK			"10.0.5.0"
 #define AP_MESH_SSID		"mesh-%s"
 #define AP_MESH_PASS		"w1reless"
 #define AP_MESH_TYPE		AUTH_WPA_WPA2_PSK

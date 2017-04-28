@@ -158,7 +158,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 #endif
 	tfp_snprintf(ap_password, 64, AP_PASSWORD);
 
-	wifi_softap_config(ap_ssid, ap_password, STA_TYPE);	// start AP with default configuration
+	wifi_softap_config(ap_ssid, ap_password, AP_TYPE);	// start AP with default configuration
 	captdnsInit();										// start captive dns server
 	httpd_user_init();									// start web server
 }
