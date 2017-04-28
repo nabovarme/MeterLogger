@@ -217,6 +217,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
+#ifdef DEBUG
+			os_printf("reconnect via wifi event handler\n");
+#endif
 			wifi_station_connect();	// reconnect on disconnect
 			break;
 		case EVENT_STAMODE_GOT_IP:		
@@ -309,7 +312,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		
 		wifi_fallback_last_present = wifi_fallback_present;
 #ifdef DEBUG
-		os_printf("WiFi present: %s\n", (wifi_present ? "yes" : "no"));
+		os_printf("wifi present: %s\n", (wifi_present ? "yes" : "no"));
+		os_printf("wifi status: %s\n", (wifi_station_get_connect_status() == STATION_GOT_IP) ? "connected" : "not connected");
 #endif
 	}
 	
@@ -335,7 +339,6 @@ void ICACHE_FLASH_ATTR wifi_default() {
     
 	wifi_station_set_config_current(&stationConf);
 
-	os_printf("wifi_station_get_connect_status: %u\n", wifi_station_get_connect_status());
 	wifi_station_connect();
 	
 	// start wifi rssi timer
@@ -383,6 +386,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_start_scan();
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
+
 	wifi_station_connect();
 	
 	// start wifi rssi timer

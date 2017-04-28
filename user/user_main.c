@@ -559,11 +559,14 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_ssid and save if different
+			// change sta_ssid, save if different and restart network
 			if (strncmp(sys_cfg.sta_ssid, cleartext, 32 - 1) != 0) {
 				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
 				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
 				cfg_save();
+				// reconnect to new ssid
+				MQTT_Disconnect(&mqtt_client);
+				wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 			}
 		}
 	}
@@ -571,11 +574,14 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 
-			// change sta_pwd and save if different
+			// change sta_pwd, save if different and restart network
 			if (strncmp(sys_cfg.sta_pwd, cleartext, 64 - 1) != 0) {
 				memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
 				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
 				cfg_save();
+				// reconnect with new password
+				MQTT_Disconnect(&mqtt_client);
+				wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 			}
 		}
 	}
@@ -898,6 +904,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// dont enable wireless before we have configured ssid
 	wifi_set_opmode_current(NULL_MODE);
 	wifi_station_disconnect();
+	// disale auto connect, we handle reconnect with this event handler
+	wifi_station_set_auto_connect(0);
 
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
