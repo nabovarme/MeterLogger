@@ -217,13 +217,13 @@ void wifi_handle_event_cb(System_Event_t *evt) {
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
+			wifi_station_connect();	// reconnect on disconnect
 			break;
 		case EVENT_STAMODE_GOT_IP:		
 			// set default network status
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
-
 #ifdef AP
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
@@ -359,10 +359,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	INFO("WIFI_INIT\r\n");
 	wifi_set_opmode(STATIONAP_MODE);
-#ifdef DEBUG
-	os_printf("auto connect: %s\n", (wifi_station_get_auto_connect() ? "yes" : "no"));
-#endif
-	wifi_station_set_auto_connect(false);	// according to docs this can only be done from user_init() or we have to reboot after calling
+
 	wifi_cb = cb;
 	config_ssid = ssid;
 	config_pass = pass;
@@ -378,10 +375,6 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start wifi scan timer
 	wifi_start_scan();
 
-	wifi_station_set_auto_connect(true);	// according to docs this can only be done from user_init() or we have to reboot after calling
-#ifdef DEBUG
-	os_printf("auto connect: %s\n", (wifi_station_get_auto_connect() ? "yes" : "no"));
-#endif
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
