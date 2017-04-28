@@ -212,14 +212,14 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
 #ifdef DEBUG
-			os_printf("disconnect from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
+			os_printf("disconnected from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
 			// set default network status
     		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
 #ifdef DEBUG
-			os_printf("reconnect via wifi event handler\n");
+			os_printf("will reconnect via wifi event handler\n");
 #endif
 			if (my_auto_connect) {
 #ifdef DEBUG
