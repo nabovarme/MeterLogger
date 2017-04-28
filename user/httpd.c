@@ -58,7 +58,8 @@ struct HttpdPriv {
 };
 
 //Connection pool
-static HttpdPriv connPrivData[MAX_CONN];
+//static HttpdPriv connPrivData[MAX_CONN];
+static HttpdPriv *connPrivData;	// allocate dynamically
 static HttpdConnData connData[MAX_CONN];
 
 //Listening connection data
@@ -508,6 +509,8 @@ ICACHE_FLASH_ATTR
 void httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 	int i;
 
+	connPrivData = malloc(sizeof(HttpdPriv) * MAX_CONN);
+
 	for (i=0; i<MAX_CONN; i++) {
 		connData[i].conn=NULL;
 	}
@@ -535,6 +538,7 @@ void httpdStop() {
 		if (espconn_delete(&httpdConn) == 0) {
 		    os_timer_disarm(&httpdDisconnectTimer);
 			httpdRetireConn(connData);
+			free(connPrivData);
 			INFO("Httpd stopped\n");
 		}
 		else {
