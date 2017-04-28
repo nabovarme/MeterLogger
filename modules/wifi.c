@@ -359,7 +359,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	INFO("WIFI_INIT\r\n");
 	wifi_set_opmode(STATIONAP_MODE);
-	wifi_station_set_auto_connect(false);
+	wifi_station_set_auto_connect(false);	// according to docs this can only be done from user_init() or we have to reboot after calling
 	wifi_cb = cb;
 	config_ssid = ssid;
 	config_pass = pass;
@@ -375,7 +375,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start wifi scan timer
 	wifi_start_scan();
 
-	wifi_station_set_auto_connect(true);
+	wifi_station_set_auto_connect(true);	// according to docs this can only be done from user_init() or we have to reboot after calling
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	wifi_station_connect();
 	
