@@ -86,6 +86,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                             |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                              |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                    |
+| /config/v2/9999999/[unix time]/reconnect               |                                                                    |
 | /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                    |
 | /config/v2/9999999/[unix time]/mem                     |                                                                    |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                    |
