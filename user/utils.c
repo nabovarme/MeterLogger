@@ -204,3 +204,15 @@ int int_pow(int x, int y) {
 	}
 	return result;
 }
+
+#ifdef DEBUG_NO_METER
+ICACHE_FLASH_ATTR
+uint32_t random_int(uint16_t max) {
+	uint16_t random_integer;
+
+	os_get_random((unsigned char *)&random_integer, 2);
+
+	return (random_integer * max) >> 16;
+}
+#endif
+
