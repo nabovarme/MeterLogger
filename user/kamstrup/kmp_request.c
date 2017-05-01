@@ -280,19 +280,18 @@ void kmp_request_send() {
 #ifdef DEBUG_NO_METER
 	// clear data
 	memset(message, 0, sizeof(message));
-	memset(topic, 0, sizeof(message));
+	memset(topic, 0, sizeof(topic));
 
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
-//	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%u&t1=%u.00 C&t2=%u.00 C&tdif=%u.00 K&flow1=%u l/h&effect1=%u.0 kW&hr=%u h&v1=%u.00 m3&e1=%u kWh&", 
-		system_get_free_heap_size(), 
-		65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
-		45 + ((sine_wave[(uint8_t)(pseudo_data_debug_no_meter + 128)] * 10) >> 8),	// t2
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, KMP_FRAME_L, "%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
+        	65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
+        	45 + ((sine_wave[(pseudo_data_debug_no_meter + 128) & 0xff] * 10) >> 8),	// t2
 		10,																// tdif
-		100 + ((sine_wave[(uint8_t)((pseudo_data_debug_no_meter + 64) * 7)] * 50) >> 8),	// flow
+		100 + ((sine_wave[((pseudo_data_debug_no_meter + 64) * 7) & 0xff] * 50) >> 8),	// flow
 		15 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// effect1
 		pseudo_data_debug_no_meter / 60,								// hr
 		pseudo_data_debug_no_meter,										// v1
