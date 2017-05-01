@@ -288,8 +288,8 @@ void kmp_request_send() {
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, KMP_FRAME_L, "%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u",
-        	65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
-        	45 + ((sine_wave[(pseudo_data_debug_no_meter + 128) & 0xff] * 10) >> 8),	// t2
+		65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
+		45 + ((sine_wave[(pseudo_data_debug_no_meter + 128) & 0xff] * 10) >> 8),	// t2
 		10,																// tdif
 		100 + ((sine_wave[((pseudo_data_debug_no_meter + 64) * 7) & 0xff] * 50) >> 8),	// flow
 		15 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// effect1
