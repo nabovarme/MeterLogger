@@ -83,6 +83,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/uptime                  |                                                                    |
 | /config/v2/9999999/[unix time]/rssi                    |                                                                    |
 | /config/v2/9999999/[unix time]/ssid                    |                                                                    |
+| /config/v2/9999999/[unix time]/scan                    |                                                                    |
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                             |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                              |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                    |
@@ -103,7 +104,10 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
+| /scan_result/v2/9999999/[unix time]             | ssid=Loppen Public&rssi=-51&channel=11                                                               |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
+| /start_ap/v2/9999999/[unix time]                | [start ap + save to flash if changed]                                                                |
+| /stop_ap/v2/9999999/[unix time]                 | [stop ap + save to flash if changed]                                                                 |
 | /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v2/9999999/[unix time]                     | heap=9672&                                                                                           |
 | /reset_reason/v2/9999999/[unix time]            |                                                                                                      |

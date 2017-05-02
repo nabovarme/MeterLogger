@@ -379,7 +379,22 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
-	wifi_set_opmode(STATIONAP_MODE);
+#ifdef AP
+	if (sys_cfg.ap_enabled) {
+		if (wifi_get_opmode() != STATIONAP_MODE) {
+			wifi_set_opmode_current(STATIONAP_MODE);
+		}
+	}
+	else {
+		if (wifi_get_opmode() != STATION_MODE) {
+			wifi_set_opmode_current(STATION_MODE);
+		}
+	}
+#else
+	if (wifi_get_opmode() != STATION_MODE) {
+		wifi_set_opmode_current(STATION_MODE);
+	}
+#endif	// AP
 
 	wifi_cb = cb;
 	config_ssid = ssid;

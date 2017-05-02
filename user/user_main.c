@@ -122,7 +122,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 #ifdef AP
-	// use crc 16 of the serial number in ap ssid
 #ifdef EN61107
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
 	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
@@ -616,6 +615,45 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
+#ifdef AP
+	else if (strncmp(function_name, "start_ap", FUNCTIONNAME_L) == 0) {
+		// found reconnect
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+
+			// start AP
+			if (wifi_get_opmode() != STATIONAP_MODE) {
+				wifi_set_opmode_current(STATIONAP_MODE);
+			}
+			
+			wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
+			wifi_softap_ip_config();
+			
+			// ...and save setting to flash if changed
+			if (sys_cfg.ap_enabled == false) {
+				sys_cfg.ap_enabled = true;
+				cfg_save();
+			}
+		}
+	}
+	else if (strncmp(function_name, "stop_ap", FUNCTIONNAME_L) == 0) {
+		// found reconnect
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			
+			// stop AP
+			if (wifi_get_opmode() != STATION_MODE) {
+				wifi_set_opmode_current(STATION_MODE);
+			}
+
+			// ...and save setting to flash if changed
+			if (sys_cfg.ap_enabled == true) {
+				sys_cfg.ap_enabled = false;
+				cfg_save();
+			}
+		}
+	}
+#endif
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
 #ifdef EN61107

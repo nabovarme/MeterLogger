@@ -102,7 +102,11 @@ cfg_load() {
 		tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", STA_SSID);
 		tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", STA_PASS);
 		sys_cfg.sta_type = STA_TYPE;
-
+#ifdef AP
+		sys_cfg.ap_enabled = true;
+#else
+		sys_cfg.ap_enabled = false;
+#endif
 		tfp_snprintf(sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
 		tfp_snprintf(sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
 		sys_cfg.mqtt_port = MQTT_PORT;

@@ -48,6 +48,7 @@ typedef struct{
 	uint8_t sta_ssid[64];
 	uint8_t sta_pwd[64];
 	uint32_t sta_type;
+	bool ap_enabled;
 
 	uint8_t mqtt_host[64];
 	uint32_t mqtt_port;
