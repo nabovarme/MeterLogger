@@ -556,6 +556,16 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
+	else if (strncmp(function_name, "scan", FUNCTIONNAME_L) == 0) {
+		// found set_ssid
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+
+			// reguster wifi scan callback to handle scan results when we do normal scanning in wifi.c
+			// wifi_scan_result_cb_unregister() is called from wifi.c when scan is done
+			wifi_scan_result_cb_register(mqtt_send_wifi_scan_results_cb);
+		}
+	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
 		// found set_ssid
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
@@ -729,6 +739,46 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		ac_test();
 	}
 #endif
+}
+
+ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *info) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+	char ssid_escaped[SSID_ESCAPED_LENGTH + 1];
+	size_t i, j;
+
+	// escape '&' since we are using it as separator
+	memset(ssid_escaped, 0, SSID_ESCAPED_LENGTH + 1);
+	for (i = 0, j = 0; i < strlen(info->ssid); i++) {
+		if (*(info->ssid + i) == '&') {
+			strncpy(ssid_escaped + j, "%26", 3);
+			j += 3;
+		}
+		else {
+			strncpy(ssid_escaped + j, info->ssid + i, 1);
+			j++;
+	    }
+	}
+
+#ifdef DEBUG
+	os_printf("ssid=%s&rssi=%d&channel=%d\n", ssid_escaped, info->rssi, info->channel);
+#endif
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&rssi=%d&channel=%d", ssid_escaped, info->rssi, info->channel);
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
 #ifdef IMPULSE

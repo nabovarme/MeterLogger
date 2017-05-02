@@ -37,6 +37,8 @@ static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
+wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
+
 uint8_t* config_ssid;
 uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
@@ -296,8 +298,15 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			if ((info != NULL) && (info->ssid != NULL) && (os_strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
 			}
+			
+			// handle sending scan results via mqtt
+			if (wifi_scan_result_cb) {
+				wifi_scan_result_cb(info);
+			}
+			
 			info = info->next.stqe_next;
 		}
+		wifi_scan_result_cb_unregister();	// done sending via mqtt
 		
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
@@ -512,3 +521,10 @@ void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
 	my_auto_connect = enabled;
 }
 
+void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
+	wifi_scan_result_cb = cb;
+}
+
+void wifi_scan_result_cb_unregister(wifi_scan_result_event_cb_t cb) {
+	wifi_scan_result_cb = NULL;
+}

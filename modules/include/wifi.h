@@ -8,6 +8,7 @@
 #ifndef USER_WIFI_H_
 #define USER_WIFI_H_
 typedef void (*WifiCallback)(uint8_t);
+typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
@@ -32,5 +33,8 @@ void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
+
+void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
+void wifi_scan_result_cb_unregister();
 
 #endif /* USER_WIFI_H_ */

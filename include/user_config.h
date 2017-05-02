@@ -12,6 +12,9 @@
 
 /*DEFAULT CONFIGURATIONS*/
 
+#define SSID_LENGTH         32
+#define SSID_ESCAPED_LENGTH (SSID_LENGTH * 3)  // & encoded as %26 takes up three times more space
+
 #ifndef DEFAULT_METER_SERIAL
 #define DEFAULT_METER_SERIAL	"9999999"
 #endif
