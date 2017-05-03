@@ -801,7 +801,17 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 	}
 
 #ifdef DEBUG
-	os_printf("ssid=%s&rssi=%d&channel=%d\n", ssid_escaped, info->rssi, info->channel);
+	os_printf("ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d\n", 
+		ssid_escaped, 
+		info->bssid[0], 
+		info->bssid[1], 
+		info->bssid[2], 
+		info->bssid[3], 
+		info->bssid[4], 
+		info->bssid[5], 
+		info->rssi, 
+		info->channel
+	);
 #endif
 
 #ifdef EN61107
@@ -812,7 +822,17 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&rssi=%d&channel=%d", ssid_escaped, info->rssi, info->channel);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d", 
+		ssid_escaped, 
+		info->bssid[0], 
+		info->bssid[1], 
+		info->bssid[2], 
+		info->bssid[3], 
+		info->bssid[4], 
+		info->bssid[5], 
+		info->rssi, 
+		info->channel
+	);
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
