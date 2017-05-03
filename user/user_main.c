@@ -68,7 +68,7 @@ static os_timer_t impulse_meter_calculate_timer;
 struct rst_info *rtc_info;
 
 #ifdef AP
-uint8_t mesh_ssid[64];
+uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
 #endif
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
@@ -124,12 +124,12 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #ifdef AP
 #ifdef EN61107
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
+	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #elif defined IMPULSE
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, sys_cfg.impulse_meter_serial);
+	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
-	tfp_snprintf(mesh_ssid, 16, AP_MESH_SSID, meter_serial_temp);
+	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #endif
 
 	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
