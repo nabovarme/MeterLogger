@@ -125,6 +125,7 @@ cfg_load() {
 		sys_cfg.impulse_meter_count = 0;
 #else
 		sys_cfg.ac_thermo_state = 0;
+		sys_cfg.offline_close_at = 0;
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
 #endif	// IMPULSE
 

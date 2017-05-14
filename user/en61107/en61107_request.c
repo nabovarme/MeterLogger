@@ -298,6 +298,15 @@ uint32_t en61107_get_received_serial() {
 	return en61107_serial;
 }
 
+// helper function to pass energy to user_main.c
+ICACHE_FLASH_ATTR
+unsigned int en61107_get_received_energy_kwh() {
+	//response.e1.value, response.e1.unit
+
+	// DEBUG: Bug here: we need to convert to kwh if unit it something else
+	return atoi(response.e1.value);
+}
+
 //ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c) {
 	if (en61107_eod == 0x03) {

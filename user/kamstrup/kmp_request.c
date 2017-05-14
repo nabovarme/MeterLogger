@@ -186,6 +186,23 @@ unsigned int kmp_get_received_serial() {
 	return kmp_serial;
 }
 
+// helper function to pass energy to user_main.c
+ICACHE_FLASH_ATTR
+unsigned int kmp_get_received_energy_kwh() {
+//	unsigned char kmp_unit_string[16];
+	unsigned char kmp_value_string[64];
+
+	kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
+	//kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
+
+	// DEBUG: Bug here: we need to convert to kwh if unit it something else
+#ifdef DEBUG_NO_METER
+	return pseudo_data_debug_no_meter;
+#else
+	return atoi(kmp_value_string);
+#endif
+}
+
 ICACHE_FLASH_ATTR
 void static kmp_get_serial_timer_func() {
 	// get serial

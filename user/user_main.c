@@ -32,7 +32,6 @@
 #endif
 
 #ifdef IMPULSE
-
 uint32_t impulse_meter_energy;
 //float impulse_meter_energy;
 uint32_t impulses_per_kwh;
@@ -175,13 +174,14 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;	
+	// vars for aes encryption
+	uint8_t cleartext[MQTT_MESSAGE_L];
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
-	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
-	int mqtt_message_l;
-	
 	uint32_t acc_energy;
 	
 	// for pseudo float print
@@ -192,9 +192,6 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
-	// vars for aes encryption
-	uint8_t cleartext[MQTT_MESSAGE_L];
-
 	led_stop_pattern();	// stop indicating config mode mode with led
 	
 	// clear data
@@ -259,6 +256,63 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #else
 	kmp_request_send();
 #endif	// EN61107
+
+#ifndef IMPULSE
+	// compare last received energy to offline_close_at and close if needed
+#ifdef EN61107
+	if (en61107_get_received_energy_kwh() >= sys_cfg.offline_close_at) {
+		if (sys_cfg.ac_thermo_state) {
+			ac_thermo_close();
+
+			// send mqtt status
+			// clear data
+			memset(mqtt_topic, 0, sizeof(mqtt_topic));
+			memset(mqtt_message, 0, sizeof(mqtt_message));
+			memset(cleartext, 0, sizeof(cleartext));
+
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+			if (mqtt_client.pCon != NULL) {
+				// if mqtt_client is initialized
+				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+#ifdef DEBUG
+				os_printf("closed because en61107_get_received_energy_kwh >= offline_close_at (%u >= %u)\n", en61107_get_received_energy_kwh(), sys_cfg.offline_close_at);
+#endif	// DEBUG
+			}
+		}
+	}
+#else	// KMP
+	if (kmp_get_received_energy_kwh() >= sys_cfg.offline_close_at) {
+		if (sys_cfg.ac_thermo_state) {
+			ac_thermo_close();
+
+			// send mqtt status
+			// clear data
+			memset(mqtt_topic, 0, sizeof(mqtt_topic));
+			memset(mqtt_message, 0, sizeof(mqtt_message));
+			memset(cleartext, 0, sizeof(cleartext));
+
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+			if (mqtt_client.pCon != NULL) {
+				// if mqtt_client is initialized
+				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+#ifdef DEBUG
+				os_printf("closed because kmp_get_received_energy_kwh >= offline_close_at (%u >= %u)\n", kmp_get_received_energy_kwh(), sys_cfg.offline_close_at);
+#endif	// DEBUG
+			}
+		}
+	}
+#endif	// EN61107
+#endif	// IMPULSE
 }
 
 
@@ -748,15 +802,45 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			//ac_motor_valve_open();
-			sys_cfg.ac_thermo_state = 1;
 			ac_thermo_open();
+		}
+	}
+	else if (strncmp(function_name, "open_until", FUNCTIONNAME_L) == 0) {
+		// found open_to_delta
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			ac_thermo_open();
+			if (sys_cfg.offline_close_at != atoi(cleartext)) {
+				// save if changed
+#ifdef EN61107
+				sys_cfg.offline_close_at = atoi(cleartext);
+#else
+				sys_cfg.offline_close_at = atoi(cleartext);
+#endif
+				cfg_save();
+			}
+		}
+	}
+	else if (strncmp(function_name, "open_until_delta", FUNCTIONNAME_L) == 0) {
+		// found open_to_delta
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+			ac_thermo_open();
+			if (sys_cfg.offline_close_at != atoi(cleartext)) {
+				// save if changed
+#ifdef EN61107
+				sys_cfg.offline_close_at = en61107_get_received_energy_kwh() + atoi(cleartext);
+#else
+				sys_cfg.offline_close_at = kmp_get_received_energy_kwh() + atoi(cleartext);
+#endif
+				cfg_save();
+			}
 		}
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			//ac_motor_valve_close();
-			sys_cfg.ac_thermo_state = 0;
 			ac_thermo_close();
 		}
 	}

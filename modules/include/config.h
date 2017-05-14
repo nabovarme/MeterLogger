@@ -59,6 +59,7 @@ typedef struct{
 	uint8_t key[16];
 #ifndef IMPULSE
 	uint8_t ac_thermo_state;	// thermo actuator state
+	uint32_t offline_close_at;	// close thermo actuator at kwh set via mqtt open_at_delta function
 	cron_jobs_t cron_jobs;
 #else
 	char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];

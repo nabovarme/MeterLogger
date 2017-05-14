@@ -18,6 +18,9 @@ void en61107_set_mqtt_client(MQTT_Client* client);
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_serial();
 
+ICACHE_FLASH_ATTR
+unsigned int en61107_get_received_energy_kwh();
+
 //ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c);
 
