@@ -31,7 +31,7 @@
 #define MQTT_BUF_SIZE		2048
 #define MQTT_KEEPALIVE		60	 /*second*/
 
-#define MQTT_CLIENT_ID		"ESP_%08X"
+#define MQTT_CLIENT_ID		"ML_%08X"
 #define MQTT_USER			"esp8266"
 #define MQTT_PASS			"chah5Kai"
 

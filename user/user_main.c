@@ -97,6 +97,20 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	sys_cfg.impulse_meter_count = impulse_meter_count_temp;
 #endif // IMPULSE
 	
+	// from here we are supposed to have a valid meter serial - write it to flash as mqtt id if it has changed
+#ifdef EN61107
+	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
+#elif defined IMPULSE
+	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%s", sys_cfg.impulse_meter_serial);
+#else
+	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
+#endif
+	if (strncmp(sys_cfg.device_id, meter_serial_temp, 16 - 1) != 0) {
+		memset(sys_cfg.device_id, 0, sizeof(sys_cfg.device_id));
+		tfp_snprintf(sys_cfg.device_id, 16, "%s", meter_serial_temp);
+		cfg_save();
+	}
+	
 	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
 	if (!MQTT_InitClient(&mqtt_client, sys_cfg.device_id, sys_cfg.mqtt_user, sys_cfg.mqtt_pass, sys_cfg.mqtt_keepalive, 0)) {	// keep state
 		INFO("Failed to initialize properly. Check MQTT version.\r\n");
@@ -123,12 +137,10 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
 #ifdef AP
 #ifdef EN61107
-	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", en61107_get_received_serial());
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #elif defined IMPULSE
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, sys_cfg.impulse_meter_serial);
 #else
-	tfp_snprintf(meter_serial_temp, METER_SERIAL_LEN, "%07u", kmp_get_received_serial());
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #endif
 
