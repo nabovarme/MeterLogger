@@ -871,9 +871,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 			memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());	// DEBUG: should use temp var here
 #else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());		// DEBUG: should use temp var here
 #endif
 			// encrypt and send
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
