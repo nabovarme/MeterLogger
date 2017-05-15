@@ -106,6 +106,8 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /ping/v2/9999999/[unix time]                    |                                                                                                      |
 | /version/v2/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
 | /status/v2/9999999/[unix time]                  | [open|close]                                                                                         |
+| /open_until/v2/9999999/[unix time]              | [kWh when meter should close]                                                                        |
+| /open_until_delta/v2/9999999/[unix time]        | [kWh when meter should close]                                                                        |
 | /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |

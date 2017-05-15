@@ -834,6 +834,20 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 				cfg_save();
 			}
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_util/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+			memset(cleartext, 0, sizeof(cleartext));
+#ifdef EN61107
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
+#else
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
+#endif
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 		}
 	}
 	else if (strncmp(function_name, "open_until_delta", FUNCTIONNAME_L) == 0) {
@@ -850,6 +864,20 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 				cfg_save();
 			}
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_util_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+			memset(cleartext, 0, sizeof(cleartext));
+#ifdef EN61107
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
+#else
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
+#endif
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 		}
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
