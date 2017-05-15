@@ -102,6 +102,11 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	tfp_snprintf(w, 11, "%u", result_int);
 }
 
+ICACHE_FLASH_ATTR void mw_to_w_str(char *mw, char *w) {
+	// just a wrapper
+	kw_to_w_str(mw, w);
+}
+
 ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str) {
 	int32_t result_int, result_frac;
 	int32_t value_int;

@@ -301,10 +301,12 @@ uint32_t en61107_get_received_serial() {
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh() {
-	//response.e1.value, response.e1.unit
+	char e1_kwh[EN61107_VALUE_L];
 
-	// DEBUG: Bug here: we need to convert to kwh if unit it something else
-	return atoi(response.e1.value);
+	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
+		mw_to_w_str(response.e1.value, e1_kwh);
+	}
+	return atoi(e1_kwh);
 }
 
 //ICACHE_FLASH_ATTR

@@ -189,17 +189,22 @@ unsigned int kmp_get_received_serial() {
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_energy_kwh() {
-//	unsigned char kmp_unit_string[16];
+	unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
-
+	
+	char e1_kwh[64];
+	
 	kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
-	//kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
+	kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 
-	// DEBUG: Bug here: we need to convert to kwh if unit it something else
+	if (strncmp(kmp_unit_string, "MWh", 16) == 0) {
+		mw_to_w_str(kmp_unit_string, e1_kwh);
+	}
+
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	return atoi(kmp_value_string);
+	return atoi(e1_kwh);
 #endif
 }
 
