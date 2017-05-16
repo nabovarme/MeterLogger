@@ -821,7 +821,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		}
 	}
 	else if (strncmp(function_name, "open_until", FUNCTIONNAME_L) == 0) {
-		// found open_to_delta
+		// found open_until
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			ac_thermo_open();
@@ -840,18 +840,14 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 			memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
-#else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
-#endif
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at);
 			// encrypt and send
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 		}
 	}
 	else if (strncmp(function_name, "open_until_delta", FUNCTIONNAME_L) == 0) {
-		// found open_to_delta
+		// found open_until_delta
 		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
 			// replay attack countermeasure - 1 hour time window
 			ac_thermo_open();
@@ -871,9 +867,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 			memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
 #else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
 #endif
 			// encrypt and send
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
