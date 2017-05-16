@@ -871,9 +871,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 			memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());	// DEBUG: should use temp var here
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", en61107_get_received_energy_kwh());
 #else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());		// DEBUG: should use temp var here
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", kmp_get_received_energy_kwh());
 #endif
 			// encrypt and send
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -1205,11 +1205,11 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 #ifdef EN61107
-		os_timer_arm(&sample_mode_timer, 12000, 0);
+		os_timer_arm(&sample_mode_timer, 30000, 0);
 #elif defined IMPULSE
 		os_timer_arm(&sample_mode_timer, 100, 0);
 #else
-		os_timer_arm(&sample_mode_timer, 12000, 0);
+		os_timer_arm(&sample_mode_timer, 16000, 0);
 #endif
 	}
 	else {
