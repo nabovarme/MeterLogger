@@ -154,7 +154,7 @@ endif
 
 ifeq ($(MC_66B), 1)
     EN61107 = 1
-	CFLAGS += -DMC_66B
+	CFLAGS += -DMC_66B -DEN61107
 endif
 
 ifeq ($(EN61107), 1)
