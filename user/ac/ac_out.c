@@ -17,7 +17,7 @@ ICACHE_FLASH_ATTR
 void ac_out_init() {
 	//Set GPIO14 and GPIO15 to output mode
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+//	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);	// DEBUG: disables becouse it may keep the esp in SD-Card Boot mode if kept hig at boot
 }
 
 ICACHE_FLASH_ATTR
@@ -38,14 +38,14 @@ void static ac_test_timer_func(void *arg) {
 #endif
 	}
 	
-	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
-		//Set GPI15 to LOW
-		gpio_output_set(0, BIT15, BIT15, 0);
-	}
-	else {
-		//Set GPI15 to HIGH
-		gpio_output_set(BIT15, 0, BIT15, 0);
-	}
+//	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT15) {
+//		//Set GPI15 to LOW
+//		gpio_output_set(0, BIT15, BIT15, 0);
+//	}
+//	else {
+//		//Set GPI15 to HIGH
+//		gpio_output_set(BIT15, 0, BIT15, 0);
+//	}
 }
 
 ICACHE_FLASH_ATTR void static ac_out_off_timer_func(void *arg) {
@@ -56,8 +56,8 @@ ICACHE_FLASH_ATTR void static ac_out_off_timer_func(void *arg) {
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
 	
-	//Set GPI15 to LOW
-	gpio_output_set(0, BIT15, BIT15, 0);
+//	//Set GPI15 to LOW
+//	gpio_output_set(0, BIT15, BIT15, 0);
 
 	led_stop_pattern();
 #ifdef LED_ON_AC
@@ -118,7 +118,7 @@ void ac_test() {
 	
 	// set GPIO14 high and GPIO15 low
 	gpio_output_set(BIT14, 0, BIT14, 0);
-	gpio_output_set(0, BIT15, BIT15, 0);
+//	gpio_output_set(0, BIT15, BIT15, 0);
 	
 	os_timer_disarm(&ac_test_timer);
 	os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
@@ -155,7 +155,7 @@ void ac_motor_valve_close() {
 #endif
 	
 	//Set GPI15 to HIGH
-	gpio_output_set(BIT15, 0, BIT15, 0);
+//	gpio_output_set(BIT15, 0, BIT15, 0);
 	
 	// wait 60 seconds and turn ac output off
 	os_timer_disarm(&ac_out_off_timer);
@@ -176,12 +176,12 @@ void ac_thermo_open() {
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
 	//Set GPI15 to LOW
-	gpio_output_set(0, BIT15, BIT15, 0);
+//	gpio_output_set(0, BIT15, BIT15, 0);
 #else	// THERMO_NC
 	//Set GPI14 to HIGH
 	gpio_output_set(BIT14, 0, BIT14, 0);
 	//Set GPI15 to HIGH
-	gpio_output_set(BIT15, 0, BIT15, 0);
+//	gpio_output_set(BIT15, 0, BIT15, 0);
 #endif
 	if (!sys_cfg.ac_thermo_state) {	// only save if state changed
 		sys_cfg.ac_thermo_state = 1;
@@ -202,12 +202,12 @@ void ac_thermo_close() {
 	//Set GPI14 to HIGHT
 	gpio_output_set(BIT14, 0, BIT14, 0);
 	//Set GPI15 to HIGH
-	gpio_output_set(BIT15, 0, BIT15, 0);
+//	gpio_output_set(BIT15, 0, BIT15, 0);
 #else	// THERMO_NC
 	//Set GPI14 to LOW
 	gpio_output_set(0, BIT14, BIT14, 0);
 	//Set GPI15 to LOW
-	gpio_output_set(0, BIT15, BIT15, 0);
+//	gpio_output_set(0, BIT15, BIT15, 0);
 #endif
 	if (sys_cfg.ac_thermo_state) {	// only save if state changed
 		sys_cfg.ac_thermo_state = 0;
