@@ -835,7 +835,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				cfg_save();
 			}
 #ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_util/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
 #else
 			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -861,7 +861,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				cfg_save();
 			}
 #ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_util_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
 #else
 			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
