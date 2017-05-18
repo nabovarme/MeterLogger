@@ -142,6 +142,9 @@ endif
 
 ifdef SERIAL
     CFLAGS += -DDEFAULT_METER_SERIAL=\"$(SERIAL)\"
+else
+    SERIAL = 9999999
+    CFLAGS += -DDEFAULT_METER_SERIAL=\"$(SERIAL)\"
 endif
 
 ifeq ($(DEBUG_NO_METER), 1)
