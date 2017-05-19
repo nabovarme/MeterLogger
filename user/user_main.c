@@ -973,7 +973,7 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
-ICACHE_FLASH_ATTR void gpio_init() {
+ICACHE_FLASH_ATTR void user_gpio_init() {
 	// gpio0 as input and enable pull up
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
 	GPIO_DIS_OUTPUT(GPIO_ID_PIN(0));
@@ -1149,6 +1149,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifdef IMPULSE
 	gpio_int_init();
 #else	
+	user_gpio_init();
 	ac_out_init();
 	cron_init();
 #endif // IMPULSE
