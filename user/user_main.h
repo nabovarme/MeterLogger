@@ -5,6 +5,7 @@ ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len);
 ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *info);
+ICACHE_FLASH_ATTR void gpio_init();
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init();

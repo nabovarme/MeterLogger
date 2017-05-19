@@ -3,6 +3,7 @@
 #include "unix_time.h"
 #include "mqtt.h"
 #include "tinyprintf.h"
+#include "utils.h"
 #include "kmp.h"
 #include "kmp_request.h"
 #include "config.h"
