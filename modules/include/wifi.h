@@ -7,6 +7,11 @@
 
 #ifndef USER_WIFI_H_
 #define USER_WIFI_H_
+
+#ifdef AP
+#include <lwip/ip.h>
+#endif
+
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
