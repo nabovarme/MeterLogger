@@ -10,9 +10,6 @@
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
-static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
-static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
-
 #ifdef AP
 bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p);
 #endif	// AP
