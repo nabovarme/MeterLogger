@@ -12,6 +12,7 @@ var searchData=
   ['aid',['aid',['../struct_event___soft_a_p_mode___sta_connected__t.html#a75603e561af40a5334c4cbc43cc7c457',1,'Event_SoftAPMode_StaConnected_t::aid()'],['../struct_event___soft_a_p_mode___sta_disconnected__t.html#af0b7f5493540515f203d2524e65c5afa',1,'Event_SoftAPMode_StaDisconnected_t::aid()']]],
   ['align_5fleft',['align_left',['../structparam.html#a95f49039d91cc53dc2e4b434419d4ad8',1,'param']]],
   ['alt',['alt',['../structparam.html#ac461871cba9204d6a52279877f23c7ec',1,'param']]],
+  ['ap_5fenabled',['ap_enabled',['../structsyscfg__t.html#a74ed65b74685508ead0ffbb836d1a4cf',1,'syscfg_t']]],
   ['ap_5fnetwork_5faddr',['ap_network_addr',['../wifi_8c.html#a3e742157a17f4fad6126c11ffe051ecc',1,'wifi.c']]],
   ['ap_5fprobereqrecved',['ap_probereqrecved',['../union_event___info__u.html#aa6fbc0a8cc5ec2b9d7932a41f7c2ed93',1,'Event_Info_u']]],
   ['apdata',['apData',['../struct_scan_result_data.html#ab01d6ea743d06a1f721ab79244ce2e6e',1,'ScanResultData']]],

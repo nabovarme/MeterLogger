@@ -72,6 +72,7 @@ var searchData=
   ['memp_5fuse_5fcustom_5fpools',['MEMP_USE_CUSTOM_POOLS',['../opt_8h.html#a69de593b8ffd4f1c249f03e48e11983b',1,'MEMP_USE_CUSTOM_POOLS():&#160;opt.h'],['../lwipopts_8h.html#a69de593b8ffd4f1c249f03e48e11983b',1,'MEMP_USE_CUSTOM_POOLS():&#160;lwipopts.h']]],
   ['memset',['memset',['../platform_8h.html#ad5f3c889b7b8e5f969df264de497551f',1,'platform.h']]],
   ['message_5fl',['MESSAGE_L',['../cron_8h.html#a7f5357e4b54f9e00e63da096ba038f10',1,'cron.h']]],
+  ['meter_5fserial_5flen',['METER_SERIAL_LEN',['../config_8h.html#aa96b34afce13a25a1e0f9c9c2ef779b4',1,'config.h']]],
   ['min_5fsize',['MIN_SIZE',['../mem_8c.html#a278694c2333c9826f21ddd2c2d220f66',1,'mem.c']]],
   ['min_5fsize_5faligned',['MIN_SIZE_ALIGNED',['../mem_8c.html#a97c704b85f71b6e61b0098b4a0a743cd',1,'mem.c']]],
   ['mpu_5fwrappers_5fincluded_5ffrom_5fapi_5ffile',['MPU_WRAPPERS_INCLUDED_FROM_API_FILE',['../mem__manager_8h.html#ab622d8c674f2a417a666a7ed89109e79',1,'mem_manager.h']]],

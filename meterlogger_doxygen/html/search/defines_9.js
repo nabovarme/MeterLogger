@@ -63,7 +63,7 @@ var searchData=
   ['inet_5fdebug',['INET_DEBUG',['../opt_8h.html#a78140cbe70258a65cb5c9e381843e4f3',1,'INET_DEBUG():&#160;opt.h'],['../lwipopts_8h.html#a78140cbe70258a65cb5c9e381843e4f3',1,'INET_DEBUG():&#160;lwipopts.h']]],
   ['inet_5fntoa',['inet_ntoa',['../inet_8h.html#ab89a604cf190369ce8bdc84dcb5d59aa',1,'inet.h']]],
   ['inet_5fntoa_5fr',['inet_ntoa_r',['../inet_8h.html#a722fcf60dc23563ae502a076e79ac1f1',1,'inet.h']]],
-  ['info',['INFO',['../_meter_logger_2mqtt_2include_2debug_8h.html#aedf01192151e10a6620567952711ff69',1,'debug.h']]],
+  ['info',['INFO',['../kamstrup-wifi_2mqtt_2include_2debug_8h.html#aedf01192151e10a6620567952711ff69',1,'debug.h']]],
   ['instrument_5flength',['INSTRUMENT_LENGTH',['../puck__def_8h.html#a97ddd2d54faeb1403a19af71b4afac81',1,'puck_def.h']]],
   ['instrument_5fport',['INSTRUMENT_PORT',['../puck__def_8h.html#a5e12e7ef79e74914b920a0280b4990a0',1,'puck_def.h']]],
   ['ip2str',['IP2STR',['../esp-open-lwip_2include_2lwip_2ip__addr_8h.html#af488ccb181cdd5905e55ffb8bff92552',1,'IP2STR():&#160;ip_addr.h'],['../sdk_2include_2ip__addr_8h.html#af488ccb181cdd5905e55ffb8bff92552',1,'IP2STR():&#160;ip_addr.h']]],

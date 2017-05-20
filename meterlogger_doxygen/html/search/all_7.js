@@ -10,6 +10,7 @@ var searchData=
   ['get_5frssi_5frunning',['get_rssi_running',['../wifi_8c.html#ab45f00433c7697247345ae6ea67472f3',1,'wifi.c']]],
   ['get_5ftime_5ffunc_5ft',['get_time_func_t',['../wpa2__enterprise_8h.html#a7c023d2d3bfbb87ec27904bf93f7fa25',1,'wpa2_enterprise.h']]],
   ['get_5funix_5ftime',['get_unix_time',['../unix__time_8c.html#a36607dbd5be7bee11f8c20932b3df407',1,'get_unix_time(void):&#160;unix_time.c'],['../unix__time_8h.html#a36607dbd5be7bee11f8c20932b3df407',1,'get_unix_time(void):&#160;unix_time.c']]],
+  ['get_5fuptime',['get_uptime',['../unix__time_8c.html#af98c0bacc67f2d0702b0ac4f130faa16',1,'get_uptime(void):&#160;unix_time.c'],['../unix__time_8h.html#af98c0bacc67f2d0702b0ac4f130faa16',1,'get_uptime(void):&#160;unix_time.c']]],
   ['getargs',['getArgs',['../struct_httpd_conn_data.html#a073f31e03338a84ec3835246dc17f0d3',1,'HttpdConnData']]],
   ['getsboxinvert',['getSBoxInvert',['../aes_8c.html#a4e98bcd2779a9b8c5811b8a5223cda9d',1,'aes.c']]],
   ['getsboxvalue',['getSBoxValue',['../aes_8c.html#ac5c3dc7cd11bcf934f6c49d5f7bd025a',1,'aes.c']]],

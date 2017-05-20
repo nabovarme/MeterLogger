@@ -8,6 +8,8 @@ var searchData=
   ['ap_5fnetwork',['AP_NETWORK',['../esp-open-sdk_2esp-open-lwip_2include_2user__config_8h.html#af23bf849dc13e4c5e2bff3c8ffd646fd',1,'user_config.h']]],
   ['ap_5fpassword',['AP_PASSWORD',['../esp-open-sdk_2esp-open-lwip_2include_2user__config_8h.html#a9fee3cc704e47eccf1457818bdaa68a8',1,'user_config.h']]],
   ['ap_5fssid',['AP_SSID',['../esp-open-sdk_2esp-open-lwip_2include_2user__config_8h.html#a56ee34255f5306176ee8fea2137397d4',1,'user_config.h']]],
+  ['ap_5fssid_5flength',['AP_SSID_LENGTH',['../esp-open-sdk_2esp-open-lwip_2include_2user__config_8h.html#ab409ebcf2cfab9112d224f725f1830d8',1,'user_config.h']]],
+  ['ap_5ftype',['AP_TYPE',['../esp-open-sdk_2esp-open-lwip_2include_2user__config_8h.html#a735ee7367d49dcd3c6496f87d7d36002',1,'user_config.h']]],
   ['apb_5fclk_5ffreq',['APB_CLK_FREQ',['../eagle__soc_8h.html#aec76bea9134686f44e7577edcc850fe6',1,'eagle_soc.h']]],
   ['api_5flib_5fdebug',['API_LIB_DEBUG',['../opt_8h.html#a671009550216f7dc03e67ba5751e3160',1,'API_LIB_DEBUG():&#160;opt.h'],['../lwipopts_8h.html#a671009550216f7dc03e67ba5751e3160',1,'API_LIB_DEBUG():&#160;lwipopts.h']]],
   ['api_5fmsg_5fdebug',['API_MSG_DEBUG',['../opt_8h.html#a4279d7ff9f986b2ff3eb068bb012b697',1,'API_MSG_DEBUG():&#160;opt.h'],['../lwipopts_8h.html#a4279d7ff9f986b2ff3eb068bb012b697',1,'API_MSG_DEBUG():&#160;lwipopts.h']]],

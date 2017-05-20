@@ -25,6 +25,7 @@ var searchData=
   ['kmp_5fframe',['kmp_frame',['../kmp_8c.html#aa630e8cd0446ab9b3a46e2b7fc0dd5d2',1,'kmp.c']]],
   ['kmp_5fframe_5fl',['KMP_FRAME_L',['../kmp_8h.html#a26c521087822adef9889d73cd425dc5a',1,'kmp.h']]],
   ['kmp_5fframe_5flength',['kmp_frame_length',['../kmp_8c.html#afab79fa21837d943bad51a06fa07be41',1,'kmp.c']]],
+  ['kmp_5fget_5freceived_5fenergy_5fkwh',['kmp_get_received_energy_kwh',['../kmp__request_8c.html#a38fdfecab4840fcd8b3c3074e715cf60',1,'kmp_get_received_energy_kwh():&#160;kmp_request.c'],['../kmp__request_8h.html#a38fdfecab4840fcd8b3c3074e715cf60',1,'kmp_get_received_energy_kwh():&#160;kmp_request.c']]],
   ['kmp_5fget_5freceived_5fserial',['kmp_get_received_serial',['../kmp__request_8c.html#ae812917b104be167131436ca730cdbe6',1,'kmp_get_received_serial():&#160;kmp_request.c'],['../kmp__request_8h.html#ae812917b104be167131436ca730cdbe6',1,'kmp_get_received_serial():&#160;kmp_request.c']]],
   ['kmp_5fget_5fregister',['kmp_get_register',['../kmp_8c.html#aff9c217307fb9210d301ba14bc2b5707',1,'kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length):&#160;kmp.c'],['../kmp_8h.html#aff9c217307fb9210d301ba14bc2b5707',1,'kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length):&#160;kmp.c']]],
   ['kmp_5fget_5fregister_5ftimer',['kmp_get_register_timer',['../kmp__request_8c.html#a9346682c7e2527ba2570e7c5eefd7b0d',1,'kmp_request.c']]],

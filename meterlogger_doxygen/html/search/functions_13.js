@@ -6,6 +6,7 @@ var searchData=
   ['send_5fack',['send_ack',['../dhcpserver_8c.html#a024751b98d23fc209015b3ac5a76aae9',1,'dhcpserver.c']]],
   ['send_5fnak',['send_nak',['../dhcpserver_8c.html#a81ead8e0f00ecfc0037e83cae928019f',1,'dhcpserver.c']]],
   ['send_5foffer',['send_offer',['../dhcpserver_8c.html#aa16cfa7bae7bd0fcb895a8b2513dd60f',1,'dhcpserver.c']]],
+  ['set_5fmy_5fauto_5fconnect',['set_my_auto_connect',['../wifi_8h.html#ac81e93c618b4a9528fb7689c85188763',1,'set_my_auto_connect(bool enabled):&#160;wifi.c'],['../wifi_8c.html#ac81e93c618b4a9528fb7689c85188763',1,'set_my_auto_connect(bool enabled):&#160;wifi.c']]],
   ['set_5fpwm_5fdebug_5fen',['set_pwm_debug_en',['../pwm_8h.html#a2f73e0d890e955721c701bc2915c4935',1,'pwm.h']]],
   ['setn16',['setn16',['../captdns_8c.html#a3b65a462da5bbfc4c310605b66952949',1,'captdns.c']]],
   ['setn32',['setn32',['../captdns_8c.html#aad0e85473ca50e7bc9726c0e0314310f',1,'captdns.c']]],

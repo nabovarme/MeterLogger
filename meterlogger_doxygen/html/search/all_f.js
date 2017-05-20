@@ -7,6 +7,7 @@ var searchData=
   ['offer_5fend',['OFFER_END',['../user__interface_8h.html#a47797d528afd74db93dd37a2c9207333ab67ba95f9dcf33d1cd600d798c76ab88',1,'user_interface.h']]],
   ['offer_5frouter',['OFFER_ROUTER',['../user__interface_8h.html#a47797d528afd74db93dd37a2c9207333ad88e6ec93eb09e1cccb8d4d039681f42',1,'user_interface.h']]],
   ['offer_5fstart',['OFFER_START',['../user__interface_8h.html#a47797d528afd74db93dd37a2c9207333a8d64153b2be4f126695bb7f6d36cff2c',1,'user_interface.h']]],
+  ['offline_5fclose_5fat',['offline_close_at',['../structsyscfg__t.html#a16d2e8aa60a5c83c0c9ee56f4d751724',1,'syscfg_t']]],
   ['ok',['OK',['../c__types_8h.html#a32c27cc471df37f4fc818d65de0a56c4a2bc49ec37d6a5715dd23e85f1ff5bb59',1,'c_types.h']]],
   ['old_5fmode',['old_mode',['../struct_event___sta_mode___auth_mode___change__t.html#a46335845fc3750b37ad254bf6879f733',1,'Event_StaMode_AuthMode_Change_t']]],
   ['on',['ON',['../ac__out_8c.html#a1fd3a3c4fa965df14bf01b65e7b4bd63a977d478dacaae531f95695750d1e9d03',1,'ac_out.c']]],

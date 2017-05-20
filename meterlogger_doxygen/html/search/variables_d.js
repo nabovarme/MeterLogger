@@ -19,7 +19,7 @@ var searchData=
   ['memp_5fsizes_5ftest',['memp_sizes_test',['../memp_8c.html#a9018d3ba837ddecc28ec4117fa9fafb2',1,'memp.c']]],
   ['memp_5ftab',['memp_tab',['../memp_8c.html#a90c0576a96802585708c0287a251a9b5',1,'memp.c']]],
   ['memset',['memset',['../structairkiss__config__t.html#a073ab3acf587db4b1389e5d85b9956f7',1,'airkiss_config_t']]],
-  ['mesh_5fssid',['mesh_ssid',['../esp-open-sdk_2esp-open-lwip_2user_2user__main_8c.html#adfe979a140da900a75402c4a9afce62b',1,'user_main.c']]],
+  ['mesh_5fssid',['mesh_ssid',['../esp-open-sdk_2esp-open-lwip_2user_2user__main_8c.html#a7c0bd9ec76d854523e83db4237bcb213',1,'user_main.c']]],
   ['message',['message',['../structmqtt__connection.html#ae324dd912be67d3e942455e5068c6acc',1,'mqtt_connection']]],
   ['message_5fid',['message_id',['../structmqtt__connection.html#ac6092e28efbf345bd43b3287aa89a590',1,'mqtt_connection']]],
   ['message_5flength',['message_length',['../structmqtt__state__t.html#a086384b58013a9bc69130cc174337c06',1,'mqtt_state_t']]],
@@ -44,5 +44,6 @@ var searchData=
   ['mqtttimer',['mqttTimer',['../struct_m_q_t_t___client.html#a6ef366a141878a8eca2fe6479154016f',1,'MQTT_Client']]],
   ['msg',['msg',['../structgreatest__run__info.html#ab9812e763c7643afea446758e6a9fa29',1,'greatest_run_info::msg()'],['../structtcpip__msg.html#a72dd6ff0a64ed4c840c8ded7d24ca5f2',1,'tcpip_msg::msg()']]],
   ['msgqueue',['msgQueue',['../struct_m_q_t_t___client.html#a2f9ccba7df29d2685c76d149f67ae59b',1,'MQTT_Client']]],
-  ['mtu',['mtu',['../structnetif.html#aca7d56b4e0f822b0ced2885f222b8d48',1,'netif']]]
+  ['mtu',['mtu',['../structnetif.html#aca7d56b4e0f822b0ced2885f222b8d48',1,'netif']]],
+  ['my_5fauto_5fconnect',['my_auto_connect',['../wifi_8c.html#ac942a4afaa29cd30132414f8f602aa13',1,'wifi.c']]]
 ];

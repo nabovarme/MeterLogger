@@ -85,6 +85,10 @@ $(function() {
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/open </td><td align="left">[unix time] </td></tr>
 <tr>
+<td align="left">/config/v2/9999999/[unix time]/open_until </td><td align="left">[kWh when meter should close] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/open_until_delta </td><td align="left">[[kWh when meter should close as delta] </td></tr>
+<tr>
 <td align="left">/config/v2/9999999/[unix time]/close </td><td align="left">[unix time] </td></tr>
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/status </td><td align="left"></td></tr>
@@ -105,11 +109,21 @@ $(function() {
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/ssid </td><td align="left"></td></tr>
 <tr>
+<td align="left">/config/v2/9999999/[unix time]/scan </td><td align="left"></td></tr>
+<tr>
 <td align="left">/config/v2/9999999/[unix time]/set_ssid </td><td align="left">[ssid] </td></tr>
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/set_pwd </td><td align="left">[pwd] </td></tr>
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/wifi_status </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/start_ap </td><td align="left">[start ap + save to flash if changed] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/stop_ap </td><td align="left">[stop ap + save to flash if changed] </td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/ap_status </td><td align="left"></td></tr>
+<tr>
+<td align="left">/config/v2/9999999/[unix time]/reconnect </td><td align="left"></td></tr>
 <tr>
 <td align="left">/config/v2/9999999/[unix time]/save (only pulse meter) </td><td align="left"></td></tr>
 <tr>
@@ -130,7 +144,7 @@ $(function() {
 <tr>
 <td align="left">/version/v2/9999999/[unix time] </td><td align="left">[sdk version]-[git version] </td></tr>
 </table>
-<p>| /status/v2/9999999/[unix time] | [open|close] | | /uptime/v2/9999999/[unix time] | [uptime in seconds] | | /rssi/v2/9999999/[unix time] | [rssi of the wifi it is connected to (in dBm, 31 if fail)] | | /ssid/v2/9999999/[unix time] | [ssid of the wifi it is connected to] | | /wifi_status/v2/9999999/[unix time] | [connected or disconnected] | | /save/v2/9999999/[unix time] (only pulse meter) | saved | | /mem/v2/9999999/[unix time] | heap=9672&amp; | | /reset_reason/v2/9999999/[unix time] | | </p>
+<p>| /status/v2/9999999/[unix time] | [open|close] | | /open_until/v2/9999999/[unix time] | [kWh when meter should close] | | /open_until_delta/v2/9999999/[unix time] | [kWh when meter should close] | | /uptime/v2/9999999/[unix time] | [uptime in seconds] | | /rssi/v2/9999999/[unix time] | [rssi of the wifi it is connected to (in dBm, 31 if fail)] | | /ssid/v2/9999999/[unix time] | [ssid of the wifi it is connected to] | | /scan_result/v2/9999999/[unix time] | ssid=Loppen Public&amp;rssi=-51&amp;channel=11 | | /wifi_status/v2/9999999/[unix time] | [connected or disconnected] | | /ap_status/v2/9999999/[unix time] | [started or stopped] | | /save/v2/9999999/[unix time] (only pulse meter) | saved | | /mem/v2/9999999/[unix time] | heap=9672&amp; | | /reset_reason/v2/9999999/[unix time] | | </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

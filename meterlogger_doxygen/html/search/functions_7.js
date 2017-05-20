@@ -7,6 +7,7 @@ var searchData=
   ['get_5flookahead_5fsize',['get_lookahead_size',['../heatshrink__encoder_8c.html#a69da5fdbae8296d5c7190ab953de134d',1,'heatshrink_encoder.c']]],
   ['get_5fpwm_5fversion',['get_pwm_version',['../pwm_8h.html#a8f0a6464621a44b494ab259204890cc5',1,'pwm.h']]],
   ['get_5funix_5ftime',['get_unix_time',['../unix__time_8c.html#a36607dbd5be7bee11f8c20932b3df407',1,'get_unix_time(void):&#160;unix_time.c'],['../unix__time_8h.html#a36607dbd5be7bee11f8c20932b3df407',1,'get_unix_time(void):&#160;unix_time.c']]],
+  ['get_5fuptime',['get_uptime',['../unix__time_8c.html#af98c0bacc67f2d0702b0ac4f130faa16',1,'get_uptime(void):&#160;unix_time.c'],['../unix__time_8h.html#af98c0bacc67f2d0702b0ac4f130faa16',1,'get_uptime(void):&#160;unix_time.c']]],
   ['getsboxinvert',['getSBoxInvert',['../aes_8c.html#a4e98bcd2779a9b8c5811b8a5223cda9d',1,'aes.c']]],
   ['getsboxvalue',['getSBoxValue',['../aes_8c.html#ac5c3dc7cd11bcf934f6c49d5f7bd025a',1,'aes.c']]],
   ['gpio16_5finput_5fconf',['gpio16_input_conf',['../gpio16_8c.html#a613d745937fd0e2c828185cb887a0bb9',1,'gpio16_input_conf(void):&#160;gpio16.c'],['../gpio16_8h.html#acc7e5be6c1aed84fe3c3260deea64a3e',1,'gpio16_input_conf(void):&#160;gpio16.c']]],

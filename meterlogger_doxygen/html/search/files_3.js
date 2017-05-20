@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['debug_2eh',['debug.h',['../_meter_logger_2mqtt_2include_2debug_8h.html',1,'(Global Namespace)'],['../esp-open-sdk_2esp-open-lwip_2include_2lwip_2debug_8h.html',1,'(Global Namespace)']]],
+  ['debug_2eh',['debug.h',['../kamstrup-wifi_2mqtt_2include_2debug_8h.html',1,'(Global Namespace)'],['../esp-open-sdk_2esp-open-lwip_2include_2lwip_2debug_8h.html',1,'(Global Namespace)']]],
   ['def_2ec',['def.c',['../def_8c.html',1,'']]],
   ['def_2eh',['def.h',['../def_8h.html',1,'']]],
   ['dhcp_2ec',['dhcp.c',['../dhcp_8c.html',1,'']]],

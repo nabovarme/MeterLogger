@@ -68,7 +68,7 @@ var searchData=
   ['rcvmsgstate',['RcvMsgState',['../uart_8h.html#a54f1ef96cc154d2f238f56727e0597ba',1,'uart.h']]],
   ['read',['read',['../structio__handle.html#a039020010a03f0b71a462475f59d26b3',1,'io_handle']]],
   ['read_5fperi_5freg',['READ_PERI_REG',['../eagle__soc_8h.html#a14c110c5360780defb1aa84ff53933d3',1,'eagle_soc.h']]],
-  ['readme_2emd',['README.md',['../_meter_logger_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../_meter_logger_2lib_2heatshrink_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../esp-open-sdk_2esp-open-lwip_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)']]],
+  ['readme_2emd',['README.md',['../kamstrup-wifi_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../kamstrup-wifi_2lib_2heatshrink_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)'],['../esp-open-sdk_2esp-open-lwip_2_r_e_a_d_m_e_8md.html',1,'(Global Namespace)']]],
   ['real32',['real32',['../c__types_8h.html#aedad8c3633259c124aedba591944a3ad',1,'c_types.h']]],
   ['real32_5ft',['real32_t',['../c__types_8h.html#a3367af45445891b41c9671c4962c37f1',1,'c_types.h']]],
   ['real64',['real64',['../c__types_8h.html#a2ff8591c879ff065e209ebcf789c884f',1,'c_types.h']]],

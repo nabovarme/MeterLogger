@@ -58,7 +58,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_569eb1bb07b135fdf44a4bb6216a0e27.html">user</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2584a8ef173e30cec0336a2c92688588.html">user</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -82,8 +82,8 @@ Functions</h2></td></tr>
 <tr class="separator:a4423ebd43da9e32c1a8a599e6542c67b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36607dbd5be7bee11f8c20932b3df407"><td class="memItemLeft" align="right" valign="top"><a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="unix__time_8h.html#a36607dbd5be7bee11f8c20932b3df407">get_unix_time</a> (void)</td></tr>
 <tr class="separator:a36607dbd5be7bee11f8c20932b3df407"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb370336699ba4621dc4f8370ca1f48d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="unix__time_8h.html#afb370336699ba4621dc4f8370ca1f48d">uptime</a> (void)</td></tr>
-<tr class="separator:afb370336699ba4621dc4f8370ca1f48d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af98c0bacc67f2d0702b0ac4f130faa16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="unix__time_8h.html#af98c0bacc67f2d0702b0ac4f130faa16">get_uptime</a> (void)</td></tr>
+<tr class="separator:af98c0bacc67f2d0702b0ac4f130faa16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a36607dbd5be7bee11f8c20932b3df407"></a>
@@ -106,16 +106,59 @@ Functions</h2></td></tr>
 
 <p class="reference">References <a class="el" href="unix__time_8c_source.html#l00009">current_unix_time</a>, and <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="watchdog_8c_source.html#l00132">add_watchdog()</a>, <a class="el" href="en61107__request_8c_source.html#l00096">en61107_received_task()</a>, <a class="el" href="en61107__request_8c_source.html#l00326">en61107_request_send()</a>, <a class="el" href="kmp__request_8c_source.html#l00039">kmp_received_task()</a>, <a class="el" href="kmp__request_8c_source.html#l00220">kmp_request_send()</a>, <a class="el" href="cron_8c_source.html#l00013">minute_timer_func()</a>, <a class="el" href="watchdog_8c_source.html#l00171">reset_watchdog()</a>, and <a class="el" href="watchdog_8c_source.html#l00052">watchdog_timer_func()</a>.</p>
-<div class="dynheader">
+<p class="reference">Referenced by <a class="el" href="en61107__request_8c_source.html#l00096">en61107_received_task()</a>, <a class="el" href="en61107__request_8c_source.html#l00337">en61107_request_send()</a>, <a class="el" href="kmp__request_8c_source.html#l00044">kmp_received_task()</a>, <a class="el" href="kmp__request_8c_source.html#l00247">kmp_request_send()</a>, and <a class="el" href="cron_8c_source.html#l00013">minute_timer_func()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                               {</div><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a> = <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp</a>();</div><div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div><div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a>;</div><div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div><div class="ttc" id="esp-open-lwip_2include_2lwip_2sntp_8h_html_a557f2d3fcbc53da30e4f1b51ea5842e7"><div class="ttname"><a href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp</a></div><div class="ttdeci">uint32 sntp_get_current_timestamp()</div></div>
+<div class="ttc" id="unix__time_8c_html_a3f79f6c532b00d7971b55e365f8783d0"><div class="ttname"><a href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a></div><div class="ttdeci">uint32_t current_unix_time</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00009">unix_time.c:9</a></div></div>
+</div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_a36607dbd5be7bee11f8c20932b3df407_cgraph.svg" width="355" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_a36607dbd5be7bee11f8c20932b3df407_cgraph.svg" width="355" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_a36607dbd5be7bee11f8c20932b3df407_icgraph.svg" width="527" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="af98c0bacc67f2d0702b0ac4f130faa16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af98c0bacc67f2d0702b0ac4f130faa16">&#9670;&nbsp;</a></span>get_uptime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uint32_t get_uptime </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="unix__time_8c_source.html#l00061">61</a> of file <a class="el" href="unix__time_8c_source.html">unix_time.c</a>.</p>
+
+<p class="reference">References <a class="el" href="unix__time_8c_source.html#l00009">current_unix_time</a>, <a class="el" href="unix__time_8c_source.html#l00008">init_time</a>, <a class="el" href="unix__time_8c_source.html#l00010">ntp_offline_second_counter</a>, and <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="watchdog_8c_source.html#l00134">add_watchdog()</a>, <a class="el" href="watchdog_8c_source.html#l00173">reset_watchdog()</a>, and <a class="el" href="watchdog_8c_source.html#l00053">watchdog_timer_func()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                            {</div><div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a> = <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp</a>();</div><div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="unix__time_8c.html#ae6e8ccf386403926abd7f901dd0b87ad">init_time</a> == 0) {</div><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="unix__time_8c.html#a2fb24c7725692ff387e54e07078ddebd">ntp_offline_second_counter</a>;</div><div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    }</div><div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">else</span> {</div><div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a> - <a class="code" href="unix__time_8c.html#ae6e8ccf386403926abd7f901dd0b87ad">init_time</a> + <a class="code" href="unix__time_8c.html#a2fb24c7725692ff387e54e07078ddebd">ntp_offline_second_counter</a>;</div><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div><div class="ttc" id="esp-open-lwip_2include_2lwip_2sntp_8h_html_a557f2d3fcbc53da30e4f1b51ea5842e7"><div class="ttname"><a href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp</a></div><div class="ttdeci">uint32 sntp_get_current_timestamp()</div></div>
+<div class="ttc" id="unix__time_8c_html_ae6e8ccf386403926abd7f901dd0b87ad"><div class="ttname"><a href="unix__time_8c.html#ae6e8ccf386403926abd7f901dd0b87ad">init_time</a></div><div class="ttdeci">uint32_t init_time</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00008">unix_time.c:8</a></div></div>
+<div class="ttc" id="unix__time_8c_html_a2fb24c7725692ff387e54e07078ddebd"><div class="ttname"><a href="unix__time_8c.html#a2fb24c7725692ff387e54e07078ddebd">ntp_offline_second_counter</a></div><div class="ttdeci">uint32_t ntp_offline_second_counter</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00010">unix_time.c:10</a></div></div>
+<div class="ttc" id="unix__time_8c_html_a3f79f6c532b00d7971b55e365f8783d0"><div class="ttname"><a href="unix__time_8c.html#a3f79f6c532b00d7971b55e365f8783d0">current_unix_time</a></div><div class="ttdeci">uint32_t current_unix_time</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00009">unix_time.c:9</a></div></div>
+</div><!-- fragment --><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_af98c0bacc67f2d0702b0ac4f130faa16_cgraph.svg" width="338" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_af98c0bacc67f2d0702b0ac4f130faa16_icgraph.svg" width="456" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
 </div>
 
 </div>
@@ -139,37 +182,23 @@ Here is the caller graph for this function:</div>
 <p class="definition">Definition at line <a class="el" href="unix__time_8c_source.html#l00037">37</a> of file <a class="el" href="unix__time_8c_source.html">unix_time.c</a>.</p>
 
 <p class="reference">References <a class="el" href="unix__time_8c_source.html#l00010">ntp_offline_second_counter</a>, <a class="el" href="unix__time_8c_source.html#l00014">ntp_offline_second_counter_timer</a>, <a class="el" href="unix__time_8c_source.html#l00033">ntp_offline_second_counter_timer_func()</a>, <a class="el" href="def_8h_source.html#l00047">NULL</a>, <a class="el" href="osapi_8h_source.html#l00050">os_timer_arm</a>, <a class="el" href="osapi_8h_source.html#l00051">os_timer_disarm</a>, <a class="el" href="os__type_8h_source.html#l00035">os_timer_func_t</a>, <a class="el" href="osapi_8h_source.html#l00052">os_timer_setfn</a>, <a class="el" href="unix__time_8c_source.html#l00006">sntp_check_timer</a>, <a class="el" href="unix__time_8c_source.html#l00016">sntp_check_timer_func()</a>, <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a9b300c6616de60524c85ea40bf70e2ba">sntp_init()</a>, <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#abdbe5ed580b63547553ded66ce2e6302">sntp_set_timezone()</a>, and <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a2da77545ece23ff7077d740072559425">sntp_setservername()</a>.</p>
-<div class="dynheader">
+<div class="fragment"><div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                            {</div><div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">// init sntp</span></div><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a2da77545ece23ff7077d740072559425">sntp_setservername</a>(0, <span class="stringliteral">&quot;dk.pool.ntp.org&quot;</span>); <span class="comment">// set server 0 by domain name</span></div><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a2da77545ece23ff7077d740072559425">sntp_setservername</a>(1, <span class="stringliteral">&quot;us.pool.ntp.org&quot;</span>); <span class="comment">// set server 1 by domain name</span></div><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#abdbe5ed580b63547553ded66ce2e6302">sntp_set_timezone</a>(0);   <span class="comment">// UTC time</span></div><div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a9b300c6616de60524c85ea40bf70e2ba">sntp_init</a>();</div><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    </div><div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="comment">// start timer to make sure we go ntp reply</span></div><div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="osapi_8h.html#a145a0d6ea21ada427fb33c16a1f3ea8b">os_timer_disarm</a>(&amp;<a class="code" href="unix__time_8c.html#a084584fc45b86f43975e73c27b93cceb">sntp_check_timer</a>);</div><div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="osapi_8h.html#a5eb7d40dec8827c48891b85bc61f4913">os_timer_setfn</a>(&amp;<a class="code" href="unix__time_8c.html#a084584fc45b86f43975e73c27b93cceb">sntp_check_timer</a>, (<a class="code" href="os__type_8h.html#a7e4d9abe0d3f4eb47f5f71e858939efd">os_timer_func_t</a> *)<a class="code" href="unix__time_8c.html#a0fc8c49b1d5626fd003a49270cd23bc9">sntp_check_timer_func</a>, <a class="code" href="def_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a>);</div><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="osapi_8h.html#ad68ee287209d12b5067c5d80fea25c09">os_timer_arm</a>(&amp;<a class="code" href="unix__time_8c.html#a084584fc45b86f43975e73c27b93cceb">sntp_check_timer</a>, 2000, 0);</div><div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div><div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="unix__time_8c.html#a2fb24c7725692ff387e54e07078ddebd">ntp_offline_second_counter</a> = 0;</div><div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="osapi_8h.html#a145a0d6ea21ada427fb33c16a1f3ea8b">os_timer_disarm</a>(&amp;<a class="code" href="unix__time_8c.html#a8d454f69902c7757e367b366994bff41">ntp_offline_second_counter_timer</a>);</div><div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="osapi_8h.html#a5eb7d40dec8827c48891b85bc61f4913">os_timer_setfn</a>(&amp;<a class="code" href="unix__time_8c.html#a8d454f69902c7757e367b366994bff41">ntp_offline_second_counter_timer</a>, (<a class="code" href="os__type_8h.html#a7e4d9abe0d3f4eb47f5f71e858939efd">os_timer_func_t</a> *)<a class="code" href="unix__time_8c.html#a802f78ed855d6c422974b9c116443c2c">ntp_offline_second_counter_timer_func</a>, <a class="code" href="def_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a>);</div><div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="osapi_8h.html#ad68ee287209d12b5067c5d80fea25c09">os_timer_arm</a>(&amp;<a class="code" href="unix__time_8c.html#a8d454f69902c7757e367b366994bff41">ntp_offline_second_counter_timer</a>, 1000, 1);       <span class="comment">// every seconds</span></div><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div><div class="ttc" id="unix__time_8c_html_a8d454f69902c7757e367b366994bff41"><div class="ttname"><a href="unix__time_8c.html#a8d454f69902c7757e367b366994bff41">ntp_offline_second_counter_timer</a></div><div class="ttdeci">static os_timer_t ntp_offline_second_counter_timer</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00014">unix_time.c:14</a></div></div>
+<div class="ttc" id="esp-open-lwip_2include_2lwip_2sntp_8h_html_a9b300c6616de60524c85ea40bf70e2ba"><div class="ttname"><a href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a9b300c6616de60524c85ea40bf70e2ba">sntp_init</a></div><div class="ttdeci">void sntp_init(void)</div></div>
+<div class="ttc" id="osapi_8h_html_a145a0d6ea21ada427fb33c16a1f3ea8b"><div class="ttname"><a href="osapi_8h.html#a145a0d6ea21ada427fb33c16a1f3ea8b">os_timer_disarm</a></div><div class="ttdeci">#define os_timer_disarm</div><div class="ttdef"><b>Definition:</b> <a href="osapi_8h_source.html#l00051">osapi.h:51</a></div></div>
+<div class="ttc" id="def_8h_html_a070d2ce7b6bb7e5c05602aa8c308d0c4"><div class="ttname"><a href="def_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4">NULL</a></div><div class="ttdeci">#define NULL</div><div class="ttdef"><b>Definition:</b> <a href="def_8h_source.html#l00047">def.h:47</a></div></div>
+<div class="ttc" id="os__type_8h_html_a7e4d9abe0d3f4eb47f5f71e858939efd"><div class="ttname"><a href="os__type_8h.html#a7e4d9abe0d3f4eb47f5f71e858939efd">os_timer_func_t</a></div><div class="ttdeci">#define os_timer_func_t</div><div class="ttdef"><b>Definition:</b> <a href="os__type_8h_source.html#l00035">os_type.h:35</a></div></div>
+<div class="ttc" id="unix__time_8c_html_a802f78ed855d6c422974b9c116443c2c"><div class="ttname"><a href="unix__time_8c.html#a802f78ed855d6c422974b9c116443c2c">ntp_offline_second_counter_timer_func</a></div><div class="ttdeci">ICACHE_FLASH_ATTR static void ntp_offline_second_counter_timer_func(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00033">unix_time.c:33</a></div></div>
+<div class="ttc" id="osapi_8h_html_a5eb7d40dec8827c48891b85bc61f4913"><div class="ttname"><a href="osapi_8h.html#a5eb7d40dec8827c48891b85bc61f4913">os_timer_setfn</a></div><div class="ttdeci">#define os_timer_setfn</div><div class="ttdef"><b>Definition:</b> <a href="osapi_8h_source.html#l00052">osapi.h:52</a></div></div>
+<div class="ttc" id="unix__time_8c_html_a0fc8c49b1d5626fd003a49270cd23bc9"><div class="ttname"><a href="unix__time_8c.html#a0fc8c49b1d5626fd003a49270cd23bc9">sntp_check_timer_func</a></div><div class="ttdeci">ICACHE_FLASH_ATTR static void sntp_check_timer_func(void *arg)</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00016">unix_time.c:16</a></div></div>
+<div class="ttc" id="esp-open-lwip_2include_2lwip_2sntp_8h_html_a2da77545ece23ff7077d740072559425"><div class="ttname"><a href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a2da77545ece23ff7077d740072559425">sntp_setservername</a></div><div class="ttdeci">void sntp_setservername(u8_t idx, char *server)</div></div>
+<div class="ttc" id="unix__time_8c_html_a084584fc45b86f43975e73c27b93cceb"><div class="ttname"><a href="unix__time_8c.html#a084584fc45b86f43975e73c27b93cceb">sntp_check_timer</a></div><div class="ttdeci">static os_timer_t sntp_check_timer</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00006">unix_time.c:6</a></div></div>
+<div class="ttc" id="osapi_8h_html_ad68ee287209d12b5067c5d80fea25c09"><div class="ttname"><a href="osapi_8h.html#ad68ee287209d12b5067c5d80fea25c09">os_timer_arm</a></div><div class="ttdeci">#define os_timer_arm(a, b, c)</div><div class="ttdef"><b>Definition:</b> <a href="osapi_8h_source.html#l00050">osapi.h:50</a></div></div>
+<div class="ttc" id="unix__time_8c_html_a2fb24c7725692ff387e54e07078ddebd"><div class="ttname"><a href="unix__time_8c.html#a2fb24c7725692ff387e54e07078ddebd">ntp_offline_second_counter</a></div><div class="ttdeci">uint32_t ntp_offline_second_counter</div><div class="ttdef"><b>Definition:</b> <a href="unix__time_8c_source.html#l00010">unix_time.c:10</a></div></div>
+<div class="ttc" id="esp-open-lwip_2include_2lwip_2sntp_8h_html_abdbe5ed580b63547553ded66ce2e6302"><div class="ttname"><a href="esp-open-lwip_2include_2lwip_2sntp_8h.html#abdbe5ed580b63547553ded66ce2e6302">sntp_set_timezone</a></div><div class="ttdeci">bool sntp_set_timezone(sint8 timezone)</div></div>
+</div><!-- fragment --><div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_a4423ebd43da9e32c1a8a599e6542c67b_cgraph.svg" width="560" height="256"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
-<a id="afb370336699ba4621dc4f8370ca1f48d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb370336699ba4621dc4f8370ca1f48d">&#9670;&nbsp;</a></span>uptime()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="c__types_8h.html#afebd45c0d36db732504450393777ce5c">ICACHE_FLASH_ATTR</a> uint32_t uptime </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="unix__time_8c_source.html#l00061">61</a> of file <a class="el" href="unix__time_8c_source.html">unix_time.c</a>.</p>
-
-<p class="reference">References <a class="el" href="unix__time_8c_source.html#l00009">current_unix_time</a>, <a class="el" href="unix__time_8c_source.html#l00008">init_time</a>, <a class="el" href="unix__time_8c_source.html#l00010">ntp_offline_second_counter</a>, and <a class="el" href="esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7">sntp_get_current_timestamp()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="unix__time_8h_afb370336699ba4621dc4f8370ca1f48d_cgraph.svg" width="312" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

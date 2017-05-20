@@ -2,6 +2,7 @@ var searchData=
 [
   ['o_5fkey_5fpad',['o_key_pad',['../structhmac__sha256__ctx__t.html#a3c85eb7b9787ace203122be24f1f79ec',1,'hmac_sha256_ctx_t']]],
   ['offer',['offer',['../dhcpserver_8c.html#a2807e80dffcde84d1d88f488f1d39715',1,'dhcpserver.c']]],
+  ['offline_5fclose_5fat',['offline_close_at',['../structsyscfg__t.html#a16d2e8aa60a5c83c0c9ee56f4d751724',1,'syscfg_t']]],
   ['old_5fmode',['old_mode',['../struct_event___sta_mode___auth_mode___change__t.html#a46335845fc3750b37ad254bf6879f733',1,'Event_StaMode_AuthMode_Change_t']]],
   ['op',['op',['../structdhcps__msg.html#a09df11b5e009ebc7ecf7b97d07de6cb2',1,'dhcps_msg']]],
   ['options',['options',['../structdhcps__msg.html#abe3aae356c401b4ff83d402309564ae4',1,'dhcps_msg']]],
