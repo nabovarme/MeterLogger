@@ -1,3 +1,4 @@
+#include <esp8266.h>
 #include "driver/spi.h"
 #include "driver/ext_spi_flash.h"
 
@@ -128,7 +129,7 @@ bool ext_spi_flash_write(uint32_t dst_addr, uint32_t *src_addr, uint32_t size) {
 ICACHE_FLASH_ATTR
 void ext_spi_flash_hexdump(uint32_t addr) {
 #ifdef DEBUG
-	uint8_t flash_data_buf;
+	uint32_t flash_data_buf;
 	uint32_t byte_count;
 
 	os_printf("%08x ", addr);

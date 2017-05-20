@@ -213,7 +213,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
 			// set default network status
-			if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+			if (os_strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 			}
 			break;
@@ -222,7 +222,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			os_printf("disconnected from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
 			// set default network status
-    		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+    		if (os_strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = false;
     		}
 			if (my_auto_connect) {
@@ -234,7 +234,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 		case EVENT_STAMODE_GOT_IP:		
 			// set default network status
-    		if (os_strncmp(&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+    		if (os_strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
     			wifi_default_ok = true;
     		}
 #ifdef AP
