@@ -381,13 +381,11 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 		os_timer_arm(&config_mode_timer, 100, 0);
 #elif defined EN61107
-		// start waiting for serial number after 30 seconds
 		// and start ap mode
 		os_timer_disarm(&config_mode_timer);
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 		os_timer_arm(&config_mode_timer, 1000, 0);
 #else
-		// start waiting for serial number after 16 seconds
 		// and start ap mode
 		os_timer_disarm(&config_mode_timer);
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
