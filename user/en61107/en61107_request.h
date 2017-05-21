@@ -7,6 +7,8 @@
 #define en61107_received_task_prio			USER_TASK_PRIO_2
 #define en61107_received_task_queue_length	64
 
+typedef void (*meter_is_ready_cb)(void);
+
 os_event_t    en61107_received_task_queue[en61107_received_task_queue_length];
 
 ICACHE_FLASH_ATTR
@@ -14,6 +16,9 @@ void en61107_request_init();
 
 ICACHE_FLASH_ATTR
 void en61107_set_mqtt_client(MQTT_Client* client);
+
+ICACHE_FLASH_ATTR
+void en61107_register_meter_is_ready_cb(meter_is_ready_cb cb);
 
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_serial();

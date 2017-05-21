@@ -17,6 +17,7 @@
 uint32_t en61107_serial = 0;
 bool en61107_serial_set = false;
 int8_t en61107_request_num;
+meter_is_ready_cb en61107_meter_is_ready_cb = NULL;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -254,6 +255,16 @@ static void en61107_received_task(os_event_t *events) {
 					// and stop retransmission timeout timer, last data from meter
 					os_timer_disarm(&en61107_receive_timeout_timer);
 
+					// tell user_main we got a serial
+					if (en61107_meter_is_ready_cb) {
+						en61107_meter_is_ready_cb();
+					}
+#ifdef DEBUG
+					else {
+						os_printf("tried to call en61107_meter_is_ready_cb() before it was set - should not happen\n");
+					}
+#endif
+
 					if (mqtt_client) {
 						// if mqtt_client is initialized
 						if (message_l > 1) {
@@ -290,6 +301,11 @@ void en61107_request_init() {
 ICACHE_FLASH_ATTR
 void en61107_set_mqtt_client(MQTT_Client* client) {
 	mqtt_client = client;
+}
+
+ICACHE_FLASH_ATTR
+void en61107_register_meter_is_ready_cb(meter_is_ready_cb cb) {
+	en61107_meter_is_ready_cb = cb;
 }
 
 // helper function to pass received kmp_serial to user_main.c

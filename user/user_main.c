@@ -72,11 +72,10 @@ uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
-#ifdef IMPULSE
-	uint32_t impulse_meter_count_temp;
-#else
 	// temp var for serial string
 	char meter_serial_temp[METER_SERIAL_LEN];	// DEBUG: 16 should be a #define...
+#ifdef IMPULSE
+	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
 	
 	// stop http configuration server
@@ -353,6 +352,64 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #endif // DEBUG
 }
 #endif // IMPULSE
+
+ICACHE_FLASH_ATTR void wait_for_serial_mode(void) {
+	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
+		// fast boot if reset, go in sample/station mode
+#ifdef DEBUG
+		printf("fast boot\n");
+#endif
+		os_timer_disarm(&sample_mode_timer);
+		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
+#ifdef EN61107
+		os_timer_arm(&sample_mode_timer, 30000, 0);
+#elif defined IMPULSE
+		os_timer_arm(&sample_mode_timer, 100, 0);
+#else
+		os_timer_arm(&sample_mode_timer, 16000, 0);
+#endif
+	}
+	else {
+#ifdef DEBUG
+		printf("normal boot\n");
+//		ext_spi_flash_erase_sector(0x0);
+//		ext_spi_flash_erase_sector(0x1000);
+#endif
+#ifdef IMPULSE
+		// start config mode at boot - dont wait for impulse based meters		
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 100, 0);
+#elif defined EN61107
+		// start waiting for serial number after 30 seconds
+		// and start ap mode
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 1000, 0);
+#else
+		// start waiting for serial number after 16 seconds
+		// and start ap mode
+		os_timer_disarm(&config_mode_timer);
+		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
+		os_timer_arm(&config_mode_timer, 1000, 0);
+#endif
+
+		// wait for 120 seconds from boot and go to station mode
+		os_timer_disarm(&sample_mode_timer);
+		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
+#ifndef DEBUG_SHORT_WEB_CONFIG_TIME
+#ifdef IMPULSE
+		os_timer_arm(&sample_mode_timer, 120000 + 100, 0);
+#elif defined EN61107
+		os_timer_arm(&sample_mode_timer, 120000 + 1000, 0);
+#else
+		os_timer_arm(&sample_mode_timer, 120000 + 1000, 0);
+#endif
+#else
+		os_timer_arm(&sample_mode_timer, 2000, 0);
+#endif
+	}
+}
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
@@ -1196,12 +1253,21 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	
 	init_unix_time();
 
+	// start config mode/sample mode in wait_for_serial_mode() via callback
+#ifdef EN61107
+	en61107_register_meter_is_ready_cb(wait_for_serial_mode);
+#elif defined IMPULSE
+	wait_for_serial_mode();
+#else
+	kmp_register_meter_is_ready_cb(wait_for_serial_mode);
+#endif
+
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
 #ifdef EN61107
 	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
-	os_timer_arm(&en61107_request_send_timer, 1000, 0);
+	os_timer_arm(&en61107_request_send_timer, 10000, 0);
 #elif defined IMPULSE
 	// do nothing here
 #else
@@ -1209,61 +1275,5 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
 #endif
-
-	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
-		// fast boot if reset, go in sample/station mode
-#ifdef DEBUG
-		printf("fast boot\n");
-#endif
-		os_timer_disarm(&sample_mode_timer);
-		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
-#ifdef EN61107
-		os_timer_arm(&sample_mode_timer, 30000, 0);
-#elif defined IMPULSE
-		os_timer_arm(&sample_mode_timer, 100, 0);
-#else
-		os_timer_arm(&sample_mode_timer, 16000, 0);
-#endif
-	}
-	else {
-#ifdef DEBUG
-		printf("normal boot\n");
-//		ext_spi_flash_erase_sector(0x0);
-//		ext_spi_flash_erase_sector(0x1000);
-#endif
-#ifdef IMPULSE
-		// start config mode at boot - dont wait for impulse based meters		
-		os_timer_disarm(&config_mode_timer);
-		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-		os_timer_arm(&config_mode_timer, 100, 0);
-#elif defined EN61107
-		// start waiting for serial number after 30 seconds
-		// and start ap mode
-		os_timer_disarm(&config_mode_timer);
-		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-		os_timer_arm(&config_mode_timer, 30000, 0);
-#else
-		// start waiting for serial number after 16 seconds
-		// and start ap mode
-		os_timer_disarm(&config_mode_timer);
-		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-		os_timer_arm(&config_mode_timer, 16000, 0);
-#endif
-
-		// wait for 120 seconds from boot and go to station mode
-		os_timer_disarm(&sample_mode_timer);
-		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
-#ifndef DEBUG_SHORT_WEB_CONFIG_TIME
-#ifdef IMPULSE
-		os_timer_arm(&sample_mode_timer, 120000 + 100, 0);
-#elif defined EN61107
-		os_timer_arm(&sample_mode_timer, 120000 + 30000, 0);
-#else
-		os_timer_arm(&sample_mode_timer, 120000 + 16000, 0);
-#endif
-#else
-		os_timer_arm(&sample_mode_timer, 22000, 0);
-#endif
-	}
 }
 

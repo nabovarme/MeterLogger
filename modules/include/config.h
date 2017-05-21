@@ -34,7 +34,7 @@
 #include "cron/cron.h"
 
 #ifdef IMPULSE
-#define IMPULSE_METER_SERIAL_LEN	13
+#define METER_SERIAL_LEN			13
 #else
 #define METER_SERIAL_LEN			8
 #endif
@@ -62,7 +62,7 @@ typedef struct{
 	uint32_t offline_close_at;	// close thermo actuator at kwh set via mqtt open_at_delta function
 	cron_jobs_t cron_jobs;
 #else
-	char impulse_meter_serial[IMPULSE_METER_SERIAL_LEN];
+	char impulse_meter_serial[METER_SERIAL_LEN];
 	char impulse_meter_energy[32 + 1];	// in Wh
 	char impulses_per_kwh[32 + 1];
 	volatile uint32_t impulse_meter_count;

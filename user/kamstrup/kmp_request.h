@@ -3,6 +3,8 @@
 #define kmp_received_task_prio			USER_TASK_PRIO_2
 #define kmp_received_task_queue_length	64
 
+typedef void (*meter_is_ready_cb)(void);
+
 os_event_t    kmp_received_task_queue[kmp_received_task_queue_length];
 
 ICACHE_FLASH_ATTR
@@ -10,6 +12,9 @@ void kmp_request_init();
 
 ICACHE_FLASH_ATTR
 void kmp_set_mqtt_client(MQTT_Client* client);
+
+ICACHE_FLASH_ATTR
+void kmp_register_meter_is_ready_cb(meter_is_ready_cb cb);
 
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial();

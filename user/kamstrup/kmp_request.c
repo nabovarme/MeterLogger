@@ -13,6 +13,7 @@
 #define QUEUE_SIZE 256
 
 uint32_t kmp_serial = 0;
+meter_is_ready_cb kmp_meter_is_ready_cb = NULL;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -149,6 +150,16 @@ static void kmp_received_task(os_event_t *events) {
 			// encrypt and send
 			message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 			
+			// tell user_main we got a serial
+			if (kmp_meter_is_ready_cb) {
+				kmp_meter_is_ready_cb();
+			}
+#ifdef DEBUG
+			else {
+				os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
+			}
+#endif
+			
 			if (mqtt_client) {
 				// if mqtt_client is initialized
 				if (kmp_serial && (message_l > 1)) {
@@ -179,6 +190,11 @@ void kmp_request_init() {
 ICACHE_FLASH_ATTR
 void kmp_set_mqtt_client(MQTT_Client* client) {
 	mqtt_client = client;
+}
+
+ICACHE_FLASH_ATTR
+void kmp_register_meter_is_ready_cb(meter_is_ready_cb cb) {
+	kmp_meter_is_ready_cb = cb;
 }
 
 // helper function to pass received kmp_serial to user_main.c
@@ -322,6 +338,16 @@ void kmp_request_send() {
 		pseudo_data_debug_no_meter										// e1
 	);
 	pseudo_data_debug_no_meter++;	// let it wrap around
+
+	// tell user_main we got a serial
+	if (kmp_meter_is_ready_cb) {
+		kmp_meter_is_ready_cb();
+	}
+#ifdef DEBUG
+	else {
+		os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
+	}
+#endif
 
 	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
