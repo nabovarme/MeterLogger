@@ -353,7 +353,7 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 }
 #endif // IMPULSE
 
-ICACHE_FLASH_ATTR void wait_for_serial_mode(void) {
+ICACHE_FLASH_ATTR void meter_is_ready(void) {
 	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
 		// fast boot if reset, go in sample/station mode
 #ifdef DEBUG
@@ -1253,13 +1253,13 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	
 	init_unix_time();
 
-	// start config mode/sample mode in wait_for_serial_mode() via callback
+	// start config mode/sample mode in meter_is_ready() via callback
 #ifdef EN61107
-	en61107_register_meter_is_ready_cb(wait_for_serial_mode);
+	en61107_register_meter_is_ready_cb(meter_is_ready);
 #elif defined IMPULSE
-	wait_for_serial_mode();
+	meter_is_ready();
 #else
-	kmp_register_meter_is_ready_cb(wait_for_serial_mode);
+	kmp_register_meter_is_ready_cb(meter_is_ready);
 #endif
 
 	// wait 10 seconds before starting wifi and let the meter boot

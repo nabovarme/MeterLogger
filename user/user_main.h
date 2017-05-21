@@ -1,5 +1,5 @@
 ICACHE_FLASH_ATTR void wait_for_serial_mode(void);
-ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status);
+meter_is_readyICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status);
 ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args);
 ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args);
