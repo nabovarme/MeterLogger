@@ -1,0 +1,6 @@
+<map id="system_get_time" name="system_get_time">
+<area shape="rect" id="node2" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="176,5,279,32"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="327,5,503,32"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="551,5,676,32"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="724,5,796,32"/>
+</map>

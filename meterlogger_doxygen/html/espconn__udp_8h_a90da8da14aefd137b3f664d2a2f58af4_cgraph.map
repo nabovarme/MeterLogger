@@ -1,0 +1,11 @@
+<map id="espconn_udp_server" name="espconn_udp_server">
+<area shape="rect" id="node2" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#ae65b40a3ff0ee3fe9b764523fa4a3c48" title="espconn_list_creat" alt="" coords="201,31,334,57"/>
+<area shape="rect" id="node3" href="$espconn__udp_8c.html#ac52ad5e01c1a769947766d4a890f1cc7" title="espconn_udp_recv" alt="" coords="200,81,335,108"/>
+<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="385,5,507,32"/>
+<area shape="rect" id="node5" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="389,56,503,83"/>
+<area shape="rect" id="node6" href="$pbuf_8h.html#ab0a418a2392133e6b18c7b19f7c04500" title="pbuf_copy_partial" alt="" coords="383,107,509,133"/>
+<area shape="rect" id="node7" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="407,157,485,184"/>
+<area shape="rect" id="node8" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="557,132,647,159"/>
+<area shape="rect" id="node9" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="561,183,643,209"/>
+<area shape="rect" id="node10" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="695,183,781,209"/>
+</map>

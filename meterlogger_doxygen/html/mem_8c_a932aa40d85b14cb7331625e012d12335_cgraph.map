@@ -1,0 +1,4 @@
+<map id="mem_malloc" name="mem_malloc">
+<area shape="rect" id="node2" href="$sys_8h.html#a4d4eb9afe5965fa2661dd54ff55d616a" title="sys_mutex_lock" alt="" coords="158,5,275,32"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a5568f68898fe9d5735f9ce2f665624fb" title="sys_mutex_unlock" alt="" coords="151,56,283,83"/>
+</map>

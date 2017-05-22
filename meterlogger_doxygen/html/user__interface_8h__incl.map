@@ -1,0 +1,9 @@
+<map id="sdk/include/user_interface.h" name="sdk/include/user_interface.h">
+<area shape="rect" id="node2" href="$os__type_8h.html" title="os_type.h" alt="" coords="99,80,179,107"/>
+<area shape="rect" id="node9" href="$esp-open-sdk_2sdk_2include_2queue_8h.html" title="queue.h" alt="" coords="332,80,403,107"/>
+<area shape="rect" id="node10" href="$user__config_8h.html" title="user_config.h" alt="" coords="427,80,529,107"/>
+<area shape="rect" id="node11" href="$spi__flash_8h.html" title="spi_flash.h" alt="" coords="554,80,639,107"/>
+<area shape="rect" id="node3" href="$ets__sys_8h.html" title="ets_sys.h" alt="" coords="100,155,179,181"/>
+<area shape="rect" id="node4" href="$c__types_8h.html" title="c_types.h" alt="" coords="45,229,124,256"/>
+<area shape="rect" id="node7" href="$eagle__soc_8h.html" title="eagle_soc.h" alt="" coords="149,229,242,256"/>
+</map>

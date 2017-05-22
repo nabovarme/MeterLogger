@@ -1,0 +1,8 @@
+<map id="espconn_udp_sent" name="espconn_udp_sent">
+<area shape="rect" id="node2" href="$espconn__udp_8c.html#ad90679652367797548ea650f09d14f7e" title="espconn_data_sent" alt="" coords="188,5,327,32"/>
+<area shape="rect" id="node7" href="$sdk_2include_2espconn_8h.html#a579e4f1c62f7c33be01398931617e988" title="espconn_sent" alt="" coords="205,56,310,83"/>
+<area shape="rect" id="node3" href="$espconn__udp_8c.html#a01fa0df74518311e3eb03f2d955f9f26" title="espconn_udp_sendto" alt="" coords="375,5,524,32"/>
+<area shape="rect" id="node4" href="$sdk_2include_2espconn_8h.html#a62219be0ac7e8dd6085915d5c0777476" title="espconn_sendto" alt="" coords="572,5,692,32"/>
+<area shape="rect" id="node5" href="$captdns_8c.html#a59c9a28ea1f015cff27b9d0c252d15f3" title="captdnsRecv" alt="" coords="740,5,839,32"/>
+<area shape="rect" id="node6" href="$captdns_8h.html#a88f42288d1b84cab204cca9e7f7aa9a3" title="captdnsInit" alt="" coords="887,5,973,32"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="set_my_auto_connect" name="set_my_auto_connect">
+<area shape="rect" id="node2" href="$watchdog_8c.html#aeb03c505b5b589ae4d89b2ae11dd1711" title="watchdog_timer_func" alt="" coords="431,5,580,32"/>
+<area shape="rect" id="node4" href="$watchdog_8c.html#a47b6861ffbed37fef88aa644f10ba917" title="wifi_reconnect_timer_func" alt="" coords="205,31,383,57"/>
+<area shape="rect" id="node3" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="628,5,740,32"/>
+</map>

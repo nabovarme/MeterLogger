@@ -1,0 +1,6 @@
+<map id="add_offer_options" name="add_offer_options">
+<area shape="rect" id="node2" href="$dhcpserver_8c.html#a024751b98d23fc209015b3ac5a76aae9" title="send_ack" alt="" coords="186,5,265,32"/>
+<area shape="rect" id="node5" href="$dhcpserver_8c.html#aa16cfa7bae7bd0fcb895a8b2513dd60f" title="send_offer" alt="" coords="183,56,268,83"/>
+<area shape="rect" id="node3" href="$dhcpserver_8c.html#a11489c1fab4206e65914c4c46850d183" title="handle_dhcp" alt="" coords="316,31,415,57"/>
+<area shape="rect" id="node4" href="$dhcpserver_8c.html#aa4cf55564a805b8654630547d365edcd" title="dhcps_start" alt="" coords="463,31,553,57"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="tcpip_msg" name="tcpip_msg">
+<area shape="rect" id="node2" href="$structnetif.html" title="{netif\n|+ state\l+ mtu\l+ hwaddr_len\l+ hwaddr\l+ flags\l+ name\l+ num\l|}" alt="" coords="90,263,193,428"/>
+<area shape="rect" id="node3" href="$structpbuf.html" title="{pbuf\n|+ payload\l+ tot_len\l+ len\l+ type\l+ flags\l+ ref\l+ eb\l|}" alt="" coords="5,5,85,171"/>
+<area shape="rect" id="node4" href="$structip__addr.html" title="{ip_addr\n|+ addr\l+ addr\l|}" alt="" coords="171,42,237,134"/>
+</map>

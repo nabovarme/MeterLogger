@@ -1,0 +1,7 @@
+<map id="wifi_softap_set_config" name="wifi_softap_set_config">
+<area shape="rect" id="node2" href="$wifi_8c.html#a05bed02754a1afbba24a7441ba96ada0" title="wifi_softap_config" alt="" coords="207,31,335,57"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="383,5,559,32"/>
+<area shape="rect" id="node6" href="$user__main_8c.html#aca4c3403260c8a02d8a445795842f53e" title="config_mode_timer_func" alt="" coords="387,56,555,83"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="607,31,732,57"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="780,31,852,57"/>
+</map>

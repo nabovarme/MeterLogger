@@ -1,0 +1,12 @@
+<map id="espconn_tcp_write" name="espconn_tcp_write">
+<area shape="rect" id="node2" href="$sdk_2include_2espconn_8h.html#a579e4f1c62f7c33be01398931617e988" title="espconn_sent" alt="" coords="202,5,307,32"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a46f54f8c9e0dbc0c03f7666380fa3bbd" title="espconn_tcp_finish" alt="" coords="187,56,323,83"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#a1203a8c81ffd8641243ae4800bfe0d55" title="espconn_client_sent" alt="" coords="373,31,517,57"/>
+<area shape="rect" id="node8" href="$espconn__tcp_8c.html#a5a1aa400ea4ec663cfc57a637ce0f7bf" title="espconn_server_sent" alt="" coords="371,81,520,108"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#a86c46016b2975352fa63c06ef75d11dc" title="espconn_client_connect" alt="" coords="568,31,733,57"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#afe66d17cd3c4b5ca9959287aec4db38b" title="espconn_tcp_client" alt="" coords="785,31,921,57"/>
+<area shape="rect" id="node7" href="$sdk_2include_2espconn_8h.html#a949cd618667cea85b1b99d14b90dce7d" title="espconn_connect" alt="" coords="972,31,1099,57"/>
+<area shape="rect" id="node9" href="$espconn__tcp_8c.html#acf0ecfba42ea8bcc55836b8dccabe511" title="espconn_tcp_accept" alt="" coords="579,81,723,108"/>
+<area shape="rect" id="node10" href="$espconn__tcp_8c.html#ace125fa28aced169fba2b955f1ce76fb" title="espconn_tcp_server" alt="" coords="781,81,924,108"/>
+<area shape="rect" id="node11" href="$sdk_2include_2espconn_8h.html#abd44446e3fc4a61fdef77d473deb678b" title="espconn_accept" alt="" coords="976,81,1095,108"/>
+</map>

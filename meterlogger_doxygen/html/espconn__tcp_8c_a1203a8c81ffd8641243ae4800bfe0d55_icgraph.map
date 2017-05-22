@@ -1,0 +1,5 @@
+<map id="espconn_client_sent" name="espconn_client_sent">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a86c46016b2975352fa63c06ef75d11dc" title="espconn_client_connect" alt="" coords="197,5,363,32"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#afe66d17cd3c4b5ca9959287aec4db38b" title="espconn_tcp_client" alt="" coords="411,5,547,32"/>
+<area shape="rect" id="node4" href="$sdk_2include_2espconn_8h.html#a949cd618667cea85b1b99d14b90dce7d" title="espconn_connect" alt="" coords="595,5,721,32"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="wifi_set_opmode_current" name="wifi_set_opmode_current">
+<area shape="rect" id="node2" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="943,5,1039,32"/>
+<area shape="rect" id="node3" href="$wifi_8c.html#a0be23fd8148c6a3abf21c739359bed52" title="wifi_default" alt="" coords="226,56,315,83"/>
+<area shape="rect" id="node10" href="$wifi_8c.html#ac4389ba687a71cbb616f05b02427eb2a" title="wifi_fallback" alt="" coords="224,107,317,133"/>
+<area shape="rect" id="node4" href="$wifi_8c.html#a1ef15ecd9e69811f6db10215c7196281" title="wifi_scan_done_cb" alt="" coords="365,81,501,108"/>
+<area shape="rect" id="node5" href="$wifi_8c.html#ae7011f25db54676b86fefe2caa450a4a" title="wifi_scan_timer_func" alt="" coords="549,56,696,83"/>
+<area shape="rect" id="node6" href="$wifi_8c.html#a5831b420da0012d53c979c375714d382" title="wifi_start_scan" alt="" coords="744,56,855,83"/>
+<area shape="rect" id="node7" href="$watchdog_8c.html#a47b6861ffbed37fef88aa644f10ba917" title="wifi_reconnect_timer_func" alt="" coords="903,56,1080,83"/>
+<area shape="rect" id="node8" href="$watchdog_8c.html#aeb03c505b5b589ae4d89b2ae11dd1711" title="watchdog_timer_func" alt="" coords="1128,56,1277,83"/>
+<area shape="rect" id="node9" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="1325,56,1437,83"/>
+</map>

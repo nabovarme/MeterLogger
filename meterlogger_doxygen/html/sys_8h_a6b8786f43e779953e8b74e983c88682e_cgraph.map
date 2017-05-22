@@ -1,0 +1,5 @@
+<map id="sys_msleep" name="sys_msleep">
+<area shape="rect" id="node2" href="$sys_8h.html#a8d364c5037778acb21c3df675db81b4f" title="sys_arch_sem_wait" alt="" coords="145,5,284,32"/>
+<area shape="rect" id="node3" href="$sys_8h.html#a83b781f96c30e915c752065a757da283" title="sys_sem_free" alt="" coords="162,56,267,83"/>
+<area shape="rect" id="node4" href="$sys_8h.html#af99da9e34a71855285c535183133dfde" title="sys_sem_new" alt="" coords="161,107,268,133"/>
+</map>

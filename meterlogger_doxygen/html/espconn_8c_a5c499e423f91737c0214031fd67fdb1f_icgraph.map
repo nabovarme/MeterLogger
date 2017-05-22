@@ -1,0 +1,15 @@
+<map id="espconn_pbuf_delete" name="espconn_pbuf_delete">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a20affdc6c469b20f65d27e24d6ba6bc1" title="espconn_tcp_disconnect\l_successful" alt="" coords="203,5,372,47"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#a46f54f8c9e0dbc0c03f7666380fa3bbd" title="espconn_tcp_finish" alt="" coords="219,122,355,149"/>
+<area shape="rect" id="node14" href="$espconn__tcp_8c.html#ae7340333afa97bbdba4ae018539f8a1a" title="espconn_tcp_reconnect" alt="" coords="205,71,369,98"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a658001fa320693943742066d8870a1b9" title="espconn_Task" alt="" coords="440,46,549,73"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#a86c6dca784d0ca2d55af8567a7968406" title="espconn_init" alt="" coords="651,46,749,73"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#a1203a8c81ffd8641243ae4800bfe0d55" title="espconn_client_sent" alt="" coords="423,97,567,123"/>
+<area shape="rect" id="node10" href="$espconn__tcp_8c.html#a5a1aa400ea4ec663cfc57a637ce0f7bf" title="espconn_server_sent" alt="" coords="420,147,569,174"/>
+<area shape="rect" id="node7" href="$espconn__tcp_8c.html#a86c46016b2975352fa63c06ef75d11dc" title="espconn_client_connect" alt="" coords="617,97,783,123"/>
+<area shape="rect" id="node8" href="$espconn__tcp_8c.html#afe66d17cd3c4b5ca9959287aec4db38b" title="espconn_tcp_client" alt="" coords="834,97,970,123"/>
+<area shape="rect" id="node9" href="$sdk_2include_2espconn_8h.html#a949cd618667cea85b1b99d14b90dce7d" title="espconn_connect" alt="" coords="1021,97,1148,123"/>
+<area shape="rect" id="node11" href="$espconn__tcp_8c.html#acf0ecfba42ea8bcc55836b8dccabe511" title="espconn_tcp_accept" alt="" coords="628,147,772,174"/>
+<area shape="rect" id="node12" href="$espconn__tcp_8c.html#ace125fa28aced169fba2b955f1ce76fb" title="espconn_tcp_server" alt="" coords="831,147,973,174"/>
+<area shape="rect" id="node13" href="$sdk_2include_2espconn_8h.html#abd44446e3fc4a61fdef77d473deb678b" title="espconn_accept" alt="" coords="1025,147,1144,174"/>
+</map>

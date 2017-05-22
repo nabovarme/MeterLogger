@@ -1,0 +1,24 @@
+<map id="espconn_sendto" name="espconn_sendto">
+<area shape="rect" id="node2" href="$captdns_8c.html#ab898071398b359603a35c202e9c65f3b" title="__attribute__" alt="" coords="210,31,310,57"/>
+<area shape="rect" id="node3" href="$espconn_8c.html#a2d001a99fea2fce497e392259cf01700" title="espconn_find_connection" alt="" coords="173,81,347,108"/>
+<area shape="rect" id="node4" href="$espconn_8c.html#acd3f1a74cab83e02797bdb8d22b8f732" title="espconn_send" alt="" coords="205,132,315,159"/>
+<area shape="rect" id="node5" href="$espconn__udp_8h.html#a48d2c0b2c80b094235633a05c586ca07" title="espconn_udp_sendto" alt="" coords="185,183,335,209"/>
+<area shape="rect" id="node6" href="$wlan__lwip__if_8h.html#a7e70d2ab3f2caed091644850737a363e" title="eagle_lwip_getif" alt="" coords="784,81,901,108"/>
+<area shape="rect" id="node7" href="$espconn__udp_8c.html#ad90679652367797548ea650f09d14f7e" title="espconn_data_sent" alt="" coords="395,183,533,209"/>
+<area shape="rect" id="node10" href="$pbuf_8h.html#ac6efc2aaeddfea6c95729dc86f785ba4" title="pbuf_alloc" alt="" coords="801,132,884,159"/>
+<area shape="rect" id="node19" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="781,233,904,260"/>
+<area shape="rect" id="node20" href="$pbuf_8h.html#a5aed441d496f607ad88ae1db2084c2d6" title="pbuf_copy" alt="" coords="801,284,885,311"/>
+<area shape="rect" id="node21" href="$netif_8h.html#adf60dd30848a63ce3a1339c98c098acc" title="netif_set_default" alt="" coords="783,335,903,361"/>
+<area shape="rect" id="node22" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="803,183,882,209"/>
+<area shape="rect" id="node8" href="$espconn__udp_8c.html#acf012530a067499d3c1f70091f09427f" title="espconn_data_sentcb" alt="" coords="581,132,733,159"/>
+<area shape="rect" id="node9" href="$espconn__udp_8c.html#ac963eff73234530596d6c02e6bb05e09" title="espconn_udp_sent" alt="" coords="590,233,725,260"/>
+<area shape="rect" id="node23" href="$espconn__udp_8c.html#a01fa0df74518311e3eb03f2d955f9f26" title="espconn_udp_sendto" alt="" coords="583,183,732,209"/>
+<area shape="rect" id="node11" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#a1cb005c6c44b685b8025b329a6d2bcd4" title="mem_malloc" alt="" coords="956,31,1053,57"/>
+<area shape="rect" id="node14" href="$memp_8h.html#a5b98c976852aa0eabda9fd588be56eb8" title="memp_malloc" alt="" coords="952,132,1057,159"/>
+<area shape="rect" id="node15" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="965,81,1044,108"/>
+<area shape="rect" id="node12" href="$sys_8h.html#a4d4eb9afe5965fa2661dd54ff55d616a" title="sys_mutex_lock" alt="" coords="1113,5,1230,32"/>
+<area shape="rect" id="node13" href="$sys_8h.html#a5568f68898fe9d5735f9ce2f665624fb" title="sys_mutex_unlock" alt="" coords="1105,56,1237,83"/>
+<area shape="rect" id="node16" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="1127,119,1216,145"/>
+<area shape="rect" id="node17" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="1130,195,1213,221"/>
+<area shape="rect" id="node18" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="1285,195,1372,221"/>
+</map>

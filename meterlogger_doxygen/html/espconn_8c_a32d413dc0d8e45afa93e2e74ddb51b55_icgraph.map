@@ -1,0 +1,9 @@
+<map id="espconn_get_connection_info" name="espconn_get_connection_info">
+<area shape="rect" id="node2" href="$captdns_8c.html#a59c9a28ea1f015cff27b9d0c252d15f3" title="captdnsRecv" alt="" coords="275,5,373,32"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#acf0ecfba42ea8bcc55836b8dccabe511" title="espconn_tcp_accept" alt="" coords="252,56,396,83"/>
+<area shape="rect" id="node7" href="$espconn__tcp_8c.html#a2dfab8a89f8e7a7e017b2b977654d2aa" title="espconn_tcp_delete" alt="" coords="253,107,395,133"/>
+<area shape="rect" id="node3" href="$captdns_8h.html#a88f42288d1b84cab204cca9e7f7aa9a3" title="captdnsInit" alt="" coords="472,5,559,32"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#ace125fa28aced169fba2b955f1ce76fb" title="espconn_tcp_server" alt="" coords="444,56,587,83"/>
+<area shape="rect" id="node6" href="$sdk_2include_2espconn_8h.html#abd44446e3fc4a61fdef77d473deb678b" title="espconn_accept" alt="" coords="635,56,753,83"/>
+<area shape="rect" id="node8" href="$sdk_2include_2espconn_8h.html#a63d15dda14dfcd8da278c31f048910c3" title="espconn_delete" alt="" coords="457,107,573,133"/>
+</map>

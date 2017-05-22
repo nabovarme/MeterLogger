@@ -1,0 +1,9 @@
+<map id="espconn_list_delete" name="espconn_list_delete">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a658001fa320693943742066d8870a1b9" title="espconn_Task" alt="" coords="225,5,335,32"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#afe66d17cd3c4b5ca9959287aec4db38b" title="espconn_tcp_client" alt="" coords="212,56,348,83"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#a2dfab8a89f8e7a7e017b2b977654d2aa" title="espconn_tcp_delete" alt="" coords="209,107,351,133"/>
+<area shape="rect" id="node8" href="$espconn__udp_8c.html#abf938536b11968226465f95681afc0f3" title="espconn_udp_disconnect" alt="" coords="193,157,367,184"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a86c6dca784d0ca2d55af8567a7968406" title="espconn_init" alt="" coords="429,5,527,32"/>
+<area shape="rect" id="node5" href="$sdk_2include_2espconn_8h.html#a949cd618667cea85b1b99d14b90dce7d" title="espconn_connect" alt="" coords="415,56,541,83"/>
+<area shape="rect" id="node7" href="$sdk_2include_2espconn_8h.html#a63d15dda14dfcd8da278c31f048910c3" title="espconn_delete" alt="" coords="420,132,536,159"/>
+</map>

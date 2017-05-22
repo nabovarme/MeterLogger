@@ -1,0 +1,14 @@
+<map id="esp&#45;open&#45;lwip/lwip/core/sys.c" name="esp&#45;open&#45;lwip/lwip/core/sys.c">
+<area shape="rect" id="node2" href="$opt_8h.html" title="lwip/opt.h" alt="" coords="120,244,199,271"/>
+<area shape="rect" id="node15" href="$sys_8h.html" title="lwip/sys.h" alt="" coords="201,95,281,121"/>
+<area shape="rect" id="node3" href="$lwipopts_8h.html" title="lwipopts.h" alt="" coords="5,319,87,345"/>
+<area shape="rect" id="node4" href="$esp-open-sdk_2esp-open-lwip_2include_2lwip_2debug_8h.html" title="lwip/debug.h" alt="" coords="111,319,208,345"/>
+<area shape="rect" id="node5" href="$arch_8h.html" title="lwip/arch.h" alt="" coords="194,393,279,420"/>
+<area shape="rect" id="node6" href="$cc_8h.html" title="arch/cc.h" alt="" coords="200,468,276,495"/>
+<area shape="rect" id="node7" href="$c__types_8h.html" title="c_types.h" alt="" coords="128,617,207,644"/>
+<area shape="rect" id="node10" href="$ets__sys_8h.html" title="ets_sys.h" alt="" coords="200,543,279,569"/>
+<area shape="rect" id="node12" href="$osapi_8h.html" title="osapi.h" alt="" coords="355,543,420,569"/>
+<area shape="rect" id="node11" href="$eagle__soc_8h.html" title="eagle_soc.h" alt="" coords="234,617,327,644"/>
+<area shape="rect" id="node16" href="$err_8h.html" title="lwip/err.h" alt="" coords="203,169,279,196"/>
+<area shape="rect" id="node17" href="$sys__arch_8h.html" title="arch/sys_arch.h" alt="" coords="355,169,471,196"/>
+</map>

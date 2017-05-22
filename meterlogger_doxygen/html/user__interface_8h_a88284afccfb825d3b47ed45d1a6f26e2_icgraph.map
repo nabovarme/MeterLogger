@@ -1,0 +1,8 @@
+<map id="wifi_softap_set_dhcps_lease" name="wifi_softap_set_dhcps_lease">
+<area shape="rect" id="node2" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="207,31,352,57"/>
+<area shape="rect" id="node3" href="$wifi_8c.html#aa87c06c3cbab2aa762551fcec59dc8f0" title="wifi_handle_event_cb" alt="" coords="400,5,551,32"/>
+<area shape="rect" id="node5" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="743,31,919,57"/>
+<area shape="rect" id="node4" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="599,5,695,32"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="967,31,1092,57"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="1140,31,1212,57"/>
+</map>

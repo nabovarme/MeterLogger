@@ -1,0 +1,8 @@
+<map id="espconn_tcp_disconnect_successful" name="espconn_tcp_disconnect_successful">
+<area shape="rect" id="node2" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a760ff135a8707ff3f481ba00d7312011" title="espconn_copy_partial" alt="" coords="236,5,388,32"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a3bdf31bbcdc7559b29999c4439ebd50b" title="espconn_find_current_pcb" alt="" coords="223,56,401,83"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#adb05495795be756c94becac3022d61ae" title="espconn_kill_oldest_pcb" alt="" coords="229,107,395,133"/>
+<area shape="rect" id="node6" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="636,132,725,159"/>
+<area shape="rect" id="node7" href="$espconn_8c.html#a5c499e423f91737c0214031fd67fdb1f" title="espconn_pbuf_delete" alt="" coords="237,208,387,235"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#a8728693719a51cc1fbe3ef775ceaaa67" title="espconn_kill_oldest" alt="" coords="449,107,588,133"/>
+</map>

@@ -1,0 +1,20 @@
+<map id="espconn_udp_sent" name="espconn_udp_sent">
+<area shape="rect" id="node2" href="$wlan__lwip__if_8h.html#a7e70d2ab3f2caed091644850737a363e" title="eagle_lwip_getif" alt="" coords="577,61,695,88"/>
+<area shape="rect" id="node3" href="$espconn__udp_8c.html#ad90679652367797548ea650f09d14f7e" title="espconn_data_sent" alt="" coords="188,163,327,189"/>
+<area shape="rect" id="node6" href="$pbuf_8h.html#ac6efc2aaeddfea6c95729dc86f785ba4" title="pbuf_alloc" alt="" coords="595,112,677,139"/>
+<area shape="rect" id="node15" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="575,213,697,240"/>
+<area shape="rect" id="node16" href="$pbuf_8h.html#a5aed441d496f607ad88ae1db2084c2d6" title="pbuf_copy" alt="" coords="594,264,678,291"/>
+<area shape="rect" id="node17" href="$netif_8h.html#adf60dd30848a63ce3a1339c98c098acc" title="netif_set_default" alt="" coords="576,315,696,341"/>
+<area shape="rect" id="node18" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="597,163,675,189"/>
+<area shape="rect" id="node4" href="$espconn__udp_8c.html#acf012530a067499d3c1f70091f09427f" title="espconn_data_sentcb" alt="" coords="375,112,527,139"/>
+<area shape="rect" id="node5" href="$espconn__udp_8c.html#ac963eff73234530596d6c02e6bb05e09" title="espconn_udp_sent" alt="" coords="383,213,518,240"/>
+<area shape="rect" id="node19" href="$espconn__udp_8c.html#a01fa0df74518311e3eb03f2d955f9f26" title="espconn_udp_sendto" alt="" coords="376,163,525,189"/>
+<area shape="rect" id="node7" href="$memp_8h.html#a5b98c976852aa0eabda9fd588be56eb8" title="memp_malloc" alt="" coords="745,61,851,88"/>
+<area shape="rect" id="node8" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="759,112,837,139"/>
+<area shape="rect" id="node12" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#a1cb005c6c44b685b8025b329a6d2bcd4" title="mem_malloc" alt="" coords="749,11,847,37"/>
+<area shape="rect" id="node9" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="920,195,1009,221"/>
+<area shape="rect" id="node10" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="923,119,1006,145"/>
+<area shape="rect" id="node11" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="1079,119,1165,145"/>
+<area shape="rect" id="node13" href="$sys_8h.html#a4d4eb9afe5965fa2661dd54ff55d616a" title="sys_mutex_lock" alt="" coords="906,5,1023,32"/>
+<area shape="rect" id="node14" href="$sys_8h.html#a5568f68898fe9d5735f9ce2f665624fb" title="sys_mutex_unlock" alt="" coords="899,56,1031,83"/>
+</map>

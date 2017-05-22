@@ -1,0 +1,6 @@
+<map id="espconn_client_sent" name="espconn_client_sent">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a46f54f8c9e0dbc0c03f7666380fa3bbd" title="espconn_tcp_finish" alt="" coords="197,31,333,57"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#afedfd58842e55800f23f90ed00b0a967" title="espconn_tcp_write" alt="" coords="389,5,523,32"/>
+<area shape="rect" id="node5" href="$espconn_8c.html#a5c499e423f91737c0214031fd67fdb1f" title="espconn_pbuf_delete" alt="" coords="381,56,531,83"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#a5a4844397c6068a44e5422de0eadcb86" title="espconn_tcp_sent" alt="" coords="579,5,709,32"/>
+</map>

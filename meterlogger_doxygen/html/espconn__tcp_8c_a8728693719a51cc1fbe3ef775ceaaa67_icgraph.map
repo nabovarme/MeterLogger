@@ -1,0 +1,7 @@
+<map id="espconn_kill_oldest" name="espconn_kill_oldest">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#adb05495795be756c94becac3022d61ae" title="espconn_kill_oldest_pcb" alt="" coords="192,35,359,61"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#ae7340333afa97bbdba4ae018539f8a1a" title="espconn_tcp_reconnect" alt="" coords="409,5,573,32"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#a20affdc6c469b20f65d27e24d6ba6bc1" title="espconn_tcp_disconnect\l_successful" alt="" coords="407,57,576,98"/>
+<area shape="rect" id="node4" href="$espconn__tcp_8c.html#a658001fa320693943742066d8870a1b9" title="espconn_Task" alt="" coords="624,35,733,61"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#a86c6dca784d0ca2d55af8567a7968406" title="espconn_init" alt="" coords="781,35,879,61"/>
+</map>

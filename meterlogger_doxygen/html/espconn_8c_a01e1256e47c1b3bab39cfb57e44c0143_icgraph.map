@@ -1,0 +1,8 @@
+<map id="espconn_tcp_set_buf_count" name="espconn_tcp_set_buf_count">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a86c46016b2975352fa63c06ef75d11dc" title="espconn_client_connect" alt="" coords="203,5,368,32"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#acf0ecfba42ea8bcc55836b8dccabe511" title="espconn_tcp_accept" alt="" coords="213,56,357,83"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#afe66d17cd3c4b5ca9959287aec4db38b" title="espconn_tcp_client" alt="" coords="419,5,555,32"/>
+<area shape="rect" id="node4" href="$sdk_2include_2espconn_8h.html#a949cd618667cea85b1b99d14b90dce7d" title="espconn_connect" alt="" coords="607,5,733,32"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#ace125fa28aced169fba2b955f1ce76fb" title="espconn_tcp_server" alt="" coords="416,56,559,83"/>
+<area shape="rect" id="node7" href="$sdk_2include_2espconn_8h.html#abd44446e3fc4a61fdef77d473deb678b" title="espconn_accept" alt="" coords="611,56,729,83"/>
+</map>

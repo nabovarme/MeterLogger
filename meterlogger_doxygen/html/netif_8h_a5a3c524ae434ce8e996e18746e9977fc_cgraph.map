@@ -1,0 +1,21 @@
+<map id="netif_init" name="netif_init">
+<area shape="rect" id="node2" href="$ip_8h.html#a9feb530a8af39f237202b679b5be04a1" title="ip_input" alt="" coords="298,56,367,83"/>
+<area shape="rect" id="node11" href="$netif_8c.html#aaaa8066c47023b576a5f403c3ba82597" title="netif_add" alt="" coords="134,208,211,235"/>
+<area shape="rect" id="node16" href="$netif_8c.html#af19693be401a265a52d2a56c65753121" title="netif_set_up" alt="" coords="125,259,220,285"/>
+<area shape="rect" id="node17" href="$tcpip_8h.html#ae510f195171bed8499ae94e264a92717" title="tcpip_input" alt="" coords="129,157,216,184"/>
+<area shape="rect" id="node3" href="$inet__chksum_8h.html#a79a1825a9588a77b8c372a3d708974a8" title="inet_chksum" alt="" coords="462,5,559,32"/>
+<area shape="rect" id="node4" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="625,56,704,83"/>
+<area shape="rect" id="node8" href="$pbuf_8h.html#a4853abdcdbbe0c4c9fc994e4e7e02b87" title="pbuf_realloc" alt="" coords="463,107,558,133"/>
+<area shape="rect" id="node5" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="753,157,843,184"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="757,81,839,108"/>
+<area shape="rect" id="node7" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="891,81,977,108"/>
+<area shape="rect" id="node9" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#aaf260c2e52686f07d59d1d347ee952cc" title="mem_trim" alt="" coords="624,107,705,133"/>
+<area shape="rect" id="node10" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="625,157,704,184"/>
+<area shape="rect" id="node12" href="$netif_8c.html#a383f97a67057d0f3cd8bfff0534973fc" title="netif_set_addr" alt="" coords="279,309,386,336"/>
+<area shape="rect" id="node13" href="$netif_8c.html#ae495c5439172c15c703a84cb33806236" title="netif_set_ipaddr" alt="" coords="452,259,569,285"/>
+<area shape="rect" id="node14" href="$netif_8c.html#a19b1df3b0b78d7505e3c4c196730ad91" title="netif_set_netmask" alt="" coords="445,309,576,336"/>
+<area shape="rect" id="node15" href="$netif_8c.html#aa6db00ff3e674d3ff8580c82f5215f4e" title="netif_set_gw" alt="" coords="462,360,559,387"/>
+<area shape="rect" id="node18" href="$sys_8h.html#a8bcfab4bd791dd33f69a778e7585275d" title="sys_mbox_valid" alt="" coords="274,259,391,285"/>
+<area shape="rect" id="node19" href="$memp_8h.html#a5b98c976852aa0eabda9fd588be56eb8" title="memp_malloc" alt="" coords="280,107,385,133"/>
+<area shape="rect" id="node20" href="$sys_8h.html#aa36345e48a49d67cbb0878cd4cbd2195" title="sys_mbox_trypost" alt="" coords="268,157,397,184"/>
+</map>

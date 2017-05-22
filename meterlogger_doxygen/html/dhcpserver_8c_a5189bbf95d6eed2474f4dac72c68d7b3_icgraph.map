@@ -1,0 +1,7 @@
+<map id="node_remove_from_list" name="node_remove_from_list">
+<area shape="rect" id="node2" href="$dhcpserver_8c.html#a5e5f582a876a86192e1168a6fe62aec5" title="dhcps_coarse_tmr" alt="" coords="215,5,347,32"/>
+<area shape="rect" id="node3" href="$dhcpserver_8c.html#a64b76b9033af6ccbb89b4963a70c9a22" title="dhcps_stop" alt="" coords="235,56,326,83"/>
+<area shape="rect" id="node4" href="$dhcpserver_8c.html#a72c6ecdbccb7cf567c40b857523706bd" title="parse_msg" alt="" coords="237,107,325,133"/>
+<area shape="rect" id="node5" href="$dhcpserver_8c.html#a11489c1fab4206e65914c4c46850d183" title="handle_dhcp" alt="" coords="395,107,493,133"/>
+<area shape="rect" id="node6" href="$dhcpserver_8c.html#aa4cf55564a805b8654630547d365edcd" title="dhcps_start" alt="" coords="541,107,632,133"/>
+</map>

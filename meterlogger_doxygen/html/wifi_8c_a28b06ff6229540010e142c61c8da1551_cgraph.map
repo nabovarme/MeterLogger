@@ -1,0 +1,8 @@
+<map id="wifi_softap_ip_config" name="wifi_softap_ip_config">
+<area shape="rect" id="node2" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="243,5,316,32"/>
+<area shape="rect" id="node3" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="223,56,335,83"/>
+<area shape="rect" id="node4" href="$user__interface_8h.html#ab48707f54ae5b1c7a10ad6801feaf2b8" title="wifi_set_ip_info" alt="" coords="223,107,336,133"/>
+<area shape="rect" id="node5" href="$user__interface_8h.html#a3955db3d72e1669492143e64f7b32775" title="wifi_softap_dhcps_start" alt="" coords="199,157,360,184"/>
+<area shape="rect" id="node6" href="$user__interface_8h.html#adc4b55015e0a64892d33a7d79a7627d6" title="wifi_softap_dhcps_stop" alt="" coords="199,208,359,235"/>
+<area shape="rect" id="node7" href="$user__interface_8h.html#a88284afccfb825d3b47ed45d1a6f26e2" title="wifi_softap_set_dhcps\l_lease" alt="" coords="203,259,356,301"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="wifi_softap_config" name="wifi_softap_config">
+<area shape="rect" id="node2" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="214,208,302,235"/>
+<area shape="rect" id="node15" href="$user__interface_8h.html#a77b8e55ff0c8ff6d01aa0da307a7ea37" title="wifi_softap_get_config" alt="" coords="181,259,335,285"/>
+<area shape="rect" id="node16" href="$user__interface_8h.html#a22c2108fdcadc9bf0cbfe9b642e759b7" title="wifi_softap_set_config" alt="" coords="181,309,335,336"/>
+<area shape="rect" id="node3" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="383,208,477,235"/>
+<area shape="rect" id="node4" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="542,183,625,209"/>
+<area shape="rect" id="node14" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="525,233,641,260"/>
+<area shape="rect" id="node5" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="699,5,743,32"/>
+<area shape="rect" id="node7" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="801,81,855,108"/>
+<area shape="rect" id="node8" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="803,208,853,235"/>
+<area shape="rect" id="node9" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="805,335,851,361"/>
+<area shape="rect" id="node10" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="689,208,753,235"/>
+<area shape="rect" id="node11" href="$tinyprintf_8c.html#a49c6d2b3d4088012f2c1fe344eef69f3" title="lli2a" alt="" coords="699,107,744,133"/>
+<area shape="rect" id="node12" href="$tinyprintf_8c.html#afebb7696337c3f599b5e8db35c560684" title="li2a" alt="" coords="700,157,743,184"/>
+<area shape="rect" id="node13" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="701,360,741,387"/>
+<area shape="rect" id="node6" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="806,5,850,32"/>
+</map>

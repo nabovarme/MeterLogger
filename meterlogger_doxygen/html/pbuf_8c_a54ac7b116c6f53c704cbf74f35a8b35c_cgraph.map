@@ -1,0 +1,12 @@
+<map id="pbuf_coalesce" name="pbuf_coalesce">
+<area shape="rect" id="node2" href="$pbuf_8c.html#acfcb0a2af918658ba0afe36499c65f47" title="pbuf_alloc" alt="" coords="162,95,245,121"/>
+<area shape="rect" id="node7" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="307,145,385,172"/>
+<area shape="rect" id="node11" href="$pbuf_8c.html#aee9cfb728d91302f068b5c6bd581e3e5" title="pbuf_copy" alt="" coords="161,196,245,223"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#a1cb005c6c44b685b8025b329a6d2bcd4" title="mem_malloc" alt="" coords="297,44,395,71"/>
+<area shape="rect" id="node6" href="$memp_8h.html#a5b98c976852aa0eabda9fd588be56eb8" title="memp_malloc" alt="" coords="293,95,399,121"/>
+<area shape="rect" id="node4" href="$sys_8h.html#a4d4eb9afe5965fa2661dd54ff55d616a" title="sys_mutex_lock" alt="" coords="454,5,571,32"/>
+<area shape="rect" id="node5" href="$sys_8h.html#a5568f68898fe9d5735f9ce2f665624fb" title="sys_mutex_unlock" alt="" coords="447,56,579,83"/>
+<area shape="rect" id="node8" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="468,132,557,159"/>
+<area shape="rect" id="node9" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="471,183,554,209"/>
+<area shape="rect" id="node10" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="627,183,713,209"/>
+</map>

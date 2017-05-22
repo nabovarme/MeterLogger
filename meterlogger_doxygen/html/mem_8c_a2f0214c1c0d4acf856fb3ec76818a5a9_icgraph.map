@@ -1,0 +1,10 @@
+<map id="mem_trim" name="mem_trim">
+<area shape="rect" id="node2" href="$pbuf_8c.html#a50abfe830a33a1a47a562febee66015d" title="pbuf_realloc" alt="" coords="135,57,229,83"/>
+<area shape="rect" id="node3" href="$ip_8c.html#a3c420dab0c6760df099a2d688fa42a26" title="ip_input" alt="" coords="277,57,347,83"/>
+<area shape="rect" id="node4" href="$netif_8c.html#a0f4a53e47c840904f824a2a1c0d4ebf4" title="netif_init" alt="" coords="593,82,665,109"/>
+<area shape="rect" id="node7" href="$netif_8c.html#a34e37a1e8e358760dc1c43887922c7db" title="netif_set_link_down" alt="" coords="395,31,533,58"/>
+<area shape="rect" id="node8" href="$tcpip_8c.html#ae510f195171bed8499ae94e264a92717" title="tcpip_input" alt="" coords="421,82,507,109"/>
+<area shape="rect" id="node9" href="$tcpip_8c.html#a61474ad2c2c25ba58cc774e2bcc4ef5f" title="tcpip_thread" alt="" coords="581,133,677,159"/>
+<area shape="rect" id="node5" href="$init_8c.html#a0c1a18439524d2f4a5e51d25c0ca2ce9" title="lwip_init" alt="" coords="725,82,795,109"/>
+<area shape="rect" id="node6" href="$tcpip_8c.html#a1f3a88b8df6ba3b9ed1c00e0a305e3db" title="tcpip_init" alt="" coords="843,107,917,134"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="espconn_client_recv" name="espconn_client_recv">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#a1bf4d2aa3261188fe87a4f3c631eee15" title="espconn_client_close" alt="" coords="197,5,347,32"/>
+<area shape="rect" id="node3" href="$pbuf_8h.html#ab0a418a2392133e6b18c7b19f7c04500" title="pbuf_copy_partial" alt="" coords="209,56,335,83"/>
+<area shape="rect" id="node4" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="233,107,311,133"/>
+<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="398,81,481,108"/>
+<area shape="rect" id="node7" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="395,132,484,159"/>
+<area shape="rect" id="node6" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="532,81,619,108"/>
+</map>

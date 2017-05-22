@@ -1,0 +1,6 @@
+<map id="netif_add" name="netif_add">
+<area shape="rect" id="node2" href="$netif_8c.html#a383f97a67057d0f3cd8bfff0534973fc" title="netif_set_addr" alt="" coords="131,56,237,83"/>
+<area shape="rect" id="node3" href="$netif_8c.html#ae495c5439172c15c703a84cb33806236" title="netif_set_ipaddr" alt="" coords="292,5,409,32"/>
+<area shape="rect" id="node4" href="$netif_8c.html#a19b1df3b0b78d7505e3c4c196730ad91" title="netif_set_netmask" alt="" coords="285,56,416,83"/>
+<area shape="rect" id="node5" href="$netif_8c.html#aa6db00ff3e674d3ff8580c82f5215f4e" title="netif_set_gw" alt="" coords="302,107,399,133"/>
+</map>

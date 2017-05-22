@@ -1,0 +1,4 @@
+<map id="netif" name="netif">
+<area shape="rect" id="node2" href="$structpbuf.html" title="{pbuf\n|+ payload\l+ tot_len\l+ len\l+ type\l+ flags\l+ ref\l+ eb\l|}" alt="" coords="5,5,85,171"/>
+<area shape="rect" id="node3" href="$structip__addr.html" title="{ip_addr\n|+ addr\l+ addr\l|}" alt="" coords="171,42,237,134"/>
+</map>

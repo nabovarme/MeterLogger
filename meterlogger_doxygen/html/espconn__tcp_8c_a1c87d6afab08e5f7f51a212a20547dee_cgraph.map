@@ -1,0 +1,9 @@
+<map id="espconn_server_close" name="espconn_server_close">
+<area shape="rect" id="node2" href="$espconn__tcp_8c.html#afc71eebe6b5059ad2b6503c328e8d8c5" title="espconn_server_recv" alt="" coords="209,56,359,83"/>
+<area shape="rect" id="node3" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="407,5,596,32"/>
+<area shape="rect" id="node4" href="$pbuf_8h.html#ab0a418a2392133e6b18c7b19f7c04500" title="pbuf_copy_partial" alt="" coords="438,56,565,83"/>
+<area shape="rect" id="node5" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="462,107,541,133"/>
+<area shape="rect" id="node6" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="647,81,730,108"/>
+<area shape="rect" id="node8" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="644,132,733,159"/>
+<area shape="rect" id="node7" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="781,81,868,108"/>
+</map>

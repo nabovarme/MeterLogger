@@ -1,0 +1,4 @@
+<map id="_comon_pkt" name="_comon_pkt">
+<area shape="rect" id="node2" href="$structespconn__packet.html" title="{espconn_packet\n|+ sent_length\l+ snd_buf_size\l+ snd_queuelen\l+ total_queuelen\l+ packseqno\l+ packseq_nxt\l+ packnum\l|}" alt="" coords="5,5,127,171"/>
+<area shape="rect" id="node3" href="$struct__espconn__buf.html" title="{_espconn_buf\n|+ payload\l+ punsent\l+ unsent\l+ len\l+ tot_len\l|}" alt="" coords="151,20,256,156"/>
+</map>

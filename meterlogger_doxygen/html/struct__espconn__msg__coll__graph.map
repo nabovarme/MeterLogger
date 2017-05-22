@@ -1,0 +1,8 @@
+<map id="_espconn_msg" name="_espconn_msg">
+<area shape="rect" id="node2" href="$struct__comon__pkt.html" title="{_comon_pkt\n|+ pcb\l+ remote_port\l+ remote_ip\l+ local_port\l+ local_ip\l+ ptrbuf\l+ cntr\l+ err\l+ timeout\l+ recv_check\l+ pbuf_num\l+ write_flag\l+ espconn_opt\l|}" alt="" coords="149,263,258,516"/>
+<area shape="rect" id="node3" href="$structespconn__packet.html" title="{espconn_packet\n|+ sent_length\l+ snd_buf_size\l+ snd_queuelen\l+ total_queuelen\l+ packseqno\l+ packseq_nxt\l+ packnum\l|}" alt="" coords="5,13,127,178"/>
+<area shape="rect" id="node4" href="$struct__espconn__buf.html" title="{_espconn_buf\n|+ payload\l+ punsent\l+ unsent\l+ len\l+ tot_len\l|}" alt="" coords="151,27,256,163"/>
+<area shape="rect" id="node5" href="$structespconn.html" title="{espconn\n|+ type\l+ state\l+ proto\l+ recv_callback\l+ sent_callback\l+ link_cnt\l+ reverse\l+ proto\l|}" alt="" coords="345,299,459,479"/>
+<area shape="rect" id="node6" href="$struct__esp__udp.html" title="{_esp_udp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l|}" alt="" coords="349,35,455,156"/>
+<area shape="rect" id="node7" href="$struct__esp__tcp.html" title="{_esp_tcp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l+ connect_callback\l+ reconnect_callback\l+ disconnect_callback\l+ write_finish_fn\l|}" alt="" coords="479,5,632,185"/>
+</map>

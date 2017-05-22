@@ -1,0 +1,22 @@
+<map id="espconn_tcp_accept" name="espconn_tcp_accept">
+<area shape="rect" id="node2" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a760ff135a8707ff3f481ba00d7312011" title="espconn_copy_partial" alt="" coords="221,5,373,32"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a95deabffd3b8a4bec81f91596901f84d" title="espconn_get_connection_info" alt="" coords="197,56,396,83"/>
+<area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#ae65b40a3ff0ee3fe9b764523fa4a3c48" title="espconn_list_creat" alt="" coords="230,107,363,133"/>
+<area shape="rect" id="node5" href="$espconn__tcp_8c.html#af3868ea055aae73a6f4de8866d31aceb" title="espconn_server_poll" alt="" coords="224,157,369,184"/>
+<area shape="rect" id="node7" href="$espconn__tcp_8c.html#afc71eebe6b5059ad2b6503c328e8d8c5" title="espconn_server_recv" alt="" coords="648,157,797,184"/>
+<area shape="rect" id="node14" href="$espconn__tcp_8c.html#a5a1aa400ea4ec663cfc57a637ce0f7bf" title="espconn_server_sent" alt="" coords="222,259,371,285"/>
+<area shape="rect" id="node19" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a8418023ae67bd83742d7d2642c3d4da0" title="espconn_tcp_get_max\l_con_allow" alt="" coords="219,310,375,351"/>
+<area shape="rect" id="node20" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#aebb1efce8ecc198f9e9a663b69f42113" title="espconn_tcp_set_buf\l_count" alt="" coords="222,375,371,417"/>
+<area shape="rect" id="node21" href="$espconn__tcp_8c.html#a70940b6d5142095e412400b06aebf3d2" title="esponn_server_err" alt="" coords="230,441,363,468"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#a1c87d6afab08e5f7f51a212a20547dee" title="espconn_server_close" alt="" coords="444,157,600,184"/>
+<area shape="rect" id="node8" href="$pbuf_8h.html#ab0a418a2392133e6b18c7b19f7c04500" title="pbuf_copy_partial" alt="" coords="877,107,1003,133"/>
+<area shape="rect" id="node9" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="901,157,979,184"/>
+<area shape="rect" id="node13" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="845,208,1035,235"/>
+<area shape="rect" id="node10" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="1086,132,1169,159"/>
+<area shape="rect" id="node12" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="1083,183,1172,209"/>
+<area shape="rect" id="node11" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="1220,132,1307,159"/>
+<area shape="rect" id="node15" href="$espconn__tcp_8c.html#a46f54f8c9e0dbc0c03f7666380fa3bbd" title="espconn_tcp_finish" alt="" coords="454,259,590,285"/>
+<area shape="rect" id="node16" href="$espconn__tcp_8c.html#afedfd58842e55800f23f90ed00b0a967" title="espconn_tcp_write" alt="" coords="656,259,789,285"/>
+<area shape="rect" id="node18" href="$espconn_8c.html#a5c499e423f91737c0214031fd67fdb1f" title="espconn_pbuf_delete" alt="" coords="648,309,797,336"/>
+<area shape="rect" id="node17" href="$espconn__tcp_8c.html#a5a4844397c6068a44e5422de0eadcb86" title="espconn_tcp_sent" alt="" coords="875,259,1005,285"/>
+</map>

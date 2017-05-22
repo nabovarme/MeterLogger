@@ -1,0 +1,6 @@
+<map id="get_uptime" name="get_uptime">
+<area shape="rect" id="node2" href="$watchdog_8h.html#ac6f711e66812f004c4ed3d0eef8c252a" title="add_watchdog" alt="" coords="161,5,271,32"/>
+<area shape="rect" id="node3" href="$watchdog_8h.html#a51be9a4121b1f7722209d0356b4521cf" title="reset_watchdog" alt="" coords="158,56,274,83"/>
+<area shape="rect" id="node4" href="$watchdog_8c.html#aeb03c505b5b589ae4d89b2ae11dd1711" title="watchdog_timer_func" alt="" coords="141,107,291,133"/>
+<area shape="rect" id="node5" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="339,107,451,133"/>
+</map>

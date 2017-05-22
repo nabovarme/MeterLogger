@@ -1,0 +1,8 @@
+<map id="system_restart" name="system_restart">
+<area shape="rect" id="node2" href="$cgiwifi_8h.html#a4ba43d83032eea6839857ed163af5fc9" title="cgiWifiSetMode" alt="" coords="180,5,295,32"/>
+<area shape="rect" id="node3" href="$cgiwifi_8c.html#a9d53126c0a5bdeb1318f081f1cca3a84" title="resetTimerCb" alt="" coords="186,56,289,83"/>
+<area shape="rect" id="node5" href="$watchdog_8c.html#aeb03c505b5b589ae4d89b2ae11dd1711" title="watchdog_timer_func" alt="" coords="163,107,312,133"/>
+<area shape="rect" id="node4" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="379,56,453,83"/>
+<area shape="rect" id="node6" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="360,107,472,133"/>
+<area shape="rect" id="node7" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="520,107,592,133"/>
+</map>

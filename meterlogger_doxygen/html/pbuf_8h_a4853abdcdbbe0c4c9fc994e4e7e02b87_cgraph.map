@@ -1,0 +1,7 @@
+<map id="pbuf_realloc" name="pbuf_realloc">
+<area shape="rect" id="node2" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#aaf260c2e52686f07d59d1d347ee952cc" title="mem_trim" alt="" coords="148,5,229,32"/>
+<area shape="rect" id="node3" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="149,56,228,83"/>
+<area shape="rect" id="node4" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="277,31,367,57"/>
+<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="281,81,363,108"/>
+<area shape="rect" id="node6" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="415,81,501,108"/>
+</map>

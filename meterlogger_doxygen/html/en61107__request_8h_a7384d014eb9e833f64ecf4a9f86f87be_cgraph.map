@@ -34,8 +34,8 @@
 <area shape="rect" id="node30" href="$sha256_8c.html#a7f22a0894ca55160852ddcdff7a1f2fc" title="sha256_raw" alt="" coords="753,848,847,875"/>
 <area shape="rect" id="node34" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7" title="sntp_get_current_timestamp" alt="" coords="469,949,659,976"/>
 <area shape="rect" id="node36" href="$mqtt__msg_8h.html#af16842423fc1d5d802a7f329fc3a9ef9" title="mqtt_msg_publish" alt="" coords="499,1127,629,1153"/>
-<area shape="rect" id="node42" href="$_meter_logger_2mqtt_2include_2queue_8h.html#acf070d5db9067c0b9598dec844313ae5" title="QUEUE_Gets" alt="" coords="511,1253,617,1280"/>
-<area shape="rect" id="node47" href="$_meter_logger_2mqtt_2include_2queue_8h.html#a0a04f14d06c5c3ee302764c5f3d7dc0c" title="QUEUE_Puts" alt="" coords="512,1012,616,1039"/>
+<area shape="rect" id="node42" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#acf070d5db9067c0b9598dec844313ae5" title="QUEUE_Gets" alt="" coords="511,1253,617,1280"/>
+<area shape="rect" id="node47" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#a0a04f14d06c5c3ee302764c5f3d7dc0c" title="QUEUE_Puts" alt="" coords="512,1012,616,1039"/>
 <area shape="rect" id="node50" href="$user__interface_8h.html#adab1155f3a463f2b05a9bde65b37514f" title="system_os_post" alt="" coords="505,1063,623,1089"/>
 <area shape="rect" id="node37" href="$mqtt__msg_8c.html#ac59e26babd30c6c0ace9a174e75786f3" title="append_message_id" alt="" coords="727,1152,873,1179"/>
 <area shape="rect" id="node38" href="$mqtt__msg_8c.html#a207c99e2058080b97c21a348d693a560" title="append_string" alt="" coords="747,1203,853,1229"/>

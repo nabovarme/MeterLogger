@@ -1,0 +1,6 @@
+<map id="system_print_meminfo" name="system_print_meminfo">
+<area shape="rect" id="node2" href="$user__main_8h.html#a6e5f80dd3fa3d07976a27c859e1aaadf" title="mqtt_data_cb" alt="" coords="209,5,312,32"/>
+<area shape="rect" id="node3" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="360,5,536,32"/>
+<area shape="rect" id="node4" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="584,5,709,32"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="757,5,829,32"/>
+</map>

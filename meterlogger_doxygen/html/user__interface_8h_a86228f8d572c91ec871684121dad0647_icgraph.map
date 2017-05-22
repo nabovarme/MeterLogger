@@ -1,0 +1,7 @@
+<map id="system_get_chip_id" name="system_get_chip_id">
+<area shape="rect" id="node2" href="$config_8h.html#a92adb6c5103eed30e16185a9cd233e51" title="cfg_load" alt="" coords="193,56,265,83"/>
+<area shape="rect" id="node3" href="$cgiwifi_8h.html#ace460e5ac8fd74afa8616bfc82561b26" title="tplSetup" alt="" coords="366,5,437,32"/>
+<area shape="rect" id="node4" href="$user__main_8c.html#a245ec00253f410a8804988bf40e1037e" title="sample_mode_timer_func" alt="" coords="313,56,489,83"/>
+<area shape="rect" id="node6" href="$user__main_8h.html#a33113d6dedb440bd7dfa5576e325140c" title="user_init" alt="" coords="711,81,783,108"/>
+<area shape="rect" id="node5" href="$user__main_8h.html#a3671381db669a16e8f6a4bf3dfb9a441" title="system_init_done" alt="" coords="537,56,663,83"/>
+</map>

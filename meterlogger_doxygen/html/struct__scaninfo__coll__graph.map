@@ -1,0 +1,5 @@
+<map id="_scaninfo" name="_scaninfo">
+<area shape="rect" id="node2" href="$structespconn.html" title="{espconn\n|+ type\l+ state\l+ proto\l+ recv_callback\l+ sent_callback\l+ link_cnt\l+ reverse\l|}" alt="" coords="77,233,191,399"/>
+<area shape="rect" id="node3" href="$struct__esp__udp.html" title="{_esp_udp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l|}" alt="" coords="5,27,111,149"/>
+<area shape="rect" id="node4" href="$struct__esp__tcp.html" title="{_esp_tcp\n|+ remote_port\l+ local_port\l+ local_ip\l+ remote_ip\l+ connect_callback\l+ reconnect_callback\l+ disconnect_callback\l|}" alt="" coords="135,5,288,171"/>
+</map>

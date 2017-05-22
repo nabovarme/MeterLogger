@@ -1,0 +1,19 @@
+<map id="mqtt/include/queue.h" name="mqtt/include/queue.h">
+<area shape="rect" id="node2" href="$os__type_8h.html" title="os_type.h" alt="" coords="5,304,85,331"/>
+<area shape="rect" id="node8" href="$ringbuf_8h.html" title="ringbuf.h" alt="" coords="598,80,671,107"/>
+<area shape="rect" id="node3" href="$ets__sys_8h.html" title="ets_sys.h" alt="" coords="991,379,1070,405"/>
+<area shape="rect" id="node4" href="$c__types_8h.html" title="c_types.h" alt="" coords="1197,453,1275,480"/>
+<area shape="rect" id="node7" href="$eagle__soc_8h.html" title="eagle_soc.h" alt="" coords="1007,453,1100,480"/>
+<area shape="rect" id="node9" href="$esp8266_8h.html" title="esp8266.h" alt="" coords="593,155,677,181"/>
+<area shape="rect" id="node25" href="$typedef_8h.html" title="typedef.h" alt="" coords="701,155,779,181"/>
+<area shape="rect" id="node14" href="$gpio_8h.html" title="gpio.h" alt="" coords="639,229,697,256"/>
+<area shape="rect" id="node15" href="$mem_8h.html" title="mem.h" alt="" coords="722,229,785,256"/>
+<area shape="rect" id="node16" href="$osapi_8h.html" title="osapi.h" alt="" coords="498,229,563,256"/>
+<area shape="rect" id="node18" href="$user__interface_8h.html" title="user_interface.h" alt="" coords="92,229,209,256"/>
+<area shape="rect" id="node22" href="$upgrade_8h.html" title="upgrade.h" alt="" coords="809,229,892,256"/>
+<area shape="rect" id="node23" href="$platform_8h.html" title="platform.h" alt="" coords="917,229,998,256"/>
+<area shape="rect" id="node24" href="$espmissingincludes_8h.html" title="espmissingincludes.h" alt="" coords="1073,304,1223,331"/>
+<area shape="rect" id="node17" href="$user__config_8h.html" title="user_config.h" alt="" coords="442,304,545,331"/>
+<area shape="rect" id="node20" href="$esp-open-sdk_2sdk_2include_2queue_8h.html" title="queue.h" alt="" coords="347,304,418,331"/>
+<area shape="rect" id="node21" href="$spi__flash_8h.html" title="spi_flash.h" alt="" coords="109,304,195,331"/>
+</map>

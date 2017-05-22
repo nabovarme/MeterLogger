@@ -1,0 +1,26 @@
+<map id="handle_dhcp" name="handle_dhcp">
+<area shape="rect" id="node2" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="545,284,619,311"/>
+<area shape="rect" id="node3" href="$dhcpserver_8c.html#a72c6ecdbccb7cf567c40b857523706bd" title="parse_msg" alt="" coords="152,132,240,159"/>
+<area shape="rect" id="node8" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="343,715,422,741"/>
+<area shape="rect" id="node12" href="$dhcpserver_8c.html#a024751b98d23fc209015b3ac5a76aae9" title="send_ack" alt="" coords="157,461,235,488"/>
+<area shape="rect" id="node24" href="$dhcpserver_8c.html#a81ead8e0f00ecfc0037e83cae928019f" title="send_nak" alt="" coords="156,563,236,589"/>
+<area shape="rect" id="node25" href="$dhcpserver_8c.html#aa16cfa7bae7bd0fcb895a8b2513dd60f" title="send_offer" alt="" coords="153,512,239,539"/>
+<area shape="rect" id="node4" href="$dhcpserver_8c.html#a6575d1e13274b93e442ed73730c88e60" title="node_insert_to_list" alt="" coords="316,5,449,32"/>
+<area shape="rect" id="node5" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="288,56,477,83"/>
+<area shape="rect" id="node6" href="$dhcpserver_8c.html#a5189bbf95d6eed2474f4dac72c68d7b3" title="node_remove_from_list" alt="" coords="302,107,463,133"/>
+<area shape="rect" id="node7" href="$dhcpserver_8c.html#a8407521ea77d5ecc99ecd189eff6d393" title="parse_options" alt="" coords="330,208,435,235"/>
+<area shape="rect" id="node9" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="711,747,794,773"/>
+<area shape="rect" id="node11" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="708,671,797,697"/>
+<area shape="rect" id="node10" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="867,747,953,773"/>
+<area shape="rect" id="node13" href="$dhcpserver_8c.html#a424b9b8d671aa4c6550b25a5fb5c69cc" title="create_msg" alt="" coords="337,461,429,488"/>
+<area shape="rect" id="node14" href="$dhcpserver_8c.html#a11dbc1add0179422de532e78b1a8c6d8" title="add_msg_type" alt="" coords="328,563,437,589"/>
+<area shape="rect" id="node15" href="$dhcpserver_8c.html#a073fe00851b9b0c98ba76fe19bf6fa83" title="add_offer_options" alt="" coords="318,360,447,387"/>
+<area shape="rect" id="node17" href="$dhcpserver_8c.html#aad9c2e8bfabe5431b4b0aa0e02cf46e2" title="add_end" alt="" coords="346,411,419,437"/>
+<area shape="rect" id="node18" href="$pbuf_8h.html#ac6efc2aaeddfea6c95729dc86f785ba4" title="pbuf_alloc" alt="" coords="341,664,424,691"/>
+<area shape="rect" id="node16" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="525,360,639,387"/>
+<area shape="rect" id="node19" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#a1cb005c6c44b685b8025b329a6d2bcd4" title="mem_malloc" alt="" coords="533,563,631,589"/>
+<area shape="rect" id="node22" href="$memp_8h.html#a5b98c976852aa0eabda9fd588be56eb8" title="memp_malloc" alt="" coords="529,613,635,640"/>
+<area shape="rect" id="node23" href="$pbuf_8c.html#ab0dd696fb4b6bc65e548944584f1738b" title="pbuf_free" alt="" coords="543,664,621,691"/>
+<area shape="rect" id="node20" href="$sys_8h.html#a4d4eb9afe5965fa2661dd54ff55d616a" title="sys_mutex_lock" alt="" coords="694,557,811,584"/>
+<area shape="rect" id="node21" href="$sys_8h.html#a5568f68898fe9d5735f9ce2f665624fb" title="sys_mutex_unlock" alt="" coords="687,608,819,635"/>
+</map>

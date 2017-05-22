@@ -1,0 +1,4 @@
+<map id="netif_init" name="netif_init">
+<area shape="rect" id="node2" href="$init_8c.html#a0c1a18439524d2f4a5e51d25c0ca2ce9" title="lwip_init" alt="" coords="125,5,195,32"/>
+<area shape="rect" id="node3" href="$tcpip_8c.html#a1f3a88b8df6ba3b9ed1c00e0a305e3db" title="tcpip_init" alt="" coords="243,5,317,32"/>
+</map>

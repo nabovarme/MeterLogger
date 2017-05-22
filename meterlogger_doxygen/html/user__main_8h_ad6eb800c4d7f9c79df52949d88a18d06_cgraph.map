@@ -1,0 +1,51 @@
+<map id="mqtt_connected_cb" name="mqtt_connected_cb">
+<area shape="rect" id="node2" href="$en61107__request_8c.html#a2e53aff8d679705828aa9c3583340eaa" title="en61107_get_received\l_serial" alt="" coords="199,5,356,47"/>
+<area shape="rect" id="node3" href="$en61107__request_8c.html#ac6b70ff316d8c3437594acadffb52044" title="en61107_set_mqtt_client" alt="" coords="192,71,363,98"/>
+<area shape="rect" id="node4" href="$crypto_8c.html#a7991ec94c8faa24921947687f2d587a0" title="encrypt_aes_hmac_combined" alt="" coords="623,695,823,722"/>
+<area shape="rect" id="node13" href="$unix__time_8c.html#a36607dbd5be7bee11f8c20932b3df407" title="get_unix_time" alt="" coords="670,442,775,469"/>
+<area shape="rect" id="node14" href="$kmp__request_8c.html#ae812917b104be167131436ca730cdbe6" title="kmp_get_received_serial" alt="" coords="192,223,363,250"/>
+<area shape="rect" id="node15" href="$kmp__request_8c.html#a345d2f4e19d47a440956862276552dd8" title="kmp_set_mqtt_client" alt="" coords="205,274,349,301"/>
+<area shape="rect" id="node16" href="$led_8c.html#a6a83b60a5039ca4c8727fc1902630210" title="led_pattern_b" alt="" coords="225,122,329,149"/>
+<area shape="rect" id="node20" href="$mqtt_8h.html#a848a6701c4c7ec3432e38ea57c003aad" title="MQTT publish function. " alt="" coords="667,274,778,301"/>
+<area shape="rect" id="node32" href="$mqtt_8h.html#a86f8adfe29d6ec8bb5070fd030540d2f" title="MQTT subscibe function. " alt="" coords="659,173,786,199"/>
+<area shape="rect" id="node34" href="$user__main_8c.html#af2c051d5ceacd30f90c08d6f584deff2" title="sample_timer_func" alt="" coords="210,553,345,579"/>
+<area shape="rect" id="node44" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="679,797,767,823"/>
+<area shape="rect" id="node48" href="$unix__time_8c.html#afb370336699ba4621dc4f8370ca1f48d" title="uptime" alt="" coords="461,831,524,858"/>
+<area shape="rect" id="node49" href="$user__interface_8h.html#a82dfc665528462dbaa945e45512b8c93" title="system_get_sdk_version" alt="" coords="193,983,362,1010"/>
+<area shape="rect" id="node50" href="$wifi_8h.html#ae4d8a7c10cbd594bf021a441c5832a34" title="wifi_fallback_is_present" alt="" coords="196,1034,359,1061"/>
+<area shape="rect" id="node5" href="$aes_8h.html#a9cb9b4ad9fb6311391d669e54f718cf4" title="AES128_CBC_encrypt\l_buffer" alt="" coords="871,747,1028,788"/>
+<area shape="rect" id="node6" href="$hmac-sha256_8c.html#a7fad664b062689148a6b1ee5d4bc790d" title="hmac_sha256_final" alt="" coords="1080,594,1217,621"/>
+<area shape="rect" id="node10" href="$hmac-sha256_8c.html#a553a08d76959d7d64d25927fa418af1f" title="hmac_sha256_init" alt="" coords="884,645,1015,671"/>
+<area shape="rect" id="node12" href="$hmac-sha256_8c.html#a604cda5243425d008a47d89401e7c987" title="hmac_sha256_update" alt="" coords="873,695,1026,722"/>
+<area shape="rect" id="node7" href="$sha256_8c.html#a28a4e37e67f8b97b374c49d8b83d8167" title="sha256_final" alt="" coords="1277,645,1375,671"/>
+<area shape="rect" id="node8" href="$sha256_8c.html#ad1c794b2d7e8eba243628e45cb69ef94" title="sha256_init" alt="" coords="1281,594,1371,621"/>
+<area shape="rect" id="node9" href="$sha256_8c.html#a00647246fd4532c27d1aafd709d5973d" title="sha256_update" alt="" coords="1269,695,1383,722"/>
+<area shape="rect" id="node11" href="$sha256_8c.html#a7f22a0894ca55160852ddcdff7a1f2fc" title="sha256_raw" alt="" coords="1101,645,1196,671"/>
+<area shape="rect" id="node17" href="$led_8c.html#af6a79b211d188e643a4f1cf7552ac7ee" title="led_blinker_timer_func" alt="" coords="415,122,571,149"/>
+<area shape="rect" id="node18" href="$led_8c.html#a7ef0b27e501c77cd25b8bb7a2de6d8bd" title="led_off" alt="" coords="691,71,754,98"/>
+<area shape="rect" id="node19" href="$led_8c.html#a0a23edee5e1db0cd2928c18a42ffe96f" title="led_on" alt="" coords="691,122,754,149"/>
+<area shape="rect" id="node21" href="$mqtt__msg_8h.html#af16842423fc1d5d802a7f329fc3a9ef9" title="mqtt_msg_publish" alt="" coords="884,274,1015,301"/>
+<area shape="rect" id="node27" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#acf070d5db9067c0b9598dec844313ae5" title="QUEUE_Gets" alt="" coords="897,325,1002,351"/>
+<area shape="rect" id="node29" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#a0a04f14d06c5c3ee302764c5f3d7dc0c" title="QUEUE_Puts" alt="" coords="897,122,1001,149"/>
+<area shape="rect" id="node31" href="$user__interface_8h.html#adab1155f3a463f2b05a9bde65b37514f" title="system_os_post" alt="" coords="890,223,1009,250"/>
+<area shape="rect" id="node22" href="$mqtt__msg_8c.html#ac59e26babd30c6c0ace9a174e75786f3" title="append_message_id" alt="" coords="1076,122,1221,149"/>
+<area shape="rect" id="node23" href="$mqtt__msg_8c.html#a207c99e2058080b97c21a348d693a560" title="append_string" alt="" coords="1095,173,1202,199"/>
+<area shape="rect" id="node24" href="$mqtt__msg_8c.html#a9a2fb8c67ff4b104dd46e72c9e97b710" title="fail_message" alt="" coords="1099,274,1199,301"/>
+<area shape="rect" id="node25" href="$mqtt__msg_8c.html#a356949afe8a334d5e91bddb4b2794921" title="fini_message" alt="" coords="1099,223,1199,250"/>
+<area shape="rect" id="node26" href="$mqtt__msg_8c.html#aae7c66cc577ac90e9535edac4abc068c" title="init_message" alt="" coords="1099,325,1199,351"/>
+<area shape="rect" id="node28" href="$proto_8h.html#a4ce0ecd80c57cb13f47a2725036451af" title="PROTO_ParseRb" alt="" coords="1084,375,1213,402"/>
+<area shape="rect" id="node30" href="$proto_8h.html#aeeb0162a48bf377e468e5fca672a5df1" title="PROTO_AddRb" alt="" coords="1090,71,1207,98"/>
+<area shape="rect" id="node33" href="$mqtt__msg_8h.html#adff62ede8c5069101032913d4434baad" title="mqtt_msg_subscribe" alt="" coords="877,173,1022,199"/>
+<area shape="rect" id="node35" href="$utils_8c.html#a2839f597af170b57af67cfe9a2d8ae71" title="decimal_number_length" alt="" coords="411,730,575,757"/>
+<area shape="rect" id="node36" href="$en61107__request_8c.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="411,375,574,402"/>
+<area shape="rect" id="node39" href="$kmp__request_8c.html#a3b022dcdc832786eb06126b5e6879604" title="kmp_request_send" alt="" coords="425,578,561,605"/>
+<area shape="rect" id="node43" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="628,645,817,671"/>
+<area shape="rect" id="node46" href="$mqtt_8h.html#a086502e2dd36681a7fb4d9a9018cfc88" title="MQTT ping function. " alt="" coords="676,223,769,250"/>
+<area shape="rect" id="node47" href="$watchdog_8c.html#a51be9a4121b1f7722209d0356b4521cf" title="reset_watchdog" alt="" coords="435,527,551,554"/>
+<area shape="rect" id="node37" href="$en61107__request_8c.html#ac0b054d686556739ae5470544e53e6ff" title="en61107_fifo_get" alt="" coords="660,325,785,351"/>
+<area shape="rect" id="node38" href="$en61107__request_8c.html#a2fa4e9967afddae0c1dedbc914dcee36" title="en61107_meter_wake\l_up_timer_func" alt="" coords="646,376,799,417"/>
+<area shape="rect" id="node40" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="701,594,745,621"/>
+<area shape="rect" id="node41" href="$kmp__request_8c.html#aeadc3768548ef2bed49c3f2fcaf57c20" title="kmp_get_register_timer_func" alt="" coords="625,493,820,519"/>
+<area shape="rect" id="node42" href="$kmp__request_8c.html#a7e59cff48c3c08aed48914a3a843d4b8" title="kmp_get_serial_timer_func" alt="" coords="631,543,814,570"/>
+<area shape="rect" id="node45" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="902,813,997,839"/>
+</map>
