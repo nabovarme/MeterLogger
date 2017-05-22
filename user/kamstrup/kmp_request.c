@@ -14,6 +14,7 @@
 
 uint32_t kmp_serial = 0;
 meter_is_ready_cb kmp_meter_is_ready_cb = NULL;
+bool meter_is_ready_cb_called = false;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -71,87 +72,9 @@ static void kmp_received_task(os_event_t *events) {
 
 	// decode kmp frame
 	if (kmp_decode_frame(message, message_l, &response) > 0) {
-		message_l = 0;		// zero it so we can reuse it for mqtt string
-		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
-	
-		if (response.kmp_response_serial) {
-			kmp_serial = response.kmp_response_serial;	// save it for later use
-		}
-		// send mqtt even if we did not got current time via ntp
-		// prepare for mqtt transmission if we got serial number from meter
-        
-		// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
-		//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
-		// BUG here.                        returns 0 -^
-		// this is a fix
-		memset(topic, 0, sizeof(topic));			// clear it
-		tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
-		tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
-
-		memset(message, 0, sizeof(message));			// clear it
-        
-		// heap size
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
-		strcat(message, key_value);
-        
-		// heating meter specific
-		// flow temperature
-		kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[3].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// return flow temperature
-		kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// temperature difference
-		kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// flow
-		kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// current power
-		kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// hours
-		kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// volume
-		kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		// power
-		kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
-		kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
-		tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
-		strcat(message, key_value);
-        
-		memset(cleartext, 0, sizeof(message));
-		os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-		os_memset(message, 0, sizeof(message));			// ...and clear it
-					
-		// encrypt and send
-		message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
-		
 		// tell user_main we got a serial
-		if (kmp_meter_is_ready_cb) {
+		if (kmp_meter_is_ready_cb && !meter_is_ready_cb_called) {
+			meter_is_ready_cb_called = true;
 			kmp_meter_is_ready_cb();
 		}
 #ifdef DEBUG
@@ -159,15 +82,95 @@ static void kmp_received_task(os_event_t *events) {
 			os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
 		}
 #endif
-		
-		if (mqtt_client) {
-			// if mqtt_client is initialized
-			if (kmp_serial && (message_l > 1)) {
-				// if we received both serial and registers send it
-				MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-			}
+		message_l = 0;		// zero it so we can reuse it for mqtt string
+		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+	
+		if (response.kmp_response_serial) {
+			kmp_serial = response.kmp_response_serial;	// save it for later use
 		}
-		kmp_requests_sent = 0;	// reset retry counter
+		else if (current_unix_time) {	// only send mqtt if we got current time via ntp
+			// prepare for mqtt transmission if we got serial number from meter
+        	
+			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
+			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
+			// BUG here.                        returns 0 -^
+			// this is a fix
+			memset(topic, 0, sizeof(topic));			// clear it
+			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
+			tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
+
+			memset(message, 0, sizeof(message));			// clear it
+        	
+			// heap size
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
+			strcat(message, key_value);
+        	
+			// heating meter specific
+			// flow temperature
+			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[3].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// return flow temperature
+			kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// temperature difference
+			kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// flow
+			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// current power
+			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// hours
+			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// volume
+			kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			// power
+			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
+			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
+			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
+			strcat(message, key_value);
+        	
+			memset(cleartext, 0, sizeof(message));
+			os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
+			os_memset(message, 0, sizeof(message));			// ...and clear it
+						
+			// encrypt and send
+			message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+						
+			if (mqtt_client) {
+				// if mqtt_client is initialized
+				if (kmp_serial && (message_l > 1)) {
+					// if we received both serial and registers send it
+					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+				}
+			}
+			kmp_requests_sent = 0;	// reset retry counter
+			// disable timer
+		}
 	}
 	else {
 		// error decoding frame - kmp_receive_timeout_timer_func() retransmits after timeout
@@ -338,7 +341,8 @@ void kmp_request_send() {
 	pseudo_data_debug_no_meter++;	// let it wrap around
 
 	// tell user_main we got a serial
-	if (kmp_meter_is_ready_cb) {
+	if (kmp_meter_is_ready_cb && !meter_is_ready_cb_called) {
+		meter_is_ready_cb_called = true;
 		kmp_meter_is_ready_cb();
 	}
 #ifdef DEBUG
