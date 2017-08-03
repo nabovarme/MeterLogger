@@ -280,7 +280,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
-		led_pattern_c();	// DEBUG
+		led_on();	// DEBUG
 		wifi_station_scan(NULL, wifi_scan_done_cb);
 //		os_printf("scan running\n");
 	}
@@ -289,7 +289,6 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	
-	led_stop_pattern();	// DEBUG
 	wifi_present = false;
 	wifi_fallback_present = false;
 	
@@ -337,6 +336,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	
 	wifi_scan_runnning = false;
 //	os_printf("scan done\n");
+	led_off();	// DEBUG
 
 	// start wifi scan timer again
 	wifi_start_scan();
