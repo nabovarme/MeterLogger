@@ -286,6 +286,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 			os_printf("wifi_station_scan() returned false, restarting scanner\n");
 #endif
+			wifi_scan_runnning = false;
 			wifi_start_scan();
 		}
 //		os_printf("scan running\n");
