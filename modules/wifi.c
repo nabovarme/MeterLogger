@@ -281,7 +281,13 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
 		led_pattern_b();	// DEBUG
-		wifi_station_scan(NULL, wifi_scan_done_cb);
+		if (wifi_station_scan(NULL, wifi_scan_done_cb) == false) {
+			// something went wrong, restart scanner
+#ifdef DEBUG
+			os_printf("wifi_station_scan() returned false, restarting scanner\n");
+#endif
+			wifi_start_scan();
+		}
 //		os_printf("scan running\n");
 	}
 }
