@@ -7,9 +7,19 @@ static os_timer_t led_single_blink_off_timer;
 
 static os_timer_t led_double_blink_timer;
 static os_timer_t led_sub_pattern_timer;
+
+static volatile bool led_blinker_timer_running = false;
+static volatile bool led_double_blinker_timer_running = false;
+
 static uint8_t led_sub_pattern_state = 0;
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
+	if (led_blinker_timer_running == false) {
+		// stop blinking if asked to stop via state variable led_blinker_timer_running
+		os_timer_disarm(&led_blinker_timer);
+		return;
+	}	
+
 	// do blinky stuff
 	if (GPIO_REG_READ(GPIO_OUT_ADDRESS) & BIT2) {
 		led_on();
@@ -25,7 +35,13 @@ ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
 	
 ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 	// blink fast two times
-		led_off();
+	if (led_double_blinker_timer_running == false) {
+		// stop blinking if asked to stop via state variable led_double_blinker_timer_running
+		os_timer_disarm(&led_double_blink_timer);
+		return;
+	}	
+
+	led_off();
 	
 	switch (led_sub_pattern_state) {
 		case 0:
@@ -90,12 +106,14 @@ ICACHE_FLASH_ATTR void led_blink(void) {
 ICACHE_FLASH_ATTR void led_pattern_a(void) {
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
+	led_blinker_timer_running = true;	// state variable to control stopping after pattern is done
 	os_timer_arm(&led_blinker_timer, 1000, 1);
 }
 
 ICACHE_FLASH_ATTR void led_pattern_b(void) {
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
+	led_blinker_timer_running = true;	// state variable to control stopping after pattern is done
 	os_timer_arm(&led_blinker_timer, 200, 1);
 }
 
@@ -103,12 +121,13 @@ ICACHE_FLASH_ATTR void led_pattern_c(void) {
 	// blink fast two times every 5th second
 	os_timer_disarm(&led_double_blink_timer);
 	os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
+	led_double_blinker_timer_running = true;	// state variable to control stopping after pattern is done
 	os_timer_arm(&led_double_blink_timer, 3000, 1);
 }
 
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {
-	os_timer_disarm(&led_blinker_timer);
-	os_timer_disarm(&led_double_blink_timer);
+	led_blinker_timer_running = false;
+	led_double_blinker_timer_running = false;
 	led_off();
 }
 
