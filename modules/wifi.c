@@ -62,11 +62,11 @@ static ip_addr_t sta_network_mask;
 static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
-ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
+ICACHE_FLASH_ATTR err_t my_input_ap(struct pbuf *p, struct netif *inp) {
 	err_t err;
 	
 	if (acl_check_packet(p)) {
-		err = orig_input_ap (p, inp);
+		err = orig_input_ap(p, inp);
 	}
 	else {
 		pbuf_free(p);
@@ -75,9 +75,9 @@ ICACHE_FLASH_ATTR err_t my_input_ap (struct pbuf *p, struct netif *inp) {
 	return err;
 }
 
-ICACHE_FLASH_ATTR err_t my_output_ap (struct netif *outp, struct pbuf *p) {
+ICACHE_FLASH_ATTR err_t my_output_ap(struct netif *outp, struct pbuf *p) {
 	err_t err;
-	err = orig_output_ap (outp, p);
+	err = orig_output_ap(outp, p);
 	return err;
 }
 
