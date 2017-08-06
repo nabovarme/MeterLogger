@@ -11,7 +11,13 @@
 #		define HW_MODEL "MC-THERMO_NC"
 #	endif
 #elif defined(IMPULSE)
-#		define HW_MODEL "IMPULSE"
+#		define HW_MODEL "NO_METER"
+#elif defined(DEBUG_NO_METER)
+#	ifdef THERMO_NO
+#		define HW_MODEL "THERMO_NO"
+#	else	// THERMO_NC
+#		define HW_MODEL "THERMO_NC"
+#	endif
 #else
 #	ifdef THERMO_NO
 #		define HW_MODEL "THERMO_NO"
