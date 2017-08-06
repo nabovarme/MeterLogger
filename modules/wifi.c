@@ -355,7 +355,16 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
 	wifi_station_disconnect();
-	wifi_set_opmode_current(STATIONAP_MODE);
+#ifdef AP
+	if (sys_cfg.ap_enabled == true) {
+		wifi_set_opmode_current(STATIONAP_MODE);
+	}
+	else {
+		wifi_set_opmode_current(STATION_MODE);
+	}
+#else
+	wifi_set_opmode_current(STATION_MODE);
+#endif	// AP
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
     
@@ -378,7 +387,16 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
 	wifi_station_disconnect();
-	wifi_set_opmode_current(STATIONAP_MODE);
+#ifdef AP
+	if (sys_cfg.ap_enabled == true) {
+		wifi_set_opmode_current(STATIONAP_MODE);
+	}
+	else {
+		wifi_set_opmode_current(STATION_MODE);
+	}
+#else
+	wifi_set_opmode_current(STATION_MODE);
+#endif	// AP
 	os_memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
