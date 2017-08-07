@@ -1,21 +1,21 @@
 To build and flash for KMP type meter (Multical 601):  
 ```  
-KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 C:  
 ```  
-EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 B:  
 ```  
-MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
 ```  
   
 To build and flash for impulse based electricity meter:  
 ```  
-IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
+IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
 ```  
   
 To configure wireless network:  
