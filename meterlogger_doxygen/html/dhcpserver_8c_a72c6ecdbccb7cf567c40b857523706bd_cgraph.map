@@ -1,7 +1,6 @@
 <map id="parse_msg" name="parse_msg">
 <area shape="rect" id="node2" href="$dhcpserver_8c.html#a6575d1e13274b93e442ed73730c88e60" title="node_insert_to_list" alt="" coords="169,5,303,32"/>
 <area shape="rect" id="node3" href="$dhcpserver_8c.html#a5189bbf95d6eed2474f4dac72c68d7b3" title="node_remove_from_list" alt="" coords="155,56,317,83"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="379,132,452,159"/>
-<area shape="rect" id="node5" href="$dhcpserver_8c.html#a8407521ea77d5ecc99ecd189eff6d393" title="parse_options" alt="" coords="183,157,289,184"/>
-<area shape="rect" id="node6" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="141,208,331,235"/>
+<area shape="rect" id="node4" href="$dhcpserver_8c.html#a8407521ea77d5ecc99ecd189eff6d393" title="parse_options" alt="" coords="183,107,289,133"/>
+<area shape="rect" id="node5" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="141,157,331,184"/>
 </map>

@@ -1,12 +1,10 @@
 <map id="user/httpd.h" name="user/httpd.h">
-<area shape="rect" id="node2" href="$auth_8c.html" title="user/auth.c" alt="" coords="5,169,93,196"/>
-<area shape="rect" id="node3" href="$cgi_8h.html" title="user/cgi.h" alt="" coords="159,87,239,114"/>
-<area shape="rect" id="node4" href="$cgi_8c.html" title="user/cgi.c" alt="" coords="118,169,197,196"/>
-<area shape="rect" id="node5" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="221,169,320,196"/>
-<area shape="rect" id="node6" href="$httpd__user__init_8c.html" title="user/httpd_user_init.c" alt="" coords="344,169,493,196"/>
-<area shape="rect" id="node7" href="$cgiwifi_8h.html" title="user/cgiwifi.h" alt="" coords="364,87,463,114"/>
-<area shape="rect" id="node8" href="$httpd_8c.html" title="user/httpd.c" alt="" coords="687,87,779,114"/>
-<area shape="rect" id="node9" href="$httpdespfs_8h.html" title="user/httpdespfs.h" alt="" coords="487,87,611,114"/>
-<area shape="rect" id="node10" href="$httpdespfs_8c.html" title="user/httpdespfs.c" alt="" coords="550,169,674,196"/>
-<area shape="rect" id="node11" href="$esp-open-sdk_2esp-open-lwip_2user_2user__main_8c.html" title="esp&#45;open&#45;lwip/user\l/user_main.c" alt="" coords="803,80,938,121"/>
+<area shape="rect" id="node2" href="$auth_8c.html" title="user/auth.c" alt="" coords="5,87,93,114"/>
+<area shape="rect" id="node3" href="$cgiwifi_8c.html" title="user/cgiwifi.c" alt="" coords="117,87,216,114"/>
+<area shape="rect" id="node4" href="$cgiwifi_8h.html" title="user/cgiwifi.h" alt="" coords="240,87,339,114"/>
+<area shape="rect" id="node5" href="$httpd__user__init_8c.html" title="user/httpd_user_init.c" alt="" coords="301,169,451,196"/>
+<area shape="rect" id="node6" href="$httpd_8c.html" title="user/httpd.c" alt="" coords="414,87,506,114"/>
+<area shape="rect" id="node7" href="$httpdespfs_8h.html" title="user/httpdespfs.h" alt="" coords="530,87,654,114"/>
+<area shape="rect" id="node8" href="$httpdespfs_8c.html" title="user/httpdespfs.c" alt="" coords="579,169,703,196"/>
+<area shape="rect" id="node9" href="$esp-open-sdk_2esp-open-lwip_2user_2user__main_8c.html" title="esp&#45;open&#45;lwip/user\l/user_main.c" alt="" coords="730,80,865,121"/>
 </map>

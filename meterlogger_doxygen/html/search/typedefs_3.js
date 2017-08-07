@@ -5,7 +5,6 @@ var searchData=
   ['esp_5fnow_5fsend_5fcb_5ft',['esp_now_send_cb_t',['../espnow_8h.html#ace98a585fefea31f55976f87bf4bfe4b',1,'espnow.h']]],
   ['esp_5ftcp',['esp_tcp',['../esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#ae391ef757d57a723ff4033fe4e4ea394',1,'esp_tcp():&#160;espconn.h'],['../sdk_2include_2espconn_8h.html#ae391ef757d57a723ff4033fe4e4ea394',1,'esp_tcp():&#160;espconn.h']]],
   ['esp_5fudp',['esp_udp',['../esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a4c758392b989c00b5d33680d02ec30e6',1,'esp_udp():&#160;espconn.h'],['../sdk_2include_2espconn_8h.html#a4c758392b989c00b5d33680d02ec30e6',1,'esp_udp():&#160;espconn.h']]],
-  ['espconn',['espconn',['../espmissingincludes_8h.html#ac94433fccbe8c0f03e08e9e64a5edbff',1,'espmissingincludes.h']]],
   ['espconn_5fbuf',['espconn_buf',['../esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a69cc3c250a7eea836344a6cab17f70e2',1,'espconn.h']]],
   ['espconn_5fconnect_5fcallback',['espconn_connect_callback',['../esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#ac2f5cc499f1d963723ed37d87a029a00',1,'espconn_connect_callback():&#160;espconn.h'],['../sdk_2include_2espconn_8h.html#ac2f5cc499f1d963723ed37d87a029a00',1,'espconn_connect_callback():&#160;espconn.h']]],
   ['espconn_5fhandle',['espconn_handle',['../esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a680f1e251ac2465c6be5b513e08b30ce',1,'espconn_handle():&#160;espconn.h'],['../sdk_2include_2espconn_8h.html#a680f1e251ac2465c6be5b513e08b30ce',1,'espconn_handle():&#160;espconn.h']]],

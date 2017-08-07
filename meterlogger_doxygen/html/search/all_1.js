@@ -129,7 +129,6 @@ var searchData=
   ['at_5fset_5fescape_5fcharacter',['at_set_escape_character',['../at__custom_8h.html#a2b779a6656f60d5e66af34c0c002bd40',1,'at_custom.h']]],
   ['at_5fsetupcmd',['at_setupCmd',['../structat__funcation_type.html#a6e72758eb6127c489f068689d25af498',1,'at_funcationType']]],
   ['at_5ftestcmd',['at_testCmd',['../structat__funcation_type.html#a31f78763f4e5b5ad9fe7de7d61584ca2',1,'at_funcationType']]],
-  ['atoi',['atoi',['../espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059',1,'espmissingincludes.h']]],
   ['auth_2ec',['auth.c',['../auth_8c.html',1,'']]],
   ['auth_2eh',['auth.h',['../auth_8h.html',1,'']]],
   ['auth_5fchange',['auth_change',['../union_event___info__u.html#a3e6fef531216adc1c73180bf9f463e6c',1,'Event_Info_u']]],

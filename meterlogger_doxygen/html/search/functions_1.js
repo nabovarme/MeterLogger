@@ -47,6 +47,5 @@ var searchData=
   ['at_5fresponse_5fok',['at_response_ok',['../at__custom_8h.html#a056246bcb78a47632ad1ff07f6169121',1,'at_custom.h']]],
   ['at_5fset_5fcustom_5finfo',['at_set_custom_info',['../at__custom_8h.html#ab5251670ab92a8af7b4cae5a9b28e3a7',1,'at_custom.h']]],
   ['at_5fset_5fescape_5fcharacter',['at_set_escape_character',['../at__custom_8h.html#a2b779a6656f60d5e66af34c0c002bd40',1,'at_custom.h']]],
-  ['atoi',['atoi',['../espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059',1,'espmissingincludes.h']]],
   ['authbasic',['authBasic',['../auth_8c.html#ac81ed03345875f282828a190baba0987',1,'authBasic(HttpdConnData *connData):&#160;auth.c'],['../auth_8h.html#ac81ed03345875f282828a190baba0987',1,'authBasic(HttpdConnData *connData):&#160;auth.c']]]
 ];

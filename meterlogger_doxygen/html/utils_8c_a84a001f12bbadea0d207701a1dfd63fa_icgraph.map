@@ -1,3 +1,6 @@
 <map id="kw_to_w_str" name="kw_to_w_str">
-<area shape="rect" id="node2" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="149,5,223,32"/>
+<area shape="rect" id="node2" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="163,5,236,32"/>
+<area shape="rect" id="node3" href="$utils_8h.html#a06225dd8f535bfef3e645bbef8de5df8" title="mw_to_w_str" alt="" coords="149,56,249,83"/>
+<area shape="rect" id="node4" href="$en61107__request_8h.html#a1d55ddd328b48520e19f10b6c0b6036c" title="en61107_get_received\l_energy_kwh" alt="" coords="324,19,481,61"/>
+<area shape="rect" id="node5" href="$kmp__request_8h.html#a38fdfecab4840fcd8b3c3074e715cf60" title="kmp_get_received_energy_kwh" alt="" coords="297,85,508,112"/>
 </map>

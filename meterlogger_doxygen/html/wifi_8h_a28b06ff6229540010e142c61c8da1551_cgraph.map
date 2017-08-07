@@ -1,8 +1,12 @@
 <map id="wifi_softap_ip_config" name="wifi_softap_ip_config">
-<area shape="rect" id="node2" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="243,5,316,32"/>
-<area shape="rect" id="node3" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="223,56,335,83"/>
-<area shape="rect" id="node4" href="$user__interface_8h.html#ab48707f54ae5b1c7a10ad6801feaf2b8" title="wifi_set_ip_info" alt="" coords="223,107,336,133"/>
-<area shape="rect" id="node5" href="$user__interface_8h.html#a3955db3d72e1669492143e64f7b32775" title="wifi_softap_dhcps_start" alt="" coords="199,157,360,184"/>
-<area shape="rect" id="node6" href="$user__interface_8h.html#adc4b55015e0a64892d33a7d79a7627d6" title="wifi_softap_dhcps_stop" alt="" coords="199,208,359,235"/>
-<area shape="rect" id="node7" href="$user__interface_8h.html#a88284afccfb825d3b47ed45d1a6f26e2" title="wifi_softap_set_dhcps\l_lease" alt="" coords="203,259,356,301"/>
+<area shape="rect" id="node2" href="$dhcpserver_8h.html#afcc7be4bef36be1a00bf656ecfbe2435" title="dhcps_set_DNS" alt="" coords="221,5,340,32"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a14648bc9f2440272f29e0d9156c53429" title="espconn_dns_setserver" alt="" coords="199,56,363,83"/>
+<area shape="rect" id="node4" href="$mqtt__utils_8h.html#a0fb3fb75731663151932b2bd21c2e717" title="UTILS_StrToIP" alt="" coords="225,107,337,133"/>
+<area shape="rect" id="node5" href="$user__interface_8h.html#ab48707f54ae5b1c7a10ad6801feaf2b8" title="wifi_set_ip_info" alt="" coords="224,157,337,184"/>
+<area shape="rect" id="node6" href="$user__interface_8h.html#a3955db3d72e1669492143e64f7b32775" title="wifi_softap_dhcps_start" alt="" coords="200,208,361,235"/>
+<area shape="rect" id="node7" href="$user__interface_8h.html#adc4b55015e0a64892d33a7d79a7627d6" title="wifi_softap_dhcps_stop" alt="" coords="201,259,361,285"/>
+<area shape="rect" id="node8" href="$dhcpserver_8c.html#ad756f0dfc02120d651d6fc42fc8728bf" title="wifi_softap_set_dhcps\l_lease" alt="" coords="204,310,357,351"/>
+<area shape="rect" id="node9" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="439,267,553,293"/>
+<area shape="rect" id="node10" href="$user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="435,317,557,344"/>
+<area shape="rect" id="node11" href="$user__interface_8h.html#a0fd4c4454b23c6532a8dcbfbcbaa4e13" title="wifi_softap_dhcps_status" alt="" coords="411,368,581,395"/>
 </map>

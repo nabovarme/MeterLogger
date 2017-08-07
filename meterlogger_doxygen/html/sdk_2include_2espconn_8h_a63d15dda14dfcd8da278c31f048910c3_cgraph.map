@@ -1,10 +1,9 @@
 <map id="espconn_delete" name="espconn_delete">
 <area shape="rect" id="node2" href="$espconn_8c.html#a2d001a99fea2fce497e392259cf01700" title="espconn_find_connection" alt="" coords="169,5,343,32"/>
-<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a2dfab8a89f8e7a7e017b2b977654d2aa" title="espconn_tcp_delete" alt="" coords="185,107,327,133"/>
-<area shape="rect" id="node9" href="$espconn__udp_8h.html#aaf1f7508b71784ca849468e4526639a5" title="espconn_udp_disconnect" alt="" coords="169,56,343,83"/>
-<area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a95deabffd3b8a4bec81f91596901f84d" title="espconn_get_connection_info" alt="" coords="391,107,589,133"/>
-<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a21fdb0b0c880a693e29905894bd60afb" title="espconn_list_delete" alt="" coords="420,56,560,83"/>
-<area shape="rect" id="node6" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="453,157,527,184"/>
-<area shape="rect" id="node7" href="$espconn__tcp_8c.html#a6a055f2ec5c88dec2ad39c0c2690a4a8" title="espconn_kill_pcb" alt="" coords="428,208,552,235"/>
-<area shape="rect" id="node8" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="637,208,727,235"/>
+<area shape="rect" id="node3" href="$espconn__tcp_8c.html#a2dfab8a89f8e7a7e017b2b977654d2aa" title="espconn_tcp_delete" alt="" coords="185,56,327,83"/>
+<area shape="rect" id="node8" href="$espconn__udp_8h.html#aaf1f7508b71784ca849468e4526639a5" title="espconn_udp_disconnect" alt="" coords="169,107,343,133"/>
+<area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a95deabffd3b8a4bec81f91596901f84d" title="espconn_get_connection_info" alt="" coords="391,5,589,32"/>
+<area shape="rect" id="node5" href="$esp-open-lwip_2include_2lwip_2app_2espconn_8h.html#a21fdb0b0c880a693e29905894bd60afb" title="espconn_list_delete" alt="" coords="420,107,560,133"/>
+<area shape="rect" id="node6" href="$espconn__tcp_8c.html#a6a055f2ec5c88dec2ad39c0c2690a4a8" title="espconn_kill_pcb" alt="" coords="428,56,552,83"/>
+<area shape="rect" id="node7" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="637,56,727,83"/>
 </map>

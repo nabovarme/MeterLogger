@@ -1,5 +1,4 @@
 <map id="en61107_delayed_uart_change_setting_timer_func" name="en61107_delayed_uart_change_setting_timer_func">
 <area shape="rect" id="node2" href="$uart_8c.html#a8f941077d51144c4c172f827b4f2072a" title="uart_set_baudrate" alt="" coords="243,5,373,32"/>
-<area shape="rect" id="node4" href="$uart_8c.html#a4db93f371dcd92498db4a4c7b82f3380" title="uart_set_stop_bits" alt="" coords="243,56,373,83"/>
-<area shape="rect" id="node3" href="$espmissingincludes_8h.html#a1bea1725066e012f8f618d08ed7fee45" title="uart_div_modify" alt="" coords="421,5,537,32"/>
+<area shape="rect" id="node3" href="$uart_8c.html#a4db93f371dcd92498db4a4c7b82f3380" title="uart_set_stop_bits" alt="" coords="243,56,373,83"/>
 </map>

@@ -1,15 +1,15 @@
 <map id="cgiSetup" name="cgiSetup">
-<area shape="rect" id="node2" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="140,152,216,179"/>
-<area shape="rect" id="node9" href="$httpd_8c.html#a5024249acf005b3e40a1257a2267532b" title="httpdFindArg" alt="" coords="129,303,227,329"/>
-<area shape="rect" id="node12" href="$httpd_8c.html#ab27493bff23508040d0c672a95ecd3b6" title="httpdRedirect" alt="" coords="127,360,229,387"/>
-<area shape="rect" id="node27" href="$utils_8c.html#a84a001f12bbadea0d207701a1dfd63fa" title="kw_to_w_str" alt="" coords="130,436,226,463"/>
-<area shape="rect" id="node30" href="$cgiwifi_8c.html#a9d53126c0a5bdeb1318f081f1cca3a84" title="resetTimerCb" alt="" coords="127,544,229,571"/>
-<area shape="rect" id="node3" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="324,123,407,149"/>
-<area shape="rect" id="node4" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="295,174,435,215"/>
-<area shape="rect" id="node6" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="299,240,432,267"/>
-<area shape="rect" id="node7" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="297,5,433,32"/>
-<area shape="rect" id="node8" href="$user__interface_8h.html#ae68a7b6345630e42fde3e827108571e0" title="system_param_save_with\l_protect" alt="" coords="277,57,453,98"/>
-<area shape="rect" id="node5" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="501,181,613,208"/>
+<area shape="rect" id="node2" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="140,144,216,171"/>
+<area shape="rect" id="node9" href="$httpd_8c.html#a5024249acf005b3e40a1257a2267532b" title="httpdFindArg" alt="" coords="129,291,227,317"/>
+<area shape="rect" id="node12" href="$httpd_8c.html#ab27493bff23508040d0c672a95ecd3b6" title="httpdRedirect" alt="" coords="127,341,229,368"/>
+<area shape="rect" id="node27" href="$utils_8c.html#a84a001f12bbadea0d207701a1dfd63fa" title="kw_to_w_str" alt="" coords="130,392,226,419"/>
+<area shape="rect" id="node29" href="$cgiwifi_8c.html#a9d53126c0a5bdeb1318f081f1cca3a84" title="resetTimerCb" alt="" coords="127,468,229,495"/>
+<area shape="rect" id="node3" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="324,5,407,32"/>
+<area shape="rect" id="node4" href="$ext__spi__flash_8c.html#ab4369189179b556a6b8e2155433c5f70" title="ext_spi_flash_erase\l_sector" alt="" coords="295,107,435,149"/>
+<area shape="rect" id="node6" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="299,173,432,200"/>
+<area shape="rect" id="node7" href="$ext__spi__flash_8c.html#a17e27ce44dd5aec4dd7a7de609093aae" title="ext_spi_flash_write" alt="" coords="297,56,433,83"/>
+<area shape="rect" id="node8" href="$user__interface_8h.html#ae68a7b6345630e42fde3e827108571e0" title="system_param_save_with\l_protect" alt="" coords="277,225,453,266"/>
+<area shape="rect" id="node5" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="501,115,613,141"/>
 <area shape="rect" id="node10" href="$httpd_8c.html#a45e5cfc52bcba530447be34fd5bae705" title="httpdUrlDecode" alt="" coords="308,291,423,317"/>
 <area shape="rect" id="node11" href="$httpd_8c.html#a635d1e810633b2b48d28d0be7357570a" title="httpdHexVal" alt="" coords="510,291,605,317"/>
 <area shape="rect" id="node13" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="321,392,409,419"/>
@@ -27,7 +27,5 @@
 <area shape="rect" id="node24" href="$tinyprintf_8c.html#a90f9fd8f2133cda7f50be8d67823405c" title="i2a" alt="" coords="837,544,877,571"/>
 <area shape="rect" id="node17" href="$tinyprintf_8c.html#aa853a0c5ba64fa2546d488b86192e7e3" title="a2d" alt="" coords="942,189,986,216"/>
 <area shape="rect" id="node28" href="$utils_8c.html#af7f86262824738791bf4a3328d09aacf" title="int_pow" alt="" coords="331,443,399,469"/>
-<area shape="rect" id="node29" href="$espmissingincludes_8h.html#ad228deceea1bac4d9f171f647c265059" title="atoi" alt="" coords="343,493,387,520"/>
-<area shape="rect" id="node31" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="329,544,402,571"/>
-<area shape="rect" id="node32" href="$user__interface_8h.html#a80e0119dbfcaaa43025fe2135d3d1efc" title="system_restart" alt="" coords="311,595,420,621"/>
+<area shape="rect" id="node30" href="$user__interface_8h.html#a80e0119dbfcaaa43025fe2135d3d1efc" title="system_restart" alt="" coords="311,493,420,520"/>
 </map>

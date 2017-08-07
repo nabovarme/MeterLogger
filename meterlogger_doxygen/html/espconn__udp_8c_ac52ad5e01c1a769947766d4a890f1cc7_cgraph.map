@@ -2,7 +2,7 @@
 <area shape="rect" id="node2" href="$pbuf_8h.html#ab0a418a2392133e6b18c7b19f7c04500" title="pbuf_copy_partial" alt="" coords="188,5,315,32"/>
 <area shape="rect" id="node3" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="212,56,291,83"/>
 <area shape="rect" id="node7" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="195,107,308,133"/>
-<area shape="rect" id="node8" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="190,157,313,184"/>
+<area shape="rect" id="node8" href="$user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="190,157,313,184"/>
 <area shape="rect" id="node4" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#ab270bbe39e1996d7095be3a139620ce0" title="mem_free" alt="" coords="366,31,449,57"/>
 <area shape="rect" id="node6" href="$memp_8h.html#a9d30a969401eb0626105950d6e63f3bf" title="memp_free" alt="" coords="363,81,452,108"/>
 <area shape="rect" id="node5" href="$mem_8c.html#a24221009a2c00e9c3fa63eaa9444a076" title="plug_holes" alt="" coords="500,31,587,57"/>

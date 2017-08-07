@@ -3,7 +3,6 @@
 <area shape="rect" id="node4" href="$uart_8c.html#a489b77b74dfee22fd4f0c5323ab44da6" title="uart_config" alt="" coords="139,81,227,108"/>
 <area shape="rect" id="node3" href="$uart_8c.html#a40bca7ca9b269f93bc9f17924a38fbe0" title="uart_tx_one_char" alt="" coords="304,31,429,57"/>
 <area shape="rect" id="node5" href="$uart_8c.html#a899cd55c7d84717f3e869e4ee5bfda84" title="uart0_rx_intr_handler" alt="" coords="292,81,441,108"/>
-<area shape="rect" id="node12" href="$espmissingincludes_8h.html#a1bea1725066e012f8f618d08ed7fee45" title="uart_div_modify" alt="" coords="309,132,425,159"/>
 <area shape="rect" id="node6" href="$en61107__request_8c.html#ad614196da23286f90ffe16126e2b254e" title="en61107_fifo_put" alt="" coords="503,5,629,32"/>
 <area shape="rect" id="node8" href="$en61107__request_8c.html#a55f8feefc9d9579a91b4303e5f9950f2" title="en61107_is_eod_char" alt="" coords="489,56,643,83"/>
 <area shape="rect" id="node9" href="$kmp__request_8c.html#a3a189e5f8a1ffa68dacbe1a0e7080c65" title="kmp_fifo_put" alt="" coords="517,107,615,133"/>

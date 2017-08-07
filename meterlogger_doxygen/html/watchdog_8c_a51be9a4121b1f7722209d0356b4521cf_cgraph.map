@@ -1,5 +1,4 @@
 <map id="reset_watchdog" name="reset_watchdog">
-<area shape="rect" id="node2" href="$unix__time_8c.html#a36607dbd5be7bee11f8c20932b3df407" title="get_unix_time" alt="" coords="169,5,275,32"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="185,56,259,83"/>
-<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7" title="sntp_get_current_timestamp" alt="" coords="323,5,513,32"/>
+<area shape="rect" id="node2" href="$unix__time_8c.html#af98c0bacc67f2d0702b0ac4f130faa16" title="get_uptime" alt="" coords="169,5,257,32"/>
+<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7" title="sntp_get_current_timestamp" alt="" coords="305,5,496,32"/>
 </map>

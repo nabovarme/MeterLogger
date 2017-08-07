@@ -1,6 +1,5 @@
 <map id="clear_cron_jobs" name="clear_cron_jobs">
 <area shape="rect" id="node2" href="$config_8c.html#ab4af9f95b39f096bb0fa8d73eb5a342e" title="cfg_save_defered" alt="" coords="169,123,297,149"/>
-<area shape="rect" id="node11" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="197,173,270,200"/>
 <area shape="rect" id="node3" href="$config_8c.html#a1e0d59e84f6bbc2564bcdf595b6972da" title="config_save_timer_func" alt="" coords="345,123,508,149"/>
 <area shape="rect" id="node4" href="$config_8c.html#acd3c633ba5f49d7bb46d6e4efa31ddb2" title="cfg_save" alt="" coords="556,123,632,149"/>
 <area shape="rect" id="node5" href="$utils_8c.html#a8d9e1de95e2d6d103108a4b0ebf4d923" title="ccit_crc16" alt="" coords="727,5,809,32"/>

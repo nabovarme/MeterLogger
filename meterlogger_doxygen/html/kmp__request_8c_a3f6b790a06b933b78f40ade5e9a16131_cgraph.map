@@ -6,9 +6,8 @@
 <area shape="rect" id="node21" href="$kmp_8c.html#af8bc72162677e954d2c93b154d7e0f7a" title="kmp_unit_to_string" alt="" coords="223,498,358,525"/>
 <area shape="rect" id="node22" href="$kmp_8c.html#aa1bdc213acbcb756d20dcf63d5cd387d" title="kmp_value_to_string" alt="" coords="218,549,363,576"/>
 <area shape="rect" id="node25" href="$tinyprintf_8c.html#a9738cbc6c538d210941db282e240c7d6" title="tfp_snprintf" alt="" coords="490,600,578,626"/>
-<area shape="rect" id="node33" href="$mqtt_8h.html#a848a6701c4c7ec3432e38ea57c003aad" title="MQTT publish function. " alt="" coords="235,650,346,677"/>
-<area shape="rect" id="node49" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="254,701,327,728"/>
-<area shape="rect" id="node50" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="196,752,385,778"/>
+<area shape="rect" id="node34" href="$mqtt_8h.html#a848a6701c4c7ec3432e38ea57c003aad" title="MQTT publish function. " alt="" coords="235,676,346,702"/>
+<area shape="rect" id="node50" href="$user__interface_8h.html#a258edd68184bb78f062a3b375dca997c" title="system_get_free_heap_size" alt="" coords="196,726,385,753"/>
 <area shape="rect" id="node3" href="$aes_8h.html#a9cb9b4ad9fb6311391d669e54f718cf4" title="AES128_CBC_encrypt\l_buffer" alt="" coords="455,179,613,220"/>
 <area shape="rect" id="node4" href="$hmac-sha256_8c.html#a7fad664b062689148a6b1ee5d4bc790d" title="hmac_sha256_final" alt="" coords="685,26,823,53"/>
 <area shape="rect" id="node9" href="$hmac-sha256_8c.html#a553a08d76959d7d64d25927fa418af1f" title="hmac_sha256_init" alt="" coords="469,77,599,104"/>
@@ -28,24 +27,25 @@
 <area shape="rect" id="node24" href="$utils_8c.html#af7f86262824738791bf4a3328d09aacf" title="int_pow" alt="" coords="500,549,568,576"/>
 <area shape="rect" id="node26" href="$tinyprintf_8c.html#ac8c8a66133cf0d7009c0d73b55311a44" title="tfp_vsnprintf" alt="" coords="707,473,801,500"/>
 <area shape="rect" id="node27" href="$tinyprintf_8c.html#a5877e42444463efc71a91b5fe76a6145" title="tfp_format" alt="" coords="907,498,989,525"/>
-<area shape="rect" id="node32" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="890,448,1006,474"/>
-<area shape="rect" id="node28" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="1108,574,1152,601"/>
-<area shape="rect" id="node29" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="1103,422,1157,449"/>
-<area shape="rect" id="node30" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="1105,473,1155,500"/>
-<area shape="rect" id="node31" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="1107,524,1153,550"/>
-<area shape="rect" id="node34" href="$mqtt__msg_8h.html#af16842423fc1d5d802a7f329fc3a9ef9" title="mqtt_msg_publish" alt="" coords="469,650,599,677"/>
-<area shape="rect" id="node40" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#acf070d5db9067c0b9598dec844313ae5" title="QUEUE_Gets" alt="" coords="481,701,587,728"/>
-<area shape="rect" id="node45" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#a0a04f14d06c5c3ee302764c5f3d7dc0c" title="QUEUE_Puts" alt="" coords="482,752,586,778"/>
-<area shape="rect" id="node48" href="$user__interface_8h.html#adab1155f3a463f2b05a9bde65b37514f" title="system_os_post" alt="" coords="475,802,593,829"/>
-<area shape="rect" id="node35" href="$mqtt__msg_8c.html#ac59e26babd30c6c0ace9a174e75786f3" title="append_message_id" alt="" coords="681,625,827,652"/>
-<area shape="rect" id="node36" href="$mqtt__msg_8c.html#a207c99e2058080b97c21a348d693a560" title="append_string" alt="" coords="701,676,807,702"/>
-<area shape="rect" id="node37" href="$mqtt__msg_8c.html#a9a2fb8c67ff4b104dd46e72c9e97b710" title="fail_message" alt="" coords="704,726,804,753"/>
-<area shape="rect" id="node38" href="$mqtt__msg_8c.html#a356949afe8a334d5e91bddb4b2794921" title="fini_message" alt="" coords="704,524,804,550"/>
-<area shape="rect" id="node39" href="$mqtt__msg_8c.html#aae7c66cc577ac90e9535edac4abc068c" title="init_message" alt="" coords="704,574,804,601"/>
-<area shape="rect" id="node41" href="$proto_8h.html#a4ce0ecd80c57cb13f47a2725036451af" title="PROTO_ParseRb" alt="" coords="689,777,819,804"/>
-<area shape="rect" id="node42" href="$proto_8c.html#aef0525e6fb0717f1ae3816f5a59fbd08" title="PROTO_Init" alt="" coords="901,713,995,740"/>
-<area shape="rect" id="node43" href="$proto_8c.html#ada6cc416001736d9b313d8871024e616" title="PROTO_ParseByte" alt="" coords="879,764,1017,790"/>
-<area shape="rect" id="node44" href="$ringbuf_8h.html#a2b4ae6481762403eec1f2072eb30217a" title="get a character from ring buffer " alt="" coords="893,814,1003,841"/>
-<area shape="rect" id="node46" href="$proto_8h.html#aeeb0162a48bf377e468e5fca672a5df1" title="PROTO_AddRb" alt="" coords="695,840,813,866"/>
-<area shape="rect" id="node47" href="$ringbuf_8h.html#a717173daf1397da584236ed52bbec10a" title="put a character into ring buffer " alt="" coords="893,865,1003,892"/>
+<area shape="rect" id="node33" href="$tinyprintf_8c.html#a919051024b2d729e34a54648b3f2462d" title="_vsnprintf_putcf" alt="" coords="890,448,1006,474"/>
+<area shape="rect" id="node28" href="$tinyprintf_8c.html#aa97593a5e53af85b608ad0910db92d77" title="a2u" alt="" coords="1108,549,1152,576"/>
+<area shape="rect" id="node29" href="$tinyprintf_8c.html#abcf035dd576671b0cc897de9dd8c75b0" title="ulli2a" alt="" coords="1103,600,1157,626"/>
+<area shape="rect" id="node30" href="$tinyprintf_8c.html#a1d61347854a8c290d59b4a21efcefd75" title="uli2a" alt="" coords="1105,397,1155,424"/>
+<area shape="rect" id="node31" href="$tinyprintf_8c.html#ac87ff66a592723f55692eaf8e3f19df8" title="ui2a" alt="" coords="1107,448,1153,474"/>
+<area shape="rect" id="node32" href="$tinyprintf_8c.html#a6252dbfebb2c8783c4e3107d551082dd" title="putchw" alt="" coords="1098,498,1162,525"/>
+<area shape="rect" id="node35" href="$mqtt__msg_8h.html#af16842423fc1d5d802a7f329fc3a9ef9" title="mqtt_msg_publish" alt="" coords="469,650,599,677"/>
+<area shape="rect" id="node41" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#acf070d5db9067c0b9598dec844313ae5" title="QUEUE_Gets" alt="" coords="481,701,587,728"/>
+<area shape="rect" id="node46" href="$kamstrup-wifi_2mqtt_2include_2queue_8h.html#a0a04f14d06c5c3ee302764c5f3d7dc0c" title="QUEUE_Puts" alt="" coords="482,752,586,778"/>
+<area shape="rect" id="node49" href="$user__interface_8h.html#adab1155f3a463f2b05a9bde65b37514f" title="system_os_post" alt="" coords="475,802,593,829"/>
+<area shape="rect" id="node36" href="$mqtt__msg_8c.html#ac59e26babd30c6c0ace9a174e75786f3" title="append_message_id" alt="" coords="681,625,827,652"/>
+<area shape="rect" id="node37" href="$mqtt__msg_8c.html#a207c99e2058080b97c21a348d693a560" title="append_string" alt="" coords="701,676,807,702"/>
+<area shape="rect" id="node38" href="$mqtt__msg_8c.html#a9a2fb8c67ff4b104dd46e72c9e97b710" title="fail_message" alt="" coords="704,726,804,753"/>
+<area shape="rect" id="node39" href="$mqtt__msg_8c.html#a356949afe8a334d5e91bddb4b2794921" title="fini_message" alt="" coords="704,524,804,550"/>
+<area shape="rect" id="node40" href="$mqtt__msg_8c.html#aae7c66cc577ac90e9535edac4abc068c" title="init_message" alt="" coords="704,574,804,601"/>
+<area shape="rect" id="node42" href="$proto_8h.html#a4ce0ecd80c57cb13f47a2725036451af" title="PROTO_ParseRb" alt="" coords="689,777,819,804"/>
+<area shape="rect" id="node43" href="$proto_8c.html#aef0525e6fb0717f1ae3816f5a59fbd08" title="PROTO_Init" alt="" coords="901,713,995,740"/>
+<area shape="rect" id="node44" href="$proto_8c.html#ada6cc416001736d9b313d8871024e616" title="PROTO_ParseByte" alt="" coords="879,764,1017,790"/>
+<area shape="rect" id="node45" href="$ringbuf_8h.html#a2b4ae6481762403eec1f2072eb30217a" title="get a character from ring buffer " alt="" coords="893,814,1003,841"/>
+<area shape="rect" id="node47" href="$proto_8h.html#aeeb0162a48bf377e468e5fca672a5df1" title="PROTO_AddRb" alt="" coords="695,840,813,866"/>
+<area shape="rect" id="node48" href="$ringbuf_8h.html#a717173daf1397da584236ed52bbec10a" title="put a character into ring buffer " alt="" coords="893,865,1003,892"/>
 </map>

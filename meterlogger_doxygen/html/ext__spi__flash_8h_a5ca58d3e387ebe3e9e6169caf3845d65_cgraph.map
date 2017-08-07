@@ -1,5 +1,4 @@
 <map id="ext_spi_flash_hexdump" name="ext_spi_flash_hexdump">
 <area shape="rect" id="node2" href="$ext__spi__flash_8c.html#a094d4588aff8210b1bb94ae90fb58526" title="ext_spi_flash_read" alt="" coords="216,5,349,32"/>
-<area shape="rect" id="node4" href="$espmissingincludes_8h.html#a0bbba7104c948de849f8051d9ac956e3" title="os_printf" alt="" coords="246,56,319,83"/>
 <area shape="rect" id="node3" href="$spi_8c.html#acebb579091ca980f217d3e5f3bd1f1d5" title="spi_transaction" alt="" coords="397,5,509,32"/>
 </map>

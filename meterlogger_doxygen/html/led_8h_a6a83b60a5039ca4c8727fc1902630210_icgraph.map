@@ -1,8 +1,18 @@
 <map id="led_pattern_b" name="led_pattern_b">
 <area shape="rect" id="node2" href="$ac__out_8h.html#a483eac71fafd6926d6e16c08b87530ef" title="ac_motor_valve_close" alt="" coords="157,5,312,32"/>
 <area shape="rect" id="node3" href="$ac__out_8c.html#aa4f3e08453187a0500d0e5441274c7a1" title="ac_test_timer_func" alt="" coords="167,56,302,83"/>
-<area shape="rect" id="node7" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="360,107,483,133"/>
-<area shape="rect" id="node4" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="389,56,454,83"/>
-<area shape="rect" id="node5" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="531,81,663,108"/>
-<area shape="rect" id="node6" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="711,81,783,108"/>
+<area shape="rect" id="node7" href="$ac__out_8h.html#a1573f96ac038a6a1b29a6f21403a2341" title="ac_thermo_open" alt="" coords="363,107,485,133"/>
+<area shape="rect" id="node8" href="$wifi_8c.html#ae7011f25db54676b86fefe2caa450a4a" title="wifi_scan_timer_func" alt="" coords="161,208,308,235"/>
+<area shape="rect" id="node4" href="$ac__out_8h.html#ad511e0e9abde1a9313a1843cef50f82a" title="ac_test" alt="" coords="391,56,457,83"/>
+<area shape="rect" id="node5" href="$cron_8c.html#a2782af03df9b913cfa565a0770e1afe1" title="minute_timer_func" alt="" coords="559,56,691,83"/>
+<area shape="rect" id="node6" href="$cron_8h.html#ae130c5973bad35b56776750c7a34db12" title="cron_init" alt="" coords="801,56,873,83"/>
+<area shape="rect" id="node9" href="$wifi_8c.html#a0d197abbbedf42c0522e20b43884c920" title="acl_check_packet" alt="" coords="360,157,488,184"/>
+<area shape="rect" id="node13" href="$wifi_8c.html#a5831b420da0012d53c979c375714d382" title="wifi_start_scan" alt="" coords="369,208,479,235"/>
+<area shape="rect" id="node10" href="$wifi_8c.html#a3cea38a15b267ddabc1e6d5cf72b5ae8" title="my_input_ap" alt="" coords="575,107,674,133"/>
+<area shape="rect" id="node11" href="$wifi_8c.html#aa87c06c3cbab2aa762551fcec59dc8f0" title="wifi_handle_event_cb" alt="" coords="761,107,912,133"/>
+<area shape="rect" id="node12" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="968,132,1064,159"/>
+<area shape="rect" id="node14" href="$watchdog_8c.html#a47b6861ffbed37fef88aa644f10ba917" title="wifi_reconnect_timer_func" alt="" coords="536,208,713,235"/>
+<area shape="rect" id="node17" href="$wifi_8c.html#a1ef15ecd9e69811f6db10215c7196281" title="wifi_scan_done_cb" alt="" coords="557,259,693,285"/>
+<area shape="rect" id="node15" href="$watchdog_8c.html#aeb03c505b5b589ae4d89b2ae11dd1711" title="watchdog_timer_func" alt="" coords="762,208,911,235"/>
+<area shape="rect" id="node16" href="$watchdog_8h.html#ab148f2150b52df5b60e312dded3a2934" title="start_watchdog" alt="" coords="960,208,1072,235"/>
 </map>

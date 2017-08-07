@@ -21,7 +21,7 @@ var searchData=
   ['wifi_5fget_5fchannel',['wifi_get_channel',['../user__interface_8h.html#a152796dafaf3baffe84e1a45ff05b5e0',1,'user_interface.h']]],
   ['wifi_5fget_5fip_5finfo',['wifi_get_ip_info',['../user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5',1,'user_interface.h']]],
   ['wifi_5fget_5fmacaddr',['wifi_get_macaddr',['../user__interface_8h.html#a0a8d02a37b170d4cd2bf9b145a31652f',1,'user_interface.h']]],
-  ['wifi_5fget_5fopmode',['wifi_get_opmode',['../espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a',1,'wifi_get_opmode(void):&#160;espmissingincludes.h'],['../user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a',1,'wifi_get_opmode(void):&#160;user_interface.h']]],
+  ['wifi_5fget_5fopmode',['wifi_get_opmode',['../user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a',1,'user_interface.h']]],
   ['wifi_5fget_5fopmode_5fdefault',['wifi_get_opmode_default',['../user__interface_8h.html#a51653539f9eb39537ddd425c486b9132',1,'user_interface.h']]],
   ['wifi_5fget_5fphy_5fmode',['wifi_get_phy_mode',['../user__interface_8h.html#a4168b74a297080a6b87a1a5e7c3d0225',1,'user_interface.h']]],
   ['wifi_5fget_5frssi',['wifi_get_rssi',['../wifi_8h.html#a79205b29f65bdd821ad9452bdbf0b747',1,'wifi_get_rssi():&#160;wifi.c'],['../wifi_8c.html#a79205b29f65bdd821ad9452bdbf0b747',1,'wifi_get_rssi():&#160;wifi.c']]],

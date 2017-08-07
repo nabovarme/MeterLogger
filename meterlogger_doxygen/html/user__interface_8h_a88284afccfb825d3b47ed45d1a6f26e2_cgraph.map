@@ -1,5 +1,5 @@
 <map id="wifi_softap_set_dhcps_lease" name="wifi_softap_set_dhcps_lease">
 <area shape="rect" id="node2" href="$user__interface_8h.html#a70c442301412fe5d3711a8f0b8c7b7b5" title="wifi_get_ip_info" alt="" coords="235,5,349,32"/>
-<area shape="rect" id="node3" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="231,56,353,83"/>
+<area shape="rect" id="node3" href="$user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="231,56,353,83"/>
 <area shape="rect" id="node4" href="$user__interface_8h.html#a0fd4c4454b23c6532a8dcbfbcbaa4e13" title="wifi_softap_dhcps_status" alt="" coords="207,107,377,133"/>
 </map>

@@ -5,7 +5,7 @@
 <area shape="rect" id="node7" href="$pbuf_8h.html#ac6efc2aaeddfea6c95729dc86f785ba4" title="pbuf_alloc" alt="" coords="595,81,677,108"/>
 <area shape="rect" id="node16" href="$pbuf_8h.html#a5aed441d496f607ad88ae1db2084c2d6" title="pbuf_copy" alt="" coords="594,233,678,260"/>
 <area shape="rect" id="node17" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="759,183,837,209"/>
-<area shape="rect" id="node18" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="575,284,697,311"/>
+<area shape="rect" id="node18" href="$user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="575,284,697,311"/>
 <area shape="rect" id="node4" href="$espconn__udp_8c.html#acf012530a067499d3c1f70091f09427f" title="espconn_data_sentcb" alt="" coords="375,132,527,159"/>
 <area shape="rect" id="node5" href="$espconn__udp_8c.html#a01fa0df74518311e3eb03f2d955f9f26" title="espconn_udp_sendto" alt="" coords="376,183,525,209"/>
 <area shape="rect" id="node8" href="$esp-open-lwip_2include_2lwip_2mem_8h.html#a1cb005c6c44b685b8025b329a6d2bcd4" title="mem_malloc" alt="" coords="749,81,847,108"/>

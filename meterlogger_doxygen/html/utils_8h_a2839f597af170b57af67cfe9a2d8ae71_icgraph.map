@@ -1,10 +1,11 @@
 <map id="decimal_number_length" name="decimal_number_length">
 <area shape="rect" id="node2" href="$utils_8h.html#aa76bb225374d144009e05cadce84260b" title="cleanup_decimal_str" alt="" coords="218,64,362,91"/>
-<area shape="rect" id="node7" href="$kmp_8h.html#aa1bdc213acbcb756d20dcf63d5cd387d" title="kmp_value_to_string" alt="" coords="217,119,363,145"/>
-<area shape="rect" id="node3" href="$en61107_8h.html#a1cf66dda97eb739b7d65099e019e79b0" title="parse_en61107_frame" alt="" coords="421,5,577,32"/>
-<area shape="rect" id="node6" href="$en61107_8h.html#a5a71fa85ca3ccb0abfcb8f122affbbdd" title="parse_mc66cde_standard\l_data_1_frame" alt="" coords="411,57,587,98"/>
-<area shape="rect" id="node4" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="635,35,799,61"/>
-<area shape="rect" id="node5" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="847,35,997,61"/>
-<area shape="rect" id="node8" href="$kmp__request_8c.html#a3f6b790a06b933b78f40ade5e9a16131" title="kmp_received_task" alt="" coords="430,123,567,149"/>
-<area shape="rect" id="node9" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="655,123,779,149"/>
+<area shape="rect" id="node7" href="$kmp_8h.html#aa1bdc213acbcb756d20dcf63d5cd387d" title="kmp_value_to_string" alt="" coords="217,123,363,149"/>
+<area shape="rect" id="node3" href="$en61107_8h.html#a1cf66dda97eb739b7d65099e019e79b0" title="parse_en61107_frame" alt="" coords="438,5,594,32"/>
+<area shape="rect" id="node6" href="$en61107_8h.html#a5a71fa85ca3ccb0abfcb8f122affbbdd" title="parse_mc66cde_standard\l_data_1_frame" alt="" coords="428,57,604,98"/>
+<area shape="rect" id="node4" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="669,35,833,61"/>
+<area shape="rect" id="node5" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="881,35,1032,61"/>
+<area shape="rect" id="node8" href="$kmp__request_8h.html#a38fdfecab4840fcd8b3c3074e715cf60" title="kmp_get_received_energy_kwh" alt="" coords="411,123,621,149"/>
+<area shape="rect" id="node9" href="$kmp__request_8c.html#a3f6b790a06b933b78f40ade5e9a16131" title="kmp_received_task" alt="" coords="447,173,585,200"/>
+<area shape="rect" id="node10" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="689,173,813,200"/>
 </map>

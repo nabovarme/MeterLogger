@@ -7,7 +7,7 @@
 <area shape="rect" id="node6" href="$espconn__tcp_8c.html#a5a4844397c6068a44e5422de0eadcb86" title="espconn_tcp_sent" alt="" coords="384,123,515,149"/>
 <area shape="rect" id="node8" href="$pbuf_8h.html#ac6efc2aaeddfea6c95729dc86f785ba4" title="pbuf_alloc" alt="" coords="787,376,869,403"/>
 <area shape="rect" id="node17" href="$wlan__lwip__if_8h.html#a7e70d2ab3f2caed091644850737a363e" title="eagle_lwip_getif" alt="" coords="769,477,887,504"/>
-<area shape="rect" id="node18" href="$espmissingincludes_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="767,224,889,251"/>
+<area shape="rect" id="node18" href="$user__interface_8h.html#a48d756265c0c1c35ba1fba102efe4d0a" title="wifi_get_opmode" alt="" coords="767,224,889,251"/>
 <area shape="rect" id="node19" href="$pbuf_8h.html#a5aed441d496f607ad88ae1db2084c2d6" title="pbuf_copy" alt="" coords="786,275,870,301"/>
 <area shape="rect" id="node20" href="$netif_8h.html#adf60dd30848a63ce3a1339c98c098acc" title="netif_set_default" alt="" coords="768,325,888,352"/>
 <area shape="rect" id="node21" href="$pbuf_8h.html#a0d26e00e2cf975274139d27ddabd7ed3" title="pbuf_free" alt="" coords="789,427,867,453"/>

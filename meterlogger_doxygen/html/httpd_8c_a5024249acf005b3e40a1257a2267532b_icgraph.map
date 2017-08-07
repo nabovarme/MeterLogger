@@ -1,5 +1,4 @@
 <map id="httpdFindArg" name="httpdFindArg">
-<area shape="rect" id="node2" href="$cgi_8h.html#a11febcd4d2ccd5bcab0a9332e78274fd" title="cgiLed" alt="" coords="179,5,240,32"/>
-<area shape="rect" id="node3" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="173,56,246,83"/>
-<area shape="rect" id="node4" href="$cgiwifi_8h.html#a4ba43d83032eea6839857ed163af5fc9" title="cgiWifiSetMode" alt="" coords="152,107,267,133"/>
+<area shape="rect" id="node2" href="$cgiwifi_8h.html#a7c655a56f56ecebad923c5c4daeb7f1a" title="cgiSetup" alt="" coords="173,5,246,32"/>
+<area shape="rect" id="node3" href="$cgiwifi_8h.html#a4ba43d83032eea6839857ed163af5fc9" title="cgiWifiSetMode" alt="" coords="152,56,267,83"/>
 </map>
