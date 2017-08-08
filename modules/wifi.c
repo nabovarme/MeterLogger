@@ -283,7 +283,6 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
-		led_pattern_b();	// DEBUG
 		// start wifi scan timeout timer
 		// hack to avoid wifi_station_scan() sometimes doesnt calling the callback
 		os_timer_disarm(&wifi_scan_timeout_timer);
@@ -295,7 +294,11 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 			os_printf("wifi_station_scan() returned false, restarting scanner\n");
 #endif
 			wifi_scan_runnning = false;
+			led_pattern_a();	// DEBUG slow led blink to show if wifi_station_scan() returned false (indicates scanner restarting)
 			wifi_start_scan();
+		}
+		else {
+			led_pattern_b();	// DEBUG fast led blink to show if wifi_scan_done_cb() returned true (indicates wifi scanner running)
 		}
 //		os_printf("scan running\n");
 	}
@@ -344,12 +347,12 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		// if fallback network appeared connect to it
 		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
 			wifi_fallback();
-			led_pattern_a();
+//			led_pattern_a();	// DEBUG uncommented for testing
 		}
 		// if fallback network disappeared connect to default network
 		else if ((!wifi_fallback_present) && (wifi_fallback_last_present)) {
 			wifi_default();
-			led_stop_pattern();
+//			led_stop_pattern();	// DEBUG uncommented for testing
 		}
 		
 		wifi_fallback_last_present = wifi_fallback_present;
