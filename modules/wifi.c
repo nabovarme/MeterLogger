@@ -31,9 +31,11 @@
 #include "tinyprintf.h"
 
 #define WIFI_SCAN_INTERVAL 5000
+#define WIFI_SCAN_TIMEOUT 60000
 #define RSSI_CHECK_INTERVAL 10000
 
 static os_timer_t wifi_scan_timer;
+static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
@@ -196,6 +198,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 // static functions
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
+static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
 void wifi_handle_event_cb(System_Event_t *evt) {
     uint8_t mac_str[20];
@@ -280,7 +283,12 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 		os_printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
-//		led_pattern_b();	// DEBUG
+		led_pattern_b();	// DEBUG
+		// start wifi scan timeout timer
+		// hack to avoid wifi_station_scan() sometimes doesnt calling the callback
+		os_timer_disarm(&wifi_scan_timeout_timer);
+		os_timer_setfn(&wifi_scan_timeout_timer, (os_timer_func_t *)wifi_scan_timeout_timer_func, NULL);
+		os_timer_arm(&wifi_scan_timeout_timer, WIFI_SCAN_TIMEOUT, 0);
 		if (wifi_station_scan(NULL, wifi_scan_done_cb) == false) {
 			// something went wrong, restart scanner
 #ifdef DEBUG
@@ -291,6 +299,18 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 		}
 //		os_printf("scan running\n");
 	}
+}
+
+static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
+#ifdef DEBUG
+	os_printf("scan timeout called\n");
+#endif
+	wifi_scan_runnning = false;
+	os_timer_disarm(&wifi_scan_timeout_timer);
+	led_stop_pattern();	// DEBUG
+
+	// start wifi scan timer again
+	wifi_start_scan();
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
@@ -343,7 +363,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	
 	wifi_scan_runnning = false;
 //	os_printf("scan done\n");
-//	led_stop_pattern();	// DEBUG
+	os_timer_disarm(&wifi_scan_timeout_timer);
+	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
 	wifi_start_scan();
@@ -355,6 +376,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
 	wifi_station_disconnect();
+	wifi_set_opmode_current(NULL_MODE);
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -387,6 +409,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
 	wifi_station_disconnect();
+	wifi_set_opmode_current(NULL_MODE);
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
