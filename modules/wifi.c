@@ -379,7 +379,6 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	// go back to saved network
 	os_printf("DEFAULT_SSID\r\n");
 	wifi_station_disconnect();
-	wifi_set_opmode_current(NULL_MODE);
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -412,7 +411,6 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	// try fallback network
 	os_printf("FALLBACK_SSID\r\n");
 	wifi_station_disconnect();
-	wifi_set_opmode_current(NULL_MODE);
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
