@@ -20,7 +20,7 @@ my $mtqq_cmd = $ARGV[1] || "version";
 my $message = $ARGV[2] || '';
 my $hmac_sha256_hash;
 
-my $topic = '/config/v2/' . $meter_serial . '/' . $mtqq_cmd;
+my $topic = '/config/v2/' . $meter_serial . '/' . time() . '/' . $mtqq_cmd;
 
 my $iv = join('', map(chr(int rand(256)), 1..16));
 
@@ -40,6 +40,8 @@ if ($sth->rows) {
 	my $sha256 = sha256(pack('H*', $key));
 	my $aes_key = substr($sha256, 0, 16);
 	my $hmac_sha256_key = substr($sha256, 16, 16);
+
+	$message .= "\0";	# null terminate
 
 	print Dumper $topic . $message;
 	$message = $m->encrypt($message, $aes_key, $iv);
