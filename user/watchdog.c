@@ -3,6 +3,7 @@
 #include "watchdog.h"
 #include "unix_time.h"
 #include "wifi.h"
+#include "config.h"
 
 #include "debug.h"
 
