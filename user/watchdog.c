@@ -41,6 +41,22 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 	}
 	else {
 		os_timer_disarm(&wifi_reconnect_timer);
+#ifdef AP
+		if (sys_cfg.ap_enabled) {
+			if (wifi_get_opmode() != STATIONAP_MODE) {
+				wifi_set_opmode_current(STATIONAP_MODE);
+			}
+		}
+		else {
+			if (wifi_get_opmode() != STATION_MODE) {
+				wifi_set_opmode_current(STATION_MODE);
+			}
+		}
+#else
+		if (wifi_get_opmode() != STATION_MODE) {
+			wifi_set_opmode_current(STATION_MODE);
+		}
+#endif	// AP
 		set_my_auto_connect(true);
 		wifi_station_connect();
 		wifi_start_scan();
@@ -77,6 +93,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 					wifi_stop_scan();
 					set_my_auto_connect(false);
 					wifi_station_disconnect();
+					wifi_set_opmode_current(NULL_MODE);
 #ifdef DEBUG
 					os_printf("stopped wifi and wifi scanner\n");
 #endif				
