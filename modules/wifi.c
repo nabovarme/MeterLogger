@@ -439,19 +439,13 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 #ifdef AP
 	if (sys_cfg.ap_enabled) {
-		if (wifi_get_opmode() != STATIONAP_MODE) {
-			wifi_set_opmode_current(STATIONAP_MODE);
-		}
+		wifi_set_opmode_current(STATIONAP_MODE);
 	}
 	else {
-		if (wifi_get_opmode() != STATION_MODE) {
-			wifi_set_opmode_current(STATION_MODE);
-		}
-	}
-#else
-	if (wifi_get_opmode() != STATION_MODE) {
 		wifi_set_opmode_current(STATION_MODE);
 	}
+#else
+	wifi_set_opmode_current(STATION_MODE);
 #endif	// AP
 
 	wifi_cb = cb;
