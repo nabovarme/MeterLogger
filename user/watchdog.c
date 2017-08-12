@@ -92,7 +92,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 				case NETWORK_RESTART:
 					// DEBUG: hack to get it to reconnect on weak wifi
 					// force reconnect to wireless
-					led_blink();	// DEBUG to se if we ever try to restart network
+					led_on();	// DEBUG to se if we ever try to restart network
 					wifi_stop_scan();
 					set_my_auto_connect(false);
 					wifi_station_disconnect();
