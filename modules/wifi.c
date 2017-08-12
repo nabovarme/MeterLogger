@@ -574,6 +574,7 @@ void ICACHE_FLASH_ATTR wifi_start_scan() {
 void ICACHE_FLASH_ATTR wifi_stop_scan() {
 	// stop wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
+	wifi_scan_runnning = false;
 }
 
 bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
