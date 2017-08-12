@@ -294,11 +294,11 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 			os_printf("wifi_station_scan() returned false, restarting scanner\n");
 #endif
 			wifi_scan_runnning = false;
-			led_pattern_a();	// DEBUG slow led blink to show if wifi_station_scan() returned false (indicates scanner restarting)
+//			led_pattern_a();	// DEBUG slow led blink to show if wifi_station_scan() returned false (indicates scanner restarting)
 			wifi_start_scan();
 		}
 		else {
-			led_pattern_b();	// DEBUG fast led blink to show if wifi_scan_done_cb() returned true (indicates wifi scanner running)
+//			led_pattern_b();	// DEBUG fast led blink to show if wifi_scan_done_cb() returned true (indicates wifi scanner running)
 		}
 //		os_printf("scan running\n");
 	}
@@ -310,7 +310,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 #endif
 	wifi_scan_runnning = false;
 	os_timer_disarm(&wifi_scan_timeout_timer);
-	led_stop_pattern();	// DEBUG
+//	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
 	wifi_start_scan();
@@ -360,6 +360,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		uint8_t s;
 		s = wifi_station_get_connect_status();
 		os_printf("wifi present: %s\n", (wifi_present ? "yes" : "no"));
+		os_printf("wifi fallback present: %s\n", (wifi_fallback_present ? "yes" : "no"));
 		os_printf("wifi status: %s (%u)\n", (s == STATION_GOT_IP) ? "connected" : "not connected", s);
 #endif
 	}
@@ -367,7 +368,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	wifi_scan_runnning = false;
 //	os_printf("scan done\n");
 	os_timer_disarm(&wifi_scan_timeout_timer);
-	led_stop_pattern();	// DEBUG
+//	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
 	wifi_start_scan();
