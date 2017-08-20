@@ -13,14 +13,14 @@ static os_timer_t ext_watchdog_timer;
 static os_timer_t wifi_reconnect_timer;
 
 typedef struct{
-	uint32_t id;
-	watchdog_type_t type;
-	uint32_t timeout;
-	uint32_t last_reset;
+	volatile uint32_t id;
+	volatile watchdog_type_t type;
+	volatile uint32_t timeout;
+	volatile uint32_t last_reset;
 } watchdog_t;
 
-watchdog_t volatile watchdog_list[WATCHDOG_MAX];
-uint8_t volatile watchdog_list_len;
+watchdog_t watchdog_list[WATCHDOG_MAX];
+volatile uint8_t watchdog_list_len;
 
 ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
 	if (gpio16_input_get()) {
