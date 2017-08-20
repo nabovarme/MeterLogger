@@ -41,12 +41,12 @@ static os_timer_t wifi_get_rssi_timer;
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
-uint8_t* config_ssid;
-uint8_t* config_pass;
+volatile uint8_t* config_ssid;
+volatile uint8_t* config_pass;
 static uint8_t wifi_status = STATION_IDLE;
 static uint8_t wifi_event = EVENT_STAMODE_DISCONNECTED;
 bool wifi_present = false;
-bool wifi_fallback_present = false;
+volatile bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
 volatile bool wifi_scan_runnning = false;
 //volatile bool wifi_reconnect = false;
