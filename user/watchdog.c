@@ -104,7 +104,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 					// and (re)-connect when last wifi scan is done - wait 6 second before starting
 					os_timer_disarm(&wifi_reconnect_timer);
 					os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
-					os_timer_arm(&wifi_reconnect_timer, 6000, 0);
+					os_timer_arm(&wifi_reconnect_timer, NETWORK_RESTART_DELAY, 0);
 #ifdef DEBUG
 					os_printf("scheduled wifi for restart...\n");
 #endif	
