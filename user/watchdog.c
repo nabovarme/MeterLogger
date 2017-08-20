@@ -19,7 +19,7 @@ typedef struct{
 	uint32_t last_reset;
 } watchdog_t;
 
-watchdog_t watchdog_list[WATCHDOG_MAX];
+watchdog_t volatile watchdog_list[WATCHDOG_MAX];
 uint8_t watchdog_list_len;
 
 ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
