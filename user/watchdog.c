@@ -20,7 +20,7 @@ typedef struct{
 } watchdog_t;
 
 watchdog_t volatile watchdog_list[WATCHDOG_MAX];
-uint8_t watchdog_list_len;
+uint8_t volatile watchdog_list_len;
 
 ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
 	if (gpio16_input_get()) {
