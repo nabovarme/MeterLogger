@@ -83,6 +83,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/ping                    |                                                                    |
 | /config/v2/9999999/[unix time]/version                 |                                                                    |
 | /config/v2/9999999/[unix time]/uptime                  |                                                                    |
+| /config/v2/9999999/[unix time]/vdd                     |                                                                    |
 | /config/v2/9999999/[unix time]/rssi                    |                                                                    |
 | /config/v2/9999999/[unix time]/ssid                    |                                                                    |
 | /config/v2/9999999/[unix time]/scan                    |                                                                    |
@@ -109,6 +110,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /open_until/v2/9999999/[unix time]              | [kWh when meter should close]                                                                        |
 | /open_until_delta/v2/9999999/[unix time]        | [kWh when meter should close]                                                                        |
 | /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
+| /vdd/v2/9999999/[unix time]                     | [power supply voltage level]                                                                         |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
 | /scan_result/v2/9999999/[unix time]             | ssid=Loppen Public&rssi=-51&channel=11                                                               |

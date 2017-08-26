@@ -660,6 +660,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(decimal_str, 8, "%u", system_get_vdd33());
 		divide_str_by_1000(decimal_str, cleartext);
+#ifdef DEBUG
+		printf("vdd: %s", cleartext);
+#endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
