@@ -287,7 +287,7 @@ wifisetup:
 	until nmcli d wifi connect "$(WIFI_SSID)" password "$(CUSTOM_AP_PASSWORD)"; do echo "retrying to connect to wifi"; done && sleep 2; firefox 'http://192.168.4.1/'
 
 flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m 0x7c000 firmware/esp_init_data_default_107th_bit_0xff.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m 0xFE000 firmware/esp_init_data_default_107th_bit_0xff.bin
 
 size:
 	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
