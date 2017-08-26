@@ -546,6 +546,8 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	char function_name[FUNCTIONNAME_L];
 
 	uint32_t received_unix_time = 0;
+	
+	char decimal_str[8];	// temp var for divide_str_by_ functions
 
 	uint8_t i;
 
@@ -642,6 +644,22 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
+		// encrypt and send
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	}
+	else if (strncmp(function_name, "vdd", FUNCTIONNAME_L) == 0) {
+		// found vdd - get voltage level
+#ifdef EN61107
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+		memset(cleartext, 0, sizeof(cleartext));
+		tfp_snprintf(decimal_str, 8, "%u", system_get_vdd33());
+		divide_str_by_1000(decimal_str, cleartext);
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2

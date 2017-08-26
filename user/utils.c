@@ -143,6 +143,11 @@ ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 	tfp_snprintf(decimal_str, 8, "%d.%02u", result_int, result_frac);
 }
 
+ICACHE_FLASH_ATTR void divide_str_by_1000(char *str, char *decimal_str) {
+	// just a wrapper
+	w_to_kw_str(str, decimal_str);
+}
+
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
 	uint32_t value_int, value_frac;
 	char *pos;
