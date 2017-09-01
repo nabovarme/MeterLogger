@@ -201,7 +201,9 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
 void wifi_handle_event_cb(System_Event_t *evt) {
+#ifdef DEBUG
     uint8_t mac_str[20];
+#endif
 	struct station_config stationConf;
 
 	wifi_status = wifi_station_get_connect_status();
