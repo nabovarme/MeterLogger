@@ -477,7 +477,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
 	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
 
-	led_stop_pattern();
+//	led_stop_pattern();
 }
 
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {
