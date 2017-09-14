@@ -1183,6 +1183,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(THERMO_NC)\n\r");
 #endif
 
+#ifdef THERMO_ON_AC_2
+	printf("\t(THERMO_ON_AC_2)\n\r");
+#endif
+
 #ifndef DEBUG_NO_METER
 #ifdef EN61107
 	uart_init(BIT_RATE_300, BIT_RATE_300);

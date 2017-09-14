@@ -50,6 +50,9 @@ thermo actuator is normal closed
   
 THERMO_NO=1  
 thermo actuator is normal open  
+
+THERMO_ON_AC_2  
+thermo actuator connected on ac 2  
   
 LED_ON_AC=1  
 use led to indicate ac state  

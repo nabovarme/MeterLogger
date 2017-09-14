@@ -7,8 +7,8 @@ use lib qw( /etc/apache2/perl );
 #use lib qw( /opt/local/apache2/perl/ );
 use Nabovarme::Db;
 
-use constant DEFAULT_BUILD_VARS => 'AP=1';
 use constant BUILD_TARGETS => 'clean all flashall';
+my $DEFAULT_BUILD_VARS = 'AP=1';
 
 my $meter_serial = $ARGV[0] || '9999999';
 
@@ -25,25 +25,29 @@ if ($sth->rows) {
 	my $key = $_->{key} || warn "no aes key found\n";
 	my $sw_version = $_->{sw_version} || warn "no sw_version found\n";
                 
+	if ($_->{sw_version} =~ /THERMO_ON_AC_2/) {
+		$DEFAULT_BUILD_VARS .= ' THERMO_ON_AC_2=1';
+	}
+
 	if ($_->{sw_version} =~ /MC-B/) {
-		print DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
-		exec DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		print $DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		exec $DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
 	}
 	elsif ($_->{sw_version} =~ /MC/) {
-		print DEFAULT_BUILD_VARS . ' EN61107=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
-		exec DEFAULT_BUILD_VARS . ' EN61107=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		print $DEFAULT_BUILD_VARS . ' EN61107=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		exec $DEFAULT_BUILD_VARS . ' EN61107=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
 	}
 	elsif ($_->{sw_version} =~ /IMPULSE/) {
-		print DEFAULT_BUILD_VARS . ' IMPULSE=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
-		exec DEFAULT_BUILD_VARS . ' IMPULSE=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		print $DEFAULT_BUILD_VARS . ' IMPULSE=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		exec $DEFAULT_BUILD_VARS . ' IMPULSE=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
 	}
 	elsif ($_->{sw_version} =~ /NO_METER/) {
-		print DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . ' screen' . "\n";
-		exec DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . ' screen' . "\n";
+		print $DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . ' screen' . "\n";
+		exec $DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . ' screen' . "\n";
 	}
 	else {
-		print DEFAULT_BUILD_VARS . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
-		exec DEFAULT_BUILD_VARS . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		print $DEFAULT_BUILD_VARS . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
+		exec $DEFAULT_BUILD_VARS . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
 	}
 }
 

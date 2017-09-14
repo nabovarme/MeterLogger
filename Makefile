@@ -177,6 +177,10 @@ ifeq ($(THERMO_NO), 1)
     CFLAGS += -DTHERMO_NO
 endif
 
+ifeq ($(THERMO_ON_AC_2), 1)
+    CFLAGS += -DTHERMO_ON_AC_2
+endif
+
 ifeq ($(LED_ON_AC), 1)
     CFLAGS += -DLED_ON_AC
 endif
