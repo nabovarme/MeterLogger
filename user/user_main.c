@@ -178,6 +178,8 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	int mqtt_message_l;	
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
+
+	led_stop_pattern();	// stop indicating config mode mode with led
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
@@ -190,8 +192,6 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	uint32_t result_int, result_frac;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
-	
-	led_stop_pattern();	// stop indicating config mode mode with led
 	
 	// clear data
 	memset(mqtt_message, 0, sizeof(mqtt_message));
