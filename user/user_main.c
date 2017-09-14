@@ -78,6 +78,8 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
 	
+	led_stop_pattern();	// stop indicating config mode mode with led
+
 	// stop http configuration server
 	httpdStop();
 
@@ -179,7 +181,6 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
 
-	led_stop_pattern();	// stop indicating config mode mode with led
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
