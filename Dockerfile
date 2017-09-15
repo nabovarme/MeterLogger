@@ -52,7 +52,9 @@ RUN apt-get update && apt-get install -y \
 	screen
 
 # Adduser `meterlogger`
+RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
 RUN adduser --disabled-password --gecos "" meterlogger && usermod -a -G dialout meterlogger
+RUN usermod -a -G sudo meterlogger
 
 # Create our main work directory
 RUN mkdir /meterlogger
@@ -70,12 +72,14 @@ RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 
+# meterlogger
+RUN cd /meterlogger/ && git clone --recursive https://github.com/nabovarme/MeterLogger.git
+
+USER root
+
 # Export ENV
 ENV PATH /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
-
-# meterlogger
-RUN cd /meterlogger/ && git clone --recursive https://github.com/nabovarme/MeterLogger.git
 
 CMD (cd /meterlogger/MeterLogger && /bin/bash)
