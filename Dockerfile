@@ -48,7 +48,8 @@ RUN apt-get update && apt-get install -y \
 	vim \
 	wget \
 	splint \
-	sudo
+	sudo \
+	screen
 
 # Adduser `meterlogger`
 RUN adduser --disabled-password --gecos "" meterlogger && usermod -a -G dialout meterlogger
