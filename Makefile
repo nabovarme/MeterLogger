@@ -282,7 +282,7 @@ htmlflash: webpages.espfs
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m $(ESPFS) webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m 0xFE000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/blank.bin 0xFC000 $(SDK_BASE)/../ESP8266_NONOS_SDK_V2.0.0_16_08_10/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m 0xFE000 $(SDK_BASE)/../ESP8266_NONOS_SDK-2.1.0/bin/blank.bin 0xFC000 $(SDK_BASE)/../ESP8266_NONOS_SDK-2.1.0/bin/esp_init_data_default.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
 
 flashblank:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 8m 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
