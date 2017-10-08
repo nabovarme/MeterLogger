@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.6.0">
+<eagle version="8.2.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -8233,7 +8233,7 @@ at 30/07/2012 11:22:31</description>
 <instance part="R9" gate="G$1" x="67.31" y="-26.67"/>
 <instance part="R10" gate="G$1" x="97.79" y="-31.75" rot="R90"/>
 <instance part="C2" gate="G$1" x="97.79" y="-19.05"/>
-<instance part="JP3" gate="G$1" x="143.51" y="-13.97" rot="R180"/>
+<instance part="JP3" gate="G$1" x="135.89" y="-16.51" rot="MR0"/>
 <instance part="OK1" gate="-1" x="46.99" y="-72.39"/>
 <instance part="GND2" gate="1" x="31.75" y="-82.55"/>
 <instance part="R3" gate="G$1" x="24.13" y="-67.31"/>
@@ -8241,8 +8241,8 @@ at 30/07/2012 11:22:31</description>
 <instance part="R5" gate="G$1" x="67.31" y="-67.31"/>
 <instance part="R6" gate="G$1" x="97.79" y="-72.39" rot="R90"/>
 <instance part="C1" gate="G$1" x="97.79" y="-59.69"/>
-<instance part="JP1" gate="G$1" x="135.89" y="-77.47" rot="R180"/>
-<instance part="JP2" gate="G$1" x="143.51" y="-54.61" rot="R180"/>
+<instance part="JP1" gate="G$1" x="135.89" y="-77.47" rot="MR0"/>
+<instance part="JP2" gate="G$1" x="135.89" y="-57.15" rot="MR0"/>
 <instance part="T1" gate="G$1" x="80.01" y="-72.39"/>
 <instance part="T2" gate="G$1" x="80.01" y="-31.75"/>
 <instance part="U1" gate="G$1" x="106.68" y="53.34"/>
@@ -8415,12 +8415,12 @@ at 30/07/2012 11:22:31</description>
 <wire x1="90.17" y1="-26.67" x2="90.17" y2="-13.97" width="0.1524" layer="91"/>
 <wire x1="90.17" y1="-13.97" x2="97.79" y2="-13.97" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="1"/>
-<wire x1="97.79" y1="-13.97" x2="135.89" y2="-13.97" width="0.1524" layer="91"/>
 <wire x1="97.79" y1="-16.51" x2="97.79" y2="-13.97" width="0.1524" layer="91"/>
-<junction x="97.79" y="-13.97"/>
-<pinref part="JP3" gate="G$1" pin="1"/>
 <pinref part="T2" gate="G$1" pin="A2"/>
 <junction x="80.01" y="-26.67"/>
+<pinref part="JP3" gate="G$1" pin="2"/>
+<wire x1="128.27" y1="-13.97" x2="97.79" y2="-13.97" width="0.1524" layer="91"/>
+<junction x="97.79" y="-13.97"/>
 </segment>
 </net>
 <net name="N$9" class="0">
@@ -8490,12 +8490,12 @@ at 30/07/2012 11:22:31</description>
 <wire x1="90.17" y1="-67.31" x2="90.17" y2="-54.61" width="0.1524" layer="91"/>
 <wire x1="90.17" y1="-54.61" x2="97.79" y2="-54.61" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
-<wire x1="97.79" y1="-54.61" x2="135.89" y2="-54.61" width="0.1524" layer="91"/>
 <wire x1="97.79" y1="-57.15" x2="97.79" y2="-54.61" width="0.1524" layer="91"/>
-<junction x="97.79" y="-54.61"/>
-<pinref part="JP2" gate="G$1" pin="1"/>
 <pinref part="T1" gate="G$1" pin="A2"/>
 <junction x="80.01" y="-67.31"/>
+<pinref part="JP2" gate="G$1" pin="2"/>
+<wire x1="128.27" y1="-54.61" x2="97.79" y2="-54.61" width="0.1524" layer="91"/>
+<junction x="97.79" y="-54.61"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -8507,15 +8507,15 @@ at 30/07/2012 11:22:31</description>
 </net>
 <net name="N$18" class="0">
 <segment>
-<pinref part="JP2" gate="G$1" pin="2"/>
-<wire x1="135.89" y1="-57.15" x2="125.73" y2="-57.15" width="0.1524" layer="91"/>
+<wire x1="125.73" y1="-74.93" x2="125.73" y2="-57.15" width="0.1524" layer="91"/>
 <wire x1="125.73" y1="-57.15" x2="125.73" y2="-16.51" width="0.1524" layer="91"/>
-<pinref part="JP3" gate="G$1" pin="2"/>
-<wire x1="125.73" y1="-16.51" x2="135.89" y2="-16.51" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="G$1" pin="2"/>
-<wire x1="128.27" y1="-80.01" x2="125.73" y2="-80.01" width="0.1524" layer="91"/>
-<wire x1="125.73" y1="-80.01" x2="125.73" y2="-57.15" width="0.1524" layer="91"/>
+<wire x1="128.27" y1="-74.93" x2="125.73" y2="-74.93" width="0.1524" layer="91"/>
+<pinref part="JP2" gate="G$1" pin="1"/>
+<wire x1="128.27" y1="-57.15" x2="125.73" y2="-57.15" width="0.1524" layer="91"/>
 <junction x="125.73" y="-57.15"/>
+<pinref part="JP3" gate="G$1" pin="1"/>
+<wire x1="128.27" y1="-16.51" x2="125.73" y2="-16.51" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$11" class="0">
