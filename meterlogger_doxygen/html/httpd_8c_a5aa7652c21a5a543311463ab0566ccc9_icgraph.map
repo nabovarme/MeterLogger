@@ -1,6 +1,0 @@
-<map id="httpdSendResp" name="httpdSendResp">
-<area shape="rect" id="node2" href="$httpd_8c.html#ad4f8c0a86c445f2f52156e8a328613e4" title="httpdRecvCb" alt="" coords="167,5,265,32"/>
-<area shape="rect" id="node3" href="$httpd_8c.html#a394ef39b684f0f7c1cf013dcb2b8300b" title="httpdConnectCb" alt="" coords="313,5,432,32"/>
-<area shape="rect" id="node4" href="$httpd_8h.html#a74eb356c950228c2f024f081f7beb830" title="httpdInit" alt="" coords="480,5,549,32"/>
-<area shape="rect" id="node5" href="$httpd__user__init_8h.html#a6abf56883c8e03334f42bfb79aa8b095" title="httpd_user_init" alt="" coords="597,5,707,32"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="QUEUE_Puts" name="QUEUE_Puts">
-<area shape="rect" id="node2" href="$proto_8h.html#aeeb0162a48bf377e468e5fca672a5df1" title="PROTO_AddRb" alt="" coords="157,5,275,32"/>
-<area shape="rect" id="node3" href="$ringbuf_8h.html#a717173daf1397da584236ed52bbec10a" title="put a character into ring buffer " alt="" coords="323,5,432,32"/>
-</map>

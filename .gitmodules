@@ -1,0 +1,4 @@
+[submodule "MeterLoggerDoxygen"]
+	path = meterlogger_doxygen
+	url = https://github.com/nabovarme/MeterLoggerDoxygen.git
+	branch = mesh

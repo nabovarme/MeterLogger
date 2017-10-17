@@ -1,6 +1,0 @@
-<map id="sha256_raw" name="sha256_raw">
-<area shape="rect" id="node2" href="$sha256_8c.html#a28a4e37e67f8b97b374c49d8b83d8167" title="sha256_final" alt="" coords="156,5,253,32"/>
-<area shape="rect" id="node4" href="$sha256_8c.html#ad1c794b2d7e8eba243628e45cb69ef94" title="sha256_init" alt="" coords="159,56,250,83"/>
-<area shape="rect" id="node5" href="$sha256_8c.html#a5b705787f5fa458c39d5691d7500694c" title="sha256_update" alt="" coords="148,107,261,133"/>
-<area shape="rect" id="node3" href="$sha256_8c.html#a97b828e7b6479297e92fb5ffc5225ee3" title="sha256_transform" alt="" coords="309,56,439,83"/>
-</map>

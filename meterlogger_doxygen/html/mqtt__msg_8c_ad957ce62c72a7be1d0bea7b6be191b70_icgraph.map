@@ -1,7 +1,0 @@
-<map id="mqtt_msg_init" name="mqtt_msg_init">
-<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="191,5,306,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="696,81,815,108"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a36ecd969af1b9c87856f01be064a98cc" title="Tcp client connect success callback function. " alt="" coords="159,107,339,133"/>
-<area shape="rect" id="node5" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="387,107,504,133"/>
-<area shape="rect" id="node6" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="552,107,648,133"/>
-</map>

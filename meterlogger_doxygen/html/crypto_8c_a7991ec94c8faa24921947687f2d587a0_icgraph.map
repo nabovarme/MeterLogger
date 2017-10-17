@@ -1,9 +1,0 @@
-<map id="encrypt_aes_hmac_combined" name="encrypt_aes_hmac_combined">
-<area shape="rect" id="node2" href="$en61107__request_8c.html#aa3b162cf5364986ea19e831ac2b18f76" title="en61107_received_task" alt="" coords="253,5,417,32"/>
-<area shape="rect" id="node4" href="$en61107__request_8h.html#a7384d014eb9e833f64ecf4a9f86f87be" title="en61107_request_send" alt="" coords="254,56,417,83"/>
-<area shape="rect" id="node5" href="$kmp__request_8c.html#a3f6b790a06b933b78f40ade5e9a16131" title="kmp_received_task" alt="" coords="267,107,404,133"/>
-<area shape="rect" id="node7" href="$kmp__request_8h.html#a3b022dcdc832786eb06126b5e6879604" title="kmp_request_send" alt="" coords="267,161,403,188"/>
-<area shape="rect" id="node3" href="$en61107__request_8h.html#acd43242675a3f25e7c3b530eac9d8b3a" title="en61107_request_init" alt="" coords="465,5,616,32"/>
-<area shape="rect" id="node6" href="$kmp__request_8h.html#a048753ff9d6b448e2dcd8c85db0d6873" title="kmp_request_init" alt="" coords="479,103,603,129"/>
-<area shape="rect" id="node8" href="$kmp__request_8c.html#a0977a4640a97d389ac3b0fef0ba7a9b6" title="kmp_receive_timeout\l_timer_func" alt="" coords="466,154,615,195"/>
-</map>

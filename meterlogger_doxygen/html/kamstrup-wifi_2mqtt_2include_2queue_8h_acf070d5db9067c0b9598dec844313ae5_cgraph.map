@@ -1,6 +1,0 @@
-<map id="QUEUE_Gets" name="QUEUE_Gets">
-<area shape="rect" id="node2" href="$proto_8h.html#a4ce0ecd80c57cb13f47a2725036451af" title="PROTO_ParseRb" alt="" coords="159,56,288,83"/>
-<area shape="rect" id="node3" href="$proto_8c.html#aef0525e6fb0717f1ae3816f5a59fbd08" title="PROTO_Init" alt="" coords="358,5,453,32"/>
-<area shape="rect" id="node4" href="$proto_8c.html#ada6cc416001736d9b313d8871024e616" title="PROTO_ParseByte" alt="" coords="336,56,475,83"/>
-<area shape="rect" id="node5" href="$ringbuf_8h.html#a2b4ae6481762403eec1f2072eb30217a" title="get a character from ring buffer " alt="" coords="350,107,461,133"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="UTILS_StrToIP" name="UTILS_StrToIP">
-<area shape="rect" id="node2" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="179,5,297,32"/>
-<area shape="rect" id="node5" href="$wifi_8c.html#a28b06ff6229540010e142c61c8da1551" title="wifi_softap_ip_config" alt="" coords="165,56,311,83"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="386,5,482,32"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="557,5,676,32"/>
-<area shape="rect" id="node6" href="$wifi_8c.html#aa87c06c3cbab2aa762551fcec59dc8f0" title="wifi_handle_event_cb" alt="" coords="359,56,509,83"/>
-<area shape="rect" id="node7" href="$wifi_8c.html#a9c38abb0900e0c7308be77d85dbf09e0" title="wifi_connect" alt="" coords="569,56,665,83"/>
-</map>

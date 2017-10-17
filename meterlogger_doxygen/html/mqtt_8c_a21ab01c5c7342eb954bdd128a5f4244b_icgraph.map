@@ -1,6 +1,0 @@
-<map id="mqtt_tcpclient_delete" name="mqtt_tcpclient_delete">
-<area shape="rect" id="node2" href="$mqtt_8c.html#a9c9b677c6161329a3c3c6470a7182984" title="Delete MQTT client and free all memory. " alt="" coords="201,5,332,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="380,56,476,83"/>
-<area shape="rect" id="node5" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="208,107,325,133"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="524,56,643,83"/>
-</map>

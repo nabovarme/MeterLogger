@@ -1,7 +1,0 @@
-<map id="sdk/include/espconn.h" name="sdk/include/espconn.h">
-<area shape="rect" id="node2" href="$wifi_8c.html" title="modules/wifi.c" alt="" coords="5,80,111,107"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html" title="mqtt/mqtt.c" alt="" coords="135,80,223,107"/>
-<area shape="rect" id="node4" href="$captdns_8c.html" title="user/captdns.c" alt="" coords="247,80,357,107"/>
-<area shape="rect" id="node5" href="$httpd_8c.html" title="user/httpd.c" alt="" coords="381,80,473,107"/>
-<area shape="rect" id="node6" href="$httpdespfs_8c.html" title="user/httpdespfs.c" alt="" coords="497,80,621,107"/>
-</map>

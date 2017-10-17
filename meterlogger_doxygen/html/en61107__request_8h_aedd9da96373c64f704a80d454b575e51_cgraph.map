@@ -1,5 +1,0 @@
-<map id="en61107_get_register_timer_func" name="en61107_get_register_timer_func">
-<area shape="rect" id="node2" href="$en61107_8c.html#a644b7692f15bd4b614a144f18debf66c" title="en61107_get_register" alt="" coords="205,5,357,32"/>
-<area shape="rect" id="node3" href="$uart_8c.html#a87f1c1c2a25d4336eb804da28ed99f7e" title="uart0_tx_buffer" alt="" coords="225,56,337,83"/>
-<area shape="rect" id="node4" href="$uart_8c.html#a40bca7ca9b269f93bc9f17924a38fbe0" title="uart_tx_one_char" alt="" coords="405,56,531,83"/>
-</map>

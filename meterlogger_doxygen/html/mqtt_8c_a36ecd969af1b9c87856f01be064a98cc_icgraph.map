@@ -1,5 +1,0 @@
-<map id="mqtt_tcpclient_connect_cb" name="mqtt_tcpclient_connect_cb">
-<area shape="rect" id="node2" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="233,5,351,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="399,5,495,32"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="543,5,661,32"/>
-</map>

@@ -1,7 +1,0 @@
-<map id="mqtt_msg_pingreq" name="mqtt_msg_pingreq">
-<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="202,5,317,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#a086502e2dd36681a7fb4d9a9018cfc88" title="MQTT ping function. " alt="" coords="213,56,306,83"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#ad8ba75844d580447adc10eee6aba039d" title="mqtt_send_keepalive" alt="" coords="185,107,333,133"/>
-<area shape="rect" id="node5" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="381,107,477,133"/>
-<area shape="rect" id="node6" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="525,107,644,133"/>
-</map>

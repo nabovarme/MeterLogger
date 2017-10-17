@@ -1,8 +1,0 @@
-<map id="mqtt_get_total_length" name="mqtt_get_total_length">
-<area shape="rect" id="node2" href="$mqtt__msg_8h.html#affd61b4be51d1e29e51dfbc42489ba36" title="mqtt_get_retain" alt="" coords="215,5,330,32"/>
-<area shape="rect" id="node3" href="$mqtt_8c.html#af470856972320b9c02da9fcb6f419fd0" title="Client received callback function. " alt="" coords="204,56,341,83"/>
-<area shape="rect" id="node4" href="$mqtt_8c.html#a36ecd969af1b9c87856f01be064a98cc" title="Tcp client connect success callback function. " alt="" coords="389,56,569,83"/>
-<area shape="rect" id="node5" href="$mqtt_8c.html#ad34b681cb2f7473d8fc786c7ed468db5" title="Begin connect to MQTT broker. " alt="" coords="617,56,735,83"/>
-<area shape="rect" id="node6" href="$mqtt_8c.html#a9d88fa6efb9163d4dbf9dc750a8d4ed0" title="MQTT_Task" alt="" coords="783,56,879,83"/>
-<area shape="rect" id="node7" href="$mqtt_8c.html#a25cb7ac079d1d119250dac075c45acf1" title="MQTT initialization mqtt client function. " alt="" coords="927,56,1045,83"/>
-</map>

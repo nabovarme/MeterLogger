@@ -1,4 +1,0 @@
-<map id="add_watchdog" name="add_watchdog">
-<area shape="rect" id="node2" href="$unix__time_8c.html#af98c0bacc67f2d0702b0ac4f130faa16" title="get_uptime" alt="" coords="163,5,251,32"/>
-<area shape="rect" id="node3" href="$esp-open-lwip_2include_2lwip_2sntp_8h.html#a557f2d3fcbc53da30e4f1b51ea5842e7" title="sntp_get_current_timestamp" alt="" coords="299,5,489,32"/>
-</map>
