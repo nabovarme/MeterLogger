@@ -6,3 +6,7 @@
 	path = pcb+power
 	url = https://github.com/nabovarme/MeterLoggerPCB.git
 	branch = mesh
+[submodule "MeterLoggerImpulsePCB"]
+	path = impulse-meter-pcb
+	url = https://github.com/nabovarme/MeterLoggerImpulsePCB.git
+	branch = mesh
