@@ -61,7 +61,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 #endif	// AP
 		led_stop_pattern();	// DEBUG
 		set_my_auto_connect(true);
-		wifi_station_connect();
+		wifi_default();
 		wifi_start_scan();
 #ifdef DEBUG
 		os_printf("watchdog restarted wifi and started wifi scanner\n");
