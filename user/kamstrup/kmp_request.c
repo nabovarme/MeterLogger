@@ -216,7 +216,7 @@ unsigned int kmp_get_received_energy_kwh() {
 	kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 
 	if (strncmp(kmp_unit_string, "MWh", 16) == 0) {
-		mw_to_w_str(kmp_unit_string, e1_kwh);
+		mw_to_w_str(kmp_value_string, e1_kwh);
 	}
 
 #ifdef DEBUG_NO_METER
