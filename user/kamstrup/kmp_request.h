@@ -20,7 +20,7 @@ ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial();
 
 ICACHE_FLASH_ATTR
-unsigned int kmp_get_received_energy_kwh();
+uint32_t kmp_get_received_energy_kwh();
 
 ICACHE_FLASH_ATTR
 void kmp_request_send();

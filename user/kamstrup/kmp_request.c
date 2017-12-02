@@ -38,6 +38,8 @@ static os_timer_t kmp_receive_timeout_timer;
 
 unsigned int kmp_requests_sent;
 
+volatile uint32_t e1_kwh = 0;
+
 #ifdef DEBUG_NO_METER
 uint8_t pseudo_data_debug_no_meter = 0;
 #endif
@@ -60,6 +62,8 @@ static void kmp_received_task(os_event_t *events) {
     kmp_response_t response;
     unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
+
+	char e1_kwh_string[64];
 
 	//ETS_UART_INTR_DISABLE();
 
@@ -153,6 +157,15 @@ static void kmp_received_task(os_event_t *events) {
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
+
+			// save energy for later use in kmp_get_received_energy_kwh()
+			if (strncmp(kmp_unit_string, "MWh", 3) == 0) {
+				mw_to_kw_str(kmp_value_string, e1_kwh_string);
+				e1_kwh = atoi(e1_kwh_string);
+			}
+			else {
+				e1_kwh = atoi(kmp_value_string);
+			}
         	
 			memset(cleartext, 0, sizeof(message));
 			os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
@@ -206,25 +219,11 @@ unsigned int kmp_get_received_serial() {
 
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
-unsigned int kmp_get_received_energy_kwh() {
+uint32_t kmp_get_received_energy_kwh() {
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	unsigned char kmp_unit_string[16];
-	unsigned char kmp_value_string[64];
-	
-	char e1_kwh[64];
-	
-	kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
-	kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
-
-	if (strncmp(kmp_unit_string, "MWh", 16) == 0) {
-		mw_to_kw_str(kmp_value_string, e1_kwh);
-		return atoi(e1_kwh);
-	}
-	else {
-		return atoi(kmp_value_string);
-	}
+	return e1_kwh;
 #endif
 }
 
