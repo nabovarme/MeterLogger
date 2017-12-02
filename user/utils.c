@@ -102,7 +102,7 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	tfp_snprintf(w, 11, "%u", result_int);
 }
 
-ICACHE_FLASH_ATTR void mw_to_w_str(char *mw, char *w) {
+ICACHE_FLASH_ATTR void mw_to_kw_str(char *mw, char *w) {
 	// just a wrapper
 	kw_to_w_str(mw, w);
 }
