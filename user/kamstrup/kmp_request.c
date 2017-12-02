@@ -207,6 +207,9 @@ unsigned int kmp_get_received_serial() {
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_energy_kwh() {
+#ifdef DEBUG_NO_METER
+	return pseudo_data_debug_no_meter;
+#else
 	unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
 	
@@ -217,12 +220,11 @@ unsigned int kmp_get_received_energy_kwh() {
 
 	if (strncmp(kmp_unit_string, "MWh", 16) == 0) {
 		mw_to_kw_str(kmp_value_string, e1_kwh);
+		return atoi(e1_kwh);
 	}
-
-#ifdef DEBUG_NO_METER
-	return pseudo_data_debug_no_meter;
-#else
-	return atoi(e1_kwh);
+	else {
+		return atoi(kmp_value_string);
+	}
 #endif
 }
 

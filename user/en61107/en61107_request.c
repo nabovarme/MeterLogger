@@ -322,8 +322,11 @@ unsigned int en61107_get_received_energy_kwh() {
 
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
 		mw_to_kw_str(response.e1.value, e1_kwh);
+		return atoi(e1_kwh);
 	}
-	return atoi(e1_kwh);
+	else {
+		return atoi(response.e1.value);
+	}
 }
 
 //ICACHE_FLASH_ATTR
