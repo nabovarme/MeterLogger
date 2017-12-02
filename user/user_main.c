@@ -997,12 +997,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 	}
-	else if (strncmp(function_name, "last_energy_kwh", FUNCTIONNAME_L) == 0) {
-		// found last_energy_kwh
+	else if (strncmp(function_name, "energy_kwh", FUNCTIONNAME_L) == 0) {
+		// found energy_kwh
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/last_energy_kwh/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/energy_kwh/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/last_energy_kwh/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/energy_kwh/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
