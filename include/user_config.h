@@ -25,7 +25,7 @@
 #define MQTT_TOPIC_L (128)
 #define MQTT_MESSAGE_L (512)
 
-#define MQTT_HOST			"loppen.christiania.org" //or "mqtt.yourdomain.com"
+#define MQTT_HOST			"nabovarme.meterlogger.net" //or "mqtt.yourdomain.com"
 //#define MQTT_HOST			"10.0.1.3"
 #define MQTT_PORT			1883
 #define MQTT_BUF_SIZE		2048
