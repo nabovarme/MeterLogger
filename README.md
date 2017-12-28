@@ -1,3 +1,13 @@
+# MeterLogger
+
+MeterLogger is a custom daughterboard you can insert in Kamstrup Meters and get them to transmit their samples 
+to a remote MQTT server.
+MeterLogger is part of the [**Nabovarme**](https://github.com/nabovarme) orgnaization.
+
+Check out the [WIKI](https://github.com/nabovarme/MeterLogger/wiki) for more details!
+
+## Build details
+
 To build and flash for KMP type meter (Multical 601):  
 ```  
 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
