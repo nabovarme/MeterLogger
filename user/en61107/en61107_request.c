@@ -19,6 +19,9 @@ bool en61107_serial_set = false;
 int8_t en61107_request_num;
 meter_is_ready_cb en61107_meter_is_ready_cb = NULL;
 bool meter_is_ready_cb_called = false;
+
+meter_sent_data_cb en61107_meter_sent_data_cb = NULL;
+
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -272,6 +275,10 @@ static void en61107_received_task(os_event_t *events) {
 							MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 						}
 					}
+					// tell user_main we got data from meter
+					if (en61107_meter_sent_data_cb) {
+						en61107_meter_sent_data_cb();
+					}
 
 					// change to last state - idle state
 					en61107_uart_state = UART_STATE_NONE;
@@ -327,6 +334,11 @@ unsigned int en61107_get_received_energy_kwh() {
 	else {
 		return atoi(response.e1.value);
 	}
+}
+
+ICACHE_FLASH_ATTR
+void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb) {
+	en61107_meter_sent_data_cb = cb;
 }
 
 //ICACHE_FLASH_ATTR

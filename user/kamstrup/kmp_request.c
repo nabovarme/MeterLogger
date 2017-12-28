@@ -15,6 +15,8 @@
 uint32_t kmp_serial = 0;
 meter_is_ready_cb kmp_meter_is_ready_cb = NULL;
 bool meter_is_ready_cb_called = false;
+
+meter_sent_data_cb kmp_meter_sent_data_cb = NULL;
 //unsigned int mqtt_lwt_flag = 0;
 
 // fifo
@@ -181,6 +183,11 @@ static void kmp_received_task(os_event_t *events) {
 					MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 				}
 			}
+			// tell user_main we got data from meter
+			if (kmp_meter_sent_data_cb) {
+				kmp_meter_sent_data_cb();
+			}
+
 			kmp_requests_sent = 0;	// reset retry counter
 			// disable timer
 		}
@@ -209,6 +216,11 @@ void kmp_set_mqtt_client(MQTT_Client* client) {
 ICACHE_FLASH_ATTR
 void kmp_register_meter_is_ready_cb(meter_is_ready_cb cb) {
 	kmp_meter_is_ready_cb = cb;
+}
+
+ICACHE_FLASH_ATTR
+void kmp_register_meter_sent_data_cb(meter_sent_data_cb cb) {
+	kmp_meter_sent_data_cb = cb;
 }
 
 // helper function to pass received kmp_serial to user_main.c
@@ -339,6 +351,7 @@ void kmp_request_send() {
 		pseudo_data_debug_no_meter,										// v1
 		pseudo_data_debug_no_meter										// e1
 	);
+	e1_kwh = pseudo_data_debug_no_meter;
 	pseudo_data_debug_no_meter++;	// let it wrap around
 
 	// tell user_main we got a serial
@@ -346,6 +359,11 @@ void kmp_request_send() {
 		meter_is_ready_cb_called = true;
 		kmp_meter_is_ready_cb();
 	}
+	// tell user_main we got data from meter
+	if (kmp_meter_sent_data_cb) {
+		kmp_meter_sent_data_cb();
+	}
+
 #ifdef DEBUG
 	else {
 		os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
