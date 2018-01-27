@@ -322,6 +322,12 @@ uint32_t en61107_get_received_serial() {
 	return en61107_serial;
 }
 
+#ifdef FORCED_FLOW_METER
+ICACHE_FLASH_ATTR
+unsigned int en61107_get_received_volume_m3() {
+	return atoi(response.v1.value);
+}
+#else
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh() {
@@ -335,6 +341,7 @@ unsigned int en61107_get_received_energy_kwh() {
 		return atoi(response.e1.value);
 	}
 }
+#endif	// FORCED_FLOW_METER
 
 ICACHE_FLASH_ATTR
 void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb) {

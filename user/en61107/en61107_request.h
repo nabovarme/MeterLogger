@@ -27,8 +27,13 @@ void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb);
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_serial();
 
+#ifdef FORCED_FLOW_METER
+ICACHE_FLASH_ATTR
+unsigned int en61107_get_received_volume_m3();
+#else
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh();
+#endif	// FORCED_FLOW_METER
 
 //ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c);

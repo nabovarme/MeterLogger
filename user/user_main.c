@@ -365,6 +365,33 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 #ifndef IMPULSE
 	// compare last received energy to offline_close_at and close if needed
 #ifdef EN61107
+#ifdef FORCED_FLOW_METER
+	if (en61107_get_received_volume_m3() >= sys_cfg.offline_close_at) {
+		if (sys_cfg.ac_thermo_state) {
+			ac_thermo_close();
+
+			// send mqtt status
+			// clear data
+			memset(mqtt_topic, 0, sizeof(mqtt_topic));
+			memset(mqtt_message, 0, sizeof(mqtt_message));
+			memset(cleartext, 0, sizeof(cleartext));
+
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+			if (mqtt_client.pCon != NULL) {
+				// if mqtt_client is initialized
+				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+#ifdef DEBUG
+				os_printf("closed because en61107_get_received_volume_m3 >= offline_close_at (%u >= %u)\n", en61107_get_received_volume_m3(), sys_cfg.offline_close_at);
+#endif	// DEBUG
+			}
+		}
+	}
+#else
 	if (en61107_get_received_energy_kwh() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
@@ -390,7 +417,35 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			}
 		}
 	}
+#endif	// FORCED_FLOW_METER
 #else	// KMP
+#ifdef FORCED_FLOW_METER
+	if (kmp_get_received_volume_m3() >= sys_cfg.offline_close_at) {
+		if (sys_cfg.ac_thermo_state) {
+			ac_thermo_close();
+
+			// send mqtt status
+			// clear data
+			memset(mqtt_topic, 0, sizeof(mqtt_topic));
+			memset(mqtt_message, 0, sizeof(mqtt_message));
+			memset(cleartext, 0, sizeof(cleartext));
+
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
+
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+			if (mqtt_client.pCon != NULL) {
+				// if mqtt_client is initialized
+				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+#ifdef DEBUG
+				os_printf("closed because kmp_get_received_volume_m3 >= offline_close_at (%u >= %u)\n", kmp_get_received_volume_m3(), sys_cfg.offline_close_at);
+#endif	// DEBUG
+			}
+		}
+	}
+#else
 	if (kmp_get_received_energy_kwh() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
@@ -417,6 +472,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 		}
 	}
 #endif	// EN61107
+#endif	// FORCED_FLOW_METER
 #endif	// IMPULSE
 }
 
@@ -953,9 +1009,17 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 			if (sys_cfg.offline_close_at != atoi(cleartext)) {
 				// save if changed
 #ifdef EN61107
+#ifdef FORCED_FLOW_METER
+				sys_cfg.offline_close_at = en61107_get_received_volume_m3() + atoi(cleartext);
+#else
 				sys_cfg.offline_close_at = en61107_get_received_energy_kwh() + atoi(cleartext);
+#endif	// FORCED_FLOW_METER
+#else
+#ifdef FORCED_FLOW_METER
+				sys_cfg.offline_close_at = kmp_get_received_volume_m3() + atoi(cleartext);
 #else
 				sys_cfg.offline_close_at = kmp_get_received_energy_kwh() + atoi(cleartext);
+#endif	// FORCED_FLOW_METER
 #endif
 				cfg_save();
 			}
@@ -966,9 +1030,17 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 			memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
+#ifdef FORCED_FLOW_METER
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_volume_m3());
+#else
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
+#endif	// FORCED_FLOW_METER
+#else
+#ifdef FORCED_FLOW_METER
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_volume_m3());
 #else
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
+#endif	// FORCED_FLOW_METER
 #endif
 			// encrypt and send
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -1003,23 +1075,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #endif
 		memset(cleartext, 0, sizeof(cleartext));
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-	}
-	else if (strncmp(function_name, "energy_kwh", FUNCTIONNAME_L) == 0) {
-		// found energy_kwh
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/energy_kwh/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/energy_kwh/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", en61107_get_received_energy_kwh());
-#else
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", kmp_get_received_energy_kwh());
-#endif
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -1227,6 +1282,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
+#endif
+
+#ifdef FORCED_FLOW_METER
+	printf("\t(FORCED_FLOW_METER)\n\r");
 #endif
 
 #ifdef THERMO_NO

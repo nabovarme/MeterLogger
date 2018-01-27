@@ -160,6 +160,10 @@ ifeq ($(MC_66B), 1)
 	CFLAGS += -DMC_66B -DEN61107
 endif
 
+ifeq ($(FORCED_FLOW_METER), 1)
+	CFLAGS += -DFORCED_FLOW_METER
+endif
+
 ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
     MODULES += user/en61107 user/cron user/ac

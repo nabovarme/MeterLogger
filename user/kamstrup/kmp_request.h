@@ -23,8 +23,13 @@ void kmp_register_meter_sent_data_cb(meter_sent_data_cb cb);
 ICACHE_FLASH_ATTR
 unsigned int kmp_get_received_serial();
 
+#ifdef FORCED_FLOW_METER
+ICACHE_FLASH_ATTR
+uint32_t kmp_get_received_volume_m3();
+#else
 ICACHE_FLASH_ATTR
 uint32_t kmp_get_received_energy_kwh();
+#endif
 
 ICACHE_FLASH_ATTR
 void kmp_request_send();
