@@ -29,6 +29,10 @@ if ($sth->rows) {
 		$DEFAULT_BUILD_VARS .= ' THERMO_ON_AC_2=1';
 	}
 
+	if ($_->{sw_version} =~ /FLOW/) {
+		$DEFAULT_BUILD_VARS .= ' FORCED_FLOW_METER=1';
+	}
+
 	if ($_->{sw_version} =~ /MC-B/) {
 		print $DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
 		exec $DEFAULT_BUILD_VARS . ' MC_66B=1' . " SERIAL=$meter_serial KEY=$key" . ' make ' . BUILD_TARGETS . "\n";
