@@ -220,6 +220,7 @@ static void en61107_received_task(os_event_t *events) {
 					);
 					strcat(message, key_value);
 
+#ifndef FORCED_FLOW_METER
 					// heating meter specific
 					// flow temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", response.t1.value, response.t1.unit);
@@ -233,19 +234,22 @@ static void en61107_received_task(os_event_t *events) {
 					// t3 temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t3=%s %s&", response.t3.value, response.t3.unit);
 					strcat(message, key_value);
-#endif
+#endif	// MC_66B
 
 					// calculated temperature difference
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", response.tdif.value, response.tdif.unit);
 					strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
 
 					// flow
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", response.flow1.value, response.flow1.unit);
 					strcat(message, key_value);
 
+#ifndef FORCED_FLOW_METER
 					// current power
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", response.effect1.value, response.effect1.unit);
 					strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
 
 					// hours
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", response.hr.value, response.hr.unit);
@@ -255,9 +259,11 @@ static void en61107_received_task(os_event_t *events) {
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", response.v1.value, response.v1.unit);
 					strcat(message, key_value);
 
+#ifndef FORCED_FLOW_METER
 					// power
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
 					strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
 
 					memset(cleartext, 0, sizeof(cleartext));
 					os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use

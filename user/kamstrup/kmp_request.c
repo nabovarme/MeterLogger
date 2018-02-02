@@ -117,6 +117,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
         	
+#ifndef FORCED_FLOW_METER
 			// heating meter specific
 			// flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
@@ -135,6 +136,7 @@ static void kmp_received_task(os_event_t *events) {
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
         	
 			// flow
 			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
@@ -142,11 +144,13 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
+#ifndef FORCED_FLOW_METER
 			// current power
 			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
         	
 			// hours
 			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
@@ -165,11 +169,13 @@ static void kmp_received_task(os_event_t *events) {
 			v1_m3 = atoi(kmp_value_string);
 #endif
         	
+#ifndef FORCED_FLOW_METER
 			// power
 			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
+#endif	// FORCED_FLOW_METER
 
 #ifndef FORCED_FLOW_METER
 			// save energy for later use in kmp_get_received_energy_kwh()
