@@ -106,13 +106,13 @@ static io_handle *handle_open(char *fname, IO_mode m, size_t buf_sz) {
     io->mode = m;
 
     if (m == IO_READ) {
-        if (0 == strcmp("-", fname)) {
+        if (0 == strncmp("-", fname, 1)) {
             io->fd = STDIN_FILENO;
         } else {
             io->fd = open(fname, O_RDONLY);
         }
     } else if (m == IO_WRITE) {
-        if (0 == strcmp("-", fname)) {
+        if (0 == strncmp("-", fname, 1)) {
             io->fd = STDOUT_FILENO;
         } else {
             io->fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC /*| O_EXCL*/, 0644);
@@ -425,7 +425,7 @@ int main(int argc, char **argv) {
     proc_args(&cfg, argc, argv);
 
     if (0 == strcmp(cfg.in_fname, cfg.out_fname)
-        && (0 != strcmp("-", cfg.in_fname))) {
+        && (0 != strncmp("-", cfg.in_fname, 1))) {
         printf("Refusing to overwrite file '%s' with itself.\n", cfg.in_fname);
         exit(1);
     }
