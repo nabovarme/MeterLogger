@@ -78,7 +78,7 @@ window.onload=function(e) {
 <p>
 <table border="0" cellspacing="10">
   <tr align="left" valign="top">
-    <td rowspan="4" align="left" valign="top"><div id="aps">Scanning...</div><br><br><br>WiFi password, if applicable: <br>
+    <td rowspan="5" align="left" valign="top"><div id="aps">Scanning...</div><br><br><br>WiFi password, if applicable: <br>
     <input type="text" name="passwd" value="%WiFiPasswd%"></td>
     <td>&nbsp;</td>
     <td align="left" valign="top">Meter serial (must be 7 digits): <br />
@@ -96,6 +96,11 @@ window.onload=function(e) {
   </tr>
   <tr>
     <td>&nbsp;</td>
+    <td align="left" valign="top">MQTT host: <br />
+    <input type="text" name="mqtthost" value="%MqttHost%" size="22"></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
     <td align="left" valign="top">&nbsp;</td>
   </tr>
   <tr>
@@ -104,7 +109,8 @@ window.onload=function(e) {
    <td align="left" valign="top"><br />
     <input type="submit" name="connect" value="Setup"></td>
  </tr>
-</table></p>
+</table>
+</p>
 </div>
 </body>
 </html>

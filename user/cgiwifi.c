@@ -168,6 +168,7 @@ static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
 int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char essid[128];
 	char passwd[128];
+	char mqtthost[64];
 #ifdef IMPULSE
 	char impulse_meter_serial[32 + 1];
 	char impulse_meter_energy_kw[32 + 1];
@@ -182,6 +183,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	
 	httpdFindArg(connData->postBuff, "essid", essid, sizeof(essid));
 	httpdFindArg(connData->postBuff, "passwd", passwd, sizeof(passwd));
+	httpdFindArg(connData->postBuff, "mqtthost", mqtthost, sizeof(mqtthost));
 #ifdef IMPULSE
 	httpdFindArg(connData->postBuff, "impulse_meter_serial", impulse_meter_serial, sizeof(impulse_meter_serial));
 	httpdFindArg(connData->postBuff, "impulse_meter_energy", impulse_meter_energy_kw, sizeof(impulse_meter_energy_kw));
@@ -190,6 +192,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 
 	os_strncpy((char*)sys_cfg.sta_ssid, essid, 32);
 	os_strncpy((char*)sys_cfg.sta_pwd, passwd, 64);
+	os_strncpy((char*)sys_cfg.mqtt_host, mqtthost, 64);
 #ifdef IMPULSE
 	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
 	kw_to_w_str(impulse_meter_energy_kw, impulse_meter_energy);
@@ -276,6 +279,9 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 		else {
 			os_strcpy(buff, "Click <a href=\"setmode.cgi?mode=2\">here</a> to go to standalone AP mode.");
 		}
+	}
+	else if (os_strcmp(token, "MqttHost") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.mqtt_host);
 	}
 #ifdef IMPULSE
 	else if (os_strcmp(token, "ImpulseMeterSerial") == 0) {
