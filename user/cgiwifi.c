@@ -205,10 +205,6 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 
 	INFO("Try to connect to AP %s pw %s\n", essid, passwd);
 
-	//Schedule disconnect/connect
-	os_timer_disarm(&resetTimer);
-	os_timer_setfn(&resetTimer, resetTimerCb, NULL);
-	os_timer_arm(&resetTimer, 1000, 0);
 #ifdef IMPULSE
 	httpdRedirect(connData, "impulse_meter_setting_up.html");
 #else
