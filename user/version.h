@@ -1,96 +1,41 @@
 #ifdef MC_66B
-#	ifdef THERMO_NO
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-B-FLOW-THERMO_NO-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "MC-B-THERMO_NO-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-B-FLOW-THERMO_NO"
-#			else
-#				define HW_MODEL "MC-B-THERMO_NO"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	else	// THERMO_NC
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-B-FLOW-THERMO_NC-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "MC-B-THERMO_NC-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-B-FLOW-THERMO_NC"
-#			else
-#				define HW_MODEL "MC-B-THERMO_NC"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	endif
+#	define HW_MODEL_STRING "MC-B"
 #elif defined(EN61107)
-#	ifdef THERMO_NO
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-FLOW-THERMO_NO-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "MC-THERMO_NO-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-FLOW-THERMO_NO"
-#			else
-#				define HW_MODEL "MC-THERMO_NO"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	else	// THERMO_NC
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-FLOW-THERMO_NC-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "MC-THERMO_NC-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "MC-FLOW-THERMO_NC"
-#			else
-#				define HW_MODEL "MC-THERMO_NC"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	endif
+#	define HW_MODEL_STRING "MC"
 #elif defined(IMPULSE)
-#		define HW_MODEL "IMPULSE"
+#	define HW_MODEL_STRING "IMPULSE"
 #elif defined(DEBUG_NO_METER)
-#		define HW_MODEL "NO_METER"
+#	define HW_MODEL_STRING "NO_METER"
 #else
-#	ifdef THERMO_NO
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "FLOW-THERMO_NO-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "THERMO_NO-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "FLOW-THERMO_NO"
-#			else
-#				define HW_MODEL "THERMO_NO"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	else	// THERMO_NC
-#		ifdef THERMO_ON_AC_2
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "FLOW-THERMO_NC-THERMO_ON_AC_2"
-#			else
-#				define HW_MODEL "THERMO_NC-THERMO_ON_AC_2"
-#			endif	// FORCED_FLOW_METER
-#		else
-#			ifdef FORCED_FLOW_METER
-#				define HW_MODEL "FLOW-THERMO_NC"
-#			else
-#				define HW_MODEL "THERMO_NC"
-#			endif	// FORCED_FLOW_METER
-#		endif	// THERMO_ON_AC_2
-#	endif
+#	define HW_MODEL_STRING "KMP"
 #endif
 
+#ifdef FORCED_FLOW_METER
+#	define FORCED_FLOW_METER_STRING "-FLOW"
+#else
+#	define FORCED_FLOW_METER_STRING ""
+#endif	// FORCED_FLOW_METER
+
+#if defined(IMPULSE)
+#	define THERMO_TYPE_STRING ""
+#else
+#	ifdef THERMO_NO
+#		define THERMO_TYPE_STRING "-THERMO_NO"
+#	else	// THERMO_NC
+#		define THERMO_TYPE_STRING "-THERMO_NC"
+#	endif	// THERMO_NO
+#endif	// IMPULSE
+
+#ifdef THERMO_ON_AC_2
+#	define THERMO_ON_AC_2_STRING "-THERMO_ON_AC_2"
+#else
+#	define THERMO_ON_AC_2_STRING ""
+#endif	// THERMO_ON_AC_2
+
+#ifndef AUTO_CLOSE	// reversed!
+#	define AUTO_CLOSE_STRING "-NO_AUTO_CLOSE"
+#else
+#	define AUTO_CLOSE_STRING ""
+#endif	// AUTO_CLOSE
+
+#define HW_MODEL (HW_MODEL_STRING FORCED_FLOW_METER_STRING THERMO_TYPE_STRING THERMO_ON_AC_2_STRING AUTO_CLOSE_STRING)
