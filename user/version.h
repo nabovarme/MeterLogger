@@ -16,7 +16,7 @@
 #	define FORCED_FLOW_METER_STRING ""
 #endif	// FORCED_FLOW_METER
 
-#if defined(IMPULSE) || defined(NO_METER)
+#if defined(IMPULSE) || defined(DEBUG_NO_METER)
 #	define THERMO_TYPE_STRING ""
 #else
 #	ifdef THERMO_NO
