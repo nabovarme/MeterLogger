@@ -178,6 +178,10 @@ else
     WIFI_SSID = "KAM_$(SERIAL)"
 endif
 
+ifeq ($(AUTO_CLOSE), 1)
+    CFLAGS += -DAUTO_CLOSE
+endif
+
 ifeq ($(THERMO_NO), 1)
     CFLAGS += -DTHERMO_NO
 endif

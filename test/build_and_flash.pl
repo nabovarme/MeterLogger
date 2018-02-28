@@ -25,6 +25,10 @@ if ($sth->rows) {
 	my $key = $_->{key} || warn "no aes key found\n";
 	my $sw_version = $_->{sw_version} || warn "no sw_version found\n";
                 
+	unless ($_->{sw_version} =~ /NO_AUTO_CLOSE/) {	# reversed!
+		$DEFAULT_BUILD_VARS .= ' AUTO_CLOSE=1';
+	}
+
 	if ($_->{sw_version} =~ /THERMO_ON_AC_2/) {
 		$DEFAULT_BUILD_VARS .= ' THERMO_ON_AC_2=1';
 	}

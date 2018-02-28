@@ -1294,6 +1294,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(THERMO_NC)\n\r");
 #endif
 
+#ifndef AUTO_CLOSE	// reversed!
+	printf("\t(NO_AUTO_CLOSE)\n\r");
+#endif
+
 #ifdef THERMO_ON_AC_2
 	printf("\t(THERMO_ON_AC_2)\n\r");
 #endif
@@ -1390,12 +1394,16 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	// start config mode/sample mode in meter_is_ready() via callback
 #ifdef EN61107
 	en61107_register_meter_is_ready_cb(meter_is_ready);
+#ifdef AUTO_CLOSE
 	en61107_register_meter_sent_data_cb(meter_sent_data);
+#endif	// AUTO_CLOSE
 #elif defined IMPULSE
 	meter_is_ready();
 #else
 	kmp_register_meter_is_ready_cb(meter_is_ready);
+#ifdef AUTO_CLOSE
 	kmp_register_meter_sent_data_cb(meter_sent_data);
+#endif	// AUTO_CLOSE
 #endif
 
 	// wait 10 seconds before starting wifi and let the meter boot

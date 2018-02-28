@@ -63,6 +63,9 @@ meter type is en61107, sub type Multical 66 B
 FORCED_FLOW_METER=1  
 meter is forced to run as a flow meter and close when volume is reached  
   
+AUTO_CLOSE=1  
+automatically check if energy is larger than the value set by open_until mqtt command 
+  
 THERMO_NO=0  
 thermo actuator is normal closed  
   
