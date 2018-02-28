@@ -1,45 +1,45 @@
-#ifdef MC_66B
+#if MC_66B
 #	define HW_MODEL_STRING "MC-B"
-#elif defined(EN61107)
+#elif EN61107
 #	define HW_MODEL_STRING "MC"
-#elif defined(IMPULSE)
+#elif IMPULSE
 #	define HW_MODEL_STRING "IMPULSE"
-#elif defined(DEBUG_NO_METER)
+#elif DEBUG_NO_METER
 #	define HW_MODEL_STRING "NO_METER"
 #else
 #	define HW_MODEL_STRING "KMP"
 #endif
 
-#ifdef FORCED_FLOW_METER
+#if FORCED_FLOW_METER
 #	define FORCED_FLOW_METER_STRING "-FLOW"
 #else
 #	define FORCED_FLOW_METER_STRING ""
 #endif	// FORCED_FLOW_METER
 
-#if defined(IMPULSE) || defined(DEBUG_NO_METER)
+#if IMPULSE || DEBUG_NO_METER
 #	define THERMO_TYPE_STRING ""
 #else
-#	ifdef THERMO_NO
+#	if THERMO_NO
 #		define THERMO_TYPE_STRING "-THERMO_NO"
 #	else	// THERMO_NC
 #		define THERMO_TYPE_STRING "-THERMO_NC"
 #	endif	// THERMO_NO
 #endif	// // not IMPULSE or DEBUG_NO_METER
 
-#if defined(IMPULSE) || defined(DEBUG_NO_METER)
+#if IMPULSE || DEBUG_NO_METER
 #	define THERMO_ON_AC_2_STRING ""
 #else
-#	ifdef THERMO_ON_AC_2
+#	if THERMO_ON_AC_2
 #		define THERMO_ON_AC_2_STRING "-THERMO_ON_AC_2"
 #	else
 #		define THERMO_ON_AC_2_STRING ""
 #	endif	// THERMO_ON_AC_2
 #endif	// // not IMPULSE or DEBUG_NO_METER
 
-#ifndef AUTO_CLOSE	// reversed!
-#	define AUTO_CLOSE_STRING "-NO_AUTO_CLOSE"
+#if AUTO_CLOSE
+#	define AUTO_CLOSE_STRING ""		// default
 #else
-#	define AUTO_CLOSE_STRING ""
+#	define AUTO_CLOSE_STRING "-NO_AUTO_CLOSE"
 #endif	// AUTO_CLOSE
 
 #define HW_MODEL (HW_MODEL_STRING FORCED_FLOW_METER_STRING THERMO_TYPE_STRING THERMO_ON_AC_2_STRING AUTO_CLOSE_STRING)

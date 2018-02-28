@@ -1288,7 +1288,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(FORCED_FLOW_METER)\n\r");
 #endif
 
-#if !(defined(IMPULSE) || defined(DEBUG_NO_METER))
+#if !(IMPULSE || DEBUG_NO_METER)
 #ifdef THERMO_NO
 	printf("\t(THERMO_NO)\n\r");
 #else
@@ -1296,7 +1296,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif
 #endif	// not IMPULSE or DEBUG_NO_METER
 
-#if !defined(IMPULSE) || !defined(DEBUG_NO_METER)
+#if !(IMPULSE || DEBUG_NO_METER)
 #ifdef THERMO_ON_AC_2
 	printf("\t(THERMO_ON_AC_2)\n\r");
 #endif
