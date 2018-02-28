@@ -24,13 +24,17 @@
 #	else	// THERMO_NC
 #		define THERMO_TYPE_STRING "-THERMO_NC"
 #	endif	// THERMO_NO
-#endif	// IMPULSE
+#endif	// // not IMPULSE or DEBUG_NO_METER
 
-#ifdef THERMO_ON_AC_2
-#	define THERMO_ON_AC_2_STRING "-THERMO_ON_AC_2"
-#else
+#if defined(IMPULSE) || defined(DEBUG_NO_METER)
 #	define THERMO_ON_AC_2_STRING ""
-#endif	// THERMO_ON_AC_2
+#else
+#	ifdef THERMO_ON_AC_2
+#		define THERMO_ON_AC_2_STRING "-THERMO_ON_AC_2"
+#	else
+#		define THERMO_ON_AC_2_STRING ""
+#	endif	// THERMO_ON_AC_2
+#endif	// // not IMPULSE or DEBUG_NO_METER
 
 #ifndef AUTO_CLOSE	// reversed!
 #	define AUTO_CLOSE_STRING "-NO_AUTO_CLOSE"
