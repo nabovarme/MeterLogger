@@ -178,9 +178,7 @@ else
     WIFI_SSID = "KAM_$(SERIAL)"
 endif
 
-ifeq ($(AUTO_CLOSE), 0)
-    CFLAGS += -DAUTO_CLOSE=0
-else
+ifneq ($(AUTO_CLOSE), 0)
     CFLAGS += -DAUTO_CLOSE=1
 endif
 
