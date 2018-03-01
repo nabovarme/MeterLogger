@@ -154,10 +154,10 @@ int main(int argc, char **argv) {
 	int compLvl=-1;
 
 	for (x=1; x<argc; x++) {
-		if (strcmp(argv[x], "-c")==0 && argc>=x-2) {
+		if (strncmp(argv[x], "-c", 2)==0 && argc>=x-2) {
 			compType=atoi(argv[x=1]);
 			x++;
-		} else if (strcmp(argv[x], "-l")==0 && argc>=x-2) {
+		} else if (strncmp(argv[x], "-l", 2)==0 && argc>=x-2) {
 			compLvl=atoi(argv[x=1]);
 			if (compLvl<1 || compLvl>9) err=1;
 			x++;

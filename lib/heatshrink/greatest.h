@@ -507,27 +507,27 @@ greatest_run_info greatest_info
             greatest_info.width = GREATEST_DEFAULT_WIDTH;               \
         }                                                               \
         for (i = 1; i < argc; i++) {                                    \
-            if (0 == strcmp("-t", argv[i])) {                           \
+            if (0 == strncmp("-t", argv[i], 2)) {                           \
                 if (argc <= i + 1) {                                    \
                     greatest_usage(argv[0]);                            \
                     exit(EXIT_FAILURE);                                 \
                 }                                                       \
                 greatest_info.test_filter = argv[i+1];                  \
                 i++;                                                    \
-            } else if (0 == strcmp("-s", argv[i])) {                    \
+            } else if (0 == strncmp("-s", argv[i], 2)) {                    \
                 if (argc <= i + 1) {                                    \
                     greatest_usage(argv[0]);                            \
                     exit(EXIT_FAILURE);                                 \
                 }                                                       \
                 greatest_info.suite_filter = argv[i+1];                 \
                 i++;                                                    \
-            } else if (0 == strcmp("-f", argv[i])) {                    \
+            } else if (0 == strncmp("-f", argv[i], 2)) {                    \
                 greatest_info.flags |= GREATEST_FLAG_FIRST_FAIL;        \
-            } else if (0 == strcmp("-v", argv[i])) {                    \
+            } else if (0 == strncmp("-v", argv[i], 2)) {                    \
                 greatest_info.flags |= GREATEST_FLAG_VERBOSE;           \
-            } else if (0 == strcmp("-l", argv[i])) {                    \
+            } else if (0 == strncmp("-l", argv[i], 2)) {                    \
                 greatest_info.flags |= GREATEST_FLAG_LIST_ONLY;         \
-            } else if (0 == strcmp("-h", argv[i])) {                    \
+            } else if (0 == strncmp("-h", argv[i], 2)) {                    \
                 greatest_usage(argv[0]);                                \
                 exit(EXIT_SUCCESS);                                     \
             } else {                                                    \
