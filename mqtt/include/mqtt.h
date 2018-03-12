@@ -101,6 +101,7 @@ typedef struct  {
 	MqttCallback connectedCb;
 	MqttCallback disconnectedCb;
 	MqttCallback publishedCb;
+	MqttCallback pingrespCb;
 	MqttCallback timeoutCb;
 	MqttDataCallback dataCb;
 	ETSTimer mqttTimer;

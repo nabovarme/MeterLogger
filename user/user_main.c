@@ -131,6 +131,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnConnected(&mqtt_client, mqtt_connected_cb);
 	MQTT_OnDisconnected(&mqtt_client, mqtt_disconnected_cb);
 	MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
+	MQTT_OnPingResp(&mqtt_client, mqtt_ping_response_cb);
 	MQTT_OnData(&mqtt_client, mqtt_data_cb);
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
@@ -596,6 +597,10 @@ ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args) {
+	reset_watchdog(MQTT_WATCHDOG_ID);
+}
+
+ICACHE_FLASH_ATTR void mqtt_ping_response_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
 }
 

@@ -130,6 +130,14 @@ deliver_publish(MQTT_Client* client, uint8_t* message, int length)
 
 }
 
+LOCAL void ICACHE_FLASH_ATTR
+deliver_pingresp(MQTT_Client* client, uint8_t* message, int length)
+{
+	if (client->pingrespCb)
+		client->pingrespCb((uint32_t*)client);
+
+}
+
 void ICACHE_FLASH_ATTR
 mqtt_send_keepalive(MQTT_Client *client) {
 	if (client->pCon->state == ESPCONN_WRITE) {
@@ -280,6 +288,7 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 	mqttClient->publishedCb = NULL;
 	mqttClient->timeoutCb = NULL;
 	mqttClient->dataCb = NULL;
+	mqttClient->pingrespCb = NULL;
 
 	INFO("MQTT: client already deleted\r\n");
 }
@@ -417,7 +426,7 @@ READPACKET:
 				}
 				break;
 			case MQTT_MSG_TYPE_PINGRESP:
-				// Ignore
+				deliver_pingresp(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
 				break;
 			}
 			// NOTE: this is done down here and not in the switch case above
@@ -999,6 +1008,12 @@ void ICACHE_FLASH_ATTR
 MQTT_OnPublished(MQTT_Client *mqttClient, MqttCallback publishedCb)
 {
 	mqttClient->publishedCb = publishedCb;
+}
+
+void ICACHE_FLASH_ATTR
+MQTT_OnPingResp(MQTT_Client *mqttClient, MqttCallback pingrespCb)
+{
+	mqttClient->pingrespCb = pingrespCb;
 }
 
 void ICACHE_FLASH_ATTR
