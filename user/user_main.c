@@ -251,7 +251,6 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		if (mqtt_client.pCon != NULL) {
 			// if mqtt_client is initialized
 			MQTT_Ping(&mqtt_client);
-			reset_watchdog(MQTT_WATCHDOG_ID);
 		}
 	}
 
