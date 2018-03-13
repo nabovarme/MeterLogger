@@ -355,6 +355,7 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 	}
 }
 
+#ifndef IMPULSE
 ICACHE_FLASH_ATTR void meter_sent_data(void) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
@@ -362,7 +363,6 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
 
-#ifndef IMPULSE
 	// compare last received energy to offline_close_at and close if needed
 #ifdef EN61107
 #ifdef FORCED_FLOW_METER
@@ -473,8 +473,8 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 	}
 #endif	// EN61107
 #endif	// FORCED_FLOW_METER
-#endif	// IMPULSE
 }
+#endif	// IMPULSE
 
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
