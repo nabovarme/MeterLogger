@@ -24,3 +24,4 @@
 
 // missing from sdk supplied include files
 void ets_isr_unmask(unsigned intr);
+void ets_isr_mask(unsigned intr);
