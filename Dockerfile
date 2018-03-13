@@ -20,6 +20,7 @@ MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 RUN "echo" "deb http://http.us.debian.org/debian jessie non-free" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
+	aptitude \
 	autoconf \
 	automake \
 	bash \
@@ -32,6 +33,7 @@ RUN apt-get update && apt-get install -y \
 	git \
 	gperf \
 	help2man \
+	joe \
 	libexpat-dev \
 	libtool \
 	libtool-bin \
@@ -67,7 +69,6 @@ USER meterlogger
 
 # esp-open-sdk
 RUN cd /meterlogger && git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
-RUN perl -pi -e 's/VENDOR_SDK = .*/VENDOR_SDK = 2.1.0/' /meterlogger/esp-open-sdk/Makefile
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
