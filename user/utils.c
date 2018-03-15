@@ -232,7 +232,6 @@ int query_string_escape(char *str, size_t size) {
 			memmove(p + 3, p + 1, len - (p - str) + 1);
 			memcpy(p, "\%26", 3);
 			len_escaped += 2;
-			memcpy(str + len_escaped, "\0", 1);  // null terminate
 		}
 		else {
 			return -1;
@@ -248,7 +247,6 @@ int query_string_escape(char *str, size_t size) {
 			memmove(p + 3, p + 1, len - (p - str) + 1);
 			memcpy(p, "\%61", 3);
 			len_escaped += 2;
-			memcpy(str + len_escaped, "\0", 1);  // null terminate
 		}
 		else {
 			return -1;
