@@ -218,22 +218,39 @@ int int_pow(int x, int y) {
 }
 
 ICACHE_FLASH_ATTR
-int query_string_escape(char *str) {
+int query_string_escape(char *str, size_t size) {
 	char *p;
 	int len;
+	int len_escaped;
 	
 	// replace "&" with "%26";
 	len = strlen(str);
+	len_escaped = len;
 	for (p = str; (p = strstr(p, "&")); ++p) {
-		memmove(p + 3, p + 1, len - (p - str) + 1);
-		memcpy(p, "\%26", 3);
+		if (len_escaped + 2 <= size - 1) {
+			// if escaped string is inside bounds
+			memmove(p + 3, p + 1, len - (p - str) + 1);
+			memcpy(p, "\%26", 3);
+			len_escaped += 2;
+		}
+		else {
+			return -1;
+		}
 	}
 	
 	// and "=" with "%61";
 	len = strlen(str);
+	len_escaped = len;
 	for (p = str; (p = strstr(p, "=")); ++p) {
-		memmove(p + 3, p + 1, len - (p - str) + 1);
-		memcpy(p, "\%61", 3);
+		if (len_escaped + 2 <= size - 1) {
+			// if escaped string is inside bounds
+			memmove(p + 3, p + 1, len - (p - str) + 1);
+			memcpy(p, "\%61", 3);
+			len_escaped += 2;
+		}
+		else {
+			return -1;
+		}
 	}
 	return strlen(str);
 }
@@ -249,7 +266,7 @@ int query_string_unescape(char *str) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "&", 1);
 	}
-
+	
 	// and "%61" with "=";
 	len = strlen(str);
 	for (p = str; (p = strstr(p, "\%61")); ++p) {

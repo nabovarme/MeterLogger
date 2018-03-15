@@ -296,13 +296,19 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=");
 	strncpy(mqtt_message, sys_cfg.sta_ssid, MQTT_MESSAGE_L - 1);
 	// escape & and =
-	query_string_escape(mqtt_message);
+	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
+		// error
+		return;
+	}
 	strcat(cleartext, mqtt_message);
 	strcat(cleartext, "&pwd=");
 
 	strncpy(mqtt_message, sys_cfg.sta_pwd, MQTT_MESSAGE_L - 1);
 	// escape & and =
-	query_string_escape(mqtt_message);
+	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
+		// error
+		return;
+	}
 	strcat(cleartext, mqtt_message);
 
 	// encrypt and send
