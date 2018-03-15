@@ -1,6 +1,7 @@
 #include <esp8266.h>
 #include "driver/uart.h"
 #include "mqtt.h"
+#include "mqtt_rpc.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
 #include "crypto/sha256.h"
@@ -63,8 +64,6 @@ static os_timer_t kmp_request_send_timer;
 static os_timer_t impulse_meter_calculate_timer;
 //static os_timer_t spi_test_timer;	// DEBUG
 #endif
-
-struct rst_info *rtc_info;
 
 #ifdef AP
 uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
@@ -300,6 +299,8 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void meter_is_ready(void) {
+	struct rst_info *rtc_info;
+	rtc_info = system_get_rst_info();
 	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
 		// fast boot if reset, go in sample/station mode
 #ifdef DEBUG
@@ -611,21 +612,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
-	int mqtt_message_l;
 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
-	// for parsing query string formatted parameters
-	#define QUERY_STRING_KEY_VALUE_L     64
-	char *query_string_key, *query_string_value;
-	char query_string_key_value[QUERY_STRING_KEY_VALUE_L];
-	char *context_query_string, *context_key_value;
-
 	uint32_t received_unix_time = 0;
 	
-	char decimal_str[8];	// temp var for divide_str_by_ functions
-
 	uint8_t i;
 
 #ifdef DEBUG
@@ -675,543 +667,122 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		str = strtok(NULL, "/");
 		i++;
 	}
+	
+	// replay attack countermeasure - 1 hour time window
+	if ((received_unix_time < (get_unix_time() - 1800)) || (received_unix_time > (get_unix_time() + 1800))) {
+		return;
+	}
+	
 	// ..and clear for further use
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	
 	// mqtt rpc dispatcher goes here
 	if (strncmp(function_name, "ping", FUNCTIONNAME_L) == 0) {
 		// found ping
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_ping(&mqtt_client);
 	}
 	else if (strncmp(function_name, "version", FUNCTIONNAME_L) == 0) {
 		// found version
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), VERSION, HW_MODEL);
-
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_version(&mqtt_client);
 	}
 	else if (strncmp(function_name, "uptime", FUNCTIONNAME_L) == 0) {
 		// found uptime
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_uptime(&mqtt_client);
 	}
 	else if (strncmp(function_name, "vdd", FUNCTIONNAME_L) == 0) {
 		// found vdd - get voltage level
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(decimal_str, 8, "%u", system_get_vdd33());
-		divide_str_by_1000(decimal_str, cleartext);
-#ifdef DEBUG
-		printf("vdd: %s\n", cleartext);
-#endif
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_vdd(&mqtt_client);
 	}
 	else if (strncmp(function_name, "rssi", FUNCTIONNAME_L) == 0) {
 		// found rssi
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", wifi_get_rssi());
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_rssi(&mqtt_client);
 	}
 	else if (strncmp(function_name, "ssid", FUNCTIONNAME_L) == 0) {
 		// found ssid
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_ssid(&mqtt_client);
 	}
 	else if (strncmp(function_name, "scan", FUNCTIONNAME_L) == 0) {
 		// found set_ssid
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-			// reguster wifi scan callback to handle scan results when we do normal scanning in wifi.c
-			// wifi_scan_result_cb_unregister() is called from wifi.c when scan is done
-			wifi_scan_result_cb_register(mqtt_send_wifi_scan_results_cb);
-		}
+		mqtt_rpc_scan(&mqtt_client);
 	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
 		// found set_ssid
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-			// change sta_ssid, save if different
-			if (strncmp(sys_cfg.sta_ssid, cleartext, 32 - 1) != 0) {
-				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
-				cfg_save();
-			}
-
-			// send mqtt reply
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-		}
+		mqtt_rpc_set_ssid(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
 		// found set_pwd
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-			// change sta_pwd, save if different
-			if (strncmp(sys_cfg.sta_pwd, cleartext, 64 - 1) != 0) {
-				memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
-				cfg_save();
-			}
-
-			// send mqtt reply
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_pwd);
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-		}
+		mqtt_rpc_set_pwd(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "set_ssid_pwd", FUNCTIONNAME_L) == 0) {
 		// found reconnect
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-#ifdef DEBUG
-			printf("param: %s\n", cleartext);
-#endif	// DEBUG
-			str = strtok_r(cleartext, "&", &context_query_string);
-			while (str != NULL) {
-				strncpy(query_string_key_value, str, QUERY_STRING_KEY_VALUE_L);
-				query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
-				query_string_value = strtok_r(NULL, "=", &context_key_value);
-				if (strncmp(query_string_key, "ssid", QUERY_STRING_KEY_VALUE_L) == 0) {
-					// un-escape & and =
-					query_string_unescape(query_string_value);
-					
-					// change sta_ssid, save if different
-#ifdef DEBUG
-					printf("key: %s value: %s\n", query_string_key, query_string_value);
-#endif	// DEBUG
-					if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
-						memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-						strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
-						cfg_save();
-					}
-				}
-				else if (strncmp(query_string_key, "pwd", QUERY_STRING_KEY_VALUE_L) == 0) {
-					// change sta_pwd, save if different
-					if (query_string_value == 0) {
-						// there is no value - no password used, use null string
-#ifdef DEBUG
-						printf("key: %s value: %s\n", query_string_key, "null");
-#endif	// DEBUG
-						if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
-							memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-							strncpy(sys_cfg.sta_pwd, "", 1);
-							cfg_save();
-						}
-					}
-					else {
-						// un-escape & and =
-						query_string_unescape(query_string_value);
-#ifdef DEBUG
-						printf("key: %s value: %s\n", query_string_key, query_string_value);
-#endif	// DEBUG
-						if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
-							memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-							strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
-							cfg_save();
-						}
-					}
-				}
-				str = strtok_r(NULL, "&", &context_query_string);
-			}
-			
-			// send mqtt reply
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=");
-			strncpy(mqtt_message, sys_cfg.sta_ssid, MQTT_MESSAGE_L - 1);
-			// escape & and =
-			query_string_escape(mqtt_message);
-			strcat(cleartext, mqtt_message);
-			strcat(cleartext, "&pwd=");
-
-			strncpy(mqtt_message, sys_cfg.sta_pwd, MQTT_MESSAGE_L - 1);
-			// escape & and =
-			query_string_escape(mqtt_message);
-			strcat(cleartext, mqtt_message);
-
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		}
+		mqtt_rpc_set_ssid_pwd(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
 		// found reconnect
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-			// reconnect with new password
-			MQTT_Disconnect(&mqtt_client);
-		}
+		mqtt_rpc_reconnect(&mqtt_client);
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {
 		// found uptime
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", wifi_get_status() ? "connected" : "disconnected");
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-	}
-	else if (strncmp(function_name, "ap_status", FUNCTIONNAME_L) == 0) {
-		// found uptime
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", (wifi_get_opmode() != STATION_MODE) ? "started" : "stopped");
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_wifi_status(&mqtt_client);
 	}
 #ifdef AP
+	else if (strncmp(function_name, "ap_status", FUNCTIONNAME_L) == 0) {
+		// found ap_status
+		mqtt_rpc_ap_status(&mqtt_client);
+	}
 	else if (strncmp(function_name, "start_ap", FUNCTIONNAME_L) == 0) {
-		// found reconnect
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-
-			// start AP
-			if (wifi_get_opmode() != STATIONAP_MODE) {
-				wifi_set_opmode_current(STATIONAP_MODE);
-				wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
-				wifi_softap_ip_config();
-			
-				// ...and save setting to flash if changed
-				if (sys_cfg.ap_enabled == false) {
-					sys_cfg.ap_enabled = true;
-					cfg_save();
-				}
-			}			
-		}
+		// found start_ap
+		mqtt_rpc_start_ap(&mqtt_client, mesh_ssid);
 	}
 	else if (strncmp(function_name, "stop_ap", FUNCTIONNAME_L) == 0) {
-		// found reconnect
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			
-			// stop AP
-			if (wifi_get_opmode() != STATION_MODE) {
-				wifi_set_opmode_current(STATION_MODE);
-				
-				// ...and save setting to flash if changed
-				if (sys_cfg.ap_enabled == true) {
-					sys_cfg.ap_enabled = false;
-					cfg_save();
-				}
-			}
-		}
+		// found stop_ap
+		mqtt_rpc_stop_ap(&mqtt_client);
 	}
-#endif
+#endif	// AP
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u", system_get_free_heap_size());
-		memset(cleartext, 0, sizeof(cleartext));
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-#ifdef DEBUG
-		system_print_meminfo();
-#endif
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_mem(&mqtt_client);
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), VERSION, HW_MODEL);
-
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_crypto(&mqtt_client);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
-		// found mem
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		// found reset_reason
+		mqtt_rpc_reset_reason(&mqtt_client);
 	}
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			add_cron_job_from_query(cleartext);
-		}
+		mqtt_rpc_set_cron(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "clear_cron", FUNCTIONNAME_L) == 0) {
 		// found clear_cron
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			clear_cron_jobs();
-		}
+		mqtt_rpc_clear_cron(&mqtt_client);
 	}
 	else if (strncmp(function_name, "cron", FUNCTIONNAME_L) == 0) {
 		// found cron
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		mqtt_rpc_cron(&mqtt_client);
 	}
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			//ac_motor_valve_open();
-			ac_thermo_open();
-		}
+		mqtt_rpc_open(&mqtt_client);
 	}
 	else if (strncmp(function_name, "open_until", FUNCTIONNAME_L) == 0) {
 		// found open_until
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			ac_thermo_open();
-			if (sys_cfg.offline_close_at != atoi(cleartext)) {
-				// save if changed
-#ifdef EN61107
-				sys_cfg.offline_close_at = atoi(cleartext);
-#else
-				sys_cfg.offline_close_at = atoi(cleartext);
-#endif
-				cfg_save();
-			}
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at);
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-
-			// send status
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-		}
+		mqtt_rpc_open_until(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "open_until_delta", FUNCTIONNAME_L) == 0) {
 		// found open_until_delta
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			// replay attack countermeasure - 1 hour time window
-			ac_thermo_open();
-			if (sys_cfg.offline_close_at != atoi(cleartext)) {
-				// save if changed
-#ifdef EN61107
-#ifdef FORCED_FLOW_METER
-				sys_cfg.offline_close_at = en61107_get_received_volume_m3() + atoi(cleartext);
-#else
-				sys_cfg.offline_close_at = en61107_get_received_energy_kwh() + atoi(cleartext);
-#endif	// FORCED_FLOW_METER
-#else
-#ifdef FORCED_FLOW_METER
-				sys_cfg.offline_close_at = kmp_get_received_volume_m3() + atoi(cleartext);
-#else
-				sys_cfg.offline_close_at = kmp_get_received_energy_kwh() + atoi(cleartext);
-#endif	// FORCED_FLOW_METER
-#endif
-				cfg_save();
-			}
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-#ifdef EN61107
-#ifdef FORCED_FLOW_METER
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_volume_m3());
-#else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
-#endif	// FORCED_FLOW_METER
-#else
-#ifdef FORCED_FLOW_METER
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_volume_m3());
-#else
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
-#endif	// FORCED_FLOW_METER
-#endif
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-
-			// send status
-#ifdef EN61107
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-			memset(cleartext, 0, sizeof(cleartext));
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
-			// encrypt and send
-			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-		}
+		mqtt_rpc_open_until_delta(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "close", FUNCTIONNAME_L) == 0) {
 		// found close
-		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
-			//ac_motor_valve_close();
-			ac_thermo_close();
-		}
+		mqtt_rpc_close(&mqtt_client);
 	}
 	else if (strncmp(function_name, "status", FUNCTIONNAME_L) == 0) {
 		// found status
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-		memset(cleartext, 0, sizeof(cleartext));
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
-		// encrypt and send
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-	}
-	else if (strncmp(function_name, "off", FUNCTIONNAME_L) == 0) {
-		// found off
-		// turn ac output off
-		ac_off();
-	}
-	else if (strncmp(function_name, "pwm", FUNCTIONNAME_L) == 0) {
-		// found pwm
-		// start ac 1 pwm
-		ac_thermo_pwm(atoi(data));
-	}
-	else if (strncmp(function_name, "test", FUNCTIONNAME_L) == 0) {
-		// found test
-		ac_test();
+		mqtt_rpc_status(&mqtt_client);
 	}
 #endif
 }
@@ -1496,8 +1067,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
-	rtc_info = system_get_rst_info();
 #ifdef DEBUG
+	struct rst_info *rtc_info;
+	rtc_info = system_get_rst_info();
 	printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 	if (rtc_info->reason == REASON_WDT_RST || rtc_info->reason == REASON_EXCEPTION_RST || rtc_info->reason == REASON_SOFT_WDT_RST) {
 		if (rtc_info->reason == REASON_EXCEPTION_RST) {
