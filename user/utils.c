@@ -256,5 +256,6 @@ int query_string_unescape(char *str) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "=", 1);
 	}
+	return strlen(str);
 }
 
