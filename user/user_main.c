@@ -616,6 +616,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
+	// for parsing query string formatted parameters
+	#define QUERY_STRING_KEY_VALUE_L     64
+	char *query_string_key, *query_string_value;
+	char query_string_key_value[QUERY_STRING_KEY_VALUE_L];
+	char *context_query_string, *context_key_value;
+
 	uint32_t received_unix_time = 0;
 	
 	char decimal_str[8];	// temp var for divide_str_by_ functions
@@ -789,6 +795,20 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				strncpy(sys_cfg.sta_ssid, cleartext, 32 - 1);
 				cfg_save();
 			}
+
+			// send mqtt reply
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+			memset(cleartext, 0, sizeof(cleartext));
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 		}
 	}
 	else if (strncmp(function_name, "set_pwd", FUNCTIONNAME_L) == 0) {
@@ -802,6 +822,102 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 				strncpy(sys_cfg.sta_pwd, cleartext, 64 - 1);
 				cfg_save();
 			}
+
+			// send mqtt reply
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+			memset(cleartext, 0, sizeof(cleartext));
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_pwd);
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+		}
+	}
+	else if (strncmp(function_name, "set_ssid_pwd", FUNCTIONNAME_L) == 0) {
+		// found reconnect
+		if ((received_unix_time > (get_unix_time() - 1800)) && (received_unix_time < (get_unix_time() + 1800))) {
+			// replay attack countermeasure - 1 hour time window
+
+#ifdef DEBUG
+			printf("param: %s\n", cleartext);
+#endif	// DEBUG
+			str = strtok_r(cleartext, "&", &context_query_string);
+			while (str != NULL) {
+				strncpy(query_string_key_value, str, QUERY_STRING_KEY_VALUE_L);
+				query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
+				query_string_value = strtok_r(NULL, "=", &context_key_value);
+				if (strncmp(query_string_key, "ssid", QUERY_STRING_KEY_VALUE_L) == 0) {
+					// un-escape & and =
+					query_string_unescape(query_string_value);
+					
+					// change sta_ssid, save if different
+#ifdef DEBUG
+					printf("key: %s value: %s\n", query_string_key, query_string_value);
+#endif	// DEBUG
+					if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
+						memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
+						strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
+						cfg_save();
+					}
+				}
+				else if (strncmp(query_string_key, "pwd", QUERY_STRING_KEY_VALUE_L) == 0) {
+					// change sta_pwd, save if different
+					if (query_string_value == 0) {
+						// there is no value - no password used, use null string
+#ifdef DEBUG
+						printf("key: %s value: %s\n", query_string_key, "null");
+#endif	// DEBUG
+						if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
+							memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+							strncpy(sys_cfg.sta_pwd, "", 1);
+							cfg_save();
+						}
+					}
+					else {
+						// un-escape & and =
+						query_string_unescape(query_string_value);
+#ifdef DEBUG
+						printf("key: %s value: %s\n", query_string_key, query_string_value);
+#endif	// DEBUG
+						if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
+							memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+							strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
+							cfg_save();
+						}
+					}
+				}
+				str = strtok_r(NULL, "&", &context_query_string);
+			}
+			
+			// send mqtt reply
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+			memset(cleartext, 0, sizeof(cleartext));
+			
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=");
+			strncpy(mqtt_message, sys_cfg.sta_ssid, MQTT_MESSAGE_L - 1);
+			// escape & and =
+			query_string_escape(mqtt_message);
+			strcat(cleartext, mqtt_message);
+			strcat(cleartext, "&pwd=");
+
+			strncpy(mqtt_message, sys_cfg.sta_pwd, MQTT_MESSAGE_L - 1);
+			// escape & and =
+			query_string_escape(mqtt_message);
+			strcat(cleartext, mqtt_message);
+
+			// encrypt and send
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		}
 	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
@@ -890,7 +1006,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&", system_get_free_heap_size());
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u", system_get_free_heap_size());
 		memset(cleartext, 0, sizeof(cleartext));
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);

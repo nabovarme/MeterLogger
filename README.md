@@ -113,6 +113,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/scan                    |                                                                    |
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                             |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                              |
+| /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                             |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                    |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                              |
 | /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                               |
@@ -137,11 +138,14 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /vdd/v2/9999999/[unix time]                     | [power supply voltage level]                                                                         |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
-| /scan_result/v2/9999999/[unix time]             | ssid=Loppen Public&rssi=-51&channel=11                                                               |
+| /set_ssid/v2/9999999/[unix time]                | [ssid of the wifi it is set to connect to]                                                           |
+| /set_pwd/v2/9999999/[unix time]                 | [password for the wifi it is set to connect to]                                                      |
+| /set_ssid_pwd/v2/9999999/[unix time]            | [combined ssid and password for the wifi it is set to connect to]                                    |
+| /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
 | /ap_status/v2/9999999/[unix time]               | [started or stopped]                                                                                 |
 | /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
-| /mem/v2/9999999/[unix time]                     | heap=9672&                                                                                           |
+| /mem/v2/9999999/[unix time]                     | heap=9672                                                                                            |
 | /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
 
 

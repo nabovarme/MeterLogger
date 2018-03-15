@@ -1,4 +1,6 @@
 #include <esp8266.h>
+#include <string.h>
+
 //#include "mqtt.h"
 #include "config.h"
 #include "user_config.h"
@@ -154,10 +156,10 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 	uint8_t decimals = 0;
 	uint8_t prepend_zeroes;
 	char zeroes[8];
-    
+	
 	memcpy(cleaned_up_str, decimal_str, length);
 	cleaned_up_str[length] = 0;	// null terminate
-    
+	
 	pos = strstr(cleaned_up_str, ".");
 	if (pos == NULL) {
 		// non fractional number
@@ -172,17 +174,17 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 		}
 		value_frac = atoi(pos + 1);
 		prepend_zeroes = decimals - decimal_number_length(atoi(pos + 1));
-        
+		
 		zeroes[0] = 0;	// null terminate
 		while (prepend_zeroes--) {
 			strcat(zeroes, "0");
 		}
-        
+		
 		// parse int
 		strncpy(cleaned_up_str, decimal_str, (pos - cleaned_up_str));
 		cleaned_up_str[cleaned_up_str - pos] = 0;	// null terminate
 		value_int = atoi(cleaned_up_str);
-        
+		
 		tfp_snprintf(cleaned_up_str, length, "%u.%s%u", value_int, zeroes, value_frac);
 	}
 }
@@ -213,5 +215,46 @@ int int_pow(int x, int y) {
 		result *= x;
 	}
 	return result;
+}
+
+ICACHE_FLASH_ATTR
+int query_string_escape(char *str) {
+	char *p;
+	int len;
+	
+	// replace "&" with "%26";
+	len = strlen(str);
+	for (p = str; (p = strstr(p, "&")); ++p) {
+		memmove(p + 3, p + 1, len - (p - str) + 1);
+		memcpy(p, "\%26", 3);
+	}
+	
+	// and "=" with "%61";
+	len = strlen(str);
+	for (p = str; (p = strstr(p, "=")); ++p) {
+		memmove(p + 3, p + 1, len - (p - str) + 1);
+		memcpy(p, "\%61", 3);
+	}
+	return strlen(str);
+}
+
+ICACHE_FLASH_ATTR
+int query_string_unescape(char *str) {
+	char *p;
+	int len;
+	
+	// replace "%26" with "&";
+	len = strlen(str);
+	for (p = str; (p = strstr(p, "\%26")); ++p) {
+		memmove(p + 1, p + 3, len - (p - str) + 1);
+		memcpy(p, "&", 1);
+	}
+
+	// and "%61" with "=";
+	len = strlen(str);
+	for (p = str; (p = strstr(p, "\%61")); ++p) {
+		memmove(p + 1, p + 3, len - (p - str) + 1);
+		memcpy(p, "=", 1);
+	}
 }
 
