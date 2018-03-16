@@ -1,4 +1,5 @@
 #include <esp8266.h>
+#include "driver/uart.h"
 #include "mqtt.h"
 #include "mqtt_rpc.h"
 #include "crypto/crypto.h"
