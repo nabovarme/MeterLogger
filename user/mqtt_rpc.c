@@ -476,12 +476,48 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 #ifndef IMPULSE
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
 	add_cron_job_from_query(query);
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(cleartext, 0, sizeof(cleartext));
+	strncpy(cleartext, query, MQTT_MESSAGE_L);
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_clear_cron(MQTT_Client *client) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
 	clear_cron_jobs();
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "");
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
 ICACHE_FLASH_ATTR

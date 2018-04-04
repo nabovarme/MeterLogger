@@ -224,30 +224,33 @@ void cron_init() {
 
 ICACHE_FLASH_ATTR
 unsigned int add_cron_job_from_query(char *query) {
-char *str;
+	char cron_params[MQTT_MESSAGE_L];
+	char *str;
 	char *key, *value;
 	char key_value[KEY_VALUE_L];
 	char command_params[COMMAND_PARAMS_L];
 	char *context_query_string, *context_key_value;
 	
+	strncpy(cron_params, query, MQTT_MESSAGE_L);	// work with a copy
+	
 	command_params[0] = 0;  // set zero length
 	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) {		// if there are room for more cron jobs
 		memset(&sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n], 0, sizeof(cron_job_t));
 		
-		str = strstr(query, "command=") + 8;						// get string after command=
+		str = strstr(cron_params, "command=") + 8;						// get string after command=
 		if (str != NULL) {
 			str = strtok_r(str, "=", &context_query_string);		// get function name
 			if (str != NULL) {
 				str = strtok_r(NULL, "", &context_query_string);	// get paramters to function
 				if (str != NULL) {
 					strncpy(command_params, str, COMMAND_PARAMS_L);
-					memcpy(query + (str - query), "\0", 1);			// truncate query after function
+					memcpy(cron_params + (str - cron_params), "\0", 1);			// truncate cron_params after function
 				}
 			}
 		}
 		
 		// parse mqtt message for query string
-		str = strtok_r(query, "&", &context_query_string);
+		str = strtok_r(cron_params, "&", &context_query_string);
 		while (str != NULL) {
 			strncpy(key_value, str, KEY_VALUE_L);
 			key = strtok_r(key_value, "=", &context_key_value);
