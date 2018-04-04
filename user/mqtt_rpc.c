@@ -453,6 +453,14 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 		
 	struct rst_info *rtc_info;
 	rtc_info = system_get_rst_info();
+
+	if (rtc_info->reason == REASON_WDT_RST || rtc_info->reason == REASON_EXCEPTION_RST || rtc_info->reason == REASON_SOFT_WDT_RST) {
+		if (rtc_info->reason == REASON_EXCEPTION_RST) {
+			os_printf("Fatal exception (%d):\n", rtc_info->exccause);
+		}
+		os_printf("epc1=0x%08x, epc2=0x%08x, epc3=0x%08x, excvaddr=0x%08x, depc=0x%08x\n", rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+	}
+	//xxx
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -461,7 +469,12 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", (rtc_info != NULL) ? rtc_info->reason : -1);
+	if (rtc_info != NULL) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+	}
+	else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", -1);
+	}
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
