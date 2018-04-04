@@ -1,11 +1,12 @@
-#define TOPIC_L         64
-#define MESSAGE_L       100
-#define FUNCTIONNAME_L  32
-#define KEY_VALUE_L     64
-#define COMMAND_L       32
+#define TOPIC_L				64
+#define MESSAGE_L			100
+#define FUNCTIONNAME_L		32
+#define KEY_VALUE_L			64
+#define COMMAND_L			32
+#define COMMAND_PARAMS_L	96
 
-#define CRON_JOBS_MAX   32
-#define CRON_FIELD_L    8
+#define CRON_JOBS_MAX		16
+#define CRON_FIELD_L		8
 
 // sample mqtt topic and message
 // char topic[] = "/config/v1/9999999/set_cron";
@@ -21,6 +22,7 @@ typedef struct {
     char month[CRON_FIELD_L];
     char day_of_week[CRON_FIELD_L];
     char command[COMMAND_L];
+	char command_params[COMMAND_PARAMS_L];
 } cron_job_t;
 
 typedef cron_job_t cron_job_list_t[CRON_JOBS_MAX];

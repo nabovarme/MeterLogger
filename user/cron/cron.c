@@ -20,7 +20,7 @@ void static minute_timer_func(void *arg) {
 	int previous_sunday;
 	int s;
 	
-	unix_time = get_unix_time() + (1 * 60 * 60);    // UTC + 1
+	unix_time = get_unix_time() + (1 * 60 * 60);	// UTC + 1
 	dt = gmtime(&unix_time);
 	
 	// compensate for daylight savings in Europe/Copenhagen
@@ -224,14 +224,29 @@ void cron_init() {
 
 ICACHE_FLASH_ATTR
 unsigned int add_cron_job_from_query(char *query) {
-	char *str;
+char *str;
 	char *key, *value;
 	char key_value[KEY_VALUE_L];
+	char command_params[COMMAND_PARAMS_L];
 	char *context_query_string, *context_key_value;
 	
+	command_params[0] = 0;  // set zero length
 	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) {		// if there are room for more cron jobs
-		// parse mqtt message for query string
 		memset(&sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n], 0, sizeof(cron_job_t));
+		
+		str = strstr(query, "command=") + 8;						// get string after command=
+		if (str != NULL) {
+			str = strtok_r(str, "=", &context_query_string);		// get function name
+			if (str != NULL) {
+				str = strtok_r(NULL, "", &context_query_string);	// get paramters to function
+				if (str != NULL) {
+					strncpy(command_params, str, COMMAND_PARAMS_L);
+					memcpy(query + (str - query), "\0", 1);			// truncate query after function
+				}
+			}
+		}
+		
+		// parse mqtt message for query string
 		str = strtok_r(query, "&", &context_query_string);
 		while (str != NULL) {
 			strncpy(key_value, str, KEY_VALUE_L);
@@ -255,9 +270,18 @@ unsigned int add_cron_job_from_query(char *query) {
 			else if (strncmp(key, "command", COMMAND_L) == 0) {
 				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command, value, COMMAND_L);
 #ifdef DEBUG
+				os_printf("command: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command);
+#endif
+				if (strlen(command_params)) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params, command_params, COMMAND_PARAMS_L);
+#ifdef DEBUG
+					os_printf("command_params: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params);
+#endif
+				}
+				sys_cfg.cron_jobs.n++;
+#ifdef DEBUG
 				os_printf("job #%d added\n\r", sys_cfg.cron_jobs.n);
 #endif
-				sys_cfg.cron_jobs.n++;
 			}
 			
 			str = strtok_r(NULL, "&", &context_query_string);
