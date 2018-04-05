@@ -211,6 +211,9 @@ void static minute_timer_func(void *arg) {
 					MQTT_Disconnect(&mqtt_client);
 				}
 			}
+			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "clear_cron", COMMAND_L) == 0) {
+				clear_cron_jobs();
+			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "off", COMMAND_L) == 0) {
 				ac_off();
 			}

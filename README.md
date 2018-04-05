@@ -93,35 +93,38 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 
 **MQTT format for messages sent _to_ meter**  
 
-| Topic                                                  | Message                                                            |
-| :----------------------------------------------------- | :----------------------------------------------------------------- |
-| /config/v2/9999999/[unix time]/ping                    |                                                                    |
-| /config/v2/9999999/[unix time]/open                    | [unix time]                                                        |
-| /config/v2/9999999/[unix time]/open_until              | [kWh when meter should close]                                      |
-| /config/v2/9999999/[unix time]/open_until_delta        | [[kWh when meter should close as delta]                            |
-| /config/v2/9999999/[unix time]/close                   | [unix time]                                                        |
-| /config/v2/9999999/[unix time]/status                  |                                                                    |
-| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open |
-| /config/v2/9999999/[unix time]/cron                    |                                                                    |
-| /config/v2/9999999/[unix time]/clear_cron              | [unix time]                                                        |
-| /config/v2/9999999/[unix time]/ping                    |                                                                    |
-| /config/v2/9999999/[unix time]/version                 |                                                                    |
-| /config/v2/9999999/[unix time]/uptime                  |                                                                    |
-| /config/v2/9999999/[unix time]/vdd                     |                                                                    |
-| /config/v2/9999999/[unix time]/rssi                    |                                                                    |
-| /config/v2/9999999/[unix time]/ssid                    |                                                                    |
-| /config/v2/9999999/[unix time]/scan                    |                                                                    |
-| /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                             |
-| /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                              |
-| /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                             |
-| /config/v2/9999999/[unix time]/wifi_status             |                                                                    |
-| /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                              |
-| /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                               |
-| /config/v2/9999999/[unix time]/ap_status               |                                                                    |
-| /config/v2/9999999/[unix time]/reconnect               |                                                                    |
-| /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                    |
-| /config/v2/9999999/[unix time]/mem                     |                                                                    |
-| /config/v2/9999999/[unix time]/reset_reason            |                                                                    |
+| Topic                                                  | Message                                                                                             |
+| :----------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/open                    | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/open_until              | [kWh when meter should close]                                                                       |
+| /config/v2/9999999/[unix time]/open_until_delta        | [[kWh when meter should close as delta]                                                             |
+| /config/v2/9999999/[unix time]/close                   | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/status                  |                                                                                                     |
+| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open                                  |
+| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=close                                 |
+| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=set_ssid_pwd=ssid=the_ssid&pwd=secret |
+| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=clear_cron                            |
+| /config/v2/9999999/[unix time]/cron                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/clear_cron              | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/version                 |                                                                                                     |
+| /config/v2/9999999/[unix time]/uptime                  |                                                                                                     |
+| /config/v2/9999999/[unix time]/vdd                     |                                                                                                     |
+| /config/v2/9999999/[unix time]/rssi                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/ssid                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/scan                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                                                              |
+| /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                                                               |
+| /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                                                              |
+| /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
+| /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
+| /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                                                                |
+| /config/v2/9999999/[unix time]/ap_status               |                                                                                                     |
+| /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
+| /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
+| /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
+| /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
   
 **MQTT format for messages sent _from_ meter**  
 
