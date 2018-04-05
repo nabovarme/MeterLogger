@@ -5,6 +5,7 @@
 #include "ac/ac_out.h"
 #include "cron/cron.h"
 #include "config.h"
+#include "mqtt.h"
 
 static os_timer_t minute_timer;
 char sec_drift;
