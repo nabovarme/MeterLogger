@@ -227,16 +227,10 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 		
-	// for parsing query string formatted parameters
-	char *str;
-	char *query_string_key, *query_string_value;
-	char query_string_key_value[MQTT_MESSAGE_L];
-	char *context_query_string, *context_key_value;
-
 #ifdef DEBUG
 	printf("param: %s\n", ssid_pwd);
 #endif	// DEBUG
-	config_save_ssid_pwd(ssid_pwd);
+	cfg_save_ssid_pwd(ssid_pwd);
 	
 	// send mqtt reply
 #ifdef EN61107
