@@ -78,6 +78,7 @@ typedef struct {
 void ICACHE_FLASH_ATTR cfg_save();
 void ICACHE_FLASH_ATTR cfg_load();
 void ICACHE_FLASH_ATTR cfg_save_defered();
+void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd);
 ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
 extern syscfg_t sys_cfg;

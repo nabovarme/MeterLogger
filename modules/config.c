@@ -147,6 +147,62 @@ cfg_save_defered() {
 	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
 }
 
+void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
+	// for parsing query string formatted parameters
+	char *str;
+	char *query_string_key, *query_string_value;
+	char query_string_key_value[MQTT_MESSAGE_L];
+	char *context_query_string, *context_key_value;
+
+	str = strtok_r(ssid_pwd, "&", &context_query_string);
+	while (str != NULL) {
+		strncpy(query_string_key_value, str, MQTT_MESSAGE_L);
+		query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
+		query_string_value = strtok_r(NULL, "=", &context_key_value);
+		if (strncmp(query_string_key, "ssid", MQTT_MESSAGE_L) == 0) {
+			// un-escape & and =
+			query_string_unescape(query_string_value);
+			
+			// change sta_ssid, save if different
+#ifdef DEBUG
+			printf("key: %s value: %s\n", query_string_key, query_string_value);
+#endif	// DEBUG
+			if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
+				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
+				strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
+				cfg_save();
+			}
+		}
+		else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
+			// change sta_pwd, save if different
+			if (query_string_value == 0) {
+				// there is no value - no password used, use null string
+#ifdef DEBUG
+				printf("key: %s value: %s\n", query_string_key, "null");
+#endif	// DEBUG
+				if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
+					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+					strncpy(sys_cfg.sta_pwd, "", 1);
+					cfg_save();
+				}
+			}
+			else {
+				// un-escape & and =
+				query_string_unescape(query_string_value);
+#ifdef DEBUG
+				printf("key: %s value: %s\n", query_string_key, query_string_value);
+#endif	// DEBUG
+				if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
+					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+					strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
+					cfg_save();
+				}
+			}
+		}
+		str = strtok_r(NULL, "&", &context_query_string);
+	}
+}
+
 ICACHE_FLASH_ATTR
 void config_save_timer_func(void *arg) {
 	if (config_save_timer_running) {

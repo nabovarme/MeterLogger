@@ -198,6 +198,16 @@ void static minute_timer_func(void *arg) {
 				//ac_motor_valve_close();
 				ac_thermo_close();
 			}
+			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "set_ssid_pwd", COMMAND_L) == 0) {
+				config_save_ssid_pwd(sys_cfg.cron_jobs.cron_job_list[i].command_params);
+			}
+			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "reconnect", COMMAND_L) == 0) {
+				// reconnect with new password
+				//MQTT_Disconnect(client);			
+#ifdef DEBUG
+				os_printf("reconnect has to be implemented\n");
+#endif
+			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "off", COMMAND_L) == 0) {
 				ac_off();
 			}

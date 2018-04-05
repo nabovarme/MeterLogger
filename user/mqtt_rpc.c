@@ -236,53 +236,7 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 #ifdef DEBUG
 	printf("param: %s\n", ssid_pwd);
 #endif	// DEBUG
-	str = strtok_r(ssid_pwd, "&", &context_query_string);
-	while (str != NULL) {
-		strncpy(query_string_key_value, str, MQTT_MESSAGE_L);
-		query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
-		query_string_value = strtok_r(NULL, "=", &context_key_value);
-		if (strncmp(query_string_key, "ssid", MQTT_MESSAGE_L) == 0) {
-			// un-escape & and =
-			query_string_unescape(query_string_value);
-			
-			// change sta_ssid, save if different
-#ifdef DEBUG
-			printf("key: %s value: %s\n", query_string_key, query_string_value);
-#endif	// DEBUG
-			if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
-				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-				strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
-				cfg_save();
-			}
-		}
-		else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
-			// change sta_pwd, save if different
-			if (query_string_value == 0) {
-				// there is no value - no password used, use null string
-#ifdef DEBUG
-				printf("key: %s value: %s\n", query_string_key, "null");
-#endif	// DEBUG
-				if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
-					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy(sys_cfg.sta_pwd, "", 1);
-					cfg_save();
-				}
-			}
-			else {
-				// un-escape & and =
-				query_string_unescape(query_string_value);
-#ifdef DEBUG
-				printf("key: %s value: %s\n", query_string_key, query_string_value);
-#endif	// DEBUG
-				if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
-					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
-					cfg_save();
-				}
-			}
-		}
-		str = strtok_r(NULL, "&", &context_query_string);
-	}
+	config_save_ssid_pwd(ssid_pwd);
 	
 	// send mqtt reply
 #ifdef EN61107
