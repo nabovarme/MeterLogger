@@ -208,7 +208,7 @@ void static minute_timer_func(void *arg) {
 				// reconnect with new password
 				if (mqtt_client.pCon != NULL) {
 					// if mqtt_client is initialized)
-					MQTT_Disconnect(mqtt_client);
+					MQTT_Disconnect(&mqtt_client);
 				}
 			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "off", COMMAND_L) == 0) {
