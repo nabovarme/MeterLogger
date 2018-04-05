@@ -9,6 +9,8 @@
 static os_timer_t minute_timer;
 char sec_drift;
 
+extern MQTT_Client mqtt_client;
+
 ICACHE_FLASH_ATTR
 void static minute_timer_func(void *arg) {
 	struct tm *dt;
@@ -203,10 +205,10 @@ void static minute_timer_func(void *arg) {
 			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "reconnect", COMMAND_L) == 0) {
 				// reconnect with new password
-				//MQTT_Disconnect(client);			
-#ifdef DEBUG
-				os_printf("reconnect has to be implemented\n");
-#endif
+				if (mqtt_client.pCon != NULL) {
+					// if mqtt_client is initialized)
+					MQTT_Disconnect(mqtt_client);
+				}
 			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "off", COMMAND_L) == 0) {
 				ac_off();
