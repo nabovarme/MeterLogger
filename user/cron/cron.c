@@ -199,7 +199,7 @@ void static minute_timer_func(void *arg) {
 				ac_thermo_close();
 			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "set_ssid_pwd", COMMAND_L) == 0) {
-				config_save_ssid_pwd(sys_cfg.cron_jobs.cron_job_list[i].command_params);
+				cfg_save_ssid_pwd(sys_cfg.cron_jobs.cron_job_list[i].command_params);
 			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "reconnect", COMMAND_L) == 0) {
 				// reconnect with new password
