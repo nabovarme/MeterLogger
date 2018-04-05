@@ -211,6 +211,32 @@ void static minute_timer_func(void *arg) {
 					MQTT_Disconnect(&mqtt_client);
 				}
 			}
+			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "start_ap", COMMAND_L) == 0) {
+				// start AP
+				if (wifi_get_opmode() != STATIONAP_MODE) {
+					wifi_set_opmode_current(STATIONAP_MODE);
+					wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
+					wifi_softap_ip_config();
+	
+					// ...and save setting to flash if changed
+					if (sys_cfg.ap_enabled == false) {
+						sys_cfg.ap_enabled = true;
+						cfg_save();
+					}
+				}
+			}
+			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "stop_ap", COMMAND_L) == 0) {
+				// stop AP
+				if (wifi_get_opmode() != STATION_MODE) {
+					wifi_set_opmode_current(STATION_MODE);
+		
+					// ...and save setting to flash if changed
+					if (sys_cfg.ap_enabled == true) {
+						sys_cfg.ap_enabled = false;
+						cfg_save();
+					}
+				}
+			}
 			else if (strncmp(sys_cfg.cron_jobs.cron_job_list[i].command, "clear_cron", COMMAND_L) == 0) {
 				clear_cron_jobs();
 			}

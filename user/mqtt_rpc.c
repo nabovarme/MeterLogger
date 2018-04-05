@@ -332,6 +332,7 @@ void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_stop_ap(MQTT_Client *client) {
+	// stop AP
 	if (wifi_get_opmode() != STATION_MODE) {
 		wifi_set_opmode_current(STATION_MODE);
 		
