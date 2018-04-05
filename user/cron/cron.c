@@ -6,6 +6,7 @@
 #include "cron/cron.h"
 #include "config.h"
 #include "mqtt.h"
+#include "wifi.h"
 
 static os_timer_t minute_timer;
 char sec_drift;
