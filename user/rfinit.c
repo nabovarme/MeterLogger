@@ -73,4 +73,6 @@ user_rf_pre_init(void)
 
   // Set Wi-Fi Tx Power, Unit: 0.25dBm, Range: [0, 82]
   system_phy_set_max_tpw(82);
+  
+  system_phy_freq_trace_enable(1);
 }
