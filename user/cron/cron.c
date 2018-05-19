@@ -24,6 +24,13 @@ void static minute_timer_func(void *arg) {
 	bool dst = false;
 	int previous_sunday;
 	int s;
+
+	if (get_unix_time() == 0) {
+#ifdef DEBUG
+		printf("skipping cron - no ntp time\n");
+#endif
+		return;
+	}
 	
 	unix_time = get_unix_time() + (1 * 60 * 60);	// UTC + 1
 	dt = gmtime(&unix_time);
