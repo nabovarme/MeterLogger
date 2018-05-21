@@ -97,7 +97,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 					wifi_stop_scan();
 					set_my_auto_connect(false);
 					wifi_station_disconnect();
-//					wifi_set_opmode_current(NULL_MODE);
+					wifi_set_opmode_current(NULL_MODE);
 #ifdef DEBUG
 					os_printf("stopped wifi and wifi scanner\n");
 #endif				

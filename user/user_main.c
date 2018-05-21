@@ -594,7 +594,10 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
-	wifi_connect(sys_cfg.sta_ssid, sys_cfg.sta_pwd, wifi_changed_cb);
+#ifdef DEBUG
+	printf("mqtt_disconnected_cb\n");
+#endif
+	wifi_default();
 }
 
 ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args) {
