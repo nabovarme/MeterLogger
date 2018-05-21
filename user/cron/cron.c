@@ -361,20 +361,21 @@ void clear_cron_jobs() {
 #endif
 }
 
-/*
+#ifdef DEBUG
 ICACHE_FLASH_ATTR
 void debug_cron_jobs() {
 	unsigned char i;
 	
 	for (i = 0; i < sys_cfg.cron_jobs.n; i++) { 
-		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\n\r", 
+		os_printf("j: %u\t%s:%s\t%s\t %s\t%s\tc: %s\tp: %s\n\r", 
 			i,
-			cron_jobs.cron_job_list[i].hour,
-			cron_jobs.cron_job_list[i].minute,
-			cron_jobs.cron_job_list[i].day_of_month,
-			cron_jobs.cron_job_list[i].month,
-			cron_jobs.cron_job_list[i].day_of_week,
-			cron_jobs.cron_job_list[i].command);
+			sys_cfg.cron_jobs.cron_job_list[i].hour,
+			sys_cfg.cron_jobs.cron_job_list[i].minute,
+			sys_cfg.cron_jobs.cron_job_list[i].day_of_month,
+			sys_cfg.cron_jobs.cron_job_list[i].month,
+			sys_cfg.cron_jobs.cron_job_list[i].day_of_week,
+			sys_cfg.cron_jobs.cron_job_list[i].command,
+			sys_cfg.cron_jobs.cron_job_list[i].command_params);
 	}
 }
-*/
+#endif
