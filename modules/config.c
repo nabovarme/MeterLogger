@@ -29,7 +29,7 @@ cfg_save() {
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
-	
+
 #if defined(IMPULSE) && !defined(DEBUG_NO_METER)	// use internal flash if built with DEBUG_NO_METER=1
 	do {
 		// try to save until sys_cfg.impulse_meter_count does not change
@@ -154,7 +154,11 @@ void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
 	char query_string_key_value[MQTT_MESSAGE_L];
 	char *context_query_string, *context_key_value;
 
-	str = strtok_r(ssid_pwd, "&", &context_query_string);
+	char ssid_pwd_copy[COMMAND_PARAMS_L];
+
+	strncpy(ssid_pwd_copy, ssid_pwd, COMMAND_PARAMS_L);	// make a copy since strtok_r() changes it
+
+	str = strtok_r(ssid_pwd_copy, "&", &context_query_string);
 	while (str != NULL) {
 		strncpy(query_string_key_value, str, MQTT_MESSAGE_L);
 		query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
@@ -170,7 +174,6 @@ void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
 			if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
 				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
 				strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
-				cfg_save();
 			}
 		}
 		else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
@@ -183,7 +186,6 @@ void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
 				if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
 					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
 					strncpy(sys_cfg.sta_pwd, "", 1);
-					cfg_save();
 				}
 			}
 			else {
@@ -195,12 +197,12 @@ void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
 				if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
 					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
 					strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
-					cfg_save();
 				}
 			}
 		}
 		str = strtok_r(NULL, "&", &context_query_string);
 	}
+	cfg_save();
 }
 
 ICACHE_FLASH_ATTR
