@@ -438,7 +438,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
-	wifi_set_opmode_current(NULL_MODE);
+//	wifi_set_opmode_current(NULL_MODE);
 
 #ifdef AP
 	if (sys_cfg.ap_enabled) {
