@@ -69,6 +69,13 @@ static os_timer_t impulse_meter_calculate_timer;
 uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
 #endif
 
+#ifdef MEMLEAK_DEBUG
+ICACHE_FLASH_ATTR
+bool check_memleak_debug_enable(void) {
+	return MEMLEAK_DEBUG_ENABLE;
+}
+#endif
+
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 	// temp var for serial string
