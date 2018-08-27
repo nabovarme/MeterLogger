@@ -76,6 +76,13 @@ bool check_memleak_debug_enable(void) {
 }
 #endif
 
+#ifdef CONFIG_ENABLE_IRAM_MEMORY
+//ICACHE_FLASH_ATTR
+uint32 user_iram_memory_is_enabled(void) {
+	return	CONFIG_ENABLE_IRAM_MEMORY;
+}
+#endif
+
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 	// temp var for serial string
