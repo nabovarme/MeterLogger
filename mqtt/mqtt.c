@@ -196,12 +196,12 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 		// Delete connections
 		espconn_delete(mqttClient->pCon);
 		
-//		if (mqttClient->pCon->proto.tcp) {
+		if (mqttClient->pCon->proto.tcp) {
 //			os_free(mqttClient->pCon->proto.tcp);
-//			mqttClient->pCon->proto.tcp = NULL;
-//		}
+			mqttClient->pCon->proto.tcp = NULL;
+		}
 //		os_free(mqttClient->pCon);
-//		mqttClient->pCon = NULL;
+		mqttClient->pCon = NULL;
 	}
 }
 
@@ -913,10 +913,12 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	}
 //	mqttClient->pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
 	mqttClient->pCon = &mqtt_espconn;
+	memcpy(mqttClient->pCon, 0, sizeof(struct espconn));
 	mqttClient->pCon->type = ESPCONN_TCP;
 	mqttClient->pCon->state = ESPCONN_NONE;
 //	mqttClient->pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
 	mqttClient->pCon->proto.tcp = &mqtt_esp_tcp;
+	memcpy(mqttClient->pCon->proto.tcp, 0, sizeof(esp_tcp));
 	mqttClient->pCon->proto.tcp->local_port = espconn_port();
 	mqttClient->pCon->proto.tcp->remote_port = mqttClient->port;
 	mqttClient->pCon->reverse = mqttClient;
