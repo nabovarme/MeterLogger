@@ -913,12 +913,12 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	}
 //	mqttClient->pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
 	mqttClient->pCon = &mqtt_espconn;
-	memcpy(mqttClient->pCon, 0, sizeof(struct espconn));
+	memset(mqttClient->pCon, 0, sizeof(struct espconn));
 	mqttClient->pCon->type = ESPCONN_TCP;
 	mqttClient->pCon->state = ESPCONN_NONE;
 //	mqttClient->pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
 	mqttClient->pCon->proto.tcp = &mqtt_esp_tcp;
-	memcpy(mqttClient->pCon->proto.tcp, 0, sizeof(esp_tcp));
+	memset(mqttClient->pCon->proto.tcp, 0, sizeof(esp_tcp));
 	mqttClient->pCon->proto.tcp->local_port = espconn_port();
 	mqttClient->pCon->proto.tcp->remote_port = mqttClient->port;
 	mqttClient->pCon->reverse = mqttClient;
