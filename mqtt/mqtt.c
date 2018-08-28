@@ -69,7 +69,7 @@ unsigned int default_private_key_len = 0;
 os_event_t mqtt_procTaskQueue[MQTT_TASK_QUEUE_SIZE];
 
 struct espconn mqtt_espconn;
-struct esp_tcp mqtt_esp_tcp;
+esp_tcp mqtt_esp_tcp;
 
 #ifdef PROTOCOL_NAMEv311
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
