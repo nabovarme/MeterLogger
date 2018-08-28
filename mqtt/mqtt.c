@@ -68,6 +68,9 @@ unsigned int default_private_key_len = 0;
 
 os_event_t mqtt_procTaskQueue[MQTT_TASK_QUEUE_SIZE];
 
+struct espconn mqtt_espconn;
+struct esp_tcp mqtt_esp_tcp;
+
 #ifdef PROTOCOL_NAMEv311
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 #endif
@@ -193,12 +196,12 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 		// Delete connections
 		espconn_delete(mqttClient->pCon);
 		
-		if (mqttClient->pCon->proto.tcp) {
-			os_free(mqttClient->pCon->proto.tcp);
-			mqttClient->pCon->proto.tcp = NULL;
-		}
-		os_free(mqttClient->pCon);
-		mqttClient->pCon = NULL;
+//		if (mqttClient->pCon->proto.tcp) {
+//			os_free(mqttClient->pCon->proto.tcp);
+//			mqttClient->pCon->proto.tcp = NULL;
+//		}
+//		os_free(mqttClient->pCon);
+//		mqttClient->pCon = NULL;
 	}
 }
 
@@ -908,10 +911,12 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		// disconnection callback is invoked.
 		mqtt_tcpclient_delete(mqttClient);
 	}
-	mqttClient->pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
+//	mqttClient->pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
+	mqttClient->pCon = &mqtt_espconn;
 	mqttClient->pCon->type = ESPCONN_TCP;
 	mqttClient->pCon->state = ESPCONN_NONE;
-	mqttClient->pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+//	mqttClient->pCon->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+	mqttClient->pCon->proto.tcp = &mqtt_esp_tcp;
 	mqttClient->pCon->proto.tcp->local_port = espconn_port();
 	mqttClient->pCon->proto.tcp->remote_port = mqttClient->port;
 	mqttClient->pCon->reverse = mqttClient;
