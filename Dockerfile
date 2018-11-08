@@ -83,4 +83,4 @@ ENV PATH /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 
-CMD (cd /meterlogger/MeterLogger && /bin/bash)
+CMD (cd /meterlogger/MeterLogger && AP=1 DEBUG=1 DEBUG_NO_METER=1 SERIAL=$BUILD_SERIAL KEY=$BUILD_KEY make clean all)
