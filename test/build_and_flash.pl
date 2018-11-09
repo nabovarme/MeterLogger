@@ -61,9 +61,10 @@ if ($sth->rows) {
 	}
 	else {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-		exec BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 	print FLASH_COMMAND . "\n";
+	system 'echo ' . FLASH_COMMAND . ' | pbcopy';	# copy command to clipboard for repeated use
 	system FLASH_COMMAND;
 }
 
