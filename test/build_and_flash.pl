@@ -7,9 +7,10 @@ use lib qw( /etc/apache2/perl );
 #use lib qw( /opt/local/apache2/perl/ );
 use Nabovarme::Db;
 
+use constant SERIAL_PORT => '/dev/tty.usbserial-A6YNEE07';
 use constant DOCKER_IMAGE => ' meterlogger:latest';
 use constant BUILD_COMMAND => 'docker run -t -i -v ~/esp8266/MeterLogger:/meterlogger/MeterLogger';
-use constant FLASH_COMMAND => 'python ./tools/esptool.py -p /dev/tty.usbserial-A6YNEE07 -b 1500000 write_flash --flash_size 8m 0xFE000 firmware/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin 0x00000 firmware/0x00000.bin 0x10000 firmware/0x10000.bin 0x60000 webpages.espfs';
+use constant FLASH_COMMAND => 'python ./tools/esptool.py -p ' . SERIAL_PORT . ' -b 1500000 write_flash --flash_size 8m 0xFE000 firmware/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin 0x00000 firmware/0x00000.bin 0x10000 firmware/0x10000.bin 0x60000 webpages.espfs';
 my $DEFAULT_BUILD_VARS = 'AP=1';
 
 my $meter_serial = $ARGV[0] || '9999999';
