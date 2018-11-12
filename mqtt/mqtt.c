@@ -311,6 +311,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 
 	struct espconn *pCon = (struct espconn*)arg;
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
+	if (client == NULL) return; // aborted connection
 
 READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
@@ -465,6 +466,8 @@ mqtt_tcpclient_sent_cb(void *arg)
 {
 	struct espconn *pCon = (struct espconn *)arg;
 	MQTT_Client* client = (MQTT_Client *)pCon->reverse;
+	if (client == NULL) return; // aborted connection
+	
 	INFO("TCP: Sent\r\n");
 	client->sendTimeout = 0;
 	client->keepAliveTick =0;
@@ -505,9 +508,10 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 void ICACHE_FLASH_ATTR
 mqtt_tcpclient_discon_cb(void *arg)
 {
-
 	struct espconn *pespconn = (struct espconn *)arg;
 	MQTT_Client* client = (MQTT_Client *)pespconn->reverse;
+	if (client == NULL) return;
+	
 	INFO("TCP: Disconnected callback\r\n");
 	if(TCP_DISCONNECTING == client->connState) {
 		client->connState = TCP_DISCONNECTED;
@@ -577,6 +581,7 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 {
 	struct espconn *pCon = (struct espconn *)arg;
 	MQTT_Client* client = (MQTT_Client *)pCon->reverse;
+	if (client == NULL) return; // aborted connection
 
 	INFO("TCP: Reconnect to %s:%d\r\n", client->host, client->port);
 
