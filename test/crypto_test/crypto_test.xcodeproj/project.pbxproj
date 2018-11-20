@@ -29,18 +29,18 @@
 
 /* Begin PBXFileReference section */
 		D68D6E171D17809300D2E393 /* crypto_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = crypto_test; sourceTree = BUILT_PRODUCTS_DIR; };
-		D68D6E1A1D17809300D2E393 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		D68D6E1A1D17809300D2E393 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../test/crypto_test/crypto_test/main.c; sourceTree = "<group>"; };
 		D68D6E211D1780DD00D2E393 /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aes.c; path = ../../user/crypto/aes.c; sourceTree = "<group>"; };
 		D68D6E221D1780DD00D2E393 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aes.h; path = ../../user/crypto/aes.h; sourceTree = "<group>"; };
 		D68D6E231D1780DD00D2E393 /* hmac-sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hmac-sha256.c"; path = "../../user/crypto/hmac-sha256.c"; sourceTree = "<group>"; };
 		D68D6E241D1780DD00D2E393 /* hmac-sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "hmac-sha256.h"; path = "../../user/crypto/hmac-sha256.h"; sourceTree = "<group>"; };
 		D68D6E251D1780DD00D2E393 /* sha256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha256.c; path = ../../user/crypto/sha256.c; sourceTree = "<group>"; };
 		D68D6E261D1780DD00D2E393 /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha256.h; path = ../../user/crypto/sha256.h; sourceTree = "<group>"; };
-		D68D6E2A1D1780ED00D2E393 /* esp8266.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = esp8266.h; sourceTree = "<group>"; };
+		D68D6E2A1D1780ED00D2E393 /* esp8266.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = esp8266.h; path = ../../test/crypto_test/crypto_test/esp8266.h; sourceTree = "<group>"; };
 		D68D6E2B1D1992E100D2E393 /* crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crypto.c; path = ../../user/crypto/crypto.c; sourceTree = "<group>"; };
 		D68D6E2C1D1992E100D2E393 /* crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypto.h; path = ../../user/crypto/crypto.h; sourceTree = "<group>"; };
-		D68D6E2E1D199F4800D2E393 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
-		D68D6E2F1D199F4800D2E393 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		D68D6E2E1D199F4800D2E393 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utils.c; path = ../../test/crypto_test/crypto_test/utils.c; sourceTree = "<group>"; };
+		D68D6E2F1D199F4800D2E393 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../../test/crypto_test/crypto_test/utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +86,8 @@
 				D68D6E2E1D199F4800D2E393 /* utils.c */,
 				D68D6E2F1D199F4800D2E393 /* utils.h */,
 			);
-			path = crypto_test;
+			name = crypto_test;
+			path = ../../user/crypto;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -249,6 +250,10 @@
 		D68D6E1F1D17809300D2E393 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					/Users/stoffer/esp8266/MeterLogger/user,
+					/Users/stoffer/esp8266/MeterLogger/test/crypto_test/crypto_test,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -256,6 +261,10 @@
 		D68D6E201D17809300D2E393 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					/Users/stoffer/esp8266/MeterLogger/user,
+					/Users/stoffer/esp8266/MeterLogger/test/crypto_test/crypto_test,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

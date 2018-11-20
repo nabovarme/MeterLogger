@@ -12,6 +12,7 @@
 #include "utils.h"
 
 #define ICACHE_FLASH_ATTR
+#define ESP_CONST_DATA
 
 #define MQTT_TOPIC_L (128 + 1)
 #define MQTT_MESSAGE_L (192 + 1)

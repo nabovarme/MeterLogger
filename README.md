@@ -83,9 +83,37 @@ serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and ot
 
 KEY=ef500c9268cf749016d26d6cbfaaf7bf
 master key for crypto, 16 bytes
-Fist 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
+First 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
+
+```  
+master key                            wifi key (first 16 bytes)
++--------------------------------+    +----------------+
+|ef500c9268cf749016d26d6cbfaaf7bf| -> |ef500c9268cf7490| 
++--------------------------------+    +----------------+
+                |
+          [sha256 hash]
+                |
+                v
++----------------------------------------------------------------+
+|89a5d4f82ad86bc9ec27427e246fd15481663afea8c463d93cc93c967c9b31be|
++----------------------------------------------------------------+
+                |                                        |
+aes key         v                   hmac sha256 key      v
++--------------------------------+  +--------------------------------+
+|89a5d4f82ad86bc9ec27427e246fd154|  |81663afea8c463d93cc93c967c9b31be|
++--------------------------------+  +--------------------------------+
+
+```  
 
 Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
+
+```  
+hmac sha256       IV                               encrypted data
++----------------+--------------------------------+------------------------------------+
+|                |7a39c2ac225923b3217f823081c62c1a|                                    |
+
+[ MORE TO COME ]
+```  
 
 AP=1
 enable wireless extender; wireless AP
