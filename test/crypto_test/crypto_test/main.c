@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
 
     printf("hmac sha256: ");
     for (i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", (uint8_t)dst[i]);
+        printf("%02x", (uint8_t)mqtt_message[i]);
     }
     printf("\n");
 
