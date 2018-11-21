@@ -105,7 +105,12 @@ aes key         v                   hmac sha256 key      v
 
 ```  
 
-Crypto is applies on mqtt packages like: first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV last part is aes encrypted data
+Crypto is applies on mqtt packages like this:
+1) at 32 bytes offset in mqtt_message contains IV, 16 bytes random bytes used for AES128 CBC encryption.
+
+2) cleartext (0-terminated) is AES128 CBC encrypted, with aes key and IV. Result is written to mqtt_message at 32 + 16 bytes offset (binary data not 0-terminated).
+
+3) HMAC SHA256 checksum is calculated on topic + IV + encrypted data and written to first 32 bytes.
 
 ```  
 hmac sha256                                                       IV                               encrypted data
