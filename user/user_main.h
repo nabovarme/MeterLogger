@@ -20,3 +20,5 @@ ICACHE_FLASH_ATTR void impulse_meter_init(void);
 
 ICACHE_FLASH_ATTR void user_init(void);
 ICACHE_FLASH_ATTR void system_init_done(void);
+
+ICACHE_FLASH_ATTR void flash_error(uint16_t calculated_crc, uint16_t saved_crc);

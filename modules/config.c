@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
+#include "user_main.h"
 
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
@@ -26,6 +27,7 @@ char config_save_timer_running;
 
 void ICACHE_FLASH_ATTR
 cfg_save() {
+	uint16_t crc;
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
@@ -68,8 +70,16 @@ cfg_save() {
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
 #else
 	// calculate checksum on sys_cfg struct without ccit_crc16
-	sys_cfg.ccit_crc16 = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
+	crc = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
+	sys_cfg.ccit_crc16 = crc;
 	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
+	
+	// check for flash memory error
+	cfg_load();	// reload saved config
+	if (crc != sys_cfg.ccit_crc16) {
+		flash_error(crc, sys_cfg.ccit_crc16);
+	}
+
 #endif	// IMPULSE
 }
 
@@ -94,7 +104,7 @@ cfg_load() {
 	// if checksum fails...
 	if (sys_cfg.ccit_crc16 != ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder))) {
 #ifdef DEBUG
-		os_printf("config crc error, default conf loaded\n");
+		printf("config crc error, default conf loaded\n");
 #endif // DEBUG
 		// if first time config load default conf
 		os_memset(&sys_cfg, 0x00, sizeof(syscfg_t));
@@ -135,7 +145,7 @@ cfg_load() {
 	}
 	else {
 #ifdef DEBUG
-		os_printf("config crc ok\n");
+		printf("config crc ok\n");
 #endif // DEBUG
 	}
 }

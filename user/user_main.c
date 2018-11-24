@@ -1127,3 +1127,34 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #endif
 }
 
+ICACHE_FLASH_ATTR void flash_error(uint16_t calculated_crc, uint16_t saved_crc) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;	
+	// vars for aes encryption
+	uint8_t cleartext[MQTT_MESSAGE_L];
+
+#ifdef DEBUG
+	printf("config crc error when saving, possible flash memory error calculated_crc=0x%x&saved_crc=0x%x\n\r", calculated_crc, saved_crc);
+#endif // DEBUG
+
+	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif	// EN61107
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "calculated_crc=0x%x&saved_crc=0x%x", calculated_crc, saved_crc);
+
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+	if (mqtt_client.pCon != NULL) {
+		// if mqtt_client is initialized
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	}
+}
