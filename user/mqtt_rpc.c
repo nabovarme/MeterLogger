@@ -510,7 +510,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	if (sys_cfg.offline_close_at != int_value && int_value >= 0) {	// only write to flash if changed and not negative value
 		// save if changed
 #ifdef EN61107
-		sys_cfg.offline_close_at = int_value);
+		sys_cfg.offline_close_at = int_value;
 #else
 		sys_cfg.offline_close_at = int_value;
 #endif
