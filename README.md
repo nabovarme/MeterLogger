@@ -144,8 +144,8 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | :----------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
 | /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
 | /config/v2/9999999/[unix time]/open                    | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/open_until              | [kWh when meter should close]                                                                       |
-| /config/v2/9999999/[unix time]/open_until_delta        | [[kWh when meter should close as delta]                                                             |
+| /config/v2/9999999/[unix time]/open_until              | [kWh when meter should close (only write to flash if changed and not negative value)]               |
+| /config/v2/9999999/[unix time]/open_until_delta        | [[kWh when meter should close as delta (only write to flash if changed and not negative value)]     |
 | /config/v2/9999999/[unix time]/close                   | [unix time]                                                                                         |
 | /config/v2/9999999/[unix time]/status                  |                                                                                                     |
 | /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open                                  |

@@ -503,14 +503,16 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	int int_value;
 		
 	ac_thermo_open();
-	if (sys_cfg.offline_close_at != atoi(value)) {
+	int_value = atoi(value);
+	if (sys_cfg.offline_close_at != int_value && int_value >= 0) {	// only write to flash if changed and not negative value
 		// save if changed
 #ifdef EN61107
-		sys_cfg.offline_close_at = atoi(value);
+		sys_cfg.offline_close_at = int_value);
 #else
-		sys_cfg.offline_close_at = atoi(value);
+		sys_cfg.offline_close_at = int_value;
 #endif
 		cfg_save();
 	}
@@ -544,9 +546,11 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	int int_value;
 		
 	ac_thermo_open();
-	if (sys_cfg.offline_close_at != atoi(value)) {
+	int_value = atoi(value);
+	if (sys_cfg.offline_close_at != int_value && int_value >= 0) {	// only write to flash if changed and not negative value
 		// save if changed
 #ifdef EN61107
 #ifdef FORCED_FLOW_METER
