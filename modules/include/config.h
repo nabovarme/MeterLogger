@@ -75,10 +75,10 @@ typedef struct {
     uint8 pad[3];
 } SAVE_FLAG;
 
-void ICACHE_FLASH_ATTR cfg_save();
+bool ICACHE_FLASH_ATTR cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc);
 void ICACHE_FLASH_ATTR cfg_load();
 void ICACHE_FLASH_ATTR cfg_save_defered();
-void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd);
+bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_crc, uint16_t *saved_crc);
 ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
 extern syscfg_t sys_cfg;

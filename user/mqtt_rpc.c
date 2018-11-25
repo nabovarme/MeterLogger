@@ -168,12 +168,16 @@ void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 		
 	// change sta_ssid, save if different
 	if (strncmp(sys_cfg.sta_ssid, ssid, 32 - 1) != 0) {
 		memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
 		strncpy(sys_cfg.sta_ssid, ssid, 32 - 1);
-		cfg_save();
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
 	}
 
 	// send mqtt reply
@@ -197,12 +201,16 @@ void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 		
 	// change sta_pwd, save if different
 	if (strncmp(sys_cfg.sta_pwd, password, 64 - 1) != 0) {
 		memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
 		strncpy(sys_cfg.sta_pwd, password, 64 - 1);
-		cfg_save();
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
 	}
 
 	// send mqtt reply
@@ -226,12 +234,16 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 
 #ifdef DEBUG
 	printf("param: %s\n", ssid_pwd);
 #endif	// DEBUG
 
-	cfg_save_ssid_pwd(ssid_pwd);
+	if (!cfg_save_ssid_pwd(ssid_pwd, &calculated_crc, &saved_crc)) {
+		mqtt_flash_error(calculated_crc, saved_crc);
+	}
 	
 	// send mqtt reply
 #ifdef EN61107
@@ -317,6 +329,8 @@ void mqtt_rpc_ap_status(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 	// start AP
 	if (wifi_get_opmode() != STATIONAP_MODE) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -326,20 +340,26 @@ void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
 		// ...and save setting to flash if changed
 		if (sys_cfg.ap_enabled == false) {
 			sys_cfg.ap_enabled = true;
-			cfg_save();
+			if (!cfg_save(&calculated_crc, &saved_crc)) {
+				mqtt_flash_error(calculated_crc, saved_crc);
+			}
 		}
 	}
 }
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_stop_ap(MQTT_Client *client) {
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 	// stop AP
 	if (wifi_get_opmode() != STATION_MODE) {
 		wifi_set_opmode_current(STATION_MODE);
 		// ...and save setting to flash if changed
 		if (sys_cfg.ap_enabled == true) {
 			sys_cfg.ap_enabled = false;
-			cfg_save();
+			if (!cfg_save(&calculated_crc, &saved_crc)) {
+				mqtt_flash_error(calculated_crc, saved_crc);
+			}
 		}
 	}
 }
@@ -504,6 +524,8 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	int int_value;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 		
 	ac_thermo_open();
 	int_value = atoi(value);
@@ -514,7 +536,9 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 #else
 		sys_cfg.offline_close_at = int_value;
 #endif
-		cfg_save();
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
 	}
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
@@ -547,6 +571,8 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	int int_value;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 		
 	ac_thermo_open();
 	int_value = atoi(value);
@@ -565,7 +591,9 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 		sys_cfg.offline_close_at = kmp_get_received_energy_kwh() + atoi(value);
 #endif	// FORCED_FLOW_METER
 #endif
-		cfg_save();
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
 	}
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());

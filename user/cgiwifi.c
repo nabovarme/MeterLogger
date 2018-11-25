@@ -201,7 +201,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	sys_cfg.impulse_meter_count = 0;
 #endif
 
-	cfg_save();
+	cfg_save(NULL, NULL);
 
 	INFO("Try to connect to AP %s pw %s\n", essid, passwd);
 

@@ -83,6 +83,8 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 	
 	led_stop_pattern();	// stop indicating config mode mode with led
 
@@ -114,7 +116,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	if (strncmp(sys_cfg.device_id, meter_serial_temp, 16 - 1) != 0) {
 		memset(sys_cfg.device_id, 0, sizeof(sys_cfg.device_id));
 		tfp_snprintf(sys_cfg.device_id, 16, "%s", meter_serial_temp);
-		cfg_save();
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
 	}
 	
 	MQTT_InitConnection(&mqtt_client, sys_cfg.mqtt_host, sys_cfg.mqtt_port, sys_cfg.security);
@@ -283,8 +287,12 @@ ICACHE_FLASH_ATTR void static kmp_request_send_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 	uint32_t impulse_time_diff;
 	uint32_t impulse_meter_count_diff;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
 
-	cfg_save();
+	if (!cfg_save(&calculated_crc, &saved_crc)) {
+		mqtt_flash_error(calculated_crc, saved_crc);
+	}
 	
 	impulse_time = get_uptime();
 	impulse_time_diff = impulse_time - last_impulse_time;
@@ -1127,7 +1135,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #endif
 }
 
-ICACHE_FLASH_ATTR void flash_error(uint16_t calculated_crc, uint16_t saved_crc) {
+ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_crc) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;	

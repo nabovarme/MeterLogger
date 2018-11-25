@@ -8,7 +8,6 @@
 #include "utils.h"
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
-#include "user_main.h"
 
 syscfg_t sys_cfg;
 SAVE_FLAG saveFlag;
@@ -25,9 +24,8 @@ SAVE_FLAG saveFlag;
 static os_timer_t config_save_timer;
 char config_save_timer_running;
 
-void ICACHE_FLASH_ATTR
-cfg_save() {
-	uint16_t crc;
+bool ICACHE_FLASH_ATTR
+cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
 #ifdef IMPULSE
 	uint32_t impulse_meter_count_temp;
 #endif // IMPULSE
@@ -70,16 +68,19 @@ cfg_save() {
 	} while (sys_cfg.impulse_meter_count != impulse_meter_count_temp);
 #else
 	// calculate checksum on sys_cfg struct without ccit_crc16
-	crc = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
-	sys_cfg.ccit_crc16 = crc;
+	sys_cfg.ccit_crc16 = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
 	system_param_save_with_protect(CFG_LOCATION, &sys_cfg, sizeof(syscfg_t));
 	
 	// check for flash memory error
-	cfg_load();	// reload saved config
-	if (crc != sys_cfg.ccit_crc16) {
-		flash_error(crc, sys_cfg.ccit_crc16);
+	if (calculated_crc && saved_crc) {	// check if return values was requested
+		*saved_crc = sys_cfg.ccit_crc16;
+		cfg_load();	// reload saved config
+		*calculated_crc = ccit_crc16(0xffff, (uint8_t *)&sys_cfg, offsetof(syscfg_t, ccit_crc16) - offsetof(syscfg_t, cfg_holder));
+		if (*calculated_crc != *saved_crc) {
+			return false;
+		}
 	}
-
+	return true;
 #endif	// IMPULSE
 }
 
@@ -141,7 +142,7 @@ cfg_load() {
 
 		INFO(" default configuration\r\n");
 
-		cfg_save();
+		cfg_save(NULL, NULL);
 	}
 	else {
 #ifdef DEBUG
@@ -157,7 +158,7 @@ cfg_save_defered() {
 	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
 }
 
-void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
+bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_crc, uint16_t *saved_crc) {
 	// for parsing query string formatted parameters
 	char *str;
 	char *query_string_key, *query_string_value;
@@ -212,7 +213,7 @@ void ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd) {
 		}
 		str = strtok_r(NULL, "&", &context_query_string);
 	}
-	cfg_save();
+	return cfg_save(calculated_crc, saved_crc);
 }
 
 ICACHE_FLASH_ATTR
@@ -228,6 +229,6 @@ void config_save_timer_func(void *arg) {
 		os_timer_disarm(&config_save_timer);
 		config_save_timer_running = 0;
 
-		cfg_save();		
+		cfg_save(NULL, NULL);		
 	}
 }
