@@ -77,7 +77,7 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
 	struct espconn *pConn = (struct espconn *)arg;
 	MQTT_Client* client = (MQTT_Client *)pConn->reverse;
-
+	if (client == NULL) return;
 
 	if (ipaddr == NULL)
 	{
