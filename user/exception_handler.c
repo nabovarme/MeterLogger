@@ -3,26 +3,26 @@
 #include "xtensa/corebits.h"
 
 //The asm stub saves the Xtensa registers here when a debugging exception happens.
-struct XTensa_exception_frame_s gdbstub_savedRegs;
+struct XTensa_exception_frame_s saved_regs;
 
 extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
 
 //Get the value of one of the A registers
 static unsigned int getaregval(int reg) {
-	if (reg==0) return gdbstub_savedRegs.a0;
-	if (reg==1) return gdbstub_savedRegs.a1;
-	return gdbstub_savedRegs.a[reg-2];
+	if (reg == 0) return saved_regs.a0;
+	if (reg == 1) return saved_regs.a1;
+	return saved_regs.a[reg-2];
 }
 
 static void print_stack(uint32_t start, uint32_t end) {
 	uint32_t pos;
 	uint32_t *values;
-	bool looksLikeStackFrame;
+	bool looks_like_stack_frame;
 	printf("\nStack dump:\n");
 	for (pos = start; pos < end; pos += 0x10) {
 		values = (uint32_t*)(pos);
 		// rough indicator: stack frames usually have SP saved as the second word
-		looksLikeStackFrame = (values[2] == pos + 0x10);
+		looks_like_stack_frame = (values[2] == pos + 0x10);
 		
 		printf("%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int) pos, 
@@ -30,7 +30,7 @@ static void print_stack(uint32_t start, uint32_t end) {
 			(long unsigned int) values[1],
 			(long unsigned int) values[2], 
 			(long unsigned int) values[3], 
-			(looksLikeStackFrame)?'<':' ');
+			(looks_like_stack_frame)?'<':' ');
 	}
 	printf("\n");
 }
@@ -40,7 +40,7 @@ static void print_reason() {
 	int i;
 	unsigned int r;
 	//register uint32_t sp asm("a1");
-	struct XTensa_exception_frame_s *reg = &gdbstub_savedRegs;
+	struct XTensa_exception_frame_s *reg = &saved_regs;
 	printf("\n\n***** Fatal exception %ld\n", (long int) reg->reason);
 	printf("pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
@@ -64,12 +64,12 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
   //Save the extra registers the Xtensa HAL doesn't save
 //  extern void gdbstub_save_extra_sfrs_for_exception();
 //  gdbstub_save_extra_sfrs_for_exception();
-  //Copy registers the Xtensa HAL did save to gdbstub_savedRegs
-	memcpy(&gdbstub_savedRegs, frame, 19*4);
+  //Copy registers the Xtensa HAL did save to saved_regs
+	memcpy(&saved_regs, frame, 19*4);
   //Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
   //has a fixed offset from the address of the passed frame, we can recover it.
-  //gdbstub_savedRegs.a1=(uint32_t)frame+EXCEPTION_GDB_SP_OFFSET;
-	gdbstub_savedRegs.a1=(uint32_t)frame;
+  //saved_regs.a1=(uint32_t)frame+EXCEPTION_GDB_SP_OFFSET;
+	saved_regs.a1=(uint32_t)frame;
 
 //  ets_wdt_disable();
 	print_reason();
