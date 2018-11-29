@@ -42,27 +42,6 @@ struct XTensa_exception_frame_s {
   uint32_t excvaddr;
 };
 
-//extern _xtos_handler	_xtos_set_exception_handler( int n, _xtos_handler f );
-extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
-
-static void my_exception_handler(struct XTensa_exception_frame_s *frame) {
-  //Save the extra registers the Xtensa HAL doesn't save
-//  extern void gdbstub_save_extra_sfrs_for_exception();
-//  gdbstub_save_extra_sfrs_for_exception();
-  //Copy registers the Xtensa HAL did save to gdbstub_savedRegs
-//  os_memcpy(&gdbstub_savedRegs, frame, 19*4);
-  //Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
-  //has a fixed offset from the address of the passed frame, we can recover it.
-  //gdbstub_savedRegs.a1=(uint32_t)frame+EXCEPTION_GDB_SP_OFFSET;
-//  gdbstub_savedRegs.a1=(uint32_t)frame;
-
-//  ets_wdt_disable();
-//  printReason();
-	printf("XXX exception!\n\r");
-//  ets_wdt_enable();
-  while(1) ;
-}
-
 #ifdef EN61107
 #include "en61107_request.h"
 #elif defined IMPULSE
@@ -114,6 +93,53 @@ bool check_memleak_debug_enable(void) {
 	return MEMLEAK_DEBUG_ENABLE;
 }
 #endif
+
+//extern _xtos_handler	_xtos_set_exception_handler( int n, _xtos_handler f );
+extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
+
+static void exception_handler(struct XTensa_exception_frame_s *frame) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;	
+	// vars for aes encryption
+	uint8_t cleartext[MQTT_MESSAGE_L];
+
+	// clear data
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/exc_test/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/exc_test/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/exc_test/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "1");
+
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+
+	if (mqtt_client.pCon != NULL) {
+		// if mqtt_client is initialized
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	}
+  //Save the extra registers the Xtensa HAL doesn't save
+//  extern void gdbstub_save_extra_sfrs_for_exception();
+//  gdbstub_save_extra_sfrs_for_exception();
+  //Copy registers the Xtensa HAL did save to gdbstub_savedRegs
+//  os_memcpy(&gdbstub_savedRegs, frame, 19*4);
+  //Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
+  //has a fixed offset from the address of the passed frame, we can recover it.
+  //gdbstub_savedRegs.a1=(uint32_t)frame+EXCEPTION_GDB_SP_OFFSET;
+//  gdbstub_savedRegs.a1=(uint32_t)frame;
+
+//  ets_wdt_disable();
+//  printReason();
+	printf("XXX exception!\n\r");
+//  ets_wdt_enable();
+//  while(1) ;
+}
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
@@ -1013,19 +1039,19 @@ void impulse_meter_init(void) {
 ICACHE_FLASH_ATTR void user_init(void) {
 	system_update_cpu_freq(160);
 
-	_xtos_set_exception_handler(EXCCAUSE_ILLEGAL, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_SYSCALL, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_INSTR_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_DIVIDE_BY_ZERO, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_UNALIGNED, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_INSTR_DATA_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_DATA_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_INSTR_ADDR_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ADDR_ERROR, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_INSTR_PROHIBITED, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_LOAD_PROHIBITED, my_exception_handler);
-	_xtos_set_exception_handler(EXCCAUSE_STORE_PROHIBITED, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_ILLEGAL, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_SYSCALL, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_DIVIDE_BY_ZERO, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_UNALIGNED, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_DATA_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_DATA_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_ADDR_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ADDR_ERROR, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_PROHIBITED, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_PROHIBITED, exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_STORE_PROHIBITED, exception_handler);
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 
