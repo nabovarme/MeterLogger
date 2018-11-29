@@ -6,6 +6,8 @@
 struct XTensa_exception_frame_s saved_regs;
 
 extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
+extern void ets_wdt_disable();
+extern void ets_wdt_enable();
 
 extern void save_extra_sfrs_for_exception();
 
@@ -72,11 +74,12 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	// saved_regs.a1=(uint32_t)frame+EXCEPTION_GDB_SP_OFFSET;
 	saved_regs.a1=(uint32_t)frame;
 
-//	ets_wdt_disable();
+	ets_wdt_disable();
 	print_reason();
-	printf("XXX exception!\n\r");
-//	ets_wdt_enable();
-	while(1) ;
+	ets_wdt_enable();
+	while(1) {
+		// wait for watchdog to bite
+	}
 }
 
 ICACHE_FLASH_ATTR
@@ -86,6 +89,7 @@ void exception_handler_init() {
         EXCCAUSE_DIVIDE_BY_ZERO, EXCCAUSE_UNALIGNED, EXCCAUSE_INSTR_DATA_ERROR, EXCCAUSE_LOAD_STORE_DATA_ERROR,
         EXCCAUSE_INSTR_ADDR_ERROR, EXCCAUSE_LOAD_STORE_ADDR_ERROR, EXCCAUSE_INSTR_PROHIBITED,
         EXCCAUSE_LOAD_PROHIBITED, EXCCAUSE_STORE_PROHIBITED};
+
 	for (i = 0; i < (sizeof(exno) / sizeof(exno[0])); i++) {
 		_xtos_set_exception_handler(exno[i], exception_handler);
 	}
