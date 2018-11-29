@@ -988,7 +988,7 @@ struct XTensa_exception_frame_s {
 //extern _xtos_handler	_xtos_set_exception_handler( int n, _xtos_handler f );
 void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
 
-static void gdb_exception_handler(struct XTensa_exception_frame_s *frame) {
+static void my_exception_handler(struct XTensa_exception_frame_s *frame) {
   //Save the extra registers the Xtensa HAL doesn't save
 //  extern void gdbstub_save_extra_sfrs_for_exception();
 //  gdbstub_save_extra_sfrs_for_exception();
