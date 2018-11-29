@@ -444,7 +444,9 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_exc_test(MQTT_Client *client) {
-	printf("doing exception...\n\r");
+#ifdef DEBUG
+	printf("forcing exception...\n\r");
+#endif
 	int *i;
 	i = 0;
 	*i = 1;
