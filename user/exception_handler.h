@@ -17,7 +17,5 @@ struct XTensa_exception_frame_s {
   uint32_t excvaddr;
 };
 
-extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
-
 ICACHE_FLASH_ATTR
 void exception_handler_init();
