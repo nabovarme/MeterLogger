@@ -442,6 +442,12 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
+ICACHE_FLASH_ATTR
+void mqtt_rpc_exc_test(MQTT_Client *client) {
+	int i;
+	i = 100 / 0;
+}
+
 #ifndef IMPULSE
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {

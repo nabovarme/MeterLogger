@@ -21,6 +21,7 @@ ICACHE_FLASH_ATTR void mqtt_rpc_stop_ap(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_mem(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_crypto(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_reset_reason(MQTT_Client *client);
+ICACHE_FLASH_ATTR void mqtt_rpc_exc_test(MQTT_Client *client);
 #ifndef IMPULSE
 ICACHE_FLASH_ATTR void mqtt_rpc_set_cron(MQTT_Client *client, char *query);
 ICACHE_FLASH_ATTR void mqtt_rpc_clear_cron(MQTT_Client *client);
