@@ -444,8 +444,10 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_exc_test(MQTT_Client *client) {
-	int i;
-	i = 100 / 0;
+	printf("doing exception...\n\r");
+	int *i;
+	i = 0;
+	*i = 1;
 }
 
 #ifndef IMPULSE

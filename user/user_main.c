@@ -1013,8 +1013,19 @@ void impulse_meter_init(void) {
 ICACHE_FLASH_ATTR void user_init(void) {
 	system_update_cpu_freq(160);
 
+	_xtos_set_exception_handler(EXCCAUSE_ILLEGAL, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_SYSCALL, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_ERROR, my_exception_handler);
 	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ERROR, my_exception_handler);
 	_xtos_set_exception_handler(EXCCAUSE_DIVIDE_BY_ZERO, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_UNALIGNED, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_DATA_ERROR, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_DATA_ERROR, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_ADDR_ERROR, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_STORE_ADDR_ERROR, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_INSTR_PROHIBITED, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_LOAD_PROHIBITED, my_exception_handler);
+	_xtos_set_exception_handler(EXCCAUSE_STORE_PROHIBITED, my_exception_handler);
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 
