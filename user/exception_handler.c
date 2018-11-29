@@ -17,9 +17,10 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 //  printReason();
 	printf("XXX exception!\n\r");
 //  ets_wdt_enable();
-//  while(1) ;
+	while(1) ;
 }
 
+ICACHE_FLASH_ATTR
 void exception_handler_init() {
 	_xtos_set_exception_handler(EXCCAUSE_ILLEGAL, exception_handler);
 	_xtos_set_exception_handler(EXCCAUSE_SYSCALL, exception_handler);

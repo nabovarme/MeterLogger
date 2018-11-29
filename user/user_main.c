@@ -22,10 +22,8 @@
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
 #include "watchdog.h"
-#include "version.h"
-
 #include "exception_handler.h"
-#include "xtensa/corebits.h"
+#include "version.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
