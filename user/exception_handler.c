@@ -1,6 +1,13 @@
 #include <esp8266.h>
+#include "tinyprintf.h"
 #include "exception_handler.h"
 #include "xtensa/corebits.h"
+
+#define STACK_TRACE_SEC				0x80
+#define SPI_FLASH_SEC_SIZE			0x1000
+
+#define STACK_TRACE_BUFFER_N		128
+char stack_trace_buffer[STACK_TRACE_BUFFER_N];
 
 //The asm stub saves the Xtensa registers here when a debugging exception happens.
 struct XTensa_exception_frame_s saved_regs;
@@ -46,6 +53,8 @@ static void print_reason() {
 	//register uint32_t sp asm("a1");
 	struct XTensa_exception_frame_s *reg = &saved_regs;
 	printf("\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+	spi_flash_write(STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE, (uint32 *)stack_trace_buffer, STACK_TRACE_BUFFER_N);
 	printf("pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
 		(long unsigned int) reg->a1, 
@@ -75,8 +84,16 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	saved_regs.a1=(uint32_t)frame;
 
 	ets_wdt_disable();
+	
+	spi_flash_erase_sector(STACK_TRACE_SEC);
+	spi_flash_erase_sector(STACK_TRACE_SEC + 1);
+	spi_flash_erase_sector(STACK_TRACE_SEC + 2);
+	spi_flash_erase_sector(STACK_TRACE_SEC + 3);
+	
 	print_reason();
+	
 	ets_wdt_enable();
+
 	while(1) {
 		// wait for watchdog to bite
 	}
