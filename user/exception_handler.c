@@ -13,9 +13,10 @@ struct XTensa_exception_frame_s saved_regs;
 // struct for buffered save log to flash
 struct stack_trace_context_t {
 	size_t flash_index;
-	char *buffer;
+	char buffer[STACK_TRACE_BUFFER_N];
 	size_t buffer_index;
 } stack_trace_context;
+
 char stack_trace_buffer[STACK_TRACE_BUFFER_N];
 
 extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
@@ -150,7 +151,7 @@ void exception_handler_init() {
 				  EXCCAUSE_LOAD_PROHIBITED, EXCCAUSE_STORE_PROHIBITED};
 
 	// initialize buffered save log to flash
-	stack_trace_context.buffer = stack_trace_buffer;
+	memset(stack_trace_buffer, 0, STACK_TRACE_BUFFER_N);
 	memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
 	stack_trace_context.flash_index = 0;
 	stack_trace_context.buffer_index = 0;
@@ -173,34 +174,32 @@ void stack_trace_append(char *c) {
 	}
 	else {
 		// data longer than buffer size, we need to split writes
-		if (len > STACK_TRACE_BUFFER_N) {
-			// data enough left to fill buffer
-			memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
+		// data enough left to fill buffer
+		memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
+		spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
+						(uint32_t *)stack_trace_context.buffer,
+						STACK_TRACE_BUFFER_N);
+		c += STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index;
+		len = strlen(c);
+		stack_trace_context.flash_index++;
+		stack_trace_context.buffer_index = 0;
+		
+		// while enough data fill whole buffer
+		while (len > STACK_TRACE_BUFFER_N) {
+			c += STACK_TRACE_BUFFER_N * stack_trace_context.flash_index + (STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
+			memcpy(stack_trace_context.buffer, c, STACK_TRACE_BUFFER_N);
 			spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
 							(uint32_t *)stack_trace_context.buffer,
 							STACK_TRACE_BUFFER_N);
-			c += STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index;
-			len = strlen(c);
+			len -= STACK_TRACE_BUFFER_N;
 			stack_trace_context.flash_index++;
-			stack_trace_context.buffer_index = 0;
-			
-			// while enough data fill whole buffer
-			while (len > STACK_TRACE_BUFFER_N) {
-				c += STACK_TRACE_BUFFER_N * stack_trace_context.flash_index + (STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
-				memcpy(stack_trace_context.buffer, c, STACK_TRACE_BUFFER_N);
-				spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
-								(uint32_t *)stack_trace_context.buffer,
-								STACK_TRACE_BUFFER_N);
-				len -= STACK_TRACE_BUFFER_N;
-				stack_trace_context.flash_index++;
-			}
-			
-			// last data
-			if (len) {
-				memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
-				memcpy(stack_trace_context.buffer, c, strlen(c));
-				stack_trace_context.buffer_index = len;
-			}
+		}
+		
+		// last data
+		if (len) {
+			memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
+			memcpy(stack_trace_context.buffer, c, strlen(c));
+			stack_trace_context.buffer_index = len;
 		}
 	}
 }
