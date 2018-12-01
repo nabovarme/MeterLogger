@@ -315,6 +315,14 @@ size:
 	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
 	$(SIZE) -B -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
 
+getstacktrace:
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 firmware/stack_trace.dump
+	
+stacktracedecode: all getstacktrace
+	test -s build/app.out || echo "Need to make all first" && exit
+	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
+	java -jar /meterlogger/EspStackTraceDecoder/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
+
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
 minicom:

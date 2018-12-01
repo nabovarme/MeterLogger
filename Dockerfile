@@ -51,7 +51,14 @@ RUN apt-get update && apt-get install -y \
 	wget \
 	splint \
 	sudo \
-	screen
+	screen \
+	software-properties-common
+
+# Java
+RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" && apt-get update
+RUN echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+RUN apt-get -y install oracle-java8-installer
 
 # Create our main work directory
 ADD . /meterlogger/MeterLogger
@@ -72,6 +79,9 @@ RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-op
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
+
+# EspStackTraceDecoder.jar
+RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
 
 USER root
 
