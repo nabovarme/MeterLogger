@@ -3,6 +3,7 @@
 #include "exception_handler.h"
 #include "xtensa/corebits.h"
 
+#define STACK_TRACE_N				0x4000
 #define STACK_TRACE_SEC				0x80
 
 #define STACK_TRACE_BUFFER_N		128
@@ -117,6 +118,8 @@ static void print_reason() {
 }
 
 static void exception_handler(struct XTensa_exception_frame_s *frame) {
+	uint8_t i;
+	
 	// Save the extra registers the Xtensa HAL doesn't save
 	save_extra_sfrs_for_exception();
 	// Copy registers the Xtensa HAL did save to saved_regs
@@ -128,10 +131,9 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 
 	ets_wdt_disable();
 	
-	spi_flash_erase_sector(STACK_TRACE_SEC);
-	spi_flash_erase_sector(STACK_TRACE_SEC + 1);
-	spi_flash_erase_sector(STACK_TRACE_SEC + 2);
-	spi_flash_erase_sector(STACK_TRACE_SEC + 3);
+	for (i = 0; i * SPI_FLASH_SEC_SIZE < STACK_TRACE_N; i++) {
+		spi_flash_erase_sector(STACK_TRACE_SEC + i);
+	}
 	
 	print_reason();
 	
@@ -166,6 +168,10 @@ void stack_trace_append(char *c) {
 	unsigned int len;
 	
 	len = strlen(c);
+	if (len == 0) return;
+	
+	// only save up to STACK_TRACE_N bytes
+	if ((stack_trace_context.flash_index * STACK_TRACE_BUFFER_N) > STACK_TRACE_N) return;
 	
 	if (len + stack_trace_context.buffer_index < STACK_TRACE_BUFFER_N) {
 		// fill into buffer
