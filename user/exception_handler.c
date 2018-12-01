@@ -143,17 +143,16 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 ICACHE_FLASH_ATTR
 void exception_handler_init() {
 	unsigned int i;
-	int exno[];
+	int exno[] = {EXCCAUSE_ILLEGAL, EXCCAUSE_SYSCALL, EXCCAUSE_INSTR_ERROR, EXCCAUSE_LOAD_STORE_ERROR,
+				  EXCCAUSE_DIVIDE_BY_ZERO, EXCCAUSE_UNALIGNED, EXCCAUSE_INSTR_DATA_ERROR, EXCCAUSE_LOAD_STORE_DATA_ERROR,
+				  EXCCAUSE_INSTR_ADDR_ERROR, EXCCAUSE_LOAD_STORE_ADDR_ERROR, EXCCAUSE_INSTR_PROHIBITED,
+				  EXCCAUSE_LOAD_PROHIBITED, EXCCAUSE_STORE_PROHIBITED};
 
 	// initialize buffered save log to flash
 	memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
 	stack_trace_context.flash_index = 0;
 	stack_trace_context.buffer_index = 0;
 
-	exno[] = {EXCCAUSE_ILLEGAL, EXCCAUSE_SYSCALL, EXCCAUSE_INSTR_ERROR, EXCCAUSE_LOAD_STORE_ERROR,
-			EXCCAUSE_DIVIDE_BY_ZERO, EXCCAUSE_UNALIGNED, EXCCAUSE_INSTR_DATA_ERROR, EXCCAUSE_LOAD_STORE_DATA_ERROR,
-			EXCCAUSE_INSTR_ADDR_ERROR, EXCCAUSE_LOAD_STORE_ADDR_ERROR, EXCCAUSE_INSTR_PROHIBITED,
-			EXCCAUSE_LOAD_PROHIBITED, EXCCAUSE_STORE_PROHIBITED};
 	for (i = 0; i < (sizeof(exno) / sizeof(exno[0])); i++) {
 		_xtos_set_exception_handler(exno[i], exception_handler);
 	}
