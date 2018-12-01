@@ -36,7 +36,9 @@ static void print_stack(uint32_t start, uint32_t end) {
 	uint32_t pos;
 	uint32_t *values;
 	bool looks_like_stack_frame;
+#ifdef DEBUG
 	printf("\nStack dump:\n");
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
 	stack_trace_append(stack_trace_buffer);
 
@@ -45,6 +47,7 @@ static void print_stack(uint32_t start, uint32_t end) {
 		// rough indicator: stack frames usually have SP saved as the second word
 		looks_like_stack_frame = (values[2] == pos + 0x10);
 		
+#ifdef DEBUG
 		printf("%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int) pos, 
 			(long unsigned int) values[0], 
@@ -52,6 +55,7 @@ static void print_stack(uint32_t start, uint32_t end) {
 			(long unsigned int) values[2], 
 			(long unsigned int) values[3], 
 			(looks_like_stack_frame)?'<':' ');
+#endif	// DEBUG
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int) pos, 
 			(long unsigned int) values[0], 
@@ -61,7 +65,9 @@ static void print_stack(uint32_t start, uint32_t end) {
 			(looks_like_stack_frame)?'<':' ');
 			stack_trace_append(stack_trace_buffer);
 	}
+#ifdef DEBUG
 	printf("\n");
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
 	
@@ -74,24 +80,30 @@ static void print_reason() {
 	unsigned int r;
 	//register uint32_t sp asm("a1");
 	struct XTensa_exception_frame_s *reg = &saved_regs;
+#ifdef DEBUG
 	printf("\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n\n***** Fatal exception %ld\n", (long int) reg->reason);
 	stack_trace_append(stack_trace_buffer);
 	
+#ifdef DEBUG
 	printf("pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
 		(long unsigned int) reg->a1, 
 		(long unsigned int) reg->excvaddr);
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
 		(long unsigned int) reg->a1, 
 		(long unsigned int) reg->excvaddr);
 	stack_trace_append(stack_trace_buffer);
 	
+#ifdef DEBUG
 	printf("ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n", 
 		(long unsigned int) reg->ps, 
 		(long unsigned int) reg->sar,
 		(long unsigned int) reg->vpri);
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n", 
 		(long unsigned int) reg->ps, 
 		(long unsigned int) reg->sar,
@@ -100,16 +112,22 @@ static void print_reason() {
 	
 	for (i = 0; i < 16; i++) {
 		r = getaregval(i);
+#ifdef DEBUG
 		printf("r%02d: 0x%08x=%10d ", i, r, r);
+#endif	// DEBUG
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "r%02d: 0x%08x=%10d ", i, r, r);
 		stack_trace_append(stack_trace_buffer);
 		if (i%3 == 2) {
+#ifdef DEBUG
 			printf("\n");
+#endif	// DEBUG
 			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 			stack_trace_append(stack_trace_buffer);
 		}
 	}
+#ifdef DEBUG
 	printf("\n");
+#endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
 	//print_stack(reg->pc, sp, 0x3fffffb0);
