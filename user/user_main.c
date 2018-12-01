@@ -22,8 +22,11 @@
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
 #include "watchdog.h"
-#include "exception_handler.h"
 #include "version.h"
+
+#ifdef DEBUG_STACK_TRACE
+#include "exception_handler.h"
+#endif	// DEBUG_STACK_TRACE
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -770,10 +773,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found reset_reason
 		mqtt_rpc_reset_reason(&mqtt_client);
 	}
+#ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "exc_test", FUNCTIONNAME_L) == 0) {
 		// found reset_reason
 		mqtt_rpc_exc_test(&mqtt_client);
 	}
+#endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
@@ -975,7 +980,9 @@ void impulse_meter_init(void) {
 ICACHE_FLASH_ATTR void user_init(void) {
 	system_update_cpu_freq(160);
 
+#ifdef DEBUG_STACK_TRACE
 	exception_handler_init();
+#endif	// DEBUG_STACK_TRACE
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 
