@@ -7,6 +7,9 @@
 #define CFG_LOCATION	0x76	/* Please don't change or if you know what you doing */
 //#define MQTT_CA_FLASH_SECTOR	0x5c
 
+#define STACK_TRACE_N				0x4000
+#define STACK_TRACE_SEC				0x80
+
 //#define MQTT_SSL_ENABLE
 //#define CLIENT_SSL_ENABLE
 

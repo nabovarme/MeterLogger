@@ -3,8 +3,7 @@
 #include "exception_handler.h"
 #include "xtensa/corebits.h"
 
-#define STACK_TRACE_N				0x4000
-#define STACK_TRACE_SEC				0x80
+#include "user_config.h"
 
 #define STACK_TRACE_BUFFER_N		128
 
