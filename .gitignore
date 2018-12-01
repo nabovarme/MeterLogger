@@ -3,5 +3,6 @@
 build/*
 build/*/*
 user/*.o
-firmware/*
+firmware/0x00000.bin
+firmware/0x10000.bin
 xcshareddata

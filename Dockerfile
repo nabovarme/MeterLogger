@@ -92,6 +92,5 @@ ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 
 WORKDIR /meterlogger/MeterLogger
 CMD cp /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py /meterlogger/MeterLogger/tools/ && \
-	cp /meterlogger/esp-open-sdk/sdk/bin/blank.bin /meterlogger/MeterLogger/firmware/ && \
 	cd /meterlogger/MeterLogger && \
 	eval $BUILD_ENV make clean all
