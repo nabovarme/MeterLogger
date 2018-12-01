@@ -6,7 +6,6 @@
 #define STACK_TRACE_SEC				0x80
 
 #define STACK_TRACE_BUFFER_N		128
-char stack_trace_buffer[STACK_TRACE_BUFFER_N];
 
 //The asm stub saves the Xtensa registers here when a debugging exception happens.
 struct XTensa_exception_frame_s saved_regs;
@@ -36,8 +35,8 @@ static void print_stack(uint32_t start, uint32_t end) {
 	uint32_t *values;
 	bool looks_like_stack_frame;
 	printf("\nStack dump:\n");
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\nStack dump:\n");
-	stack_trace_append(stack_trace_buffer);
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
+	stack_trace_append(stack_trace_context.buffer);
 
 	for (pos = start; pos < end; pos += 0x10) {
 		values = (uint32_t*)(pos);
@@ -51,18 +50,18 @@ static void print_stack(uint32_t start, uint32_t end) {
 			(long unsigned int) values[2], 
 			(long unsigned int) values[3], 
 			(looks_like_stack_frame)?'<':' ');
-		tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "%08lx:  %08lx %08lx %08lx %08lx %c\n",
+		tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int) pos, 
 			(long unsigned int) values[0], 
 			(long unsigned int) values[1],
 			(long unsigned int) values[2], 
 			(long unsigned int) values[3], 
 			(looks_like_stack_frame)?'<':' ');
-			stack_trace_append(stack_trace_buffer);
+			stack_trace_append(stack_trace_context.buffer);
 	}
 	printf("\n");
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\n");
-	stack_trace_append(stack_trace_buffer);
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "\n");
+	stack_trace_append(stack_trace_context.buffer);
 	
 	stack_trace_last();
 }
@@ -74,43 +73,43 @@ static void print_reason() {
 	//register uint32_t sp asm("a1");
 	struct XTensa_exception_frame_s *reg = &saved_regs;
 	printf("\n\n***** Fatal exception %ld\n", (long int) reg->reason);
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\n\n***** Fatal exception %ld\n", (long int) reg->reason);
-	stack_trace_append(stack_trace_buffer);
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+	stack_trace_append(stack_trace_context.buffer);
 	
 	printf("pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
 		(long unsigned int) reg->a1, 
 		(long unsigned int) reg->excvaddr);
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n", 
 		(long unsigned int) reg->pc, 
 		(long unsigned int) reg->a1, 
 		(long unsigned int) reg->excvaddr);
-	stack_trace_append(stack_trace_buffer);
+	stack_trace_append(stack_trace_context.buffer);
 	
 	printf("ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n", 
 		(long unsigned int) reg->ps, 
 		(long unsigned int) reg->sar,
 		(long unsigned int) reg->vpri);
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n", 
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n", 
 		(long unsigned int) reg->ps, 
 		(long unsigned int) reg->sar,
 		(long unsigned int) reg->vpri);
-	stack_trace_append(stack_trace_buffer);
+	stack_trace_append(stack_trace_context.buffer);
 	
 	for (i = 0; i < 16; i++) {
 		r = getaregval(i);
 		printf("r%02d: 0x%08x=%10d ", i, r, r);
-		tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "r%02d: 0x%08x=%10d ", i, r, r);
-		stack_trace_append(stack_trace_buffer);
+		tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "r%02d: 0x%08x=%10d ", i, r, r);
+		stack_trace_append(stack_trace_context.buffer);
 		if (i%3 == 2) {
 			printf("\n");
-			tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\n");
-			stack_trace_append(stack_trace_buffer);
+			tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "\n");
+			stack_trace_append(stack_trace_context.buffer);
 		}
 	}
 	printf("\n");
-	tfp_snprintf(stack_trace_buffer, SPI_FLASH_SEC_SIZE, "\n");
-	stack_trace_append(stack_trace_buffer);
+	tfp_snprintf(stack_trace_context.buffer, STACK_TRACE_BUFFER_N, "\n");
+	stack_trace_append(stack_trace_context.buffer);
 	//print_stack(reg->pc, sp, 0x3fffffb0);
 	print_stack(getaregval(1), 0x3fffffb0);
 }
