@@ -60,10 +60,6 @@ RUN echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-
 RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
 RUN apt-get -y install oracle-java8-installer
 
-# Create our main work directory
-ADD . /meterlogger/MeterLogger
-RUN ls /meterlogger/MeterLogger/Makefile
-
 # Adduser `meterlogger`
 RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
 RUN adduser --disabled-password --gecos "" meterlogger && usermod -a -G dialout meterlogger
