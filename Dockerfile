@@ -75,13 +75,16 @@ RUN chown -R meterlogger:meterlogger /meterlogger
 USER meterlogger
 
 # esp-open-sdk
-RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git
+RUN cd /meterlogger && git clone --recursive https://github.com/espressif/ESP8266_NONOS_SDK.git
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 
 # EspStackTraceDecoder.jar
 RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
+
+# meterlogger
+RUN cd /meterlogger && git clone --recursive -b exception_handler_sdk_v3 https://github.com/nabovarme/MeterLogger.git
 
 USER root
 
