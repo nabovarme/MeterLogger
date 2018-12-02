@@ -69,6 +69,8 @@ RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) N
 RUN adduser --disabled-password --gecos "" meterlogger && usermod -a -G dialout meterlogger
 RUN usermod -a -G sudo meterlogger
 
+# Create our main work directory
+RUN mkdir /meterlogger
 RUN chown -R meterlogger:meterlogger /meterlogger
 
 # Crosstool demands non-root user for compilation
