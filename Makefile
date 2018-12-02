@@ -109,7 +109,7 @@ endif
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt modules user user/crypto
-EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(HOME)/esp8266/esp-open-sdk/sdk/include $(SDK_BASE)/../esp-open-lwip/include include lib/heatshrink user/crypto user/kamstrup user/61107
+EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(SDK_BASE)/../lx106-hal/include $(HOME)/esp8266/esp-open-sdk/sdk/include $(SDK_BASE)/../esp-open-lwip/include include lib/heatshrink user/crypto user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
 LIBS	= main net80211 wpa pp phy hal ssl gcc c
