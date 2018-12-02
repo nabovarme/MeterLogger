@@ -109,6 +109,7 @@ uart_tx_one_char(uint8 uart, uint8 TxChar)
       if ((fifo_cnt >> UART_TXFIFO_CNT_S & UART_TXFIFO_CNT) < 126) {
         break;
       }
+      system_soft_wdt_feed()
     }
 
     WRITE_PERI_REG(UART_FIFO(uart) , TxChar);
