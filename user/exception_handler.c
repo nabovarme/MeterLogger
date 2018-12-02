@@ -26,12 +26,14 @@ extern void ets_wdt_enable();
 extern void save_extra_sfrs_for_exception();
 
 //Get the value of one of the A registers
+ICACHE_FLASH_ATTR
 static unsigned int getaregval(int reg) {
 	if (reg == 0) return saved_regs.a0;
 	if (reg == 1) return saved_regs.a1;
 	return saved_regs.a[reg-2];
 }
 
+ICACHE_FLASH_ATTR
 static void print_stack(uint32_t start, uint32_t end) {
 	uint32_t pos;
 	uint32_t *values;
@@ -75,6 +77,7 @@ static void print_stack(uint32_t start, uint32_t end) {
 }
 
 // Print exception info to console
+ICACHE_FLASH_ATTR
 static void print_reason() {
 	int i;
 	unsigned int r;
@@ -134,6 +137,7 @@ static void print_reason() {
 	print_stack(getaregval(1), 0x3fffffb0);
 }
 
+ICACHE_FLASH_ATTR
 static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	uint8_t i;
 	
