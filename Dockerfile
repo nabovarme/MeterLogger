@@ -73,7 +73,7 @@ RUN chown -R meterlogger:meterlogger /meterlogger
 USER meterlogger
 
 # esp-open-sdk
-RUN cd /meterlogger && git clone --recursive https://github.com/espressif/ESP8266_NONOS_SDK.git
+RUN cd /meterlogger && git clone --recursive -b sdk-v3.0.0 https://github.com/nabovarme/esp-open-sdk.git
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
