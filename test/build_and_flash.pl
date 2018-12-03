@@ -27,10 +27,15 @@ if ($sth->rows) {
 	$_ = $sth->fetchrow_hashref;
 	my $key = $_->{key} || warn "no aes key found\n";
 	my $sw_version = $_->{sw_version} || warn "no sw_version found\n";
-                
+
 	if ($_->{sw_version} =~ /NO_AUTO_CLOSE/) {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' AUTO_CLOSE=0' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
 		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' AUTO_CLOSE=0' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+	}
+
+	if ($_->{sw_version} =~ /DEBUG_STACK_TRACE/) {
+		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' DEBUG_STACK_TRACE=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' DEBUG_STACK_TRACE=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 
 	if ($_->{sw_version} =~ /THERMO_ON_AC_2/) {
