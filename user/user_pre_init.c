@@ -1,6 +1,9 @@
 #include <esp8266.h>
 #include "user_pre_init.h"
 
+#include <esp_sdk_ver.h>
+#if ESP_SDK_VERSION == 030300
+
 #define EAGLE_FLASH_BIN_ADDR					(SYSTEM_PARTITION_CUSTOMER_BEGIN + 1)
 #define EAGLE_IROM0TEXT_BIN_ADDR				(SYSTEM_PARTITION_CUSTOMER_BEGIN + 2)
 
@@ -57,3 +60,4 @@ ICACHE_FLASH_ATTR void user_pre_init(void) {
 	}
 }
 
+#endif
