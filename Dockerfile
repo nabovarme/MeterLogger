@@ -51,7 +51,14 @@ RUN apt-get update && apt-get install -y \
 	wget \
 	splint \
 	sudo \
-	screen
+	screen \
+	software-properties-common
+
+# Java
+RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" && apt-get update
+RUN echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+RUN apt-get -y install oracle-java8-installer
 
 # Adduser `meterlogger`
 RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
@@ -60,8 +67,6 @@ RUN usermod -a -G sudo meterlogger
 
 # Create our main work directory
 RUN mkdir /meterlogger
-
-# My heart belongs to daddy
 RUN chown -R meterlogger:meterlogger /meterlogger
 
 # Crosstool demands non-root user for compilation
@@ -73,8 +78,11 @@ RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 
+# EspStackTraceDecoder.jar
+RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
+
 # meterlogger
-RUN cd /meterlogger/ && git clone --recursive https://github.com/nabovarme/MeterLogger.git
+RUN cd /meterlogger && git clone --recursive -b exception_handler_sdk_v3 https://github.com/nabovarme/MeterLogger.git
 
 USER root
 
@@ -83,4 +91,7 @@ ENV PATH /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 
-CMD (cd /meterlogger/MeterLogger && /bin/bash)
+WORKDIR /meterlogger/MeterLogger
+CMD cp /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py /meterlogger/MeterLogger/tools/ && \
+	cd /meterlogger/MeterLogger && \
+	eval $BUILD_ENV make clean all
