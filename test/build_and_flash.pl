@@ -48,27 +48,27 @@ if ($sth->rows) {
 	# parse hw models
 	if ($_->{sw_version} =~ /MC-B/) {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' MC_66B=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-#		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' MC_66B=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' MC_66B=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 	elsif ($_->{sw_version} =~ /MC/) {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' EN61107=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-#		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' EN61107=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' EN61107=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 	elsif ($_->{sw_version} =~ /IMPULSE/) {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' IMPULSE=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-#		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' IMPULSE=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE ;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' IMPULSE=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE ;
 	}
 	elsif ($_->{sw_version} =~ /NO_METER/) {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-#		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . ' DEBUG=1 DEBUG_NO_METER=1' . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 	else {
 		print BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE . "\n";
-#		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
+		system BUILD_COMMAND . ' -e BUILD_ENV="' . $DEFAULT_BUILD_VARS . qq[ SERIAL=$meter_serial KEY=$key] . '"' . DOCKER_IMAGE;
 	}
 	print FLASH_COMMAND . "\n";
-#	system 'echo ' . FLASH_COMMAND . ' | pbcopy';	# copy command to clipboard for repeated use
-#	system FLASH_COMMAND;
+	system 'echo ' . FLASH_COMMAND . ' | pbcopy';	# copy command to clipboard for repeated use
+	system FLASH_COMMAND;
 }
 
 # end of main
