@@ -1,7 +1,6 @@
 #include <esp8266.h>
 #include "user_pre_init.h"
 
-#include <esp_sdk_ver.h>
 #if ESP_SDK_VERSION == 030300
 
 #define EAGLE_FLASH_BIN_ADDR					(SYSTEM_PARTITION_CUSTOMER_BEGIN + 1)

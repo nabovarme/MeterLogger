@@ -19,6 +19,7 @@
 #include <osapi.h>
 #include <user_interface.h>
 #include <upgrade.h>
+#include <esp_sdk_ver.h>
 #endif
 
 #include "platform.h"
