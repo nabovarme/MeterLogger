@@ -1007,6 +1007,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 
+#ifdef DEBUG_STACK_TRACE
+	printf("\t(DEBUG_STACK_TRACE)\n\r");
+#endif
+
 #ifdef FORCED_FLOW_METER
 	printf("\t(FORCED_FLOW_METER)\n\r");
 #endif
