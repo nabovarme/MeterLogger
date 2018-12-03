@@ -82,7 +82,7 @@ RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
 
 # meterlogger
-RUN cd /meterlogger && git clone --recursive -b exception_handler_sdk_v3 https://github.com/nabovarme/MeterLogger.git
+RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git
 
 USER root
 
