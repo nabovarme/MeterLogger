@@ -66,8 +66,11 @@ meter is forced to run as a flow meter and close when volume is reached
 AUTO_CLOSE=1  
 automatically check if energy is larger than the value set by open_until mqtt command 
   
-NO_CRON=1
-disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this
+DEBUG_STACK_TRACE=1  
+Enable exception stack trace dump at to flash at address STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE (0x80000), STACK_TRACE_N bytes  
+
+NO_CRON=1  
+disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this  
 
 THERMO_NO=0  
 thermo actuator is normal closed  
@@ -160,6 +163,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
 | /config/v2/9999999/[unix time]/version                 |                                                                                                     |
 | /config/v2/9999999/[unix time]/uptime                  |                                                                                                     |
+| /config/v2/9999999/[unix time]/stack_trace             | [enable stack trace dumps until restart i.e. once (only if built with DEBUG_STACK_TRACE=1)]         |
 | /config/v2/9999999/[unix time]/vdd                     |                                                                                                     |
 | /config/v2/9999999/[unix time]/rssi                    |                                                                                                     |
 | /config/v2/9999999/[unix time]/ssid                    |                                                                                                     |
@@ -188,6 +192,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /open_until/v2/9999999/[unix time]              | [kWh when meter should close]                                                                        |
 | /open_until_delta/v2/9999999/[unix time]        | [kWh when meter should close]                                                                        |
 | /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
+| /stack_trace/v2/9999999/[unix time]             |                                                                                                      |
 | /vdd/v2/9999999/[unix time]                     | [power supply voltage level]                                                                         |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |

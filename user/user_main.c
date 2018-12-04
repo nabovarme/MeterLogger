@@ -24,10 +24,6 @@
 #include "watchdog.h"
 #include "version.h"
 
-#ifdef DEBUG_STACK_TRACE
-#include "exception_handler.h"
-#endif	// DEBUG_STACK_TRACE
-
 #ifdef EN61107
 #include "en61107_request.h"
 #elif defined IMPULSE
@@ -783,9 +779,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_reset_reason(&mqtt_client);
 	}
 #ifdef DEBUG_STACK_TRACE
-	else if (strncmp(function_name, "exc_test", FUNCTIONNAME_L) == 0) {
-		// found reset_reason
-		mqtt_rpc_exc_test(&mqtt_client);
+	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {
+		// found stack_trace
+		mqtt_rpc_stack_trace(&mqtt_client);
 	}
 #endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE
@@ -990,10 +986,6 @@ void impulse_meter_init(void) {
 
 ICACHE_FLASH_ATTR void user_init(void) {
 	system_update_cpu_freq(160);
-
-#ifdef DEBUG_STACK_TRACE
-	exception_handler_init();
-#endif	// DEBUG_STACK_TRACE
 
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 
