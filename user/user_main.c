@@ -518,9 +518,6 @@ ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	unsigned char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
-	uint8_t cleartext[MQTT_MESSAGE_L];
-	int mqtt_message_l;
 
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
