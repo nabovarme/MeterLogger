@@ -1,3 +1,5 @@
+#ifndef NO_CRON
+
 #include <esp8266.h>
 
 #include <time.h>
@@ -385,3 +387,5 @@ void debug_cron_jobs() {
 	}
 }
 #endif
+
+#endif	// NO_CRON

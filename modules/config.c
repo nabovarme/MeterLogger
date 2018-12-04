@@ -137,7 +137,9 @@ cfg_load() {
 #else
 		sys_cfg.ac_thermo_state = 0;
 		sys_cfg.offline_close_at = 0;
+#ifndef NO_CRON
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+#endif	// NO_CRON
 #endif	// IMPULSE
 
 		INFO(" default configuration\r\n");

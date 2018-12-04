@@ -66,6 +66,9 @@ meter is forced to run as a flow meter and close when volume is reached
 AUTO_CLOSE=1  
 automatically check if energy is larger than the value set by open_until mqtt command 
   
+NO_CRON=1
+disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this
+
 THERMO_NO=0  
 thermo actuator is normal closed  
   

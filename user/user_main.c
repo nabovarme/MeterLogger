@@ -789,6 +789,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 #endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE
+#ifndef NO_CRON
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
 		// found set_cron
 		mqtt_rpc_set_cron(&mqtt_client, cleartext);
@@ -801,6 +802,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found cron
 		mqtt_rpc_cron(&mqtt_client);
 	}
+#endif	// NO_CRON
 	else if (strncmp(function_name, "open", FUNCTIONNAME_L) == 0) {
 		// found open
 		mqtt_rpc_open(&mqtt_client);
@@ -1016,6 +1018,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 
+#ifdef NO_CRON
+	printf("\t(NO_CRON)\n\r");
+#endif
+	
 #ifdef DEBUG_STACK_TRACE
 	printf("\t(DEBUG_STACK_TRACE)\n\r");
 #endif
@@ -1086,7 +1092,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #else	
 	user_gpio_init();
 	ac_out_init();
+#ifndef NO_CRON
 	cron_init();
+#endif	// NO_CRON
 #endif // IMPULSE
 
 	led_init();

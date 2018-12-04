@@ -455,6 +455,7 @@ void mqtt_rpc_exc_test(MQTT_Client *client) {
 #endif	// DEBUG_STACK_TRACE
 
 #ifndef IMPULSE
+#ifndef NO_CRON
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -522,6 +523,7 @@ void mqtt_rpc_cron(MQTT_Client *client) {
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
+#endif	// NO_CRON
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_open(MQTT_Client *client) {

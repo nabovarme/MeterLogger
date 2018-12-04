@@ -188,6 +188,10 @@ ifneq ($(AUTO_CLOSE), 0)
     CFLAGS += -DAUTO_CLOSE=1
 endif
 
+ifeq ($(NO_CRON), 1)
+    CFLAGS += -DNO_CRON=1
+endif
+
 ifeq ($(THERMO_NO), 1)
     CFLAGS += -DTHERMO_NO
 endif
