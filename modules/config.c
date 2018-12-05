@@ -80,8 +80,8 @@ cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
 			return false;
 		}
 	}
-	return true;
 #endif	// IMPULSE
+	return true;
 }
 
 void ICACHE_FLASH_ATTR
