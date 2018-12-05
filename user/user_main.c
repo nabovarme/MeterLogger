@@ -1137,9 +1137,11 @@ ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif	// EN61107
+#endif
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "calculated_crc=0x%x&saved_crc=0x%x", calculated_crc, saved_crc);
 
 	// encrypt and send
