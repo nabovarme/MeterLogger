@@ -74,7 +74,7 @@ USER meterlogger
 
 # esp-open-sdk
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git && \
-    cd esp-open-sd && git checkout sdk-v2.2.x
+    cd /meterlogger/esp-open-sdk && git checkout sdk-v2.2.x
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
