@@ -55,16 +55,27 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 }
 
 ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
-	uint32_t result_int, result_frac;
-	uint32_t w_int;
+	int32_t result_int, result_frac;
+	int32_t w_int;
+	bool negative;
 	
 	w_int = atoi(w);
+	negative = (w_int < 0) ? true : false;
+	
+	if (negative) {
+		w_int = -w_int;
+	}
 	
 	// ...divide by 1000 and prepare decimal string in kWh
-	result_int = (int32_t)(w_int / 1000);
+	result_int = w_int / 1000;
 	result_frac = w_int % 1000;
 	
-	tfp_snprintf(kw, 15, "%u.%03u", result_int, result_frac);
+	if (negative) {
+		tfp_snprintf(kw, 15, "-%u.%03u", result_int, result_frac);
+	}
+	else {
+		tfp_snprintf(kw, 15, "%u.%03u", result_int, result_frac);
+	}
 }
 
 ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
