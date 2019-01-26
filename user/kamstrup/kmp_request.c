@@ -41,7 +41,7 @@ static os_timer_t kmp_receive_timeout_timer;
 unsigned int kmp_requests_sent;
 
 #ifdef FORCED_FLOW_METER
-volatile uint32_t v1_m3 = 0;
+volatile uint32_t v1_l = 0;
 #else
 volatile uint32_t e1_kwh = 0;
 #endif
@@ -69,7 +69,9 @@ static void kmp_received_task(os_event_t *events) {
     unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
 
-#ifndef FORCED_FLOW_METER
+#ifdef FORCED_FLOW_METER
+	char v1_l_string[64];
+#else
 	char e1_kwh_string[64];
 #endif	// FORCED_FLOW_METER
 
@@ -166,7 +168,8 @@ static void kmp_received_task(os_event_t *events) {
 
 #ifdef FORCED_FLOW_METER
 			// save volume for later use in kmp_get_received_volume_m3()
-			v1_m3 = atoi(kmp_value_string);
+			multiply_str_by_1000(kmp_value_string, v1_l_string);
+			v1_l = atoi(v1_l_string);
 #endif
         	
 #ifndef FORCED_FLOW_METER
@@ -250,11 +253,11 @@ unsigned int kmp_get_received_serial() {
 
 #ifdef FORCED_FLOW_METER
 ICACHE_FLASH_ATTR
-uint32_t kmp_get_received_volume_m3() {
+uint32_t kmp_get_received_volume_l() {
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	return v1_m3;
+	return v1_l;
 #endif
 }
 #else

@@ -29,7 +29,7 @@ unsigned int en61107_get_received_serial();
 
 #ifdef FORCED_FLOW_METER
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_volume_m3();
+unsigned int en61107_get_received_volume_l();
 #else
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh();

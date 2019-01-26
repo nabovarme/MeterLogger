@@ -25,7 +25,7 @@ unsigned int kmp_get_received_serial();
 
 #ifdef FORCED_FLOW_METER
 ICACHE_FLASH_ATTR
-uint32_t kmp_get_received_volume_m3();
+uint32_t kmp_get_received_volume_l();
 #else
 ICACHE_FLASH_ATTR
 uint32_t kmp_get_received_energy_kwh();

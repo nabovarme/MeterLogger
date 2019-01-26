@@ -391,7 +391,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 	// compare last received energy to offline_close_at and close if needed
 #ifdef EN61107
 #ifdef FORCED_FLOW_METER
-	if (en61107_get_received_volume_m3() >= sys_cfg.offline_close_at) {
+	if (en61107_get_received_volume_l() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
 
@@ -411,7 +411,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 				// if mqtt_client is initialized
 				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 #ifdef DEBUG
-				os_printf("closed because en61107_get_received_volume_m3 >= offline_close_at (%u >= %u)\n", en61107_get_received_volume_m3(), sys_cfg.offline_close_at);
+				os_printf("closed because en61107_get_received_volume_l >= offline_close_at (%u >= %u)\n", en61107_get_received_volume_l(), sys_cfg.offline_close_at);
 #endif	// DEBUG
 			}
 		}
@@ -445,7 +445,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 #endif	// FORCED_FLOW_METER
 #else	// KMP
 #ifdef FORCED_FLOW_METER
-	if (kmp_get_received_volume_m3() >= sys_cfg.offline_close_at) {
+	if (kmp_get_received_volume_l() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
 
@@ -465,7 +465,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 				// if mqtt_client is initialized
 				MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 #ifdef DEBUG
-				os_printf("closed because kmp_get_received_volume_m3 >= offline_close_at (%u >= %u)\n", kmp_get_received_volume_m3(), sys_cfg.offline_close_at);
+				os_printf("closed because kmp_get_received_volume_l >= offline_close_at (%u >= %u)\n", kmp_get_received_volume_l(), sys_cfg.offline_close_at);
 #endif	// DEBUG
 			}
 		}

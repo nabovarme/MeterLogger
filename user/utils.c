@@ -110,6 +110,10 @@ ICACHE_FLASH_ATTR void mw_to_kw_str(char *mw, char *w) {
 	kw_to_w_str(mw, w);
 }
 
+ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str) {
+	kw_to_w_str(str, decimal_str);
+}
+	
 ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str) {
 	int32_t result_int, result_frac;
 	int32_t value_int;

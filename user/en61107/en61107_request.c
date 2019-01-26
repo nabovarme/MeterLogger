@@ -330,8 +330,11 @@ uint32_t en61107_get_received_serial() {
 
 #ifdef FORCED_FLOW_METER
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_volume_m3() {
-	return atoi(response.v1.value);
+unsigned int en61107_get_received_volume_l() {
+	char v1_l_string[64];
+	
+	multiply_str_by_1000(response.v1.value, v1_l_string);
+	return atoi(v1_l_string);
 }
 #else
 // helper function to pass energy to user_main.c
