@@ -570,7 +570,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	int_value = atoi(value);
 #endif	// FORCED_FLOW_METER
 		
-	if (int_value >= 0) {	// only open valve if not negative value
+	if (atoi(value) >= 0) {	// only open valve if not negative value
 		ac_thermo_open();
 		if (sys_cfg.offline_close_at != int_value) {	// only write to flash if changed
 			// save if changed
@@ -636,7 +636,7 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #else
 	int_value = atoi(value);
 #endif	// FORCED_FLOW_METER
-	if (int_value >= 0) {	// only open valve if not negative value
+	if (atoi(value) >= 0) {	// only open valve if not negative value
 		ac_thermo_open();
 		if (sys_cfg.offline_close_at != int_value) {	// only write to flash if changed
 			// save if changed
