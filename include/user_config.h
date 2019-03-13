@@ -76,7 +76,11 @@
 #define STA_FALLBACK_PASS	"w1reless"
 
 #ifdef IMPULSE
+#ifndef FORCED_FLOW_METER
 #define AP_SSID				"EL_%s"
+#else
+#define AP_SSID				"WATER_%s"
+#endif	// FORCED_FLOW_METER
 #else
 #define AP_SSID				"KAM_%07u"
 #endif
