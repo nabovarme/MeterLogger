@@ -46,7 +46,7 @@ if ($sth->rows) {
 	}
 
 	if ($_->{sw_version} =~ /FLOW/) {
-		$DEFAULT_BUILD_VARS .= ' FORCED_FLOW_METER=1';
+		$DEFAULT_BUILD_VARS .= ' FLOW_METER=1';
 	}
 
 	# parse hw models

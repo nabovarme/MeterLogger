@@ -25,7 +25,7 @@ MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall
   
 To build and flash for KMP/en61107 type, forced as flow meter:  
 ```  
-FORCED_FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
 ```  
   
 To build and flash for impulse based electricity meter:  
@@ -60,7 +60,7 @@ meter type is en61107, sub type Multical 66 C
 MC_66B=1  
 meter type is en61107, sub type Multical 66 B  
   
-FORCED_FLOW_METER=1  
+FLOW_METER=1  
 meter is forced to run as a flow meter and close when volume is reached  
   
 AUTO_CLOSE=1  

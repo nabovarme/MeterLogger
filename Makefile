@@ -167,8 +167,8 @@ ifeq ($(MC_66B), 1)
 	CFLAGS += -DMC_66B -DEN61107
 endif
 
-ifeq ($(FORCED_FLOW_METER), 1)
-	CFLAGS += -DFORCED_FLOW_METER
+ifeq ($(FLOW_METER), 1)
+	CFLAGS += -DFLOW_METER
 endif
 
 ifeq ($(EN61107), 1)

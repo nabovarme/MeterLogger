@@ -249,11 +249,11 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 
-#ifndef FORCED_FLOW_METER
+#ifndef FLOW_METER
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&v1=%s m3&flow1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
 #else
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_units_string, acc_units_string);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 		
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -394,7 +394,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 
 	// compare last received energy to offline_close_at and close if needed
 #ifdef EN61107
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 	if (en61107_get_received_volume_l() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
@@ -446,9 +446,9 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			}
 		}
 	}
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 #else	// KMP
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 	if (kmp_get_received_volume_l() >= sys_cfg.offline_close_at) {
 		if (sys_cfg.ac_thermo_state) {
 			ac_thermo_close();
@@ -501,7 +501,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 		}
 	}
 #endif	// EN61107
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 }
 #endif	// IMPULSE
 
@@ -979,8 +979,8 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(DEBUG_STACK_TRACE)\n\r");
 #endif
 
-#ifdef FORCED_FLOW_METER
-	printf("\t(FORCED_FLOW_METER)\n\r");
+#ifdef FLOW_METER
+	printf("\t(FLOW_METER)\n\r");
 #endif
 
 #if !(defined(IMPULSE) || defined(DEBUG_NO_METER))

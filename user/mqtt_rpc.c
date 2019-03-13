@@ -558,8 +558,8 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	int int_value;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
-#ifdef FORCED_FLOW_METER
-	// use liters internally for FORCED_FLOW_METER
+#ifdef FLOW_METER
+	// use liters internally for FLOW_METER
 	char volume_string[32];
 	char offline_close_at_string[32];
 	char offline_close_at_m3_string[32];
@@ -568,7 +568,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	int_value = atoi(volume_string);
 #else
 	int_value = atoi(value);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 		
 	if (atoi(value) >= 0) {	// only open valve if not negative value
 		ac_thermo_open();
@@ -590,14 +590,14 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(cleartext, 0, sizeof(cleartext));
-#ifdef FORCED_FLOW_METER
-	// use liters internally for FORCED_FLOW_METER
+#ifdef FLOW_METER
+	// use liters internally for FLOW_METER
 	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at);
 	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -625,8 +625,8 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 		
-#ifdef FORCED_FLOW_METER
-	// use liters internally for FORCED_FLOW_METER
+#ifdef FLOW_METER
+	// use liters internally for FLOW_METER
 	char volume_string[32];
 	char offline_close_at_string[32];
 	char offline_close_at_m3_string[32];
@@ -635,23 +635,23 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	int_value = atoi(volume_string);
 #else
 	int_value = atoi(value);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 	if (atoi(value) >= 0) {	// only open valve if not negative value
 		ac_thermo_open();
 		if (sys_cfg.offline_close_at != int_value) {	// only write to flash if changed
 			// save if changed
 #ifdef EN61107
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 			sys_cfg.offline_close_at = en61107_get_received_volume_l() + int_value;
 #else
 			sys_cfg.offline_close_at = en61107_get_received_energy_kwh() + int_value;
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 #else
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 			sys_cfg.offline_close_at = kmp_get_received_volume_l() + int_value;
 #else
 			sys_cfg.offline_close_at = kmp_get_received_energy_kwh() + int_value;
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 #endif
 			if (!cfg_save(&calculated_crc, &saved_crc)) {
 				mqtt_flash_error(calculated_crc, saved_crc);
@@ -665,23 +665,23 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #endif
 	memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
-#ifdef FORCED_FLOW_METER
-	// use liters internally for FORCED_FLOW_METER
+#ifdef FLOW_METER
+	// use liters internally for FLOW_METER
 	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at - en61107_get_received_volume_l());
 	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 #else
-#ifdef FORCED_FLOW_METER
-	// use liters internally for FORCED_FLOW_METER
+#ifdef FLOW_METER
+	// use liters internally for FLOW_METER
 	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at - kmp_get_received_volume_l());
 	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 #endif
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
