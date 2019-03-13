@@ -10,6 +10,16 @@
 #define STACK_TRACE_N				0x4000
 #define STACK_TRACE_SEC				0x80
 
+#ifdef IMPULSE
+#ifndef FLOW_METER	// electricity meter
+#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(80)	// mS
+#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(120)	// mS
+#else				// analog water meter
+#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(10)	// mS
+#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(1000)	// mS
+#endif	// FLOW_METER
+#endif	// IMPULSE
+
 //#define MQTT_SSL_ENABLE
 //#define CLIENT_SSL_ENABLE
 
