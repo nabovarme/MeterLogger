@@ -250,9 +250,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 
 #ifndef FLOW_METER
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&v1=%s m3&flow1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
-#else
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_units_string, acc_units_string);
+#else
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&v1=%s m3&flow1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
 #endif	// FLOW_METER
 		
 		// encrypt and send
