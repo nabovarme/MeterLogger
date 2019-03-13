@@ -131,8 +131,8 @@ cfg_load() {
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifdef IMPULSE
 		tfp_snprintf(sys_cfg.impulse_meter_serial, METER_SERIAL_LEN, DEFAULT_METER_SERIAL);
-		tfp_snprintf(sys_cfg.impulse_meter_energy, 2, "0");
-		tfp_snprintf(sys_cfg.impulses_per_kwh, 4, "100");
+		tfp_snprintf(sys_cfg.impulse_meter_units, 2, "0");
+		tfp_snprintf(sys_cfg.impulses_per_unit, 4, "100");
 		sys_cfg.impulse_meter_count = 0;
 #else
 		sys_cfg.ac_thermo_state = 0;

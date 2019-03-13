@@ -65,8 +65,8 @@ typedef struct{
 #endif	// NO_CRON
 #else
 	char impulse_meter_serial[METER_SERIAL_LEN];
-	char impulse_meter_energy[32 + 1];	// in Wh
-	char impulses_per_kwh[32 + 1];
+	char impulse_meter_units[32 + 1];	// in Wh
+	char impulses_per_unit[32 + 1];
 	volatile uint32_t impulse_meter_count;
 #endif	// IMPULSE
 	uint16_t ccit_crc16;

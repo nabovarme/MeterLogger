@@ -33,13 +33,13 @@
 #endif
 
 #ifdef IMPULSE
-uint32_t impulse_meter_energy;
-//float impulse_meter_energy;
-uint32_t impulses_per_kwh;
+uint32_t impulse_meter_units;
+//float impulse_meter_units;
+uint32_t impulses_per_unit;
 
 volatile uint32_t impulse_time;
 volatile uint32_t last_impulse_time;
-volatile uint32_t current_energy;	// in W
+volatile uint32_t current_units;	// in W/m3
 
 volatile uint32_t last_impulse_meter_count;
 
@@ -206,11 +206,11 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #ifdef EN61107
 	en61107_request_send();
 #elif defined IMPULSE
-	uint32_t acc_energy;
+	uint32_t acc_units;
 	
 	// for pseudo float print
-	char current_energy_kwh[32];
-	char acc_energy_kwh[32];
+	char current_units_string[32];
+	char acc_units_string[32];
 	
 	uint32_t result_int, result_frac;
 	unsigned char leading_zeroes[16];
@@ -221,35 +221,39 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	memset(cleartext, 0, sizeof(cleartext));
 
 	if (impulse_time > (get_uptime() - 60)) {	// only send mqtt if impulse received last minute
-		acc_energy = impulse_meter_energy + (sys_cfg.impulse_meter_count * (1000 / impulses_per_kwh));
+		acc_units = impulse_meter_units + (sys_cfg.impulse_meter_count * (1000 / impulses_per_unit));
 	
-		// for acc_energy...
+		// for acc_units...
 		// ...divide by 1000 and prepare decimal string in kWh
-		result_int = (int32_t)(acc_energy / 1000);
-		result_frac = acc_energy - result_int * 1000;
+		result_int = (int32_t)(acc_units / 1000);
+		result_frac = acc_units - result_int * 1000;
 	
 		// prepare decimal string
 		strcpy(leading_zeroes, "");
 		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
 			strcat(leading_zeroes, "0");
 		}
-		tfp_snprintf(acc_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
+		tfp_snprintf(acc_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
-		// for current_energy...
+		// for current_units...
 		// ...divide by 1000 and prepare decimal string in kWh
-		result_int = (int32_t)(current_energy / 1000);
-		result_frac = current_energy - result_int * 1000;
+		result_int = (int32_t)(current_units / 1000);
+		result_frac = current_units - result_int * 1000;
 		
 		// prepare decimal string
 		strcpy(leading_zeroes, "");
 		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
 			strcat(leading_zeroes, "0");
 		}
-		tfp_snprintf(current_energy_kwh, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
+		tfp_snprintf(current_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_energy_kwh, acc_energy_kwh);
+#ifndef FORCED_FLOW_METER
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&v1=%s m3&flow1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
+#else
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_units_string, acc_units_string);
+#endif	// FORCED_FLOW_METER
 		
 		// encrypt and send
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -313,11 +317,11 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #endif
 
 	if (impulse_time_diff && impulse_meter_count_diff) {	// only calculate if not zero interval or zero meter count diff - should not happen
-		current_energy = 3600 * (1000 / impulses_per_kwh) * impulse_meter_count_diff / impulse_time_diff;
+		current_units = 3600 * (1000 / impulses_per_unit) * impulse_meter_count_diff / impulse_time_diff;
 	}
 
 #ifdef DEBUG
-	printf("current_energy: %u\n", current_energy);
+	printf("current_units: %u\n", current_units);
 #endif // DEBUG
 }
 #endif // IMPULSE
@@ -924,11 +928,11 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 
 ICACHE_FLASH_ATTR
 void impulse_meter_init(void) {
-	impulse_meter_energy = atoi(sys_cfg.impulse_meter_energy);
+	impulse_meter_units = atoi(sys_cfg.impulse_meter_units);
 	
-	impulses_per_kwh = atoi(sys_cfg.impulses_per_kwh);
-	if (impulses_per_kwh == 0) {
-		impulses_per_kwh = 100;		// if not set set to some default != 0
+	impulses_per_unit = atoi(sys_cfg.impulses_per_unit);
+	if (impulses_per_unit == 0) {
+		impulses_per_unit = 100;		// if not set set to some default != 0
 	}
 	
 	impulse_time = get_uptime();
