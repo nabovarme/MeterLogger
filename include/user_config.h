@@ -15,8 +15,8 @@
 #define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(80)	// mS
 #define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(120)	// mS
 #else				// analog water meter
-#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(10)	// mS
-#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(1000)	// mS
+#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(0)	// dont use time filter for analog meters
+#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(0)	// dont use time filter for analog meters
 #endif	// FLOW_METER
 #endif	// IMPULSE
 

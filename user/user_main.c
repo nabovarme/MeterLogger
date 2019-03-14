@@ -909,12 +909,14 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 #ifdef DEBUG
 		printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
 #endif	// DEBUG
-		if ((impulse_edge_to_edge_time > IMPULSE_EDGE_TO_EDGE_TIME_MIN * 1000) && (impulse_edge_to_edge_time < IMPULSE_EDGE_TO_EDGE_TIME_MAX * 1000)) {
+		if (((IMPULSE_EDGE_TO_EDGE_TIME_MIN == 0) || (IMPULSE_EDGE_TO_EDGE_TIME_MAX == 0)) || ((impulse_edge_to_edge_time > IMPULSE_EDGE_TO_EDGE_TIME_MIN * 1000) && (impulse_edge_to_edge_time < IMPULSE_EDGE_TO_EDGE_TIME_MAX * 1000))) {
 			// arm the debounce timer to enable GPIO interrupt again
 			sys_cfg.impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
 			os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
 			os_timer_arm(&impulse_meter_calculate_timer, 100, 0);
+			// blink led to show impulse received
+			led_blink_short();	// DEBUG
 		}
 	}
 	else {						// falling edge

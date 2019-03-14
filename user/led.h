@@ -5,6 +5,7 @@ ICACHE_FLASH_ATTR void led_init(void);
 ICACHE_FLASH_ATTR void led_on(void);
 ICACHE_FLASH_ATTR void led_off(void);
 ICACHE_FLASH_ATTR void led_blink(void);
+ICACHE_FLASH_ATTR void led_blink_short(void);
 ICACHE_FLASH_ATTR void led_pattern_a(void);
 ICACHE_FLASH_ATTR void led_pattern_b(void);
 ICACHE_FLASH_ATTR void led_pattern_c(void);
