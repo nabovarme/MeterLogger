@@ -235,6 +235,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		}
 		tfp_snprintf(acc_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
+#ifndef FLOW_METER
 		// for current_units...
 		// ...divide by 1000 and prepare decimal string in kWh
 		result_int = (int32_t)(current_units / 1000);
@@ -246,13 +247,16 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 			strcat(leading_zeroes, "0");
 		}
 		tfp_snprintf(current_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
+#else
+		tfp_snprintf(current_units_string, 32, "%u", current_units);
+#endif	// FLOW_METER
 
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 
 #ifndef FLOW_METER
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_units_string, acc_units_string);
 #else
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&v1=%s m3&flow1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&flow1=%s l/h&v1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
 #endif	// FLOW_METER
 		
 		// encrypt and send
