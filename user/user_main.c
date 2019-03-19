@@ -45,6 +45,8 @@ volatile uint32_t last_impulse_meter_count;
 
 uint32_t impulse_falling_edge_time;
 uint32_t impulse_rising_edge_time;
+
+uint32_t last_uptime;
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqtt_client;
@@ -201,6 +203,12 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	int mqtt_message_l;	
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
+
+	// for saving operating time
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
+	uint32_t uptime;
+	uint32_t uptime_diff;
 #endif
 
 #ifdef EN61107
@@ -216,6 +224,15 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	unsigned char leading_zeroes[16];
 	unsigned int i;
 	
+	// save operating time in seconds
+	uptime = get_uptime();
+	uptime_diff = uptime - last_uptime;
+	sys_cfg.operating_time += uptime_diff;
+	last_uptime = uptime;
+	if (!cfg_save(&calculated_crc, &saved_crc)) {
+		mqtt_flash_error(calculated_crc, saved_crc);
+	}
+
 	// clear data
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -254,9 +271,9 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
 
 #ifndef FLOW_METER
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&", system_get_free_heap_size(), current_units_string, acc_units_string);
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&hr=%u&", system_get_free_heap_size(), current_units_string, acc_units_string, (uint32_t)(sys_cfg.operating_time / 3600));
 #else
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&flow1=%s l/h&v1=%s m3&", system_get_free_heap_size(), current_units_string, acc_units_string);
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&flow1=%s l/h&v1=%s m3&hr=%u&", system_get_free_heap_size(), current_units_string, acc_units_string, (uint32_t)(sys_cfg.operating_time / 3600));
 #endif	// FLOW_METER
 		
 		// encrypt and send

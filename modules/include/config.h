@@ -68,6 +68,7 @@ typedef struct{
 	char impulse_meter_units[32 + 1];	// in Wh
 	char impulses_per_unit[32 + 1];
 	volatile uint32_t impulse_meter_count;
+	uint64_t operating_time;	// operating seconds counter
 #endif	// IMPULSE
 	uint16_t ccit_crc16;
 } syscfg_t;

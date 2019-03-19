@@ -134,6 +134,7 @@ cfg_load() {
 		tfp_snprintf(sys_cfg.impulse_meter_units, 2, "0");
 		tfp_snprintf(sys_cfg.impulses_per_unit, 4, "100");
 		sys_cfg.impulse_meter_count = 0;
+		sys_cfg.operating_time = 0;
 #else
 		sys_cfg.ac_thermo_state = 0;
 		sys_cfg.offline_close_at = 0;
