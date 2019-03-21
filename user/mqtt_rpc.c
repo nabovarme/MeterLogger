@@ -40,6 +40,7 @@ void mqtt_rpc_ping(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -60,6 +61,7 @@ void mqtt_rpc_version(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), VERSION, HW_MODEL);
@@ -83,6 +85,7 @@ void mqtt_rpc_uptime(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
 	// encrypt and send
@@ -106,6 +109,7 @@ void mqtt_rpc_vdd(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(decimal_str, 8, "%u", system_get_vdd33());
 	divide_str_by_1000(decimal_str, cleartext);
@@ -131,6 +135,7 @@ void mqtt_rpc_rssi(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", wifi_get_rssi());
 	// encrypt and send
@@ -152,6 +157,7 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
 	// encrypt and send
@@ -192,6 +198,7 @@ void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
 	// encrypt and send
@@ -225,6 +232,7 @@ void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_pwd);
 	// encrypt and send
@@ -257,6 +265,7 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=");
@@ -302,6 +311,7 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", wifi_get_status() ? "connected" : "disconnected");
 	// encrypt and send
@@ -324,6 +334,7 @@ void mqtt_rpc_ap_status(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", (wifi_get_opmode() != STATION_MODE) ? "started" : "stopped");
 	// encrypt and send
@@ -383,6 +394,7 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u", system_get_free_heap_size());
@@ -408,6 +420,7 @@ void mqtt_rpc_crypto(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s", system_get_sdk_version(), VERSION, HW_MODEL);
@@ -434,6 +447,7 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	if (rtc_info != NULL) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
@@ -463,6 +477,7 @@ void mqtt_rpc_stack_trace(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "enabled");
 
@@ -490,6 +505,7 @@ void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	strncpy(cleartext, query, MQTT_MESSAGE_L);
 	// encrypt and send
@@ -513,6 +529,7 @@ void mqtt_rpc_clear_cron(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));	// empty reply
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -535,6 +552,7 @@ void mqtt_rpc_cron(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
 	// encrypt and send
@@ -589,6 +607,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
@@ -608,6 +627,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send
@@ -663,6 +683,7 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 #ifdef EN61107
 #ifdef FLOW_METER
@@ -693,6 +714,7 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send
@@ -718,6 +740,7 @@ void mqtt_rpc_status(MQTT_Client *client) {
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 	// encrypt and send

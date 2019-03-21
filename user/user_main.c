@@ -847,6 +847,7 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
 #endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d", 
 		ssid_escaped, 

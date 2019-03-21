@@ -120,7 +120,7 @@ static void en61107_received_task(os_event_t *events) {
 			// get message buffer
 			memset(message, 0, sizeof(message));
 			i = 0;
-			while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+			while (en61107_fifo_get(&c) && (i < EN61107_FRAME_L)) {
 				message[i++] = c;
 			}
 			message_l = i;
@@ -144,7 +144,7 @@ static void en61107_received_task(os_event_t *events) {
 			// get message buffer
 			memset(message, 0, sizeof(message));
 			i = 0;
-			while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+			while (en61107_fifo_get(&c) && (i < EN61107_FRAME_L)) {
 				message[i++] = c;
 			}
 			message_l = i;
@@ -161,7 +161,7 @@ static void en61107_received_task(os_event_t *events) {
 			// get message buffer
 			memset(message, 0, sizeof(message));
 			i = 0;
-			while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+			while (en61107_fifo_get(&c) && (i < EN61107_FRAME_L)) {
 				message[i++] = c;
 			}
 			message_l = i;
@@ -178,7 +178,7 @@ static void en61107_received_task(os_event_t *events) {
 			// get message buffer
 			memset(message, 0, sizeof(message));
 			i = 0;
-			while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+			while (en61107_fifo_get(&c) && (i < EN61107_FRAME_L)) {
 				message[i++] = c;
 			}
 			message_l = i;

@@ -70,7 +70,6 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, u
 	int return_l;
 
 	// encrypt
-	memset(dst, 0, sizeof(dst));
 	// get random iv in first 16 bytes of mqtt_message
 	os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
 
