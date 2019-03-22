@@ -177,10 +177,10 @@ ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
 #ifdef DEBUG
 		os_printf("remove watchdog, id: %d\n", id);
 #endif
+		watchdog_list_len--;
 		watchdog_list[watchdog_list_len].id = 0;
 		watchdog_list[watchdog_list_len].type = NOT_ENABLED;
 		watchdog_list[watchdog_list_len].timeout = 0;
-		watchdog_list_len--;
 		return true;
 	}
 	else {
