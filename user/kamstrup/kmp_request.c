@@ -83,6 +83,23 @@ static void kmp_received_task(os_event_t *events) {
 		message[i++] = c;
 	}
 	message_l = i;
+#ifdef DEBUG
+//	message[message_l] = 0;
+//	printf ("__FUNCTION__ = %s\n", __FUNCTION__);
+	if (message[0] == 'm') {
+		kmp_request_send();
+	}
+	else if (message[0] == 'k') {
+		os_printf("free heap: %u\n", system_get_free_heap_size());
+	}
+	else if (message[0] == 'r') {
+		force_reset_wifi();
+	}
+	else if (message[0] == 'q') {
+		// print queue
+		debug_print_mqtt_queue(mqtt_client);
+	}
+#endif
 
 	// decode kmp frame
 	if (kmp_decode_frame(message, message_l, &response) > 0) {

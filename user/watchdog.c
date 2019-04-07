@@ -203,3 +203,22 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 		}
 	}
 }
+
+ICACHE_FLASH_ATTR void force_reset_wifi() {
+	// DEBUG: hack to get it to reconnect on weak wifi
+	// force reconnect to wireless
+	wifi_stop_scan();
+	set_my_auto_connect(false);
+	wifi_station_disconnect();
+	wifi_set_opmode_current(NULL_MODE);
+#ifdef DEBUG
+	os_printf("stopped wifi and wifi scanner\n");
+#endif	
+	// and (re)-connect when last wifi scan is done - wait 6 second before starting
+	os_timer_disarm(&wifi_reconnect_timer);
+	os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
+	os_timer_arm(&wifi_reconnect_timer, NETWORK_RESTART_DELAY, 0);
+#ifdef DEBUG
+	os_printf("scheduled wifi for restart...\n");
+#endif	
+}
