@@ -213,13 +213,29 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	wifi_station_get_config(&stationConf);
 
 #ifdef DEBUG
-//	os_printf("E%dW%d\n", evt->event, wifi_status);
+//	printf("E%dW%dR%d\n", evt->event, wifi_status, evt->event_info.disconnected.reason);
 #endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
 			// set default network status
 			if (os_strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
+			}
+			break;
+		case EVENT_STAMODE_DHCP_TIMEOUT:
+#ifdef DEBUG
+			os_printf("dhcp timeout\n");
+#endif
+			// set default network status
+    		if (os_strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+    			wifi_default_ok = false;
+    		}
+			if (my_auto_connect) {
+#ifdef DEBUG
+				os_printf("reconnecting on dhcp timeout\n");
+#endif
+				wifi_station_disconnect();
+				wifi_station_connect();
 			}
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
@@ -251,6 +267,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_softap_ip_config();
 
 			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
+			wifi_station_set_reconnect_policy(0);
 #endif	// AP
 			wifi_cb(wifi_status);
 			break;

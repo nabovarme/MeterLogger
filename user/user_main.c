@@ -1091,6 +1091,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	wifi_station_disconnect();
 	// disale auto connect, we handle reconnect with this event handler
 	wifi_station_set_auto_connect(0);
+	wifi_station_set_reconnect_policy(0);
 
 	// do everything else in system_init_done
 	system_init_done_cb(&system_init_done);
