@@ -30,10 +30,6 @@
 #include "led.h"
 #include "tinyprintf.h"
 
-#define WIFI_SCAN_INTERVAL 5000
-#define WIFI_SCAN_TIMEOUT 60000
-#define RSSI_CHECK_INTERVAL 10000
-
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
@@ -334,7 +330,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #endif
 			wifi_scan_runnning = false;
 //			led_pattern_a();	// DEBUG slow led blink to show if wifi_station_scan() returned false (indicates scanner restarting)
-			wifi_start_scan();
+			wifi_start_scan(WIFI_SCAN_INTERVAL);
 		}
 		else {
 //			led_pattern_b();	// DEBUG fast led blink to show if wifi_scan_done_cb() returned true (indicates wifi scanner running)
@@ -352,7 +348,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 //	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
-	wifi_start_scan();
+	wifi_start_scan(WIFI_SCAN_INTERVAL);
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
@@ -410,7 +406,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 //	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
-	wifi_start_scan();
+	wifi_start_scan(WIFI_SCAN_INTERVAL);
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
@@ -502,7 +498,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_station_set_config(&stationConf);
 
 	// start wifi scan timer
-	wifi_start_scan();
+	wifi_start_scan(2 * WIFI_SCAN_INTERVAL);	// double time to let it connect to wifi first
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	my_auto_connect = true;		// enable wifi wifi_handle_event_cb() based auto connect
@@ -604,11 +600,11 @@ bool ICACHE_FLASH_ATTR wifi_get_status() {
 	return wifi_default_ok;
 }
 
-void ICACHE_FLASH_ATTR wifi_start_scan() {
+void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
 	// start wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
-	os_timer_arm(&wifi_scan_timer, WIFI_SCAN_INTERVAL, 0);
+	os_timer_arm(&wifi_scan_timer, interval, 0);
 }
 
 void ICACHE_FLASH_ATTR wifi_stop_scan() {

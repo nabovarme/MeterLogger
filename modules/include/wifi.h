@@ -12,6 +12,10 @@
 #include <lwip/ip.h>
 #endif
 
+#define WIFI_SCAN_INTERVAL 5000
+#define WIFI_SCAN_TIMEOUT 60000
+#define RSSI_CHECK_INTERVAL 10000
+
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
@@ -30,7 +34,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void);
 #endif	// AP
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
 bool ICACHE_FLASH_ATTR wifi_get_status();
-void ICACHE_FLASH_ATTR wifi_start_scan();
+void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval);
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
