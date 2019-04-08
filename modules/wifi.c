@@ -217,6 +217,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 	switch (evt->event) {
 		case EVENT_STAMODE_CONNECTED:
+#ifdef DEBUG
+			printf("connected to ssid %s\n", evt->event_info.connected.ssid);
+#endif
 			// set default network status
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
@@ -246,6 +249,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 		case EVENT_STAMODE_GOT_IP:		
 			// set default network status
+#ifdef DEBUG
+			printf("got ip:" IPSTR ", netmask:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip), IP2STR(&evt->event_info.got_ip.mask));
+#endif
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 			}

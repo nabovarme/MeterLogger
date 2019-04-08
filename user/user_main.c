@@ -615,6 +615,10 @@ ICACHE_FLASH_ATTR void mqtt_ping_response_cb(uint32_t *args) {
 }
 
 ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args) {
+#ifdef DEBUG
+	printf("mqtt_timeout_cb\n");
+#endif
+//	wifi_default();
 }
 	
 ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
