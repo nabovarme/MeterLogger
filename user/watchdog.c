@@ -62,7 +62,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		led_stop_pattern();	// DEBUG
 		set_my_auto_connect(true);
 		wifi_default();
-		wifi_start_scan(2 * WIFI_SCAN_INTERVAL);	// double time to let it connect to wifi first
+		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
 #ifdef DEBUG
 		printf("watchdog restarted wifi and started wifi scanner\n");
 #endif	
