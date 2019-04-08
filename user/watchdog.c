@@ -38,7 +38,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
 		os_timer_arm(&wifi_reconnect_timer, 1000, 0);		
 #ifdef DEBUG
-		os_printf("scanner still running - rescheduling reccont\n");
+		printf("scanner still running - rescheduling reccont\n");
 #endif	
 	}
 	else {
@@ -64,7 +64,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		wifi_default();
 		wifi_start_scan();
 #ifdef DEBUG
-		os_printf("watchdog restarted wifi and started wifi scanner\n");
+		printf("watchdog restarted wifi and started wifi scanner\n");
 #endif	
 	}
 }
@@ -80,40 +80,24 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 			(watchdog_list[i].last_reset) && 
 			((int32_t)watchdog_list[i].last_reset < (int32_t)(uptime - watchdog_list[i].timeout))) {
 #ifdef DEBUG
-			os_printf("watchdog timeout, id: %d\n", watchdog_list[i].id);
+			printf("watchdog timeout, id: %d\n", watchdog_list[i].id);
 #endif			
 			switch (watchdog_list[i].type) {
 				case REBOOT:
 					system_restart();
 #ifdef DEBUG
-					os_printf("reboot\n");
+					printf("reboot\n");
 #endif	
 					break;
 					
 				case NETWORK_RESTART:
-					// DEBUG: hack to get it to reconnect on weak wifi
-					// force reconnect to wireless
-					led_pattern_b();	// DEBUG to se if we ever try to restart network
-					wifi_stop_scan();
-					set_my_auto_connect(false);
-					wifi_station_disconnect();
-					wifi_set_opmode_current(NULL_MODE);
-#ifdef DEBUG
-					os_printf("stopped wifi and wifi scanner\n");
-#endif				
-					// and (re)-connect when last wifi scan is done - wait 6 second before starting
-					os_timer_disarm(&wifi_reconnect_timer);
-					os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
-					os_timer_arm(&wifi_reconnect_timer, NETWORK_RESTART_DELAY, 0);
-#ifdef DEBUG
-					os_printf("scheduled wifi for restart...\n");
-#endif	
+					force_reset_wifi();
 					break;
 					
 				case REBOOT_VIA_EXT_WD:
 					os_timer_disarm(&ext_watchdog_timer);
 #ifdef DEBUG
-					os_printf("reboot via ext watchdog\n");
+					printf("reboot via ext watchdog\n");
 #endif	
 					break;
 			}
@@ -129,7 +113,7 @@ ICACHE_FLASH_ATTR void init_watchdog() {
 
 ICACHE_FLASH_ATTR void start_watchdog() {
 #ifdef DEBUG
-	os_printf("watchdog started\n");
+	printf("watchdog started\n");
 #endif
 	// start configurable software watchdog system
 	os_timer_disarm(&watchdog_timer);
@@ -147,7 +131,7 @@ ICACHE_FLASH_ATTR void start_watchdog() {
 
 ICACHE_FLASH_ATTR void stop_watchdog() {
 #ifdef DEBUG
-	os_printf("watchdog stopped\n");
+	printf("watchdog stopped\n");
 #endif
 	os_timer_disarm(&ext_watchdog_timer);
 }
@@ -155,7 +139,7 @@ ICACHE_FLASH_ATTR void stop_watchdog() {
 ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout) {	
 	if (watchdog_list_len < WATCHDOG_MAX) {
 #ifdef DEBUG
-		os_printf("add watchdog, id: %d\n", id);
+		printf("add watchdog, id: %d\n", id);
 #endif
 		watchdog_list[watchdog_list_len].id = id;
 		watchdog_list[watchdog_list_len].type = type;
@@ -166,7 +150,7 @@ ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t 
 	}
 	else {
 #ifdef DEBUG
-		os_printf("watchdog error, cant add more\n");
+		printf("watchdog error, cant add more\n");
 #endif
 		return false;
 	}
@@ -175,7 +159,7 @@ ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t 
 ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
 	if (watchdog_list_len > 0) {
 #ifdef DEBUG
-		os_printf("remove watchdog, id: %d\n", id);
+		printf("remove watchdog, id: %d\n", id);
 #endif
 		watchdog_list_len--;
 		watchdog_list[watchdog_list_len].id = 0;
@@ -185,7 +169,7 @@ ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
 	}
 	else {
 #ifdef DEBUG
-		os_printf("watchdog error, cant remove %d\n", id);
+		printf("watchdog error, cant remove %d\n", id);
 #endif
 		return false;
 	}
@@ -195,7 +179,7 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 	uint32_t i;
 	
 #ifdef DEBUG
-	os_printf("reset watchdog, id: %d\n", id);
+	printf("reset watchdog, id: %d\n", id);
 #endif			
 	for (i = 0; i < WATCHDOG_MAX; i++) {
 		if (watchdog_list[i].id == id) {
@@ -207,18 +191,19 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 ICACHE_FLASH_ATTR void force_reset_wifi() {
 	// DEBUG: hack to get it to reconnect on weak wifi
 	// force reconnect to wireless
+	led_pattern_b();	// DEBUG to se if we ever try to restart network
 	wifi_stop_scan();
 	set_my_auto_connect(false);
 	wifi_station_disconnect();
 	wifi_set_opmode_current(NULL_MODE);
 #ifdef DEBUG
-	os_printf("stopped wifi and wifi scanner\n");
-#endif	
+	printf("stopped wifi and wifi scanner\n");
+#endif				
 	// and (re)-connect when last wifi scan is done - wait 6 second before starting
 	os_timer_disarm(&wifi_reconnect_timer);
 	os_timer_setfn(&wifi_reconnect_timer, (os_timer_func_t *)wifi_reconnect_timer_func, NULL);
 	os_timer_arm(&wifi_reconnect_timer, NETWORK_RESTART_DELAY, 0);
 #ifdef DEBUG
-	os_printf("scheduled wifi for restart...\n");
+	printf("scheduled wifi for restart...\n");
 #endif	
 }
