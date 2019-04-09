@@ -33,14 +33,13 @@
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
+static os_timer_t wifi_station_stay_connected_timeout_timer;
 
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
 volatile uint8_t* config_ssid;
 volatile uint8_t* config_pass;
-static uint8_t wifi_status = STATION_IDLE;
-static uint8_t wifi_event = EVENT_STAMODE_DISCONNECTED;
 bool wifi_present = false;
 volatile bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
@@ -195,15 +194,18 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
+static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(void *arg);
 
 void wifi_handle_event_cb(System_Event_t *evt) {
+	static uint8_t wifi_status;
+//	static uint8_t wifi_event;
 #ifdef DEBUG
 	uint8_t mac_str[20];
 #endif
 	struct station_config stationConf;
 
 	wifi_status = wifi_station_get_connect_status();
-	wifi_event = evt->event;
+//	wifi_event = evt->event;
 
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
@@ -233,7 +235,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 				printf("reconnecting on disconnect\n");
 #endif
-				wifi_station_connect();	// reconnect on disconnect
+				wifi_station_stay_connected();	// reconnect on disconnect
 			}
 			break;
 		case EVENT_STAMODE_AUTHMODE_CHANGE:
@@ -272,13 +274,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
 			}
-			if (my_auto_connect) {
+			
 #ifdef DEBUG
-				printf("reconnecting on dhcp timeout\n");
+			printf("reconnecting on dhcp timeout\n");
 #endif
-				wifi_station_disconnect();
-				wifi_station_connect();
-			}
+			wifi_station_stay_connected();
 			break;
 	case EVENT_SOFTAPMODE_STACONNECTED:
 #ifdef DEBUG
@@ -349,6 +349,31 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 
 	// start wifi scan timer again
 	wifi_start_scan(WIFI_SCAN_INTERVAL);
+}
+
+static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(void *arg) {
+	static uint8_t wifi_status;
+	
+	wifi_status = wifi_station_get_connect_status();
+
+	if (my_auto_connect) {
+		// we set up a timer to check if we are connected and reconnects if not
+		if (wifi_status != STATION_GOT_IP) {
+#ifdef DEBUG
+			printf("wifi_station_stay_connected_timeout_timer_func() reconnecting\n");
+#endif
+			wifi_station_disconnect();
+			wifi_set_event_handler_cb(wifi_handle_event_cb);
+			wifi_station_connect();
+			
+			os_timer_disarm(&wifi_station_stay_connected_timeout_timer);
+			os_timer_setfn(&wifi_station_stay_connected_timeout_timer, (os_timer_func_t *)wifi_station_stay_connected_timeout_timer_func, NULL);
+			os_timer_arm(&wifi_station_stay_connected_timeout_timer, WIFI_STATION_STAY_CONNECTED_TIMEOUT, 0);
+		}
+		else {
+			os_timer_disarm(&wifi_station_stay_connected_timeout_timer);
+		}
+	}
 }
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
@@ -433,7 +458,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
     
 	wifi_station_set_config_current(&stationConf);
 
-	wifi_station_connect();
+	wifi_station_stay_connected();
 	
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -464,7 +489,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	tfp_snprintf(stationConf.password, 64, "%s", STA_FALLBACK_PASS);
 	
 	wifi_station_set_config_current(&stationConf);
-	wifi_station_connect();
+	wifi_station_stay_connected();
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
@@ -500,10 +525,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	// start wifi scan timer
 	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
 
-	wifi_set_event_handler_cb(wifi_handle_event_cb);
-	my_auto_connect = true;		// enable wifi wifi_handle_event_cb() based auto connect
-
-	wifi_station_connect();
+	wifi_station_stay_connected();
 	
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -624,6 +646,11 @@ bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
 
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
 	my_auto_connect = enabled;
+}
+
+void ICACHE_FLASH_ATTR wifi_station_stay_connected() {
+	my_auto_connect = true;		// enable wifi wifi_handle_event_cb() based auto connect
+	wifi_station_stay_connected_timeout_timer_func((void *)NULL);
 }
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
