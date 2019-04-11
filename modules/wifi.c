@@ -353,6 +353,9 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(void *arg) {
 	static uint8_t wifi_status;
+#ifdef DEBUG
+	struct station_config stationConf;
+#endif
 	
 	wifi_status = wifi_station_get_connect_status();
 
@@ -364,6 +367,24 @@ static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(voi
 #endif
 			wifi_station_disconnect();
 			wifi_set_event_handler_cb(wifi_handle_event_cb);
+#ifdef DEBUG
+			memset(&stationConf, 0, sizeof(struct station_config));
+			wifi_station_get_config(&stationConf);
+    
+			printf("station_config.ssid: %s\n\r", stationConf.ssid);
+			printf("station_config.password: %s\n\r", stationConf.password);
+			printf("station_config.bssid_set: %d\n\r", stationConf.bssid_set);
+			printf("station_config.threshold.bssid: %02x:%02x:%02x:%02x:%02x:%02x\n\r", 
+				stationConf.bssid[0], 
+				stationConf.bssid[1], 
+				stationConf.bssid[2], 
+				stationConf.bssid[3], 
+				stationConf.bssid[4], 
+				stationConf.bssid[5]
+			);
+			printf("station_config.threshold.rssi: %d\n\r", stationConf.threshold.rssi);
+			printf("station_config.threshold.authmode: %d\n\r", stationConf.threshold.authmode);
+#endif
 			wifi_station_connect();
 			
 			os_timer_disarm(&wifi_station_stay_connected_timeout_timer);
@@ -520,7 +541,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 
 	my_auto_connect = false;	// disable wifi wifi_handle_event_cb() based auto connect
 	wifi_station_disconnect();
-	wifi_station_set_config(&stationConf);
+	wifi_station_set_config_current(&stationConf);
 
 	// start wifi scan timer
 	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
