@@ -355,6 +355,7 @@ static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(voi
 	static uint8_t wifi_status;
 #ifdef DEBUG
 	struct station_config stationConf;
+	bool wifi_station_connect_status;
 #endif
 	
 	wifi_status = wifi_station_get_connect_status();
@@ -385,7 +386,12 @@ static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(voi
 			printf("station_config.threshold.rssi: %d\n\r", stationConf.threshold.rssi);
 			printf("station_config.threshold.authmode: %d\n\r", stationConf.threshold.authmode);
 #endif
+#ifdef DEBUG
+			wifi_station_connect_status = wifi_station_connect();
+			printf("wifi_station_connect() returned %s\n\r", (wifi_station_connect ? "true" : "false"));
+#else
 			wifi_station_connect();
+#endif	// DEBUG
 			
 			os_timer_disarm(&wifi_station_stay_connected_timeout_timer);
 			os_timer_setfn(&wifi_station_stay_connected_timeout_timer, (os_timer_func_t *)wifi_station_stay_connected_timeout_timer_func, NULL);
