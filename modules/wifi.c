@@ -375,7 +375,7 @@ static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(voi
 			printf("station_config.ssid: %s\n\r", stationConf.ssid);
 			printf("station_config.password: %s\n\r", stationConf.password);
 			printf("station_config.bssid_set: %d\n\r", stationConf.bssid_set);
-			printf("station_config.threshold.bssid: %02x:%02x:%02x:%02x:%02x:%02x\n\r", 
+			printf("station_config.bssid: %02x:%02x:%02x:%02x:%02x:%02x\n\r", 
 				stationConf.bssid[0], 
 				stationConf.bssid[1], 
 				stationConf.bssid[2], 
