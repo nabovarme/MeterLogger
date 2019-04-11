@@ -388,7 +388,7 @@ static void ICACHE_FLASH_ATTR wifi_station_stay_connected_timeout_timer_func(voi
 #endif
 #ifdef DEBUG
 			wifi_station_connect_status = wifi_station_connect();
-			printf("wifi_station_connect() returned %s\n\r", (wifi_station_connect ? "true" : "false"));
+			printf("wifi_station_connect() returned %s\n\r", (wifi_station_connect_status ? "true" : "false"));
 #else
 			wifi_station_connect();
 #endif	// DEBUG
