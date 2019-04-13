@@ -16,7 +16,6 @@
 #define WIFI_SCAN_INTERVAL_LONG 20000
 #define WIFI_SCAN_TIMEOUT 60000
 #define RSSI_CHECK_INTERVAL 10000
-#define WIFI_STATION_STAY_CONNECTED_TIMEOUT 8000
 
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
@@ -41,9 +40,11 @@ void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
-void ICACHE_FLASH_ATTR wifi_station_stay_connected();
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
+#ifdef DEBUG
+void ICACHE_FLASH_ATTR debug_wifi_dump_ip();
+#endif
 
 #endif /* USER_WIFI_H_ */

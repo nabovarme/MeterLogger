@@ -91,12 +91,7 @@ static void kmp_received_task(os_event_t *events) {
 		kmp_request_send();
 	}
 	else if (message[0] == 'i') {
-		struct ip_info info;
-		wifi_get_ip_info(STATION_IF, &info);
-		printf("station ip:" IPSTR "\n", IP2STR(&info.ip));
-
-		wifi_get_ip_info(SOFTAP_IF, &info);
-		printf("softap ip:" IPSTR "\n", IP2STR(&info.ip));
+		debug_wifi_dump_ip();
 	}
 	else if (message[0] == 'k') {
 		os_printf("free heap: %u\n", system_get_free_heap_size());
