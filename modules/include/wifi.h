@@ -44,7 +44,7 @@ void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
 #ifdef DEBUG
-void ICACHE_FLASH_ATTR debug_wifi_dump_ip();
+void ICACHE_FLASH_ATTR debug_print_wifi_ip();
 #endif
 
 #endif /* USER_WIFI_H_ */

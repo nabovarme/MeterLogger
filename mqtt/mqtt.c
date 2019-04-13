@@ -1009,9 +1009,6 @@ MQTT_DeleteClient(MQTT_Client *mqttClient)
 void ICACHE_FLASH_ATTR
 MQTT_OnConnected(MQTT_Client *mqttClient, MqttCallback connectedCb)
 {
-#ifdef DEBUG
-	debug_print_mqtt_queue(mqttClient);
-#endif
 	mqttClient->connectedCb = connectedCb;
 }
 

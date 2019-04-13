@@ -642,7 +642,8 @@ void wifi_scan_result_cb_unregister(wifi_scan_result_event_cb_t cb) {
 }
 
 #ifdef DEBUG
-void ICACHE_FLASH_ATTR debug_wifi_dump_ip() {
+void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
+#ifdef AP
 	struct netif *nif;
 	
 	for (nif = netif_list; nif != NULL; nif = nif->next) {
@@ -651,5 +652,13 @@ void ICACHE_FLASH_ATTR debug_wifi_dump_ip() {
 			nif->num == netif_default->num ? ", default" : ""
 		);
 	}
+#else
+	struct ip_info info;
+	wifi_get_ip_info(STATION_IF, &info);
+	printf("station ip:" IPSTR "\n", IP2STR(&info.ip));
+	
+	wifi_get_ip_info(SOFTAP_IF, &info);
+	printf("softap ip:" IPSTR "\n", IP2STR(&info.ip));
+#endif	// AP
 }
 #endif
