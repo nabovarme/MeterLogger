@@ -380,9 +380,9 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0)) {
 				wifi_present = true;
 				channel = info->channel;
-#ifdef DEBUG
-				printf("channel set to %d\n\r", channel);
-#endif
+//#ifdef DEBUG
+//				printf("channel set to %d\n\r", channel);
+//#endif
 			}
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
