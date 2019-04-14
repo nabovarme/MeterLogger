@@ -716,4 +716,8 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 	printf("softap ip:" IPSTR "\n", IP2STR(&info.ip));
 #endif	// AP
 }
-#endif
+
+void ICACHE_FLASH_ATTR debug_print_wifi_config() {
+	printf("ssid: %s, pass: %s\n\r", config_ssid, config_pass);
+}
+#endif	// DEBUG

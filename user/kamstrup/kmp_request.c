@@ -93,6 +93,9 @@ static void kmp_received_task(os_event_t *events) {
 	else if (message[0] == 'c') {
 		printf("channel: %d\n\r", wifi_get_channel());
 	}
+	else if (message[0] == 'C') {
+		debug_print_wifi_config();
+	}
 	else if (message[0] == 'i') {
 		debug_print_wifi_ip();
 	}

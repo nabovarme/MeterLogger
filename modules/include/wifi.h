@@ -45,6 +45,7 @@ void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip();
+void ICACHE_FLASH_ATTR debug_print_wifi_config();
 #endif
 
 #endif /* USER_WIFI_H_ */
