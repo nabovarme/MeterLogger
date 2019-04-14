@@ -37,7 +37,7 @@ static os_timer_t wifi_get_rssi_timer;
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
-//uint8_t channel;
+uint8_t channel = 0;
 volatile uint8_t* config_ssid;
 volatile uint8_t* config_pass;
 bool wifi_present = false;
@@ -381,10 +381,10 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		while (info != NULL) {
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0)) {
 				wifi_present = true;
-//				channel = info->channel;
-//#ifdef DEBUG
-//				printf("channel set to %d\n\r", channel);
-//#endif
+				channel = info->channel;
+#ifdef DEBUG
+				printf("channel set to %d\n\r", channel);
+#endif
 			}
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
@@ -467,6 +467,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
+//	wifi_set_channel(channel);	// restore channel number
 	wifi_station_disconnect();	// reconnects in handle_event_cb()
 	
 	// start wifi rssi timer
@@ -537,6 +538,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	my_auto_connect = true;	// handle_event_cb() based auto connect
 
+//	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();
 
 	if (wifi_station_dhcpc_status() == DHCP_STOPPED) {
@@ -564,7 +566,7 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 	ap_conf.authmode = authmode;
 	ap_conf.ssid_len = 0;
 	ap_conf.beacon_interval = 100;
-	ap_conf.channel = 1;
+	ap_conf.channel = channel;
 	ap_conf.max_connection = 8;
 	ap_conf.ssid_hidden = 0;
 
