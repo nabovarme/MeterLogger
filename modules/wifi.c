@@ -236,6 +236,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 				wifi_station_connect();	// reconnect on disconnect
 			}
+			else {
+#ifdef DEBUG
+				printf("autoconnect not enabled!\n\r");
+#endif
+			}
 			break;
 		case EVENT_STAMODE_AUTHMODE_CHANGE:
 #ifdef DEBUG
@@ -461,7 +466,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	tfp_snprintf(stationConf.password, 64, "%s", config_pass);
 	
 	wifi_station_set_config_current(&stationConf);
-	wifi_station_disconnect();
+	my_auto_connect = true;		// handle_event_cb() based auto connect
+	wifi_station_disconnect();	// reconnects in handle_event_cb()
 	
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -492,7 +498,8 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	
 	wifi_station_set_config_current(&stationConf);
 
-	wifi_station_disconnect();
+	my_auto_connect = true;		// handle_event_cb() based auto connect
+	wifi_station_disconnect();	// reconnects in handle_event_cb()
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
@@ -521,8 +528,6 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	tfp_snprintf(stationConf.ssid, 32, "%s", ssid);
 	tfp_snprintf(stationConf.password, 64, "%s", pass);
 
-	my_auto_connect = false;	// disable wifi wifi_handle_event_cb() based auto connect
-//	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);	// save to flash so it will reconnect at boot
 	wifi_station_set_config_current(&stationConf);
 
@@ -530,7 +535,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
-	my_auto_connect = true;		// enable wifi wifi_handle_event_cb() based auto connect
+	my_auto_connect = true;	// handle_event_cb() based auto connect
 
 	wifi_station_connect();
 
