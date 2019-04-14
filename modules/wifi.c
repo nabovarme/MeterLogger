@@ -449,6 +449,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 
 	// go back to saved network
 	printf("DEFAULT_SSID\r\n");
+	my_auto_connect = false;		// handle_event_cb() based auto connect
+	wifi_station_disconnect();
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -468,7 +470,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
 //	wifi_set_channel(channel);	// restore channel number
-	wifi_station_disconnect();	// reconnects in handle_event_cb()
+	wifi_station_connect();	// reconnect
 	
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -481,6 +483,8 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 
 	// try fallback network
 	printf("FALLBACK_SSID\r\n");
+	my_auto_connect = false;		// handle_event_cb() based auto connect
+	wifi_station_disconnect();
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -500,7 +504,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_set_config_current(&stationConf);
 
 	my_auto_connect = true;		// handle_event_cb() based auto connect
-	wifi_station_disconnect();	// reconnects in handle_event_cb()
+	wifi_station_connect();	// reconnect
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
