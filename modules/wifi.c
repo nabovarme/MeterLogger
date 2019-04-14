@@ -38,8 +38,6 @@ WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
 uint8_t channel = 0;
-volatile uint8_t* config_ssid;
-volatile uint8_t* config_pass;
 bool wifi_present = false;
 volatile bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
@@ -464,8 +462,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
-	tfp_snprintf(stationConf.ssid, 32, "%s", config_ssid);
-	tfp_snprintf(stationConf.password, 64, "%s", config_pass);
+	tfp_snprintf(stationConf.ssid, 32, "%s", sys_cfg.sta_ssid);
+	tfp_snprintf(stationConf.password, 64, "%s", sys_cfg.sta_pwd);
 	
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
@@ -507,7 +505,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_connect();	// reconnect
 }
 
-void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
+void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
@@ -525,13 +523,11 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 #endif	// AP
 
 	wifi_cb = cb;
-	config_ssid = ssid;
-	config_pass = pass;
 
 	memset(&stationConf, 0, sizeof(struct station_config));
 
-	tfp_snprintf(stationConf.ssid, 32, "%s", ssid);
-	tfp_snprintf(stationConf.password, 64, "%s", pass);
+	tfp_snprintf(stationConf.ssid, 32, "%s", sys_cfg.sta_ssid);
+	tfp_snprintf(stationConf.password, 64, "%s", sys_cfg.sta_pwd);
 
 	wifi_station_set_config(&stationConf);	// save to flash so it will reconnect at boot
 	wifi_station_set_config_current(&stationConf);
@@ -718,6 +714,6 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 }
 
 void ICACHE_FLASH_ATTR debug_print_wifi_config() {
-	printf("ssid: %s, pass: %s\n\r", config_ssid, config_pass);
+	printf("ssid: %s, pass: %s\n\r", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
 }
 #endif	// DEBUG

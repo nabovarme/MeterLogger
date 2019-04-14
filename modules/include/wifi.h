@@ -28,7 +28,7 @@ void wifi_handle_event_cb(System_Event_t *evt);
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);
 void ICACHE_FLASH_ATTR wifi_default();
 void ICACHE_FLASH_ATTR wifi_fallback();
-void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb);
+void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb);
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode);
 #ifdef AP
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void);
