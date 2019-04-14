@@ -387,20 +387,20 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
 			}
-#ifdef DEBUG
-			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel, 
-				info->ssid,
-				info->bssid[0], 
-				info->bssid[1], 
-				info->bssid[2], 
-				info->bssid[3], 
-				info->bssid[4], 
-				info->bssid[5],
-				info->rssi,
-				info->freq_offset,
-				info->freqcal_val
-			);
-#endif
+//#ifdef DEBUG
+//			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel, 
+//				info->ssid,
+//				info->bssid[0], 
+//				info->bssid[1], 
+//				info->bssid[2], 
+//				info->bssid[3], 
+//				info->bssid[4], 
+//				info->bssid[5],
+//				info->rssi,
+//				info->freq_offset,
+//				info->freqcal_val
+//			);
+//#endif
 			
 			// handle sending scan results via mqtt
 			if (wifi_scan_result_cb) {
