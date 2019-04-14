@@ -90,14 +90,20 @@ static void kmp_received_task(os_event_t *events) {
 	if (message[0] == 'm') {
 		kmp_request_send();
 	}
+	else if (message[0] == 'c') {
+		printf("channel: %d\n\r", wifi_get_channel());
+	}
 	else if (message[0] == 'i') {
 		debug_print_wifi_ip();
 	}
 	else if (message[0] == 'k') {
-		os_printf("free heap: %u\n", system_get_free_heap_size());
+		printf("free heap: %u\n", system_get_free_heap_size());
 	}
 	else if (message[0] == 'r') {
 		force_reset_wifi();
+	}
+	else if (message[0] == 's') {
+		printf("scanner: %s\n\r", wifi_scan_is_running() ? "running" : "not running");
 	}
 	else if (message[0] == 'q') {
 		// print queue

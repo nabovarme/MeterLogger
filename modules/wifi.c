@@ -37,6 +37,7 @@ static os_timer_t wifi_get_rssi_timer;
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
+//uint8_t channel;
 volatile uint8_t* config_ssid;
 volatile uint8_t* config_pass;
 bool wifi_present = false;
@@ -311,10 +312,14 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 //	struct scan_config config;
+#ifdef DEBUG
+	printf ("\t-> %s()\n\r", __FUNCTION__);
+#endif
 	
 	if (!wifi_scan_runnning) {
 		// scan for fallback network
 		wifi_scan_runnning = true;
+//		channel = wifi_get_channel();	// save channel nummber
 #ifdef DEBUG
 		printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
@@ -341,8 +346,10 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 #ifdef DEBUG
+	printf ("\t-> %s()\n\r", __FUNCTION__);
 	printf("scan timeout called\n");
 #endif
+//	wifi_set_channel(channel);	// restore channel number
 	wifi_scan_runnning = false;
 	os_timer_disarm(&wifi_scan_timeout_timer);
 //	led_stop_pattern();	// DEBUG
@@ -354,10 +361,14 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	
+#ifdef DEBUG
+	printf ("\t-> %s(%x, %d)\n\r", __FUNCTION__, arg == NULL ? 0 : (unsigned int)arg, status);
+#endif
 	wifi_present = false;
 	wifi_fallback_present = false;
 	
 	// check if fallback network is present
+//	if (arg != NULL) {
 	if ((arg != NULL) && (status == OK)) {
 		info = (struct bss_info *)arg;
 		wifi_fallback_present = false;
@@ -365,10 +376,28 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		while (info != NULL) {
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0)) {
 				wifi_present = true;
+//				channel = info->channel;
+//#ifdef DEBUG
+//				printf("channel set to %d\n\r", channel);
+//#endif
 			}
 			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
 			}
+#ifdef DEBUG
+			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel, 
+				info->ssid,
+				info->bssid[0], 
+				info->bssid[1], 
+				info->bssid[2], 
+				info->bssid[3], 
+				info->bssid[4], 
+				info->bssid[5],
+				info->rssi,
+				info->freq_offset,
+				info->freqcal_val
+			);
+#endif
 			
 			// handle sending scan results via mqtt
 			if (wifi_scan_result_cb) {
@@ -400,6 +429,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 #endif
 	}
 	
+//	wifi_set_channel(channel);	// restore channel number
 	wifi_scan_runnning = false;
 //	printf("scan done\n");
 	os_timer_disarm(&wifi_scan_timeout_timer);
@@ -414,7 +444,6 @@ void ICACHE_FLASH_ATTR wifi_default() {
 
 	// go back to saved network
 	printf("DEFAULT_SSID\r\n");
-	wifi_station_disconnect();
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -432,7 +461,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	tfp_snprintf(stationConf.password, 64, "%s", config_pass);
 	
 	wifi_station_set_config_current(&stationConf);
-	wifi_station_connect();
+	wifi_station_disconnect();
 	
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
@@ -445,7 +474,6 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 
 	// try fallback network
 	printf("FALLBACK_SSID\r\n");
-	wifi_station_disconnect();
 #ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -464,14 +492,14 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	
 	wifi_station_set_config_current(&stationConf);
 
-	wifi_station_connect();
+	wifi_station_disconnect();
 }
 
 void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback cb) {
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
-	wifi_set_opmode_current(NULL_MODE);
+//	wifi_set_opmode_current(NULL_MODE);
 
 #ifdef AP
 	if (sys_cfg.ap_enabled) {
@@ -494,7 +522,7 @@ void ICACHE_FLASH_ATTR wifi_connect(uint8_t* ssid, uint8_t* pass, WifiCallback c
 	tfp_snprintf(stationConf.password, 64, "%s", pass);
 
 	my_auto_connect = false;	// disable wifi wifi_handle_event_cb() based auto connect
-	wifi_station_disconnect();
+//	wifi_station_disconnect();
 	wifi_station_set_config(&stationConf);	// save to flash so it will reconnect at boot
 	wifi_station_set_config_current(&stationConf);
 
@@ -608,6 +636,9 @@ bool ICACHE_FLASH_ATTR wifi_get_status() {
 }
 
 void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
+#ifdef DEBUG
+	printf ("\t-> %s(%s)\n\r", __FUNCTION__, (interval == WIFI_SCAN_INTERVAL) ? "WIFI_SCAN_INTERVAL" : "WIFI_SCAN_INTERVAL_LONG");
+#endif
 	// start wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
@@ -615,6 +646,9 @@ void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
 }
 
 void ICACHE_FLASH_ATTR wifi_stop_scan() {
+#ifdef DEBUG
+	printf ("\t-> %s()\n\r", __FUNCTION__);
+#endif
 	// stop wifi scan timeout timer and wifi scan timer
 	os_timer_disarm(&wifi_scan_timeout_timer);
 	os_timer_disarm(&wifi_scan_timer);
@@ -647,7 +681,17 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 	struct netif *nif;
 	
 	for (nif = netif_list; nif != NULL; nif = nif->next) {
-		printf("nif %c%c%d: " IPSTR "%s%s\n", nif->name[0], nif->name[1], nif->num, IP2STR(&nif->ip_addr.addr), 
+		printf("nif %c%c%d (mac: %02x:%02x:%02x:%02x:%02x:%02x): " IPSTR "%s%s\n", 
+			nif->name[0], 
+			nif->name[1], 
+			nif->num, 
+			nif->hwaddr[0], 
+			nif->hwaddr[1], 
+			nif->hwaddr[2], 
+			nif->hwaddr[3], 
+			nif->hwaddr[4], 
+			nif->hwaddr[5], 
+			IP2STR(&nif->ip_addr.addr), 
 			nif->dhcp != NULL ? ", dhcp enabled" : "", 
 			nif->num == netif_default->num ? ", default" : ""
 		);
