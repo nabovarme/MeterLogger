@@ -982,6 +982,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
 	printf("Hardware model: %s\n\r", HW_MODEL);
+	printf("Flash id: %x\n\r", spi_flash_get_id());
 
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
