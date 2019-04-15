@@ -974,15 +974,17 @@ void impulse_meter_init(void) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void user_init(void) {
+	size_t flash_size;
+	
 	system_update_cpu_freq(160);
-
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+	flash_size = spi_flash_size();
 
 	printf("\n\r");
 	printf("SDK version: %s\n\r", system_get_sdk_version());
 	printf("Software version: %s\n\r", VERSION);
 	printf("Hardware model: %s\n\r", HW_MODEL);
-	printf("Flash id: 0x%x, size: %u kB\n\r", spi_flash_get_id(), spi_flash_size() / 1024 / 8);
+	printf("Flash id: 0x%x%s, size: %u kB\n\r", spi_flash_get_id(), flash_size ? "" : " (unknown manufacturer)", flash_size / 1024 / 8);
 
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");
