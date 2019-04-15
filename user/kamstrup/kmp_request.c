@@ -403,6 +403,7 @@ void kmp_request_send() {
 
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
 	memset(cleartext, 0, sizeof(cleartext));
+	pseudo_data_debug_no_meter = (get_unix_time() / 60) % 256;
 	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%u&t1=%u.00 C&t2=%u.00 C&tdif=%u.00 K&flow1=%u l/h&effect1=%u.0 kW&hr=%u h&v1=%u.00 m3&e1=%u kWh&",
 		system_get_free_heap_size(),
 		65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
@@ -415,7 +416,6 @@ void kmp_request_send() {
 		pseudo_data_debug_no_meter										// e1
 	);
 	e1_kwh = pseudo_data_debug_no_meter;
-	pseudo_data_debug_no_meter++;	// let it wrap around
 
 	// tell user_main we got a serial
 	if (kmp_meter_is_ready_cb && !meter_is_ready_cb_called) {
