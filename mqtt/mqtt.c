@@ -75,6 +75,9 @@ LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 LOCAL void ICACHE_FLASH_ATTR
 mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
+#ifdef DEBUG
+	printf("\t-> %s()\n\r", __FUNCTION__);
+#endif
 	struct espconn *pConn = (struct espconn *)arg;
 	MQTT_Client* client = (MQTT_Client *)pConn->reverse;
 	if (client == NULL) return;
@@ -715,6 +718,12 @@ MQTT_Task(os_event_t *e)
 	MQTT_Client* client = (MQTT_Client*)e->par;
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
+
+#ifdef DEBUG
+	printf("\t-> %s()\n\r", __FUNCTION__);
+	printf("\t\tevent sig: %d, par: %d, conn state: %d\n\r", e->sig, e->par, client->connState);
+#endif
+
 	if (e->par == 0)
 		return;
 	switch (client->connState) {
@@ -920,7 +929,10 @@ MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, ui
 void ICACHE_FLASH_ATTR
 MQTT_Connect(MQTT_Client *mqttClient)
 {
-	uint32_t keeplive; 
+	uint32_t keeplive;
+#ifdef DEBUG
+	err_t dns_err;
+#endif	// DEBUG
 	
 	if (mqttClient->pCon) {
 		// Clean up the old connection forcefully - using MQTT_Disconnect
@@ -976,7 +988,12 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	}
 	else {
 		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
+#ifdef DEBUG
+		dns_err = espconn_gethostbyname(mqttClient->pCon, mqttClient->host, &mqttClient->ip, mqtt_dns_found);
+		printf("espconn_gethostbyname() returned %d\n\r", dns_err);
+#else
 		espconn_gethostbyname(mqttClient->pCon, mqttClient->host, &mqttClient->ip, mqtt_dns_found);
+#endif	// DEBUG
 	}
 	mqttClient->connState = TCP_CONNECTING;
 }
