@@ -34,8 +34,8 @@ ICACHE_FLASH_ATTR void static ntp_offline_second_counter_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void init_unix_time(void) {
 	// init sntp
-	sntp_setservername(0, "dk.pool.ntp.org"); // set server 0 by domain name
-	sntp_setservername(1, "us.pool.ntp.org"); // set server 1 by domain name
+	sntp_setservername(0, NTP_SERVER_1); // set server 0 by domain name
+	sntp_setservername(1, NTP_SERVER_2); // set server 1 by domain name
 	sntp_set_timezone(0);	// UTC time
 	sntp_init();
 	

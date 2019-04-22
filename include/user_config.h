@@ -104,5 +104,8 @@
 #define AP_MESH_PASS		"w1reless"
 #define AP_MESH_TYPE		AUTH_WPA_WPA2_PSK
 
+#define NTP_SERVER_1		"dk.pool.ntp.org"
+#define NTP_SERVER_2		"us.pool.ntp.org"
+
 #endif
 
