@@ -76,7 +76,8 @@ USER meterlogger
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git && \
     cd /meterlogger/esp-open-sdk && git checkout sdk-v2.2.x
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
-RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git
+RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
+    cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout my_lwip
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 
 # EspStackTraceDecoder.jar
