@@ -109,7 +109,7 @@ static void kmp_received_task(os_event_t *events) {
 		printf("scanner: %s\n\r", wifi_scan_is_running() ? "running" : "not running");
 	}
 	else if (message[0] == 'u') {
-		printf("uptime: %d\n\r", get_unix_time());
+		printf("unix_time: %d\n\r", get_unix_time());
 	}
 	else if (message[0] == 'q') {
 		// print queue
