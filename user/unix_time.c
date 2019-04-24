@@ -57,9 +57,6 @@ ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
 
 ICACHE_FLASH_ATTR uint32_t get_uptime(void) {
 	current_unix_time = sntp_get_current_timestamp();
-#ifdef DEBUG
-	printf("sntp_get_current_timestamp: %d\n\r", current_unix_time);
-#endif
 	if (init_time == 0) {	// just booted
 		return ntp_offline_second_counter;
 	}
