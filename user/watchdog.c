@@ -71,7 +71,6 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		sntp_setservername(0, NTP_SERVER_1); // set server 0 by domain name
 		sntp_setservername(1, NTP_SERVER_2); // set server 1 by domain name
 		sntp_set_timezone(0);	// UTC time
-		sntp_init();
 #endif	// AP
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
 #ifdef DEBUG
@@ -199,9 +198,9 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 	}
 }
 
+// DEBUG: hack to get it to reconnect on weak wifi
+// force reconnect to wireless
 ICACHE_FLASH_ATTR void force_reset_wifi() {
-	// DEBUG: hack to get it to reconnect on weak wifi
-	// force reconnect to wireless
 	led_pattern_b();	// DEBUG to se if we ever try to restart network
 	wifi_stop_scan();
 	set_my_auto_connect(false);
@@ -209,7 +208,6 @@ ICACHE_FLASH_ATTR void force_reset_wifi() {
 	wifi_set_opmode_current(NULL_MODE);
 #ifdef AP
 	dns_flush_all();	// call custom lwip function to flush dns table
-	sntp_stop();
 #endif	// AP
 #ifdef DEBUG
 	printf("stopped wifi and wifi scanner\n");

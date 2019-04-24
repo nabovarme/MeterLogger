@@ -20,10 +20,9 @@ ICACHE_FLASH_ATTR void static sntp_check_timer_func(void *arg) {
 	} else {
 		os_timer_disarm(&sntp_check_timer);
 		// save init time for use in get_uptime()
-		if (init_time == 0) {		// only set init_time at boot
-		    os_timer_disarm(&ntp_offline_second_counter_timer);		// stop offline second counter
-			
-			init_time = current_unix_time;
+		os_timer_disarm(&ntp_offline_second_counter_timer);		// stop offline second counter
+		if (init_time == 0) {		// only set init_time at boot			
+			init_time = current_unix_time;							// save the unix time stamp we go ntp time
 		}
 	}
 }
@@ -45,9 +44,9 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 	os_timer_arm(&sntp_check_timer, 2000, 0);
 
 	ntp_offline_second_counter = 0;
-    os_timer_disarm(&ntp_offline_second_counter_timer);
-    os_timer_setfn(&ntp_offline_second_counter_timer, (os_timer_func_t *)ntp_offline_second_counter_timer_func, NULL);
-    os_timer_arm(&ntp_offline_second_counter_timer, 1000, 1);		// every seconds
+	os_timer_disarm(&ntp_offline_second_counter_timer);
+	os_timer_setfn(&ntp_offline_second_counter_timer, (os_timer_func_t *)ntp_offline_second_counter_timer_func, NULL);
+	os_timer_arm(&ntp_offline_second_counter_timer, 1000, 1);		// every seconds
 }
 
 ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
@@ -58,7 +57,10 @@ ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
 
 ICACHE_FLASH_ATTR uint32_t get_uptime(void) {
 	current_unix_time = sntp_get_current_timestamp();
-	if (init_time == 0) {
+#ifdef DEBUG
+	printf("sntp_get_current_timestamp: %d\n\r", current_unix_time);
+#endif
+	if (init_time == 0) {	// just booted
 		return ntp_offline_second_counter;
 	}
 	else {
