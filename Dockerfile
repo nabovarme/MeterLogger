@@ -85,7 +85,7 @@ RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/r
 
 # meterlogger
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git && \
-    cd /meterlogger/MeterLogger && git checkout my_lwip_dev
+    cd /meterlogger/MeterLogger && git checkout dns_cache
 
 USER root
 
