@@ -95,7 +95,8 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 	     *((uint8 *) &ipaddr->addr + 2),
 	     *((uint8 *) &ipaddr->addr + 3));
 
-	if (client->ip.addr == 0 && ipaddr->addr != 0)
+// 	if (client->ip.addr == 0 && ipaddr->addr != 0)
+	if (ipaddr->addr != IPADDR_ANY)
 	{
 		os_memcpy(client->pCon->proto.tcp->remote_ip, &ipaddr->addr, 4);
 		if (client->security) {
@@ -930,9 +931,7 @@ void ICACHE_FLASH_ATTR
 MQTT_Connect(MQTT_Client *mqttClient)
 {
 	uint32_t keeplive;
-#ifdef DEBUG
 	err_t dns_err;
-#endif	// DEBUG
 	
 	if (mqttClient->pCon) {
 		// Clean up the old connection forcefully - using MQTT_Disconnect
@@ -988,12 +987,18 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	}
 	else {
 		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
+		dns_err = dns_gethostbyname(mqttClient->host, &mqttClient->ip, mqtt_dns_found, mqttClient->pCon);
+		if (dns_err == ERR_INPROGRESS) {
+			/* DNS request sent, wait for sntp_dns_found being called */
 #ifdef DEBUG
-		dns_err = espconn_gethostbyname(mqttClient->pCon, mqttClient->host, &mqttClient->ip, mqtt_dns_found);
-		printf("espconn_gethostbyname() returned %d\n\r", dns_err);
-#else
-		espconn_gethostbyname(mqttClient->pCon, mqttClient->host, &mqttClient->ip, mqtt_dns_found);
+			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
 #endif	// DEBUG
+		} else if (dns_err == ERR_OK) {
+#ifdef DEBUG
+			printf("dns_gethostbyname() returned ERR_OK\n\r");
+#endif	// DEBUG
+			mqtt_dns_found(mqttClient->host, &mqttClient->ip, mqttClient->pCon);
+		}
 	}
 	mqttClient->connState = TCP_CONNECTING;
 }
