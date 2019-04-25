@@ -8,7 +8,6 @@
 #ifdef AP
 // open lwip networking
 #include <lwip/dns.h>
-#include <lwip/sntp.h>
 #endif	// AP
 
 #include "debug.h"
@@ -67,11 +66,6 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		led_stop_pattern();	// DEBUG
 		set_my_auto_connect(true);
 		wifi_default();
-#ifdef AP
-		sntp_setservername(0, NTP_SERVER_1); // set server 0 by domain name
-		sntp_setservername(1, NTP_SERVER_2); // set server 1 by domain name
-		sntp_set_timezone(0);	// UTC time
-#endif	// AP
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
 #ifdef DEBUG
 		printf("watchdog restarted wifi and started wifi scanner\n");
