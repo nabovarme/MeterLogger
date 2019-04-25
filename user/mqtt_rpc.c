@@ -319,7 +319,6 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
-#ifdef AP
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ap_status(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -378,7 +377,6 @@ void mqtt_rpc_stop_ap(MQTT_Client *client) {
 		}
 	}
 }
-#endif	// AP
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_mem(MQTT_Client *client) {

@@ -16,8 +16,6 @@ the internal webserver.
 */
 
 #include <esp8266.h>
-// open lwip networking
-#ifdef AP
 #include <lwip/ip.h>
 #include <lwip/udp.h>
 #include <lwip/tcp_impl.h>
@@ -27,9 +25,6 @@ the internal webserver.
 #include <lwip/dns.h>
 #include <lwip/app/dhcpserver.h>
 #include <lwip/opt.h>
-#else
-#include <ip_addr.h>
-#endif  // AP
 #include <espconn.h>
 
 #ifdef FREERTOS

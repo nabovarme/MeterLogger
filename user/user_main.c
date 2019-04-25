@@ -67,9 +67,7 @@ static os_timer_t impulse_meter_calculate_timer;
 //static os_timer_t spi_test_timer;	// DEBUG
 #endif
 
-#ifdef AP
 uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
-#endif
 
 #ifdef MEMLEAK_DEBUG
 ICACHE_FLASH_ATTR
@@ -157,7 +155,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
 	wifi_connect(wifi_changed_cb);
-#ifdef AP
 #ifdef EN61107
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #elif defined IMPULSE
@@ -168,9 +165,6 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 
 	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
 	wifi_softap_ip_config();
-#else
-	wifi_set_opmode_current(STATION_MODE);
-#endif	// AP
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
 }
@@ -739,7 +733,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found uptime
 		mqtt_rpc_wifi_status(&mqtt_client);
 	}
-#ifdef AP
 	else if (strncmp(function_name, "ap_status", FUNCTIONNAME_L) == 0) {
 		// found ap_status
 		mqtt_rpc_ap_status(&mqtt_client);
@@ -752,7 +745,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found stop_ap
 		mqtt_rpc_stop_ap(&mqtt_client);
 	}
-#endif	// AP
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
 		mqtt_rpc_mem(&mqtt_client);

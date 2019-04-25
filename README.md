@@ -10,27 +10,27 @@ Check out the [WIKI](https://github.com/nabovarme/MeterLogger/wiki) for more det
 
 To build and flash for KMP type meter (Multical 601):  
 ```  
-KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 C:  
 ```  
-EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 B:  
 ```  
-MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for KMP/en61107 type, forced as flow meter:  
 ```  
-FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for impulse based electricity meter:  
 ```  
-IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To configure wireless network:  
@@ -140,9 +140,6 @@ cleartext message (null terminated)
 hmac sha256 key
 ```  
 
-AP=1
-enable wireless extender; wireless AP
-enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set. 
 
 **MQTT format for messages sent _to_ meter**  
 

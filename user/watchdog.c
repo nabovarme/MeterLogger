@@ -5,10 +5,7 @@
 #include "wifi.h"
 #include "config.h"
 #include "led.h"
-#ifdef AP
-// open lwip networking
 #include <lwip/dns.h>
-#endif	// AP
 
 #include "debug.h"
 
@@ -47,7 +44,6 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 	}
 	else {
 		os_timer_disarm(&wifi_reconnect_timer);
-#ifdef AP
 		if (sys_cfg.ap_enabled) {
 			if (wifi_get_opmode() != STATIONAP_MODE) {
 				wifi_set_opmode_current(STATIONAP_MODE);
@@ -58,11 +54,6 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 				wifi_set_opmode_current(STATION_MODE);
 			}
 		}
-#else
-		if (wifi_get_opmode() != STATION_MODE) {
-			wifi_set_opmode_current(STATION_MODE);
-		}
-#endif	// AP
 		led_stop_pattern();	// DEBUG
 		set_my_auto_connect(true);
 		wifi_default();

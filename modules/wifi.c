@@ -5,8 +5,6 @@
  *      Author: Minh
  */
 #include <esp8266.h>
-// open lwip networking
-#ifdef AP
 #include <lwip/ip.h>
 #include <lwip/udp.h>
 #include <lwip/tcp_impl.h>
@@ -16,9 +14,6 @@
 #include <lwip/dns.h>
 #include <lwip/app/dhcpserver.h>
 #include <lwip/opt.h>
-#else
-#include <ip_addr.h>
-#endif  // AP
 #include <espconn.h>
 
 #include "wifi.h"
@@ -48,7 +43,6 @@ volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false;
 volatile bool my_auto_connect = true;
 
-#ifdef AP
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
@@ -186,7 +180,6 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	// default allow everything else
     return true;
 }
-#endif	// AP
 
 // static functions
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
@@ -255,7 +248,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 			}
-#ifdef AP
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
 			sta_network_mask = evt->event_info.got_ip.mask;
@@ -265,7 +257,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
 			wifi_station_set_reconnect_policy(0);
-#endif	// AP
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_STAMODE_DHCP_TIMEOUT:
@@ -289,9 +280,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_connected.mac));
 			printf("station: %s join, AID = %d\n", mac_str, evt->event_info.sta_connected.aid);
 #endif
-#ifdef AP
 			patch_netif_ap(my_input_ap, my_output_ap, true);
-#endif	// AP
 			break;
 	case EVENT_SOFTAPMODE_STADISCONNECTED:
 #ifdef DEBUG
@@ -449,16 +438,12 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	printf("DEFAULT_SSID\r\n");
 	my_auto_connect = false;		// handle_event_cb() based auto connect
 	wifi_station_disconnect();
-#ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
 	}
 	else {
 		wifi_set_opmode_current(STATION_MODE);
 	}
-#else
-	wifi_set_opmode_current(STATION_MODE);
-#endif	// AP
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
@@ -483,16 +468,12 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	printf("FALLBACK_SSID\r\n");
 	my_auto_connect = false;		// handle_event_cb() based auto connect
 	wifi_station_disconnect();
-#ifdef AP
 	if (sys_cfg.ap_enabled == true) {
 		wifi_set_opmode_current(STATIONAP_MODE);
 	}
 	else {
 		wifi_set_opmode_current(STATION_MODE);
 	}
-#else
-	wifi_set_opmode_current(STATION_MODE);
-#endif	// AP
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
 	
@@ -511,16 +492,12 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	INFO("WIFI_INIT\r\n");
 //	wifi_set_opmode_current(NULL_MODE);
 
-#ifdef AP
 	if (sys_cfg.ap_enabled) {
 		wifi_set_opmode_current(STATIONAP_MODE);
 	}
 	else {
 		wifi_set_opmode_current(STATION_MODE);
 	}
-#else
-	wifi_set_opmode_current(STATION_MODE);
-#endif	// AP
 
 	wifi_cb = cb;
 
@@ -573,7 +550,6 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 	wifi_softap_set_config(&ap_conf);
 }
 
-#ifdef AP
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	struct ip_info info;
 	struct dhcps_lease dhcp_lease;
@@ -629,7 +605,6 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 
 	wifi_softap_dhcps_start();
 }
-#endif	// AP
 
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 	while (get_rssi_running == true) {
@@ -684,7 +659,6 @@ void wifi_scan_result_cb_unregister(wifi_scan_result_event_cb_t cb) {
 
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
-#ifdef AP
 	struct netif *nif;
 	
 	for (nif = netif_list; nif != NULL; nif = nif->next) {
@@ -703,14 +677,6 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 			nif->num == netif_default->num ? ", default" : ""
 		);
 	}
-#else
-	struct ip_info info;
-	wifi_get_ip_info(STATION_IF, &info);
-	printf("station ip:" IPSTR "\n", IP2STR(&info.ip));
-	
-	wifi_get_ip_info(SOFTAP_IF, &info);
-	printf("softap ip:" IPSTR "\n", IP2STR(&info.ip));
-#endif	// AP
 }
 
 void ICACHE_FLASH_ATTR debug_print_wifi_config() {
