@@ -12,12 +12,12 @@
 # 4. # docker run -i -t -u $UID -v $(pwd):/data/riotbuild uiota-build ./dist/tools/compile_test/compile_test.py
 
 
-FROM debian:jessie
+FROM debian:stretch
 
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
 # unrar is non-free
-RUN "echo" "deb http://http.us.debian.org/debian jessie non-free" >> /etc/apt/sources.list
+RUN "echo" "deb http://http.us.debian.org/debian stretch non-free" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
