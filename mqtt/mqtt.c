@@ -983,19 +983,20 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	else {
 		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
 		dns_err = dns_gethostbyname(mqttClient->host, &mqttClient->ip, mqtt_dns_found, mqttClient->pCon);
-		if (dns_err == ERR_INPROGRESS) {
-			/* DNS request sent, wait for sntp_dns_found being called */
-#ifdef DEBUG
-			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
-#endif	// DEBUG
-		} else if (dns_err == ERR_OK) {
+		if (dns_err == ERR_OK) {
 #ifdef DEBUG
 			printf("dns_gethostbyname() returned ERR_OK\n\r");
 #endif	// DEBUG
 			mqtt_dns_found(mqttClient->host, &mqttClient->ip, mqttClient->pCon);
+		} else if (dns_err == ERR_INPROGRESS) {
+			/* DNS request sent, wait for sntp_dns_found being called */
+#ifdef DEBUG
+			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
+#endif	// DEBUG
+			mqttClient->connState = TCP_CONNECTING;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		}
 	}
-	mqttClient->connState = TCP_CONNECTING;
 }
 
 void ICACHE_FLASH_ATTR
