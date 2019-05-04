@@ -75,7 +75,7 @@ else
 	ESPPORT ?= /dev/ttyUSB0
 	SDK_BASE	?= $(HOME)/esp8266/esp-open-sdk/sdk
 
-	CCFLAGS += -Os -ffunction-sections -fno-jump-tables
+	CCFLAGS += -Os -ffunction-sections -fdata-sections -fno-jump-tables
 	AR = xtensa-lx106-elf-ar
 	AS = xtensa-lx106-elf-as
 	CC = xtensa-lx106-elf-gcc
