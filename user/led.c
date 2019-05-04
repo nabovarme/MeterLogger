@@ -103,6 +103,13 @@ ICACHE_FLASH_ATTR void led_blink(void) {
 	os_timer_arm(&led_single_blink_off_timer, 1000, 0);
 }
 
+ICACHE_FLASH_ATTR void led_blink_short(void) {
+	led_on();
+	os_timer_disarm(&led_single_blink_off_timer);
+	os_timer_setfn(&led_single_blink_off_timer, (os_timer_func_t *)led_single_blink_off_timer_func, NULL);
+	os_timer_arm(&led_single_blink_off_timer, 100, 0);
+}
+
 ICACHE_FLASH_ATTR void led_pattern_a(void) {
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);

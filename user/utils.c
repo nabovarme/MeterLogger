@@ -9,8 +9,13 @@
 #include "tinyprintf.h"
 
 // crc table
+#ifdef ESP_CONST_DATA
 ESP_CONST_DATA
-const uint16_t ccit_crc16_table[256] = {
+const uint32_t 
+#else
+const uint16_t
+#endif
+ccit_crc16_table[256] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
 	0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -54,20 +59,7 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 	return crc16;
 }
 
-ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
-	uint32_t result_int, result_frac;
-	uint32_t w_int;
-	
-	w_int = atoi(w);
-	
-	// ...divide by 1000 and prepare decimal string in kWh
-	result_int = (int32_t)(w_int / 1000);
-	result_frac = w_int % 1000;
-	
-	tfp_snprintf(kw, 15, "%u.%03u", result_int, result_frac);
-}
-
-ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
+ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str) {
 	uint32_t result_int, result_frac;
 	uint32_t i;
 	uint32_t len;
@@ -79,22 +71,22 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	uint32_t pos_int;
 	uint32_t pos_frac;
 	
-	len = strlen(kw);
+	len = strlen(str);
 	
 	result_frac = 0;
 	pos_int = 0;
 	pos_frac = 0;
 	dec_separator = false;
 	for (i = 0; i < len && pos_frac < 3; i++) {
-		if (kw[i] == '.') {
+		if (str[i] == '.') {
 			dec_separator = 1;
 		}
 		else if (!dec_separator) {
-			result_int_str[pos_int++] = kw[i];
+			result_int_str[pos_int++] = str[i];
 		}
 		else {
-			//result_frac_str[pos_frac++] = kw[i];
-			result_frac += (kw[i] - '0') * int_pow(10, 2 - pos_frac);
+			//result_frac_str[pos_frac++] = str[i];
+			result_frac += (str[i] - '0') * int_pow(10, 2 - pos_frac);
 			pos_frac++;
 		}
 	}
@@ -102,53 +94,94 @@ ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
 	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
 	
 	result_int += result_frac;
-	tfp_snprintf(w, 11, "%u", result_int);
+	tfp_snprintf(decimal_str, 11, "%u", result_int);
+}
+
+ICACHE_FLASH_ATTR void kw_to_w_str(char *kw, char *w) {
+	// just a wrapper
+	multiply_str_by_1000(kw, w);
 }
 
 ICACHE_FLASH_ATTR void mw_to_kw_str(char *mw, char *w) {
 	// just a wrapper
-	kw_to_w_str(mw, w);
+	multiply_str_by_1000(mw, w);
 }
-
+	
 ICACHE_FLASH_ATTR void divide_str_by_10(char *str, char *decimal_str) {
 	int32_t result_int, result_frac;
 	int32_t value_int;
+	bool negative;
 	
 	value_int = atoi(str);
+	negative = (value_int < 0) ? true : false;
 	
+	if (negative) {
+		value_int = -value_int;
+	}
+
 	// ...divide by 10 and prepare decimal string
-	result_int = (int32_t)(value_int / 10);
-	if (result_int < 0) {
-		result_frac = -1 * (value_int % 10);
+	result_int = value_int / 10;
+	result_frac = value_int % 10;
+	
+	if (negative) {
+		tfp_snprintf(decimal_str, 8, "-%u.%01u", result_int, result_frac);
 	}
 	else {
-		result_frac = value_int % 100;
+		tfp_snprintf(decimal_str, 8, "%u.%01u", result_int, result_frac);
 	}
-	
-	tfp_snprintf(decimal_str, 8, "%d.%01u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void divide_str_by_100(char *str, char *decimal_str) {
 	int32_t result_int, result_frac;
 	int32_t value_int;
+	bool negative;
 	
 	value_int = atoi(str);
+	negative = (value_int < 0) ? true : false;
+	
+	if (negative) {
+		value_int = -value_int;
+	}
 	
 	// ...divide by 100 and prepare decimal string
-	result_int = (int32_t)(value_int / 100);
-	if (result_int < 0) {
-		result_frac = -1 * (value_int % 100);
+	result_int = value_int / 100;
+	result_frac = value_int % 100;
+	
+	if (negative) {
+		tfp_snprintf(decimal_str, 15, "-%u.%02u", result_int, result_frac);
 	}
 	else {
-		result_frac = value_int % 100;
+		tfp_snprintf(decimal_str, 15, "%u.%02u", result_int, result_frac);
 	}
-	
-	tfp_snprintf(decimal_str, 8, "%d.%02u", result_int, result_frac);
 }
 
 ICACHE_FLASH_ATTR void divide_str_by_1000(char *str, char *decimal_str) {
+	int32_t result_int, result_frac;
+	int32_t value_int;
+	bool negative;
+	
+	value_int = atoi(str);
+	negative = (value_int < 0) ? true : false;
+	
+	if (negative) {
+		value_int = -value_int;
+	}
+	
+	// ...divide by 1000 and prepare decimal string in kWh
+	result_int = value_int / 1000;
+	result_frac = value_int % 1000;
+	
+	if (negative) {
+		tfp_snprintf(decimal_str, 15, "-%u.%03u", result_int, result_frac);
+	}
+	else {
+		tfp_snprintf(decimal_str, 15, "%u.%03u", result_int, result_frac);
+	}
+}
+
+ICACHE_FLASH_ATTR void w_to_kw_str(char *w, char *kw) {
 	// just a wrapper
-	w_to_kw_str(str, decimal_str);
+	divide_str_by_1000(w, kw);
 }
 
 ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
@@ -277,3 +310,23 @@ int query_string_unescape(char *str) {
 	return strlen(str);
 }
 
+ICACHE_FLASH_ATTR
+size_t spi_flash_size() {					// returns the flash chip's size, in BYTES
+	uint32_t id = spi_flash_get_id();  
+	uint8_t manufacturer_id = id & 0xff;
+//	uint8_t type_id = (id >> 8) & 0xff;		// not relevant for size calculation
+	uint8_t size_id = (id >> 16) & 0xff;	// lucky for us, WinBond ID's their chips as a form that lets us calculate the size
+	if (manufacturer_id == 0xef) {
+		return 1 << size_id;
+	}
+	else if (manufacturer_id == 0xe0) {		// LG Semi (Goldstar)
+		return 1 << size_id;
+	}
+//	else if (manufacturer_id == 0x1c) {		// Mitsubishi
+//		return 1 << size_id;
+//	}
+	else {
+		// could not identify chip
+		return 0;
+	}
+}

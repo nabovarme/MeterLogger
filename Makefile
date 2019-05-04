@@ -33,7 +33,6 @@ FLAVOR ?= release
 GIT_VERSION := $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
 CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
 CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
-AP = 1
 
 #############################################################
 # Select compile
@@ -112,17 +111,9 @@ MODULES		= driver mqtt modules user user/crypto
 EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(SDK_BASE)/../lx106-hal/include $(HOME)/esp8266/esp-open-sdk/sdk/include $(SDK_BASE)/../esp-open-lwip/include include lib/heatshrink user/crypto user/kamstrup user/61107
 
 # libraries used in this project, mainly provided by the SDK
-LIBS	= main net80211 wpa pp phy hal ssl gcc c
-ifeq ($(AP), 1)
-    LIBS	+= lwip_open
-else
-    LIBS	+= lwip
-endif
+LIBS	= main net80211 wpa pp phy hal ssl lwip_open gcc c
 # compiler flags using during compilation of source files
-CFLAGS	= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DMEMLEAK_DEBUG
-ifeq ($(AP), 1)
-    CFLAGS	+= -DLWIP_OPEN_SRC
-endif
+CFLAGS	= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DMEMLEAK_DEBUG -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref
@@ -158,7 +149,7 @@ ifeq ($(DEBUG_SHORT_WEB_CONFIG_TIME), 1)
     CFLAGS += -DDEBUG_SHORT_WEB_CONFIG_TIME
 endif
 
-ifeq ($(DEBUG_STACK_TRACE), 1)
+ifneq ($(DEBUG_STACK_TRACE), 0)
     CFLAGS += -DDEBUG_STACK_TRACE
 endif
 
@@ -167,8 +158,8 @@ ifeq ($(MC_66B), 1)
 	CFLAGS += -DMC_66B -DEN61107
 endif
 
-ifeq ($(FORCED_FLOW_METER), 1)
-	CFLAGS += -DFORCED_FLOW_METER
+ifeq ($(FLOW_METER), 1)
+	CFLAGS += -DFLOW_METER
 endif
 
 ifeq ($(EN61107), 1)
@@ -188,6 +179,10 @@ ifneq ($(AUTO_CLOSE), 0)
     CFLAGS += -DAUTO_CLOSE=1
 endif
 
+ifeq ($(NO_CRON), 1)
+    CFLAGS += -DNO_CRON=1
+endif
+
 ifeq ($(THERMO_NO), 1)
     CFLAGS += -DTHERMO_NO
 endif
@@ -202,10 +197,6 @@ endif
 
 ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
     CFLAGS += -DEXT_SPI_RAM_IS_NAND
-endif
-
-ifeq ($(AP), 1)
-    CFLAGS += -DAP
 endif
 
 # various paths from the SDK used in this project

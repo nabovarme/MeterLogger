@@ -79,7 +79,7 @@ static void print_stack(uint32_t start, uint32_t end) {
 // Print exception info to console
 ICACHE_FLASH_ATTR
 static void print_reason() {
-	int i;
+	unsigned int i;
 	unsigned int r;
 	//register uint32_t sp asm("a1");
 	struct XTensa_exception_frame_s *reg = &saved_regs;
@@ -116,7 +116,7 @@ static void print_reason() {
 	for (i = 0; i < 16; i++) {
 		r = getaregval(i);
 #ifdef DEBUG
-		printf("r%02d: 0x%08x=%10d ", i, r, r);
+		printf("r%02u: 0x%08x=%10u ", i, r, r);
 #endif	// DEBUG
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "r%02d: 0x%08x=%10d ", i, r, r);
 		stack_trace_append(stack_trace_buffer);

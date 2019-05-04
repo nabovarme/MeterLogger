@@ -171,9 +171,9 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char mqtthost[64];
 #ifdef IMPULSE
 	char impulse_meter_serial[32 + 1];
-	char impulse_meter_energy_kw[32 + 1];
-	char impulse_meter_energy[32 + 1];
-	char impulses_per_kwh[8 + 1];
+	char impulse_meter_units_string[32 + 1];
+	char impulse_meter_units[32 + 1];
+	char impulses_per_unit[8 + 1];
 #endif
 	
 	if (connData->conn==NULL) {
@@ -186,8 +186,8 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	httpdFindArg(connData->postBuff, "mqtthost", mqtthost, sizeof(mqtthost));
 #ifdef IMPULSE
 	httpdFindArg(connData->postBuff, "impulse_meter_serial", impulse_meter_serial, sizeof(impulse_meter_serial));
-	httpdFindArg(connData->postBuff, "impulse_meter_energy", impulse_meter_energy_kw, sizeof(impulse_meter_energy_kw));
-	httpdFindArg(connData->postBuff, "impulses_per_kwh", impulses_per_kwh, sizeof(impulses_per_kwh));
+	httpdFindArg(connData->postBuff, "impulse_meter_units", impulse_meter_units_string, sizeof(impulse_meter_units_string));
+	httpdFindArg(connData->postBuff, "impulses_per_unit", impulses_per_unit, sizeof(impulses_per_unit));
 #endif
 
 	os_strncpy((char*)sys_cfg.sta_ssid, essid, 32);
@@ -195,9 +195,9 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	os_strncpy((char*)sys_cfg.mqtt_host, mqtthost, 64);
 #ifdef IMPULSE
 	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
-	kw_to_w_str(impulse_meter_energy_kw, impulse_meter_energy);
-	os_strncpy((char*)sys_cfg.impulse_meter_energy, impulse_meter_energy, 32 + 1);
-	os_strncpy((char*)sys_cfg.impulses_per_kwh, impulses_per_kwh, 8 + 1);
+	kw_to_w_str(impulse_meter_units_string, impulse_meter_units);
+	os_strncpy((char*)sys_cfg.impulse_meter_units, impulse_meter_units, 32 + 1);
+	os_strncpy((char*)sys_cfg.impulses_per_unit, impulses_per_unit, 8 + 1);
 	sys_cfg.impulse_meter_count = 0;
 #endif
 
@@ -246,7 +246,7 @@ int ICACHE_FLASH_ATTR cgiWifiSetMode(HttpdConnData *connData) {
 void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg) {
 	char buff[1024];
 #ifdef IMPULSE
-	char impulse_meter_energy[32 + 1];
+	char impulse_meter_units[32 + 1];
 #endif // IMPULSE
 	int x;
 	//static struct station_config stconf;
@@ -283,12 +283,12 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 	else if (os_strcmp(token, "ImpulseMeterSerial") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
 	}
-	else if (os_strcmp(token, "ImpulseMeterEnergy") == 0) {
-		tfp_snprintf(impulse_meter_energy, 32 + 1, "%u", atoi(sys_cfg.impulse_meter_energy) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_kwh)));
-		w_to_kw_str(impulse_meter_energy, buff);
+	else if (os_strcmp(token, "ImpulseMeterUnits") == 0) {
+		tfp_snprintf(impulse_meter_units, 32 + 1, "%u", atoi(sys_cfg.impulse_meter_units) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_unit)));
+		divide_str_by_1000(impulse_meter_units, buff);
 	}
-	else if (os_strcmp(token, "ImpulsesPerKwh") == 0) {
-		os_strcpy(buff, (char*)sys_cfg.impulses_per_kwh);
+	else if (os_strcmp(token, "ImpulsesPerUnit") == 0) {
+		os_strcpy(buff, (char*)sys_cfg.impulses_per_unit);
 	}
 #endif
 

@@ -10,27 +10,27 @@ Check out the [WIKI](https://github.com/nabovarme/MeterLogger/wiki) for more det
 
 To build and flash for KMP type meter (Multical 601):  
 ```  
-KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 C:  
 ```  
-EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for en61107, sub type Multical 66 B:  
 ```  
-MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for KMP/en61107 type, forced as flow meter:  
 ```  
-FORCED_FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To build and flash for impulse based electricity meter:  
 ```  
-IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf AP=1 make clean all flashall  
+IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
 ```  
   
 To configure wireless network:  
@@ -60,12 +60,18 @@ meter type is en61107, sub type Multical 66 C
 MC_66B=1  
 meter type is en61107, sub type Multical 66 B  
   
-FORCED_FLOW_METER=1  
+FLOW_METER=1  
 meter is forced to run as a flow meter and close when volume is reached  
   
 AUTO_CLOSE=1  
 automatically check if energy is larger than the value set by open_until mqtt command 
   
+DEBUG_STACK_TRACE=1  
+Enable exception stack trace dump at to flash at address STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE (0x80000), STACK_TRACE_N bytes  
+
+NO_CRON=1  
+disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this  
+
 THERMO_NO=0  
 thermo actuator is normal closed  
   
@@ -134,9 +140,6 @@ cleartext message (null terminated)
 hmac sha256 key
 ```  
 
-AP=1
-enable wireless extender; wireless AP
-enables open source lwip and uses more memory so mqtt buffer is smaller when this option is set. 
 
 **MQTT format for messages sent _to_ meter**  
 
@@ -157,6 +160,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
 | /config/v2/9999999/[unix time]/version                 |                                                                                                     |
 | /config/v2/9999999/[unix time]/uptime                  |                                                                                                     |
+| /config/v2/9999999/[unix time]/stack_trace             | [enable stack trace dumps until restart i.e. once (only if built with DEBUG_STACK_TRACE=1)]         |
 | /config/v2/9999999/[unix time]/vdd                     |                                                                                                     |
 | /config/v2/9999999/[unix time]/rssi                    |                                                                                                     |
 | /config/v2/9999999/[unix time]/ssid                    |                                                                                                     |
@@ -185,6 +189,7 @@ enables open source lwip and uses more memory so mqtt buffer is smaller when thi
 | /open_until/v2/9999999/[unix time]              | [kWh when meter should close]                                                                        |
 | /open_until_delta/v2/9999999/[unix time]        | [kWh when meter should close]                                                                        |
 | /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
+| /stack_trace/v2/9999999/[unix time]             |                                                                                                      |
 | /vdd/v2/9999999/[unix time]                     | [power supply voltage level]                                                                         |
 | /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |

@@ -86,13 +86,13 @@ window.onload=function(e) {
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td align="left" valign="top">Meter energy in kWh: <br />
-    <input type="text" name="impulse_meter_energy" value="%ImpulseMeterEnergy%" maxlength="16"></td>
+    <td align="left" valign="top">Meter energy in kWh/m<sup>3</sup>: <br />
+    <input type="text" name="impulse_meter_units" value="%ImpulseMeterUnits%" maxlength="16"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td align="left" valign="top">Impulses pr. kWh: <br />
-    <input type="text" name="impulses_per_kwh" value="%ImpulsesPerKwh%" maxlength="16"></td>
+    <td align="left" valign="top">Impulses pr. kWh/m<sup>3</sup>: <br />
+    <input type="text" name="impulses_per_unit" value="%ImpulsesPerUnit%" maxlength="16"></td>
   </tr>
   <tr>
     <td>&nbsp;</td>

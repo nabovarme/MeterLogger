@@ -12,12 +12,12 @@
 # 4. # docker run -i -t -u $UID -v $(pwd):/data/riotbuild uiota-build ./dist/tools/compile_test/compile_test.py
 
 
-FROM debian:jessie
+FROM debian:stretch
 
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
 # unrar is non-free
-RUN "echo" "deb http://http.us.debian.org/debian jessie non-free" >> /etc/apt/sources.list
+RUN "echo" "deb http://http.us.debian.org/debian stretch non-free" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
 	gawk \
 	gcc \
 	git \
+	gnupg \
 	gperf \
 	help2man \
 	joe \
@@ -55,10 +56,11 @@ RUN apt-get update && apt-get install -y \
 	software-properties-common
 
 # Java
-RUN add-apt-repository "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" && apt-get update
-RUN echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-RUN apt-get -y install oracle-java8-installer
+RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > /etc/apt/sources.list.d/linuxuprising-java.list && apt-get update
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 73C3DB2A
+RUN echo oracle-java11-installer shared/accepted-oracle-license-v1-2 select true | sudo /usr/bin/debconf-set-selections
+RUN echo oracle-java11-installer shared/accepted-oracle-licence-v1-2 boolean true | sudo /usr/bin/debconf-set-selections
+RUN apt-get install -y --allow-unauthenticated oracle-java11-set-default
 
 # Adduser `meterlogger`
 RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
@@ -73,16 +75,19 @@ RUN chown -R meterlogger:meterlogger /meterlogger
 USER meterlogger
 
 # esp-open-sdk
-RUN cd /meterlogger && git clone --recursive -b sdk-v3.1.0-dev https://github.com/nabovarme/esp-open-sdk.git
+RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git && \
+    cd /meterlogger/esp-open-sdk && git checkout master
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
-RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/martin-ger/esp-open-lwip.git
+RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
+    cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout dns_cache
 RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
 
 # EspStackTraceDecoder.jar
 RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
 
 # meterlogger
-RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git
+RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git && \
+    cd /meterlogger/MeterLogger && git checkout dns_cache
 
 USER root
 

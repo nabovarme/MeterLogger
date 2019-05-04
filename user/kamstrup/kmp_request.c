@@ -9,6 +9,7 @@
 #include "config.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
+#include "watchdog.c"
 
 #define QUEUE_SIZE 256
 
@@ -40,8 +41,8 @@ static os_timer_t kmp_receive_timeout_timer;
 
 unsigned int kmp_requests_sent;
 
-#ifdef FORCED_FLOW_METER
-volatile uint32_t v1_m3 = 0;
+#ifdef FLOW_METER
+volatile uint32_t v1_l = 0;
 #else
 volatile uint32_t e1_kwh = 0;
 #endif
@@ -69,18 +70,52 @@ static void kmp_received_task(os_event_t *events) {
     unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
 
-#ifndef FORCED_FLOW_METER
+#ifdef FLOW_METER
+	char v1_l_string[64];
+#else
 	char e1_kwh_string[64];
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 
 	//ETS_UART_INTR_DISABLE();
 
 	memset(message, 0x00, KMP_FRAME_L);			// clear message buffer
 	i = 0;
-	while (kmp_fifo_get(&c) && (i <= KMP_FRAME_L)) {
+	while (kmp_fifo_get(&c) && (i < KMP_FRAME_L)) {
 		message[i++] = c;
 	}
 	message_l = i;
+#ifdef DEBUG
+//	message[message_l] = 0;
+//	printf ("__FUNCTION__ = %s\n", __FUNCTION__);
+	if (message[0] == 'm') {
+		kmp_request_send();
+	}
+	else if (message[0] == 'c') {
+		printf("channel: %d\n\r", wifi_get_channel());
+	}
+	else if (message[0] == 'C') {
+		debug_print_wifi_config();
+	}
+	else if (message[0] == 'i') {
+		debug_print_wifi_ip();
+	}
+	else if (message[0] == 'k') {
+		printf("free heap: %u\n", system_get_free_heap_size());
+	}
+	else if (message[0] == 'r') {
+		force_reset_wifi();
+	}
+	else if (message[0] == 's') {
+		printf("scanner: %s\n\r", wifi_scan_is_running() ? "running" : "not running");
+	}
+	else if (message[0] == 'u') {
+		printf("unix_time: %d\n\r", get_unix_time());
+	}
+	else if (message[0] == 'q') {
+		// print queue
+		debug_print_mqtt_queue(mqtt_client);
+	}
+#endif
 
 	// decode kmp frame
 	if (kmp_decode_frame(message, message_l, &response) > 0) {
@@ -117,7 +152,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
         	
-#ifndef FORCED_FLOW_METER
+#ifndef FLOW_METER
 			// heating meter specific
 			// flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
@@ -136,7 +171,7 @@ static void kmp_received_task(os_event_t *events) {
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
         	
 			// flow
 			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
@@ -144,13 +179,13 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
         	
-#ifndef FORCED_FLOW_METER
+#ifndef FLOW_METER
 			// current power
 			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
         	
 			// hours
 			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
@@ -164,20 +199,21 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
 
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 			// save volume for later use in kmp_get_received_volume_m3()
-			v1_m3 = atoi(kmp_value_string);
+			multiply_str_by_1000(kmp_value_string, v1_l_string);
+			v1_l = atoi(v1_l_string);
 #endif
         	
-#ifndef FORCED_FLOW_METER
+#ifndef FLOW_METER
 			// power
 			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
 			strcat(message, key_value);
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 
-#ifndef FORCED_FLOW_METER
+#ifndef FLOW_METER
 			// save energy for later use in kmp_get_received_energy_kwh()
 			if (strncmp(kmp_unit_string, "MWh", 3) == 0) {
 				mw_to_kw_str(kmp_value_string, e1_kwh_string);
@@ -248,13 +284,13 @@ unsigned int kmp_get_received_serial() {
 	return kmp_serial;
 }
 
-#ifdef FORCED_FLOW_METER
+#ifdef FLOW_METER
 ICACHE_FLASH_ATTR
-uint32_t kmp_get_received_volume_m3() {
+uint32_t kmp_get_received_volume_l() {
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	return v1_m3;
+	return v1_l;
 #endif
 }
 #else
@@ -267,7 +303,7 @@ uint32_t kmp_get_received_energy_kwh() {
 	return e1_kwh;
 #endif
 }
-#endif	// FORCED_FLOW_METER
+#endif	// FLOW_METER
 
 ICACHE_FLASH_ATTR
 void static kmp_get_serial_timer_func() {
@@ -370,6 +406,7 @@ void kmp_request_send() {
 
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
 	memset(cleartext, 0, sizeof(cleartext));
+	pseudo_data_debug_no_meter = (get_unix_time() / 60) % 256;
 	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%u&t1=%u.00 C&t2=%u.00 C&tdif=%u.00 K&flow1=%u l/h&effect1=%u.0 kW&hr=%u h&v1=%u.00 m3&e1=%u kWh&",
 		system_get_free_heap_size(),
 		65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
@@ -382,7 +419,6 @@ void kmp_request_send() {
 		pseudo_data_debug_no_meter										// e1
 	);
 	e1_kwh = pseudo_data_debug_no_meter;
-	pseudo_data_debug_no_meter++;	// let it wrap around
 
 	// tell user_main we got a serial
 	if (kmp_meter_is_ready_cb && !meter_is_ready_cb_called) {

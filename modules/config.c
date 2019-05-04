@@ -80,8 +80,8 @@ cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
 			return false;
 		}
 	}
-	return true;
 #endif	// IMPULSE
+	return true;
 }
 
 void ICACHE_FLASH_ATTR
@@ -113,11 +113,7 @@ cfg_load() {
 		tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", STA_SSID);
 		tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", STA_PASS);
 		sys_cfg.sta_type = STA_TYPE;
-#ifdef AP
 		sys_cfg.ap_enabled = true;
-#else
-		sys_cfg.ap_enabled = false;
-#endif
 		tfp_snprintf(sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
 		tfp_snprintf(sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
 		sys_cfg.mqtt_port = MQTT_PORT;
@@ -131,13 +127,16 @@ cfg_load() {
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifdef IMPULSE
 		tfp_snprintf(sys_cfg.impulse_meter_serial, METER_SERIAL_LEN, DEFAULT_METER_SERIAL);
-		tfp_snprintf(sys_cfg.impulse_meter_energy, 2, "0");
-		tfp_snprintf(sys_cfg.impulses_per_kwh, 4, "100");
+		tfp_snprintf(sys_cfg.impulse_meter_units, 2, "0");
+		tfp_snprintf(sys_cfg.impulses_per_unit, 4, "100");
 		sys_cfg.impulse_meter_count = 0;
+		sys_cfg.operating_time = 0;
 #else
 		sys_cfg.ac_thermo_state = 0;
 		sys_cfg.offline_close_at = 0;
+#ifndef NO_CRON
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
+#endif	// NO_CRON
 #endif	// IMPULSE
 
 		INFO(" default configuration\r\n");
