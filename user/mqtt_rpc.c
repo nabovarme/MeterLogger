@@ -400,6 +400,7 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 #ifdef DEBUG
 	system_print_meminfo();
+	system_show_malloc();
 #endif
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
