@@ -101,6 +101,8 @@ static void kmp_received_task(os_event_t *events) {
 	}
 	else if (message[0] == 'k') {
 		printf("free heap: %u\n", system_get_free_heap_size());
+		system_print_meminfo();
+		system_show_malloc();
 	}
 	else if (message[0] == 'r') {
 		force_reset_wifi();
