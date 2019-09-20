@@ -28,6 +28,7 @@
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
+static os_timer_t wifi_stop_fallback_ap_timer;
 
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
@@ -185,6 +186,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
+static void ICACHE_FLASH_ATTR wifi_stop_fallback_ap_timer_func(char *mesh_ssid);
 
 void wifi_handle_event_cb(System_Event_t *evt) {
 	static uint8_t wifi_status;
@@ -431,6 +433,27 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	wifi_start_scan(WIFI_SCAN_INTERVAL);
 }
 
+static void ICACHE_FLASH_ATTR wifi_stop_fallback_ap_timer_func(char *mesh_ssid) {
+#ifdef DEBUG
+	printf("wifi_stop_fallback_ap_timer_func\n\r");
+	wifi_start_scan(WIFI_SCAN_INTERVAL);
+#endif // DEBUG
+	if (sys_cfg.ap_enabled == true) {
+		if (wifi_get_opmode() != STATIONAP_MODE) {
+			wifi_set_opmode_current(STATIONAP_MODE);
+		}
+		// reconfigure ap network to mesh
+		wifi_set_opmode_current(STATIONAP_MODE);
+		wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
+		wifi_softap_ip_config();		
+	}
+	else {
+		if (wifi_get_opmode() != STATION_MODE) {
+			wifi_set_opmode_current(STATION_MODE);
+		}
+	}	
+}
+
 void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
 
@@ -530,6 +553,23 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
 
 //	led_stop_pattern();
+}
+
+void ICACHE_FLASH_ATTR wifi_start_fallback_ap(char *mesh_ssid) {
+#ifdef DEBUG
+	printf("wifi_start_fallback_ap\n\r");
+#endif // DEBUG
+	wifi_stop_scan();
+	if (wifi_get_opmode() != STATIONAP_MODE) {
+		wifi_set_opmode_current(STATIONAP_MODE);
+	}
+	wifi_softap_config(STA_FALLBACK_SSID, STA_FALLBACK_PASS, STA_FALLBACK_TYPE);
+	wifi_softap_ip_config();
+
+	// go back to mesh network after WIFI_FALLBACK_AP_TIME
+	os_timer_disarm(&wifi_stop_fallback_ap_timer);
+	os_timer_setfn(&wifi_stop_fallback_ap_timer, (os_timer_func_t *)wifi_stop_fallback_ap_timer_func, mesh_ssid);
+	os_timer_arm(&wifi_stop_fallback_ap_timer, WIFI_FALLBACK_AP_TIME, 0);
 }
 
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {

@@ -745,6 +745,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found stop_ap
 		mqtt_rpc_stop_ap(&mqtt_client);
 	}
+	else if (strncmp(function_name, "start_fallback", FUNCTIONNAME_L) == 0) {
+		// found start_fallback
+		mqtt_rpc_start_fallback_ap(&mqtt_client, mesh_ssid);
+	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem
 		mqtt_rpc_mem(&mqtt_client);

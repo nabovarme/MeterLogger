@@ -15,6 +15,8 @@
 #define WIFI_SCAN_TIMEOUT 60000
 #define RSSI_CHECK_INTERVAL 10000
 
+#define WIFI_FALLBACK_AP_TIME 120000
+
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
@@ -25,7 +27,9 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);
 void ICACHE_FLASH_ATTR wifi_default();
 void ICACHE_FLASH_ATTR wifi_fallback();
 void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb);
+void ICACHE_FLASH_ATTR wifi_start_fallback_ap();
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode);
+void ICACHE_FLASH_ATTR wifi_start_fallback_ap(char *mesh_ssid);
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void);
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
 bool ICACHE_FLASH_ATTR wifi_get_status();

@@ -16,6 +16,7 @@ ICACHE_FLASH_ATTR void mqtt_rpc_wifi_status(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_ap_status(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid);
 ICACHE_FLASH_ATTR void mqtt_rpc_stop_ap(MQTT_Client *client);
+ICACHE_FLASH_ATTR void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *mesh_ssid);
 ICACHE_FLASH_ATTR void mqtt_rpc_mem(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_crypto(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_reset_reason(MQTT_Client *client);
