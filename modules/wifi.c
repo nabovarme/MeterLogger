@@ -410,8 +410,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			wifi_default();
 			led_stop_pattern();
 		}
-		
-		wifi_fallback_last_present = wifi_fallback_present;
 #ifdef DEBUG
 		uint8_t s;
 		s = wifi_station_get_connect_status();
@@ -419,6 +417,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		printf("wifi fallback present: %s\n", (wifi_fallback_present ? "yes" : "no"));
 		printf("wifi status: %s (%u)\n", (s == STATION_GOT_IP) ? "connected" : "not connected", s);
 #endif
+		wifi_fallback_last_present = wifi_fallback_present;
 	}
 	
 //	wifi_set_channel(channel);	// restore channel number

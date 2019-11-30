@@ -399,7 +399,7 @@ static void httpdRecvCb(void *arg, char *data, unsigned short len) {
 	for (x=0; x<len; x++) {
 		if (conn->postLen<0) {
 			//This byte is a header byte.
-			if (conn->priv->headPos!=MAX_HEAD_LEN) conn->priv->head[conn->priv->headPos++]=data[x];
+			if (conn->priv->headPos<MAX_HEAD_LEN) conn->priv->head[conn->priv->headPos++]=data[x];
 			conn->priv->head[conn->priv->headPos]=0;
 			//Scan for /r/n/r/n
 			if (data[x]=='\n' && (char *)os_strstr(conn->priv->head, "\r\n\r\n")!=NULL) {
