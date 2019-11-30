@@ -134,11 +134,6 @@ deliver_pingresp(MQTT_Client* client, uint8_t* message, int length)
 
 void ICACHE_FLASH_ATTR
 mqtt_send_keepalive(MQTT_Client *client) {
-	if (client->pCon->state == ESPCONN_WRITE) {
-		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
-		return;
-	}
-
 	INFO("\r\nMQTT: Send keepalive packet to %s:%d!\r\n", client->host, client->port);
 	client->mqtt_state.outbound_message = mqtt_msg_pingreq(&client->mqtt_state.mqtt_connection);
 	client->mqtt_state.pending_msg_type = MQTT_MSG_TYPE_PINGREQ;
