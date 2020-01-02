@@ -53,10 +53,7 @@ RUN apt-get update && apt-get install -y \
 	splint \
 	sudo \
 	screen \
-	software-properties-common \
-	texlive \
-	texlive-latex-base \
-	texlive-latex-extra
+	software-properties-common
 
 # Java
 RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > /etc/apt/sources.list.d/linuxuprising-java.list && apt-get update
@@ -102,4 +99,4 @@ ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 WORKDIR /meterlogger/MeterLogger
 CMD cp /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py /meterlogger/MeterLogger/tools/ && \
 	cd /meterlogger/MeterLogger && \
-	eval $BUILD_ENV make clean qr all
+	eval $BUILD_ENV make clean all
