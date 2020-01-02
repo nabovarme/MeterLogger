@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{pstricks}
+\usepackage{pst-barcode}
+\usepackage[a4paper,margin=20mm,landscape,twocolumn]{geometry}
+
+%\newcommand{\varserial}{9999999}
+\newcommand{\varmobilepay}{28490157}
+\newcommand{\varmobilepayurl}{https://meterlogger.net/detail_acc.epl?serial=\varserial&low=1}
+
+\begin{document}
+
+
+\textsf{{\fontsize{50}{60}\selectfont \textbf{Meter}}}
+
+\begin{pspicture}(60mm,60mm)
+\psbarcode{\varmobilepayurl}{eclevel=H width=2.0 height=2.0}{qrcode}
+\end{pspicture}
+
+\newpage
+
+\textsf{{\fontsize{50}{60}\selectfont \textbf{MobilePay}}}
+
+\begin{pspicture}(60mm,60mm)
+\psbarcode{https://www.mobilepay.dk/erhverv/betalingslink/betalingslink-svar?phone=\varmobilepay&amount=&comment=\varserial NV}{eclevel=H width=2.0 height=2.0}{qrcode}
+\end{pspicture}
+
+\textsf{Send beløb til MobilePay \varmobilepay}
+
+\textsf{Skriv din målers serienummer: \varserial NV som besked}
+
+\end{document}
+

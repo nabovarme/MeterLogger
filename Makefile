@@ -7,6 +7,9 @@
 #
 # Output directors to store intermediate compiled files
 # relative to the project directory
+MOBILEPAY = 28490157
+METERLOGGER_URL = "https://meterlogger.net/detail_acc.epl?serial=$(SERIAL)&low=1"
+
 BUILD_BASE	= build
 FW_BASE = firmware
 ESPTOOL = esptool.py
@@ -317,6 +320,12 @@ stacktracedecode:
 	test -s build/app.out || echo "Need to make all first" && exit
 	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
 	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
+
+qr:
+	cd customer && \
+	latex "\newcommand{\varserial}{$(SERIAL)} \input{template.tex}"  && dvips template.dvi && ps2pdf template.ps && \
+	mv template.pdf $(SERIAL).pdf && \
+	rm template.ps template.dvi template.aux template.log
 
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb

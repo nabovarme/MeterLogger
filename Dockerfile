@@ -53,7 +53,10 @@ RUN apt-get update && apt-get install -y \
 	splint \
 	sudo \
 	screen \
-	software-properties-common
+	software-properties-common \
+	texlive \
+	texlive-latex-base \
+	texlive-latex-extra
 
 # Java
 RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > /etc/apt/sources.list.d/linuxuprising-java.list && apt-get update
