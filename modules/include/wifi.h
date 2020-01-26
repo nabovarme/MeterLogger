@@ -32,6 +32,7 @@ bool ICACHE_FLASH_ATTR wifi_get_status();
 void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval);
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
+void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
 

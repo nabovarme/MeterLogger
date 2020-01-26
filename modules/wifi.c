@@ -640,6 +640,11 @@ bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
 	return wifi_scan_runnning;
 }
 
+void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {	// helper function to let watchdog reset the state of the wifi_fallback_*
+	wifi_fallback_present = false;
+	wifi_fallback_last_present = false;
+}
+
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
 	return wifi_fallback_present;
 }
