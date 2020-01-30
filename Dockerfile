@@ -87,7 +87,7 @@ RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/r
 
 # meterlogger
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git && \
-    cd /meterlogger/MeterLogger && git checkout dns_cache
+    cd /meterlogger/MeterLogger && git checkout no_arp_check
 
 USER root
 
