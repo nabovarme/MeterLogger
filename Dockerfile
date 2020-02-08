@@ -75,8 +75,8 @@ RUN chown -R meterlogger:meterlogger /meterlogger
 USER meterlogger
 
 # esp-open-sdk
-RUN cd /meterlogger && git clone --recursive https://github.com/espressif/ESP8266_NONOS_SDK.git esp-open-sdk && \
-    cd /meterlogger/esp-open-sdk && git checkout master
+RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git && \
+    cd /meterlogger/esp-open-sdk && git checkout sdk-v3.1.0-dev
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
     cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout no_arp_check
