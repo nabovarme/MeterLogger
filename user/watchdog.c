@@ -46,7 +46,13 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		os_timer_disarm(&wifi_reconnect_timer);
 		if (sys_cfg.ap_enabled) {
 			if (wifi_get_opmode() != STATIONAP_MODE) {
+#ifdef DEBUG
+				printf("HEAP1=%u\n\r", system_get_free_heap_size());
+#endif
 				wifi_set_opmode_current(STATIONAP_MODE);
+#ifdef DEBUG
+				printf("HEAP2=%u\n\r", system_get_free_heap_size());
+#endif
 			}
 		}
 		else {
@@ -59,6 +65,9 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		wifi_default();
 		wifi_fallback_force_reset_state();			// dont asume we had seen a working backup network
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
+#ifdef DEBUG
+		printf("HEAP3=%u\n\r", system_get_free_heap_size());
+#endif
 #ifdef DEBUG
 		printf("watchdog restarted wifi and started wifi scanner\n");
 #endif	

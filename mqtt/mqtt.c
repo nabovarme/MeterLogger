@@ -175,6 +175,9 @@ mqtt_send_keepalive(MQTT_Client *client) {
 void ICACHE_FLASH_ATTR
 mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 {
+#ifdef DEBUG
+	printf("HEAP5=%u\n\r", system_get_free_heap_size());
+#endif
 	if (mqttClient->pCon != NULL) {
 		INFO("TCP: Free memory\r\n");
 		// Force abort connections
@@ -189,6 +192,9 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 		os_free(mqttClient->pCon);
 		mqttClient->pCon = NULL;
 	}
+#ifdef DEBUG
+	printf("HEAP6=%u\n\r", system_get_free_heap_size());
+#endif
 }
 
 /**
@@ -915,6 +921,9 @@ MQTT_InitLWT(MQTT_Client *mqttClient, uint8_t* will_topic, uint8_t* will_msg, ui
 void ICACHE_FLASH_ATTR
 MQTT_Connect(MQTT_Client *mqttClient)
 {
+#ifdef DEBUG
+	printf("HEAP4=%u\n\r", system_get_free_heap_size());
+#endif
 	uint32_t keeplive;
 	err_t dns_err;
 	

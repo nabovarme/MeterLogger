@@ -330,3 +330,42 @@ size_t spi_flash_size() {					// returns the flash chip's size, in BYTES
 		return 0;
 	}
 }
+
+extern void *__real_pvPortMalloc(size_t size);
+extern void *__real_pvPortCalloc(void *ptr, size_t size);
+extern void *__real_pvPortRealloc(void *ptr, size_t size);
+extern void *__real_pvPortZalloc(size_t size);
+extern void __real_vPortFree(void *p);
+
+void* __wrap_pvPortMalloc(size_t size) {
+	void *p = NULL;
+	p = __real_pvPortMalloc(size);
+	printf("hl{m,%u,%d,%x}\n", size, 1, p);
+	return p;
+}
+
+void *__wrap_pvPortCalloc(size_t num, size_t size) {
+	void *p = NULL;
+	p = __real_pvPortCalloc(size, size);
+	printf("hl{c,%u,%d,%x}\n", num * size, 1, p);
+	return p;
+}
+
+void *__wrap_pvPortRealloc(void *ptr, size_t size) {
+	void *p = NULL;
+	p = __real_pvPortRealloc(ptr, size);
+	printf("hl{r,%u,%d,%x,", size, 1, ptr);
+	return p;
+}
+
+void* __wrap_pvPortZalloc(size_t size) {
+	void *p = NULL;
+	p = __real_pvPortZalloc(size);
+	printf("hl{z,%u,%d,%x}\n", size, 1, p);
+	return p;
+}
+
+void __wrap_vPortFree(void *p) {
+	printf("hl{f,%x,%d}\n\r", p, 1);
+	__real_vPortFree(p);
+}

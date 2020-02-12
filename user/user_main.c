@@ -32,6 +32,12 @@
 #include "kmp_request.h"
 #endif
 
+extern unsigned int _heap_start;
+#define MALLOC_HEAP_ADDR ((char *) (&_heap_start))
+#define MALLOC_HEAP_END ((char *) 0x3fffc000)
+#define MALLOC_HEAP_SIZE \
+	(MALLOC_HEAP_END - MALLOC_HEAP_ADDR)
+
 #ifdef IMPULSE
 uint32_t impulse_meter_units;
 //float impulse_meter_units;
@@ -971,6 +977,15 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	
 	system_update_cpu_freq(160);
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+
+	printf("free heap: %u\n", system_get_free_heap_size());
+	system_print_meminfo();
+	system_show_malloc();
+
+	printf("\nhlog_param:{\"heap_start\":%u, \"heap_end\":%u}\n",
+		(unsigned int) MALLOC_HEAP_ADDR,
+		(unsigned int) MALLOC_HEAP_END);
+
 	flash_size = spi_flash_size();
 
 	printf("\n\r");
