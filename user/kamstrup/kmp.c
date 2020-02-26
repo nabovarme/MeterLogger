@@ -578,42 +578,42 @@ void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
 
 ICACHE_FLASH_ATTR
 void kmp_byte_stuff() {
-    unsigned char stuffed_data[KMP_FRAME_L];
-    unsigned int i;
-    unsigned int j = 0;
+	unsigned char stuffed_data[KMP_FRAME_L];
+	unsigned int i;
+	unsigned int j = 0;
 
-    memset(stuffed_data, 0x00, KMP_FRAME_L);
+	memset(stuffed_data, 0x00, KMP_FRAME_L);
 
-    for (i = KMP_DST_IDX; i < (kmp_frame_length); i++) {
+	for (i = KMP_DST_IDX; i < (kmp_frame_length); i++) {
 		if ((kmp_frame[i] == 0x80) || (kmp_frame[i] == 0x40) || (kmp_frame[i] == 0x0d) || (kmp_frame[i] == 0x06) || (kmp_frame[i] == 0x1b)) {
-            stuffed_data[j++] = 0x1b;
-            stuffed_data[j++] = kmp_frame[i] ^ 0xff;
+			stuffed_data[j++] = 0x1b;
+			stuffed_data[j++] = kmp_frame[i] ^ 0xff;
 		}
 		else {
-            stuffed_data[j++] = kmp_frame[i];
+			stuffed_data[j++] = kmp_frame[i];
 		}
 	}
-    memcpy(kmp_frame + KMP_DST_IDX, stuffed_data, j);
-    kmp_frame_length = j + KMP_DST_IDX;
-    kmp_data_length = j;
+	memcpy(kmp_frame + KMP_DST_IDX, stuffed_data, j);
+	kmp_frame_length = j + KMP_DST_IDX;
+	kmp_data_length = j;
 }
 
 ICACHE_FLASH_ATTR
 void kmp_byte_unstuff() {
-    unsigned char unstuffed_data[KMP_FRAME_L];
-    unsigned int i;
-    unsigned int j = 0;
-    
-    for (i = KMP_DST_IDX; i < kmp_frame_length; i++) {
-        if (kmp_frame[i] == 0x1b) {		  // byte unstuffing special char
-            unstuffed_data[j++] = kmp_frame[i + 1] ^ 0xff;
-            i++;
-         }
-        else {
-            unstuffed_data[j++] = kmp_frame[i];
-        }
-    }
-    memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
-    kmp_frame_length = j + KMP_DST_IDX;
-    kmp_data_length = j;
+	unsigned char unstuffed_data[KMP_FRAME_L];
+	unsigned int i;
+	unsigned int j = 0;
+	
+	for (i = KMP_DST_IDX; i < kmp_frame_length; i++) {
+		if (kmp_frame[i] == 0x1b) {		  // byte unstuffing special char
+			unstuffed_data[j++] = kmp_frame[i + 1] ^ 0xff;
+			i++;
+		 }
+		else {
+			unstuffed_data[j++] = kmp_frame[i];
+		}
+	}
+	memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
+	kmp_frame_length = j + KMP_DST_IDX;
+	kmp_data_length = j;
 }
