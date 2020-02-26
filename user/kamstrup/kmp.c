@@ -593,9 +593,11 @@ void kmp_byte_stuff() {
 			stuffed_data[j++] = kmp_frame[i];
 		}
 	}
-	memcpy(kmp_frame + KMP_DST_IDX, stuffed_data, j);
-	kmp_frame_length = j + KMP_DST_IDX;
-	kmp_data_length = j;
+	if ((j <= (KMP_FRAME_L - KMP_DST_IDX)) && (j > 0)) {
+		memcpy(kmp_frame + KMP_DST_IDX, stuffed_data, j);
+		kmp_frame_length = j + KMP_DST_IDX;
+		kmp_data_length = j;
+	}
 }
 
 ICACHE_FLASH_ATTR
@@ -613,7 +615,9 @@ void kmp_byte_unstuff() {
 			unstuffed_data[j++] = kmp_frame[i];
 		}
 	}
-	memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
-	kmp_frame_length = j + KMP_DST_IDX;
-	kmp_data_length = j;
+	if ((j <= (KMP_FRAME_L - KMP_DST_IDX)) && (j > 0)) {
+		memcpy(kmp_frame + KMP_DST_IDX, unstuffed_data, j);
+		kmp_frame_length = j + KMP_DST_IDX;
+		kmp_data_length = j;
+	}
 }
