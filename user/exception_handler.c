@@ -147,8 +147,8 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	memcpy(&saved_regs, frame, 19*4);
 	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
 	// has a fixed offset from the address of the passed frame, we can recover it.
-	//saved_regs.a1=(uint32_t)frame + EXCEPTION_GDB_SP_OFFSET;
-	saved_regs.a1 = (uint32_t)frame;
+	// saved_regs.a1 = (uint32_t)frame + EXCEPTION_GDB_SP_OFFSET;
+	saved_regs.a1 = (uint32_t)frame + 0x100;
 
 	ets_wdt_disable();
 	
