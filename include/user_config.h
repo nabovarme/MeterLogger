@@ -57,13 +57,13 @@
 #ifdef NO_CRON
 #define QUEUE_BUFFER_SIZE		 		12288
 #else
-#define QUEUE_BUFFER_SIZE		 		4096
+#define QUEUE_BUFFER_SIZE		 		8192
 #endif	// NO_CRON
 #else
 #ifdef NO_CRON
 #define QUEUE_BUFFER_SIZE		 		16384
 #else
-#define QUEUE_BUFFER_SIZE		 		8192
+#define QUEUE_BUFFER_SIZE		 		12288
 #endif	// NO_CRON
 #endif	// DEBUG_NO_METER
 
