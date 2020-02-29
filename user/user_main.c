@@ -1087,7 +1087,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #endif // IMPULSE
 	
 	// dont enable wireless before we have configured ssid
-	wifi_set_opmode_current(NULL_MODE);
+//	wifi_set_opmode_current(NULL_MODE);
 	wifi_station_disconnect();
 	// disale auto connect, we handle reconnect with this event handler
 	wifi_station_set_auto_connect(0);
