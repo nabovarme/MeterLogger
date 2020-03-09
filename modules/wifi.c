@@ -434,7 +434,9 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
 
 	// go back to saved network
+#ifdef DEBUG
 	printf("DEFAULT_SSID\r\n");
+#endif
 	my_auto_connect = false;		// handle_event_cb() based auto connect
 	wifi_station_disconnect();
 	if (sys_cfg.ap_enabled == true) {
@@ -464,7 +466,9 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
 
 	// try fallback network
+#ifdef DEBUG
 	printf("FALLBACK_SSID\r\n");
+#endif
 	my_auto_connect = false;		// handle_event_cb() based auto connect
 	wifi_station_disconnect();
 	if (sys_cfg.ap_enabled == true) {
@@ -518,7 +522,9 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	wifi_station_connect();
 
 	if (wifi_station_dhcpc_status() == DHCP_STOPPED) {
+#ifdef DEBUG
 		printf("starting dhcp client\n\r");
+#endif
 		wifi_station_dhcpc_set_maxtry(255);
 		wifi_station_dhcpc_start();
 	}
