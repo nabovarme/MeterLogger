@@ -106,6 +106,8 @@ else
 endif
 #############################################################
 
+GIT_LWIP_VERSION := $(shell cd $(SDK_BASE)/../esp-open-lwip ; git rev-parse --abbrev-ref HEAD)-$(shell cd $(SDK_BASE)/../esp-open-lwip ; git rev-list HEAD --count)-$(shell cd $(SDK_BASE)/../esp-open-lwip ; git describe --abbrev=4 --dirty --always)
+
 # which modules (subdirectories) of the project to include in compiling
 MODULES		= driver mqtt modules user user/crypto
 EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(SDK_BASE)/../lx106-hal/include $(HOME)/esp8266/esp-open-sdk/sdk/include $(SDK_BASE)/../esp-open-lwip/include include lib/heatshrink user/crypto user/kamstrup user/61107
@@ -113,7 +115,7 @@ EXTRA_INCDIR    = . include $(SDK_BASE)/../include $(SDK_BASE)/../lx106-hal/incl
 # libraries used in this project, mainly provided by the SDK
 LIBS	= main net80211 wpa pp phy hal ssl lwip_open gcc c
 # compiler flags using during compilation of source files
-CFLAGS	= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DMEMLEAK_DEBUG -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
+CFLAGS	= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DMEMLEAK_DEBUG -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections
@@ -341,6 +343,7 @@ clean:
 foo:
 #	echo $(CFLAGS)
 #	@echo $(CUSTOM_KEY)
-	@echo $(CUSTOM_AP_PASSWORD)
+#	@echo $(CUSTOM_AP_PASSWORD)
+	@echo $(GIT_LWIP_VERSION)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
