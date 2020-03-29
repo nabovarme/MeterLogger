@@ -50,9 +50,11 @@ uint32_t last_uptime;
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqtt_client;
+static os_timer_t sample_timer_first;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
+static os_timer_t mqtt_connected_initial_mqtt_rpc_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 static os_timer_t mqtt_connected_defer_timer;
@@ -84,6 +86,22 @@ uint32 user_iram_memory_is_enabled(void) {
 }
 #endif	// CONFIG_ENABLE_IRAM_MEMORY
 #endif
+
+ICACHE_FLASH_ATTR void static mqtt_connected_initial_mqtt_rpc_timer_func(void *arg) {
+	// send mqtt version
+	mqtt_rpc_version(&mqtt_client);
+
+	// send mqtt uptime
+	mqtt_rpc_uptime(&mqtt_client);
+
+#ifndef IMPULSE
+	// send mqtt status
+	mqtt_rpc_status(&mqtt_client);
+#endif
+
+	// send mqtt reset_reason
+	mqtt_rpc_reset_reason(&mqtt_client);
+}
 
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
@@ -298,6 +316,11 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #endif	// EN61107
 }
 
+ICACHE_FLASH_ATTR void static sample_timer_first_func(void *arg) {
+	// helper function to sample once when mqtt_connected_cb() is called
+	sample_timer_func(NULL);
+	os_timer_disarm(&sample_timer_first);	// done using this timer
+}
 
 #ifdef EN61107
 ICACHE_FLASH_ATTR void static en61107_request_send_timer_func(void *arg) {
@@ -563,19 +586,10 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 #endif
 	MQTT_Subscribe(&mqtt_client, mqtt_topic, 0);
 	
-	// send mqtt version
-	mqtt_rpc_version(&mqtt_client);
-
-	// send mqtt uptime
-	mqtt_rpc_uptime(&mqtt_client);
-
-#ifndef IMPULSE
-	// send mqtt status
-	mqtt_rpc_status(&mqtt_client);
-#endif	
-
-	// send mqtt reset_reason
-	mqtt_rpc_reset_reason(&mqtt_client);
+	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
+	os_timer_disarm(&mqtt_connected_initial_mqtt_rpc_timer);
+	os_timer_setfn(&mqtt_connected_initial_mqtt_rpc_timer, (os_timer_func_t *)mqtt_connected_initial_mqtt_rpc_timer_func, NULL);
+	os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 1000, 0);
 
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
@@ -586,8 +600,12 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	kmp_set_mqtt_client(&mqtt_client);
 #endif
 	
-	// sample once and start sample timer
-	sample_timer_func(NULL);
+	// sample once outside this function...	
+	os_timer_disarm(&sample_timer_first);
+	os_timer_setfn(&sample_timer_first, (os_timer_func_t *)sample_timer_first_func, NULL);
+	os_timer_arm(&sample_timer_first, 1100, 0);		// once after 1.1 second
+
+	// ...and start sample timer repeatedly
 	os_timer_disarm(&sample_timer);
 	os_timer_setfn(&sample_timer, (os_timer_func_t *)sample_timer_func, NULL);
 	os_timer_arm(&sample_timer, 60000, 1);		// every 60 seconds

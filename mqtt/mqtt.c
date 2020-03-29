@@ -362,7 +362,6 @@ READPACKET:
 			client->mqtt_state.message_length_read = len;
 			client->mqtt_state.message_length = mqtt_get_total_length(client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
 
-
 			switch (msg_type) {
 			case MQTT_MSG_TYPE_SUBACK:
 				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_SUBSCRIBE && client->mqtt_state.pending_msg_id == msg_id)
@@ -390,7 +389,6 @@ READPACKET:
 				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH && client->mqtt_state.pending_msg_id == msg_id) {
 					INFO("MQTT: received MQTT_MSG_TYPE_PUBACK, finish QoS1 publish\r\n");
 				}
-
 				break;
 			case MQTT_MSG_TYPE_PUBREC:
 				client->mqtt_state.outbound_message = mqtt_msg_pubrel(&client->mqtt_state.mqtt_connection, msg_id);
