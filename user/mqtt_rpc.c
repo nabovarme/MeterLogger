@@ -460,25 +460,6 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_restart(MQTT_Client *client) {
-	uint8_t cleartext[MQTT_MESSAGE_L];
-	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
-	int mqtt_message_l;
-		
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
-#endif
-	memset(mqtt_message, 0, sizeof(mqtt_message));
-	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "restart");
-	// encrypt and send
-	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-	
 	system_restart();
 }
 

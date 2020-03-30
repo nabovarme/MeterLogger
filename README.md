@@ -203,7 +203,6 @@ hmac sha256 key
 | /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v2/9999999/[unix time]                     | heap=9672                                                                                            |
 | /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
-| /restart/v2/9999999/[unix time]                 | restart                                                                                              |
 
 
 
