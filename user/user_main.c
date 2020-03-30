@@ -796,6 +796,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found reset_reason
 		mqtt_rpc_reset_reason(&mqtt_client);
 	}
+	else if (strncmp(function_name, "restart", FUNCTIONNAME_L) == 0) {
+		// found restart
+		mqtt_rpc_restart(&mqtt_client);
+	}
 #ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace

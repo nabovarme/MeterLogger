@@ -19,6 +19,7 @@ ICACHE_FLASH_ATTR void mqtt_rpc_stop_ap(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_mem(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_crypto(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_reset_reason(MQTT_Client *client);
+ICACHE_FLASH_ATTR void mqtt_rpc_restart(MQTT_Client *client);
 #ifdef DEBUG_STACK_TRACE
 ICACHE_FLASH_ATTR void mqtt_rpc_stack_trace(MQTT_Client *client);
 #endif	// DEBUG_STACK_TRACE

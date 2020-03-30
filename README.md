@@ -176,6 +176,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
 | /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
+| /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
   
 **MQTT format for messages sent _from_ meter**  
 
