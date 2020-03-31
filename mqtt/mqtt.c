@@ -432,7 +432,10 @@ READPACKET:
 					//Not Implement yet
 					len -= client->mqtt_state.message_length;
 					pdata += client->mqtt_state.message_length;
-
+					
+					//system_soft_wdt_feed();
+					WRITE_PERI_REG(0X60000914, 0X73);
+					
 					INFO("Get another published message\r\n");
 					goto READPACKET;
 				}
