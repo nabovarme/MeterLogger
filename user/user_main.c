@@ -54,7 +54,7 @@ static os_timer_t sample_timer_first;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
-static os_timer_t mqtt_connected_initial_mqtt_rpc_timer;
+static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 static os_timer_t mqtt_connected_defer_timer;
@@ -63,7 +63,7 @@ static os_timer_t mqtt_connected_defer_timer;
 #else
 static os_timer_t kmp_request_send_timer;
 #endif
-uint8_t mqtt_connected_initial_mqtt_rpc_state;	// state variable for mqtt_connected_initial_mqtt_rpc_timer_func()
+uint8_t mqtt_connected_first_mqtt_rpc_state;	// state variable for mqtt_connected_first_mqtt_rpc_timer_func()
 
 #ifdef IMPULSE
 static os_timer_t impulse_meter_calculate_timer;
@@ -88,37 +88,37 @@ uint32 user_iram_memory_is_enabled(void) {
 #endif	// CONFIG_ENABLE_IRAM_MEMORY
 #endif
 
-ICACHE_FLASH_ATTR void static mqtt_connected_initial_mqtt_rpc_timer_func(void *arg) {
-	switch (mqtt_connected_initial_mqtt_rpc_state) {
+ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg) {
+	switch (mqtt_connected_first_mqtt_rpc_state) {
 		case 0:
 			// send mqtt version
 			mqtt_rpc_version(&mqtt_client);
-			mqtt_connected_initial_mqtt_rpc_state = 1;
-			os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 100, 0);
+			mqtt_connected_first_mqtt_rpc_state = 1;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 1:
 			// send mqtt uptime
 			mqtt_rpc_uptime(&mqtt_client);
-			mqtt_connected_initial_mqtt_rpc_state = 2;
-			os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 100, 0);
+			mqtt_connected_first_mqtt_rpc_state = 2;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 2:
 			// send mqtt reset_reason
 			mqtt_rpc_reset_reason(&mqtt_client);
-			mqtt_connected_initial_mqtt_rpc_state = 3;
-			os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 100, 0);
+			mqtt_connected_first_mqtt_rpc_state = 3;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 #ifndef IMPULSE
 		case 3:
 			// send mqtt status
 			mqtt_rpc_status(&mqtt_client);
-			mqtt_connected_initial_mqtt_rpc_state = 4;
-			os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 100, 0);
+			mqtt_connected_first_mqtt_rpc_state = 4;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 #endif
 		default:
-			mqtt_connected_initial_mqtt_rpc_state = 0;
-			os_timer_disarm(&mqtt_connected_initial_mqtt_rpc_timer);
+			mqtt_connected_first_mqtt_rpc_state = 0;
+			os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
 			break;
 	}
 }
@@ -607,10 +607,10 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	MQTT_Subscribe(&mqtt_client, mqtt_topic, 0);
 	
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
-	mqtt_connected_initial_mqtt_rpc_state = 0;
-	os_timer_disarm(&mqtt_connected_initial_mqtt_rpc_timer);
-	os_timer_setfn(&mqtt_connected_initial_mqtt_rpc_timer, (os_timer_func_t *)mqtt_connected_initial_mqtt_rpc_timer_func, NULL);
-	os_timer_arm(&mqtt_connected_initial_mqtt_rpc_timer, 2000, 0);
+	mqtt_connected_first_mqtt_rpc_state = 0;
+	os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
+	os_timer_setfn(&mqtt_connected_first_mqtt_rpc_timer, (os_timer_func_t *)mqtt_connected_first_mqtt_rpc_timer_func, NULL);
+	os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 2000, 0);
 
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
