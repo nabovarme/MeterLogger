@@ -173,13 +173,15 @@ ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
 
 ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 	uint32_t i;
+	uint32_t uptime;
 	
+	uptime = get_uptime();
 #ifdef DEBUG
 	printf("reset watchdog, id: %d\n", id);
 #endif			
 	for (i = 0; i < WATCHDOG_MAX; i++) {
 		if (watchdog_list[i].id == id) {
-			watchdog_list[i].last_reset = get_uptime();
+			watchdog_list[i].last_reset = uptime;
 		}
 	}
 }
