@@ -303,7 +303,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 	if (client == NULL) return; // aborted connection
 
-READPACKET:
+//READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
 	// INFO("STATE: %d\r\n", client->connState);
 	if (len < MQTT_BUF_SIZE && len > 0) {
@@ -425,7 +425,7 @@ READPACKET:
 			if (msg_type == MQTT_MSG_TYPE_PUBLISH)
 			{
 				len = client->mqtt_state.message_length_read;
-
+				
 				if (client->mqtt_state.message_length < client->mqtt_state.message_length_read)
 				{
 					//client->connState = MQTT_PUBLISH_RECV;
@@ -436,10 +436,10 @@ READPACKET:
 					//system_soft_wdt_feed();
 					WRITE_PERI_REG(0X60000914, 0X73);
 					
-					INFO("Get another published message\r\n");
-					goto READPACKET;
+					// for now skip multiple mqtt packets in same tcp packet
+					//INFO("Get another published message\r\n");
+					//goto READPACKET;
 				}
-
 			}
 			break;
 		}
