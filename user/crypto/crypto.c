@@ -98,6 +98,11 @@ ICACHE_FLASH_ATTR
 size_t decrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
+	
+	if (message_l < SHA256_DIGEST_LENGTH + 16) {
+		// message shorter than length of HMAC SHA256 checksum + IV. Not a valid message
+		return 0;
+	}
 
 	// hmac sha256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
