@@ -125,9 +125,11 @@ deliver_publish(MQTT_Client* client, uint8_t* message, int length)
 	event_data.data_length = length;
 	event_data.data = mqtt_get_publish_data(message, &event_data.data_length);
 
-	if (client->dataCb)
+	if (client->dataCb) {
+		//system_soft_wdt_feed();
+		WRITE_PERI_REG(0X60000914, 0X73);
 		client->dataCb((uint32_t*)client, event_data.topic, event_data.topic_length, event_data.data, event_data.data_length);
-
+	}
 }
 
 LOCAL void ICACHE_FLASH_ATTR
