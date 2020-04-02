@@ -107,6 +107,7 @@ typedef struct  {
 	ETSTimer mqttTimer;
 	uint32_t keepAliveTick;
 	uint32_t reconnectTick;
+	uint32_t connectTick;
 	uint32_t sendTimeout;
 	tConnState connState;
 	QUEUE msgQueue;
