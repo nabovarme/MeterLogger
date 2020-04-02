@@ -303,12 +303,11 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 	if (client == NULL) return; // aborted connection
 
-//READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
 	// INFO("STATE: %d\r\n", client->connState);
 	if (len < MQTT_BUF_SIZE && len > 0) {
 		memcpy(client->mqtt_state.in_buffer, pdata, len);
-
+		
 		msg_type = mqtt_get_type(client->mqtt_state.in_buffer);
 		msg_qos = mqtt_get_qos(client->mqtt_state.in_buffer);
 		msg_id = mqtt_get_id(client->mqtt_state.in_buffer, client->mqtt_state.in_buffer_length);
@@ -428,17 +427,16 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				
 				if (client->mqtt_state.message_length < client->mqtt_state.message_length_read)
 				{
-					//client->connState = MQTT_PUBLISH_RECV;
-					//Not Implement yet
+					INFO("Get another published message\r\n");
+					
 					len -= client->mqtt_state.message_length;
 					pdata += client->mqtt_state.message_length;
 					
-					//system_soft_wdt_feed();
-					WRITE_PERI_REG(0X60000914, 0X73);
+					// save rest of data to buffer so it can be processed via task function
+					client->mqtt_state.in_buffer_length = len;
+					memcpy(client->mqtt_state.in_buffer, pdata, len);
 					
-					// for now skip multiple mqtt packets in same tcp packet
-					//INFO("Get another published message\r\n");
-					//goto READPACKET;
+					client->connState = MQTT_PUBLISH_RECV;
 				}
 			}
 			break;
@@ -787,6 +785,13 @@ MQTT_Task(os_event_t *e)
 			client->mqtt_state.outbound_message = NULL;
 			break;
 		}
+		break;
+	case MQTT_PUBLISH_RECV:
+		INFO("MQTT: processing next mqtt packet in tcp packet\r\n");
+		client->connState = MQTT_MSG_TYPE_PUBLISH;
+		memcpy(dataBuffer, client->mqtt_state.in_buffer, client->mqtt_state.in_buffer_length);
+		dataLen = client->mqtt_state.in_buffer_length;
+		mqtt_tcpclient_recv(client, dataBuffer, dataLen);
 		break;
 	}
 }
