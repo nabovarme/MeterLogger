@@ -334,8 +334,11 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 						case CONNECTION_ACCEPTED:
 							INFO("MQTT: Connected to %s:%d\r\n", client->host, client->port);
 							client->connState = MQTT_DATA;
-							if (client->connectedCb)
+							if (client->connectedCb) {
+								//system_soft_wdt_feed();
+								WRITE_PERI_REG(0X60000914, 0X73);
 								client->connectedCb((uint32_t*)client);
+							}
 						break;
 						case CONNECTION_REFUSE_PROTOCOL:
 						case CONNECTION_REFUSE_SERVER_UNAVAILABLE:

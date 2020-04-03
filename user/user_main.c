@@ -89,30 +89,45 @@ uint32 user_iram_memory_is_enabled(void) {
 #endif
 
 ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg) {
+	unsigned char mqtt_topic[MQTT_TOPIC_L];
+
 	switch (mqtt_connected_first_mqtt_rpc_state) {
 		case 0:
-			// send mqtt version
-			mqtt_rpc_version(&mqtt_client);
-			mqtt_connected_first_mqtt_rpc_state = 1;
+		// subscribe to /config/v2/[serial]/#
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", en61107_get_received_serial());
+#elif defined IMPULSE
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
+#endif
+			MQTT_Subscribe(&mqtt_client, mqtt_topic, 0);
+			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 1:
-			// send mqtt uptime
-			mqtt_rpc_uptime(&mqtt_client);
-			mqtt_connected_first_mqtt_rpc_state = 2;
+			// send mqtt version
+			mqtt_rpc_version(&mqtt_client);
+			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 2:
+			// send mqtt uptime
+			mqtt_rpc_uptime(&mqtt_client);
+			mqtt_connected_first_mqtt_rpc_state++;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
+			break;
+		case 3:
 			// send mqtt reset_reason
 			mqtt_rpc_reset_reason(&mqtt_client);
-			mqtt_connected_first_mqtt_rpc_state = 3;
+			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 #ifndef IMPULSE
-		case 3:
+		case 4:
 			// send mqtt status
 			mqtt_rpc_status(&mqtt_client);
-			mqtt_connected_first_mqtt_rpc_state = 4;
+			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 #endif
@@ -579,8 +594,11 @@ ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 #endif
 
 ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
-	unsigned char mqtt_topic[MQTT_TOPIC_L];
-
+	// show led status when mqtt is connected via fallback wifi
+	if (wifi_fallback_is_present()) {
+		led_pattern_b();
+	}
+	
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
 		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
@@ -591,21 +609,6 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	}
 #endif
 
-	// show led status when mqtt is connected via fallback wifi
-	if (wifi_fallback_is_present()) {
-		led_pattern_b();
-	}
-	
-	// subscribe to /config/v2/[serial]/#
-#ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", en61107_get_received_serial());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%s/#", sys_cfg.impulse_meter_serial);
-#else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/config/v2/%07u/#", kmp_get_received_serial());
-#endif
-	MQTT_Subscribe(&mqtt_client, mqtt_topic, 0);
-	
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
 	mqtt_connected_first_mqtt_rpc_state = 0;
 	os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
@@ -681,13 +684,11 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	if (topic_len < MQTT_TOPIC_L && topic_len > 0) {	// dont memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_topic, topic, topic_len);
-//		os_printf("memcpy(mqtt_topic, topic, topic_len);\n");
 		mqtt_topic[topic_len] = 0;
 	}
 
 	if (data_len < MQTT_MESSAGE_L && data_len > 0) {	// dont memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_message, data, data_len);
-//		os_printf("memcpy(mqtt_message, data, data_len);\n");
 		mqtt_message[data_len] = 0;
 	}
 	
