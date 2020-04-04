@@ -51,6 +51,7 @@
 //#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
 #define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 
+#define MQTT_SEND_TIMOUT		5	/*second*/
 #define MQTT_RECONNECT_TIMEOUT	5	/*second*/
 #define MQTT_CONNECT_TIMEOUT	5	/*second*/
 

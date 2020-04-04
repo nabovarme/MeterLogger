@@ -48,12 +48,11 @@
 #include "mqtt_utils.h"
 #include "queue.h"
 
-#define MQTT_TASK_PRIO        		USER_TASK_PRIO_1
-#define MQTT_TASK_QUEUE_SIZE    	100
-#define MQTT_SEND_TIMOUT			5
+#define MQTT_TASK_PRIO				USER_TASK_PRIO_1
+#define MQTT_TASK_QUEUE_SIZE		100
 
 #ifndef QUEUE_BUFFER_SIZE
-#define QUEUE_BUFFER_SIZE		 	2048
+#define QUEUE_BUFFER_SIZE			2048
 #endif
 
 os_event_t mqtt_procTaskQueue[MQTT_TASK_QUEUE_SIZE];
@@ -305,6 +304,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 	if (client == NULL) return; // aborted connection
 
+READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
 	// INFO("STATE: %d\r\n", client->connState);
 	if (len < MQTT_BUF_SIZE && len > 0) {
@@ -432,16 +432,18 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				
 				if (client->mqtt_state.message_length < client->mqtt_state.message_length_read)
 				{
-					INFO("Get another published message - ignoring\r\n");
+					INFO("Get another published message\r\n");
 					
-					//len -= client->mqtt_state.message_length;
-					//pdata += client->mqtt_state.message_length;
+					len -= client->mqtt_state.message_length;
+					pdata += client->mqtt_state.message_length;
 					
 					// save rest of data to buffer so it can be processed via task function
 					//client->mqtt_state.in_buffer_length = len;
 					//memcpy(client->mqtt_state.in_buffer, pdata, len);
 					
 					//client->connState = MQTT_PUBLISH_RECV;
+					//Not Implement yet
+					goto READPACKET;
 				}
 			}
 			break;
