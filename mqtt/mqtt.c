@@ -304,7 +304,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 	if (client == NULL) return; // aborted connection
 
-READPACKET:
+//READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
 	// INFO("STATE: %d\r\n", client->connState);
 	if (len < MQTT_BUF_SIZE && len > 0) {
@@ -432,7 +432,7 @@ READPACKET:
 				
 				if (client->mqtt_state.message_length < client->mqtt_state.message_length_read)
 				{
-					INFO("Get another published message\r\n");
+					INFO("Get another published message - ignoring\r\n");
 					
 					len -= client->mqtt_state.message_length;
 					pdata += client->mqtt_state.message_length;
@@ -443,7 +443,7 @@ READPACKET:
 					
 					//client->connState = MQTT_PUBLISH_RECV;
 					//Not Implement yet
-					goto READPACKET;
+					//goto READPACKET;
 				}
 			}
 			break;
