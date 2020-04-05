@@ -138,3 +138,9 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 	led_off();
 }
 
+ICACHE_FLASH_ATTR void led_destroy(void) {
+	os_timer_disarm(&led_blinker_timer);
+	os_timer_disarm(&led_single_blink_off_timer);
+	os_timer_disarm(&led_double_blink_timer);
+	os_timer_disarm(&led_sub_pattern_timer);
+}

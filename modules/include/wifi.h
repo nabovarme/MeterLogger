@@ -35,6 +35,7 @@ bool ICACHE_FLASH_ATTR wifi_scan_is_running();
 void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
+void ICACHE_FLASH_ATTR wifi_destroy();
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();

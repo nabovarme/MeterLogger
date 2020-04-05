@@ -449,6 +449,13 @@ void kmp_request_send() {
 	kmp_requests_sent = 0;	// reset retry counter
 }
 
+ICACHE_FLASH_ATTR
+void kmp_request_destroy() {
+	os_timer_disarm(&kmp_get_serial_timer);
+	os_timer_disarm(&kmp_get_register_timer);
+	os_timer_disarm(&kmp_receive_timeout_timer);
+}
+
 // fifo
 unsigned int kmp_fifo_in_use() {
 	return fifo_head - fifo_tail;

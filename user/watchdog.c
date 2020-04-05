@@ -129,7 +129,9 @@ ICACHE_FLASH_ATTR void stop_watchdog() {
 #ifdef DEBUG
 	printf("watchdog stopped\n");
 #endif
+	os_timer_disarm(&watchdog_timer);
 	os_timer_disarm(&ext_watchdog_timer);
+	os_timer_disarm(&wifi_reconnect_timer);
 }
 
 ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t timeout) {	

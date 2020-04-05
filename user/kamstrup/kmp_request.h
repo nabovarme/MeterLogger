@@ -34,6 +34,9 @@ uint32_t kmp_get_received_energy_kwh();
 ICACHE_FLASH_ATTR
 void kmp_request_send();
 
+ICACHE_FLASH_ATTR
+void kmp_request_destroy();
+	
 // fifo
 unsigned int kmp_fifo_in_use();
 

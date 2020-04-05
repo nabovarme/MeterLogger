@@ -57,9 +57,9 @@ static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
+static os_timer_t mqtt_connected_defer_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
-static os_timer_t mqtt_connected_defer_timer;
 #elif defined IMPULSE
 //static os_timer_t kmp_request_send_timer;
 #else
@@ -805,6 +805,29 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "restart", FUNCTIONNAME_L) == 0) {
 		// found restart
+		// stop all timers started from user_main.c
+		os_timer_disarm(&sample_timer);
+		os_timer_disarm(&mqtt_connected_defer_timer);
+		
+		MQTT_DeleteClient(&mqtt_client);
+#ifndef IMPULSE
+#ifdef EN61107
+		en61107_request_destroy();
+#else
+		kmp_request_destroy();
+#endif
+#endif	// IMPULSE
+		set_my_auto_connect(false);
+		wifi_station_disconnect();
+		wifi_set_opmode_current(NULL_MODE);
+		led_destroy();	// stop led blinking timers if its running
+#ifndef NO_CRON
+		cron_destroy();
+#endif	// NO_CRON
+		destroy_unix_time();
+		stop_watchdog();
+		wifi_destroy();
+	
 		mqtt_rpc_restart(&mqtt_client);
 	}
 #ifdef DEBUG_STACK_TRACE

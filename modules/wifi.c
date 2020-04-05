@@ -659,6 +659,13 @@ void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
 	my_auto_connect = enabled;
 }
 
+void ICACHE_FLASH_ATTR wifi_destroy() {
+	// only call this before restarting system_restart() to stop all timers
+	os_timer_disarm(&wifi_scan_timer);
+	os_timer_disarm(&wifi_scan_timeout_timer);
+	os_timer_disarm(&wifi_get_rssi_timer);
+}
+
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 	wifi_scan_result_cb = cb;
 }

@@ -460,7 +460,7 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_restart(MQTT_Client *client) {
-	system_restart();
+	system_restart_defered();
 }
 
 #ifdef DEBUG_STACK_TRACE

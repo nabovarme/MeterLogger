@@ -73,6 +73,8 @@ unsigned char en61107_fifo_get(unsigned char *c);
 ICACHE_FLASH_ATTR
 unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos);
 
+ICACHE_FLASH_ATTR
+void en61107_request_destroy();
 
 // private methods
 

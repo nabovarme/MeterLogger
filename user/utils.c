@@ -8,6 +8,8 @@
 #include "utils.h"
 #include "tinyprintf.h"
 
+static os_timer_t system_restart_defered_timer;
+
 // crc table
 #ifdef ESP_CONST_DATA
 ESP_CONST_DATA
@@ -329,4 +331,22 @@ size_t spi_flash_size() {					// returns the flash chip's size, in BYTES
 		// could not identify chip
 		return 0;
 	}
+}
+
+ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
+	os_timer_disarm(&system_restart_defered_timer);
+	system_restart();
+#ifdef DEBUG
+	printf("...restarting now\n\r");
+#endif
+}
+
+ICACHE_FLASH_ATTR
+void system_restart_defered() {
+	os_timer_disarm(&system_restart_defered_timer);
+	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
+	os_timer_arm(&system_restart_defered_timer, 10000, 0);
+#ifdef DEBUG
+	printf("going to restart in 10 sec...\n\r");
+#endif
 }

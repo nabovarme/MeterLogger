@@ -14,6 +14,8 @@ Cgi/template routines for the /wifi url.
 
 #include <esp8266.h>
 #include "httpd.h"
+#include "captdns.h"
+#include "led.h"
 #include "config.h"
 #include "debug.h"
 
@@ -152,11 +154,31 @@ static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
 //	if (x==STATION_GOT_IP) {
 //		//Go to STA mode. This needs a reset, so do that.
 //		INFO("Got IP. Going into STA mode..\n");
+	if (cgiWifiAps.scanInProgress) {
+		// scanner still running, we wait for it to complete before restarting to avoid crash
+#ifdef DEBUG
+		os_printf("scanner still running, defering restart 1 second...\n");
+#endif
+		os_timer_disarm(&resetTimer);
+		os_timer_setfn(&resetTimer, resetTimerCb, NULL);
+		os_timer_arm(&resetTimer, 1000, 0);	// try again one second later
+		
+		return;
+	}
 #ifdef DEBUG
 	os_printf("restarting...\n");
 #endif
 //		wifi_set_opmode(1);
-	system_restart();
+	led_destroy();	// stop led blinking timers
+
+	// stop http configuration server
+	httpdStop();
+
+	// stop captive dns
+	captdnsStop();
+	
+	os_timer_disarm(&resetTimer);
+	system_restart_defered();
 //	} else {
 //		INFO("Connect fail. Not going into STA-only mode.\n");
 //		//Maybe also pass this through on the webpage?

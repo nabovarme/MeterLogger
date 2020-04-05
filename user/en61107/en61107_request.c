@@ -636,3 +636,9 @@ unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
 	}
 }
 
+ICACHE_FLASH_ATTR
+void en61107_request_destroy() {
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+	os_timer_disarm(&en61107_meter_wake_up_timer);
+}

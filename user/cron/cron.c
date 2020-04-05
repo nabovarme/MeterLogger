@@ -369,6 +369,11 @@ void clear_cron_jobs() {
 #endif
 }
 
+ICACHE_FLASH_ATTR
+void cron_destroy() {
+	os_timer_disarm(&minute_timer);
+}
+
 #ifdef DEBUG
 ICACHE_FLASH_ATTR
 void debug_cron_jobs() {
