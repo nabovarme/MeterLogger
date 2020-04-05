@@ -32,6 +32,8 @@
 #include "kmp_request.h"
 #endif
 
+bool fast_boot;
+
 #ifdef IMPULSE
 uint32_t impulse_meter_units;
 //float impulse_meter_units;
@@ -148,13 +150,15 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 	
-	led_stop_pattern();	// stop indicating config mode mode with led
+	if (fast_boot == false) {
+		led_stop_pattern();	// stop indicating config mode mode with led
 
-	// stop http configuration server
-	httpdStop();
+		// stop http configuration server
+		httpdStop();
 
-	// stop captive dns
-	captdnsStop();
+		// stop captive dns
+		captdnsStop();
+	}
 
 #ifdef IMPULSE
 	// save sys_cfg.impulse_meter_count - in case it has been incremented since cfg_load() at boot
@@ -404,6 +408,7 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 	rtc_info = system_get_rst_info();
 	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
 		// fast boot if reset, go in sample/station mode
+		fast_boot = true;
 #ifdef DEBUG
 		printf("fast boot\n");
 #endif
@@ -419,6 +424,7 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 	}
 	else {
 #ifdef DEBUG
+		fast_boot = false;
 		printf("normal boot\n");
 //		ext_spi_flash_erase_sector(0x0);
 //		ext_spi_flash_erase_sector(0x1000);
