@@ -29,7 +29,7 @@ Cgi/template routines for the /wifi url.
 typedef struct {
 	char ssid[32];
 	sint8_t rssi;
-	char enc;
+	AUTH_MODE enc;
 } ApData;
 
 //Scan result
@@ -117,26 +117,30 @@ int ICACHE_FLASH_ATTR cgiWiFiScan(HttpdConnData *connData) {
 
 	if (cgiWifiAps.scanInProgress==1) {
 		//We're still scanning. Tell Javascript code that.
-		tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"1\"\n }\n}\n");
-		len = strlen(buff);
-		httpdSend(connData, buff, len);
+		len = tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"1\"\n }\n}\n");
+		if (httpdSend(connData, buff, len) == 0) {
+			return HTTPD_CGI_SERVER_ERROR;
+		}
 	} else {
 		//We have a scan result. Pass it on.
-		tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"0\", \n\"APs\": [\n");
-		len = strlen(buff);
-		httpdSend(connData, buff, len);
+		len = tfp_snprintf(buff, 1024, "{\n \"result\": { \n\"inProgress\": \"0\", \n\"APs\": [\n");
+		if (httpdSend(connData, buff, len) == 0) {
+			return HTTPD_CGI_SERVER_ERROR;
+		}
 		if (cgiWifiAps.apData==NULL) cgiWifiAps.noAps=0;
 		for (i=0; i<cgiWifiAps.noAps; i++) {
 			//Fill in json code for an access point
-			tfp_snprintf(buff, 1024, "{\"essid\": \"%s\", \"rssi\": \"%d\", \"enc\": \"%d\"}%s\n", 
+			len = tfp_snprintf(buff, 1024, "{\"essid\": \"%s\", \"rssi\": \"%d\", \"enc\": \"%d\"}%s\n", 
 					cgiWifiAps.apData[i]->ssid, cgiWifiAps.apData[i]->rssi, 
 					cgiWifiAps.apData[i]->enc, (i==cgiWifiAps.noAps-1)?"":",");
-			len = strlen(buff);
-			httpdSend(connData, buff, len);
+			if (httpdSend(connData, buff, len) == 0) {
+				return HTTPD_CGI_SERVER_ERROR;
+			}
 		}
-		tfp_snprintf(buff, 1024, "]\n}\n}\n");
-		len = strlen(buff);
-		httpdSend(connData, buff, len);
+		len = tfp_snprintf(buff, 1024, "]\n}\n}\n");
+		if (httpdSend(connData, buff, len) == 0) {
+			return HTTPD_CGI_SERVER_ERROR;
+		}
 		//Also start a new scan.
 		wifiStartScan();
 	}

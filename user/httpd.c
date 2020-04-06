@@ -39,7 +39,7 @@ Esp8266 http server - core routines
 //Max post buffer len
 #define MAX_POST 1024
 //Max send buffer len
-#define MAX_SENDBUFF_LEN 2048
+#define MAX_SENDBUFF_LEN 4096
 
 
 //This gets set at init time.
@@ -308,7 +308,8 @@ static void httpdSentCb(void *arg) {
 	xmitSendBuff(conn);
 }
 
-static const char *httpNotFoundHeader="HTTP/1.0 404 Not Found\r\nServer: esp8266-httpd/0.1\r\nContent-Type: text/plain\r\n\r\nNot Found.\r\n";
+static const char *httpNotFoundHeader="HTTP/1.0 404 Not Found\r\nServer: esp8266-httpd/0.1\r\nContent-Type: text/plain\r\n\r\n 404 Not Found.\r\n";
+static const char *httpdServerErrorHeader="HTTP/1.0 500 Internal Server Error\r\nServer: esp8266-httpd/0.1\r\nContent-Type: text/plain\r\n\r\n500 Internal Server Error.\r\n";
 
 //This is called when the headers have been received and the connection is ready to send
 //the result headers and data.
@@ -316,6 +317,7 @@ ICACHE_FLASH_ATTR
 static void httpdSendResp(HttpdConnData *conn) {
 	int i=0;
 	int r;
+	
 	//See if the url is somewhere in our internal url table.
 	while (builtInUrls[i].url!=NULL && conn->url!=NULL) {
 		int match=0;
@@ -329,8 +331,16 @@ static void httpdSendResp(HttpdConnData *conn) {
 			conn->cgi=builtInUrls[i].cgiCb;
 			conn->cgiArg=builtInUrls[i].cgiArg;
 			r=conn->cgi(conn);
-			if (r!=HTTPD_CGI_NOTFOUND) {
+			if (r!=HTTPD_CGI_NOTFOUND && r!=HTTPD_CGI_SERVER_ERROR) {
 				if (r==HTTPD_CGI_DONE) conn->cgi=NULL;  //If cgi finishes immediately: mark conn for destruction.
+					return;
+			}
+			else if (r==HTTPD_CGI_SERVER_ERROR) {
+				//Server error
+				INFO("%s server error. 500!\n", conn->url);
+				conn->priv->sendBuffLen=0;
+				httpdSend(conn, httpdServerErrorHeader, -1);
+				conn->cgi=NULL; //mark for destruction
 				return;
 			}
 		}
