@@ -817,17 +817,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		kmp_request_destroy();
 #endif
 #endif	// IMPULSE
-		set_my_auto_connect(false);
-		wifi_station_disconnect();
-		wifi_set_opmode_current(NULL_MODE);
-		led_destroy();	// stop led blinking timers if its running
-#ifndef NO_CRON
-		cron_destroy();
-#endif	// NO_CRON
-		destroy_unix_time();
-		stop_watchdog();
-		wifi_destroy();
-	
 		mqtt_rpc_restart(&mqtt_client);
 	}
 #ifdef DEBUG_STACK_TRACE

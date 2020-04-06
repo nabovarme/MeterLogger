@@ -169,15 +169,8 @@ static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
 	os_printf("restarting...\n");
 #endif
 //		wifi_set_opmode(1);
-	led_destroy();	// stop led blinking timers
-
-	// stop http configuration server
-	httpdStop();
-
-	// stop captive dns
-	captdnsStop();
-	
 	os_timer_disarm(&resetTimer);
+		
 	system_restart_defered();
 //	} else {
 //		INFO("Connect fail. Not going into STA-only mode.\n");

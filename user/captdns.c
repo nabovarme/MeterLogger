@@ -38,6 +38,7 @@ the internal webserver.
 static int sockFd;
 #endif
 
+bool captdnsInitialized;
 
 #define DNS_LEN 512
 
@@ -343,10 +344,14 @@ void ICACHE_FLASH_ATTR captdnsInit(void) {
 	conn.proto.udp->local_port = 53;
 	espconn_regist_recvcb(&conn, captdnsRecv);
 	espconn_create(&conn);
+	captdnsInitialized = true;
 }
 
 void ICACHE_FLASH_ATTR captdnsStop(void) {
-	espconn_delete(&conn);
+	if (captdnsInitialized) {
+		espconn_delete(&conn);
+		captdnsInitialized = false;
+	}
 }
 
 #endif

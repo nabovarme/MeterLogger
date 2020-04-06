@@ -5,8 +5,15 @@
 #include "config.h"
 #include "user_config.h"
 #include "debug.h"
-#include "utils.h"
+#include "wifi.h"
+#include "httpd.h"
+#include "captdns.h"
+#include "unix_time.h"
+#include "cron/cron.h"
+#include "led.h"
+#include "watchdog.h"
 #include "tinyprintf.h"
+#include "utils.h"
 
 static os_timer_t system_restart_defered_timer;
 
@@ -343,6 +350,22 @@ ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
+	httpdStop();		// stop http configuration server
+	captdnsStop();		// stop captive dns
+
+	wifi_destroy();
+	set_my_auto_connect(false);
+	wifi_station_disconnect();
+	wifi_set_opmode_current(NULL_MODE);
+	led_destroy();	// stop led blinking timers if its running
+#ifndef NO_CRON
+	cron_destroy();
+#endif	// NO_CRON
+	destroy_unix_time();
+	stop_watchdog();
+		
+	ETS_UART_INTR_DISABLE();
+
 	os_timer_disarm(&system_restart_defered_timer);
 	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
 	os_timer_arm(&system_restart_defered_timer, 16000, 0);

@@ -528,6 +528,11 @@ void static httpdDisconnectTimerFunc(void *arg) {
 
 ICACHE_FLASH_ATTR
 void httpdStop() {
+	if (connPrivData == NULL) {
+		// allready stopped
+		return;
+	}
+
 	INFO("Httpd stopping, state=%d conn=%p\n", httpdConn.state, &httpdConn);
 	
 	if (httpdConn.state != ESPCONN_NONE) {
@@ -535,6 +540,7 @@ void httpdStop() {
 		    os_timer_disarm(&httpdDisconnectTimer);
 			httpdRetireConn(connData);
 			free(connPrivData);
+			connPrivData = NULL;
 			INFO("Httpd stopped\n");
 		}
 		else {
