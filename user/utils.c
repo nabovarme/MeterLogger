@@ -345,8 +345,8 @@ ICACHE_FLASH_ATTR
 void system_restart_defered() {
 	os_timer_disarm(&system_restart_defered_timer);
 	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
-	os_timer_arm(&system_restart_defered_timer, 10000, 0);
+	os_timer_arm(&system_restart_defered_timer, 16000, 0);
 #ifdef DEBUG
-	printf("going to restart in 10 sec...\n\r");
+	printf("going to restart in 16 sec...\n\r");
 #endif
 }
