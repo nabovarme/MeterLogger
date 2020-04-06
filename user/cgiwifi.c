@@ -28,7 +28,7 @@ Cgi/template routines for the /wifi url.
 //WiFi access point data
 typedef struct {
 	char ssid[32];
-	char rssi;
+	sint8_t rssi;
 	char enc;
 } ApData;
 
