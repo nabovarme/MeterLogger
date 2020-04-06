@@ -309,3 +309,8 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 
 	httpdSend(connData, buff, -1);
 }
+
+void ICACHE_FLASH_ATTR cgiWifiInit() {
+	memset(&cgiWifiAps, 0, sizeof(ScanResultData));
+	wifiStartScan();
+}

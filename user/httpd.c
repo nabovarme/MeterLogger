@@ -26,6 +26,7 @@ Esp8266 http server - core routines
 #include <espconn.h>
 
 #include "httpd.h"
+#include "cgiwifi.h"
 #include "espfs.h"
 #include "debug.h"
 #include "tinyprintf.h"
@@ -515,6 +516,8 @@ void httpdInit(HttpdBuiltInUrl *fixedUrls, int port) {
 	httpdTcp.local_port=port;
 	httpdConn.proto.tcp=&httpdTcp;
 	builtInUrls=fixedUrls;
+	
+	cgiWifiInit();
 
 	INFO("Httpd init, conn=%p\n", &httpdConn);
 	espconn_regist_connectcb(&httpdConn, httpdConnectCb);
