@@ -8,13 +8,14 @@ static os_timer_t led_single_blink_off_timer;
 static os_timer_t led_double_blink_timer;
 static os_timer_t led_sub_pattern_timer;
 
+static volatile bool led_disabled = true;
 static volatile bool led_blinker_timer_running = false;
 static volatile bool led_double_blinker_timer_running = false;
 
 static uint8_t led_sub_pattern_state = 0;
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
-	if (led_blinker_timer_running == false) {
+	if (led_blinker_timer_running == false || led_disabled) {
 		// stop blinking if asked to stop via state variable led_blinker_timer_running
 		os_timer_disarm(&led_blinker_timer);
 		return;
@@ -35,7 +36,7 @@ ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
 	
 ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 	// blink fast two times
-	if (led_double_blinker_timer_running == false) {
+	if (led_double_blinker_timer_running == false || led_disabled) {
 		// stop blinking if asked to stop via state variable led_double_blinker_timer_running
 		os_timer_disarm(&led_double_blink_timer);
 		return;
@@ -83,6 +84,8 @@ ICACHE_FLASH_ATTR void led_init(void) {
 	
 	// Set GPIO2 to HIGH (turn blue led off)
 	gpio_output_set(BIT2, 0, BIT2, 0);
+	
+	led_disabled = false;
 }
 
 ICACHE_FLASH_ATTR void led_on(void) {
@@ -97,6 +100,10 @@ ICACHE_FLASH_ATTR void led_off(void) {
 }
 
 ICACHE_FLASH_ATTR void led_blink(void) {
+	if (led_disabled) {
+		return;
+	}
+	
 	led_on();
 	os_timer_disarm(&led_single_blink_off_timer);
 	os_timer_setfn(&led_single_blink_off_timer, (os_timer_func_t *)led_single_blink_off_timer_func, NULL);
@@ -104,6 +111,10 @@ ICACHE_FLASH_ATTR void led_blink(void) {
 }
 
 ICACHE_FLASH_ATTR void led_blink_short(void) {
+	if (led_disabled) {
+		return;
+	}
+	
 	led_on();
 	os_timer_disarm(&led_single_blink_off_timer);
 	os_timer_setfn(&led_single_blink_off_timer, (os_timer_func_t *)led_single_blink_off_timer_func, NULL);
@@ -111,6 +122,10 @@ ICACHE_FLASH_ATTR void led_blink_short(void) {
 }
 
 ICACHE_FLASH_ATTR void led_pattern_a(void) {
+	if (led_disabled) {
+		return;
+	}
+	
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
 	led_blinker_timer_running = true;	// state variable to control stopping after pattern is done
@@ -118,6 +133,10 @@ ICACHE_FLASH_ATTR void led_pattern_a(void) {
 }
 
 ICACHE_FLASH_ATTR void led_pattern_b(void) {
+	if (led_disabled) {
+		return;
+	}
+	
 	os_timer_disarm(&led_blinker_timer);
 	os_timer_setfn(&led_blinker_timer, (os_timer_func_t *)led_blinker_timer_func, NULL);
 	led_blinker_timer_running = true;	// state variable to control stopping after pattern is done
@@ -126,6 +145,10 @@ ICACHE_FLASH_ATTR void led_pattern_b(void) {
 
 ICACHE_FLASH_ATTR void led_pattern_c(void) {
 	// blink fast two times every 5th second
+	if (led_disabled) {
+		return;
+	}
+	
 	os_timer_disarm(&led_double_blink_timer);
 	os_timer_setfn(&led_double_blink_timer, (os_timer_func_t *)led_double_blink_timer_func, NULL);
 	led_double_blinker_timer_running = true;	// state variable to control stopping after pattern is done
@@ -139,8 +162,6 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 }
 
 ICACHE_FLASH_ATTR void led_destroy(void) {
-	os_timer_disarm(&led_blinker_timer);
-	os_timer_disarm(&led_single_blink_off_timer);
-	os_timer_disarm(&led_double_blink_timer);
-	os_timer_disarm(&led_sub_pattern_timer);
+	led_disabled = true;
+	led_stop_pattern();
 }
