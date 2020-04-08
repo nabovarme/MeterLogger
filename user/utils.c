@@ -358,9 +358,11 @@ void system_restart_defered() {
 	wifi_station_disconnect();
 	wifi_set_opmode_current(NULL_MODE);
 	led_destroy();	// stop led blinking timers if its running
+#ifndef IMPULSE
 #ifndef NO_CRON
 	cron_destroy();
 #endif	// NO_CRON
+#endif	// IMPULSE
 	destroy_unix_time();
 	stop_watchdog();
 		
