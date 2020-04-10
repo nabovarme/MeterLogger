@@ -6,7 +6,6 @@
 #include "config.h"
 #include "led.h"
 #include <lwip/dns.h>
-#include <sntp.h>
 
 #include "debug.h"
 
@@ -60,7 +59,6 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 		wifi_default();
 		wifi_fallback_force_reset_state();			// dont asume we had seen a working backup network
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);	// longer time to let it connect to wifi first
-		sntp_init();
 #ifdef DEBUG
 		printf("watchdog restarted wifi and started wifi scanner\n");
 #endif	
@@ -194,7 +192,6 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 // force reconnect to wireless
 ICACHE_FLASH_ATTR void force_reset_wifi() {
 	led_pattern_b();	// DEBUG to se if we ever try to restart network
-	sntp_stop();
 	wifi_stop_scan();
 	set_my_auto_connect(false);
 	wifi_station_disconnect();
