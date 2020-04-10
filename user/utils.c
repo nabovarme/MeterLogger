@@ -1,6 +1,5 @@
 #include <esp8266.h>
 #include <string.h>
-#include <sntp.h>
 
 //#include "mqtt.h"
 #include "config.h"
@@ -353,7 +352,6 @@ ICACHE_FLASH_ATTR
 void system_restart_defered() {
 	httpdStop();		// stop http configuration server
 	captdnsStop();		// stop captive dns
-	sntp_stop();		// stop ntp client
 
 	wifi_destroy();
 	set_my_auto_connect(false);

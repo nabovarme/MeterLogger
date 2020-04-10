@@ -69,4 +69,5 @@ ICACHE_FLASH_ATTR void destroy_unix_time(void) {
 	// only call this before restarting system_restart() to stop all timers
 	os_timer_disarm(&sntp_check_timer);
 	os_timer_disarm(&ntp_offline_second_counter_timer);
+	sntp_stop();		// stop ntp client
 }
