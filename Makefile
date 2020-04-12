@@ -121,8 +121,8 @@ CFLAGS	= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-s
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections
 
 ifeq ($(FLAVOR),debug)
-    CFLAGS += -g -O0
-    LDFLAGS += -g -O0
+    CFLAGS += -g -O2
+    LDFLAGS += -g -O2
 endif
 
 ifeq ($(FLAVOR),release)
@@ -316,10 +316,14 @@ getstacktrace:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
 	
 stacktracedecode:
-	test -s build/app.out || echo "Need to make all first" && exit
+	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
 	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
 	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
 
+objdump:
+	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
+	$(OBJDUMP) -f -s -d --source $(TARGET_OUT) > $(TARGET).S
+	
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
 minicom:
@@ -338,6 +342,7 @@ clean:
 	$(Q) rm -f $(FW_FILE_1)
 	$(Q) rm -f $(FW_FILE_2)
 	$(Q) rm -f app_app.size
+	$(Q) rm -f $(TARGET).S
 #	$(Q) rm -rf $(FW_BASE)
 
 foo:
