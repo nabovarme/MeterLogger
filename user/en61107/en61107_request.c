@@ -297,6 +297,8 @@ static void en61107_received_task(os_event_t *events) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_init() {
+	unsigned int i;
+
 	fifo_head = 0;
 	fifo_tail = 0;
 
@@ -307,7 +309,20 @@ void en61107_request_init() {
 	en61107_request_num = 0;
 
 	en61107_etx_received = false;
-	
+
+	// wake up meter with 500 ms of null characters
+#ifdef EN61107
+	// BIT_RATE_300
+	for (i = 0; i < 16; i++) {
+		uart_tx_one_char(UART0, '\0');
+	}
+#else
+	// BIT_RATE_1200
+	for (i = 0; i < 60; i++) {
+		uart_tx_one_char(UART0, '\0');
+	}
+#endif
+
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
 
