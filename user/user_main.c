@@ -299,7 +299,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		// prepare decimal string
 		strcpy(leading_zeroes, "");
 		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
-			strcat(leading_zeroes, "0");
+			tfp_snprintf(leading_zeroes, 16, "0");
 		}
 		tfp_snprintf(acc_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 
@@ -310,9 +310,10 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		result_frac = current_units - result_int * 1000;
 		
 		// prepare decimal string
-		strcpy(leading_zeroes, "");
+//		strcpy(leading_zeroes, "");
+		tfp_snprintf(leading_zeroes, 16, "0");
 		for (i = 0; i < (3 - decimal_number_length(result_frac)); i++) {
-			strcat(leading_zeroes, "0");
+			tfp_snprintf(leading_zeroes, 16, "0");
 		}
 		tfp_snprintf(current_units_string, 32, "%u.%s%u", result_int, leading_zeroes, result_frac);
 #else

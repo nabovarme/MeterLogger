@@ -152,7 +152,7 @@ static void kmp_received_task(os_event_t *events) {
         	
 			// heap size
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
         	
 #ifndef FLOW_METER
 			// heating meter specific
@@ -160,46 +160,46 @@ static void kmp_received_task(os_event_t *events) {
 			kmp_value_to_string(response.kmp_response_register_list[3].value, response.kmp_response_register_list[3].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[3].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
         	
 			// return flow temperature
 			kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
         	
 			// temperature difference
 			kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
 #endif	// FLOW_METER
         	
 			// flow
 			kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
         	
 #ifndef FLOW_METER
 			// current power
 			kmp_value_to_string(response.kmp_response_register_list[7].value, response.kmp_response_register_list[7].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
 #endif	// FLOW_METER
         	
 			// hours
 			kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
         	
 			// volume
 			kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
 
 #ifdef FLOW_METER
 			// save volume for later use in kmp_get_received_volume_m3()
@@ -212,7 +212,7 @@ static void kmp_received_task(os_event_t *events) {
 			kmp_value_to_string(response.kmp_response_register_list[0].value, response.kmp_response_register_list[0].si_ex, kmp_value_string);
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", kmp_value_string, kmp_unit_string);
-			strcat(message, key_value);
+			tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
 #endif	// FLOW_METER
 
 #ifndef FLOW_METER
