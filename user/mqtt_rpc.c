@@ -275,7 +275,8 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 		// error
 		return;
 	}
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s&pwd=", mqtt_message);
+	strcat(cleartext, mqtt_message);
+	strcat(cleartext, "&pwd=");
 
 	strncpy(mqtt_message, sys_cfg.sta_pwd, MQTT_MESSAGE_L - 1);
 	// escape & and =
@@ -283,7 +284,7 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 		// error
 		return;
 	}
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", mqtt_message);
+	strcat(cleartext, mqtt_message);
 
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);

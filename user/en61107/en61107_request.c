@@ -206,7 +206,7 @@ static void en61107_received_task(os_event_t *events) {
 
 					// heap size
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 					// meter program
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "program=%01u%01u%03u%02u%01u%02u%02u&", 
@@ -218,51 +218,51 @@ static void en61107_received_task(os_event_t *events) {
 						response.meter_program.ff, 
 						response.meter_program.gg
 					);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 #ifndef FLOW_METER
 					// heating meter specific
 					// flow temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", response.t1.value, response.t1.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
         	
 					// return flow temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 #ifndef MC_66B
 					// t3 temperature
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "t3=%s %s&", response.t3.value, response.t3.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 #endif	// MC_66B
 
 					// calculated temperature difference
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", response.tdif.value, response.tdif.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 #endif	// FLOW_METER
 
 					// flow
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", response.flow1.value, response.flow1.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 #ifndef FLOW_METER
 					// current power
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", response.effect1.value, response.effect1.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 #endif	// FLOW_METER
 
 					// hours
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", response.hr.value, response.hr.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 					// volume
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", response.v1.value, response.v1.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 
 #ifndef FLOW_METER
 					// power
 					tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
-					tfp_snprintf(message, EN61107_FRAME_L, "%s", key_value);
+					strcat(message, key_value);
 #endif	// FLOW_METER
 
 					memset(cleartext, 0, sizeof(cleartext));

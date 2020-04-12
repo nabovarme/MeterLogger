@@ -411,7 +411,7 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
 			for (i = 0; i < (exponent - decimal_number_length(result_frac)); i++) {
-				tfp_snprintf(zeroes, 16, "0");
+				strcat(leading_zeroes, "0");
 			}
 			tfp_snprintf(value_string, 23 + i, "-%u.%s%u", result_int, leading_zeroes, result_frac);
         }
@@ -428,7 +428,7 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
 			for (i = 0; i < (exponent - decimal_number_length(result_frac)); i++) {
-				tfp_snprintf(zeroes, 16, "0");
+				strcat(leading_zeroes, "0");
 			}
 			tfp_snprintf(value_string, 22 + i, "%u.%s%u", result_int, leading_zeroes, result_frac);
         }

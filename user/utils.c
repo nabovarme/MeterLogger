@@ -198,7 +198,7 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 	char *pos;
 	uint8_t decimals = 0;
 	uint8_t prepend_zeroes;
-	char zeroes[16];
+	char zeroes[8];
 	
 	memcpy(cleaned_up_str, decimal_str, length);
 	cleaned_up_str[length] = 0;	// null terminate
@@ -220,7 +220,7 @@ ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_s
 		
 		zeroes[0] = 0;	// null terminate
 		while (prepend_zeroes--) {
-			tfp_snprintf(zeroes, 16, "0");
+			strcat(zeroes, "0");
 		}
 		
 		// parse int
