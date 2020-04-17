@@ -60,7 +60,7 @@ RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EA8CACC073C3DB2A
 RUN echo oracle-java11-installer shared/accepted-oracle-license-v1-2 select true | sudo /usr/bin/debconf-set-selections
 RUN echo oracle-java11-installer shared/accepted-oracle-licence-v1-2 boolean true | sudo /usr/bin/debconf-set-selections
-RUN apt-get install -y --allow-unauthenticated oracle-java13-set-default
+RUN apt-get install -y --allow-unauthenticated oracle-java14-set-default
 
 # Adduser `meterlogger`
 RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
