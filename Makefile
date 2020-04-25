@@ -310,7 +310,7 @@ flash107th_bit_0xff:
 
 size:
 	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
-	$(SIZE) -B -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
+	$(SIZE) -B -t -d $(APP_AR) | tee -a $(BUILD_BASE)/../app_app.size
 
 getstacktrace:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
