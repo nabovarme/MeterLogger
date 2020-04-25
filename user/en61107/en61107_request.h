@@ -61,8 +61,8 @@ void en61107_uart_send_inst_values();
 
 
 // fifo
-ICACHE_FLASH_ATTR
-unsigned int en61107_fifo_in_use();
+//ICACHE_FLASH_ATTR
+inline unsigned int en61107_fifo_in_use();
 
 //ICACHE_FLASH_ATTR
 inline unsigned char en61107_fifo_put(unsigned char c);
