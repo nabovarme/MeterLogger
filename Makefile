@@ -156,8 +156,7 @@ ifneq ($(DEBUG_STACK_TRACE), 0)
 endif
 
 ifeq ($(DEBUG_PROFILER), 1)
- #   CFLAGS += -DDEBUG_PROFILER -finstrument-functions
-    CFLAGS += -DDEBUG_PROFILER
+    CFLAGS += -DDEBUG_PROFILER -finstrument-functions
 endif
 
 ifeq ($(MC_66B), 1)
