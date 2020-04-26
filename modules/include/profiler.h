@@ -2,8 +2,8 @@
 #define PROFILER_H
 
 #ifdef DEBUG_PROFILER
-#define PROFILE_FUNC_ENTER()	profile_func_enter(__builtin_return_address, NULL)
-#define PROFILE_FUNC_EXIT()		profile_func_exit(__builtin_return_address, NULL)
+#define PROFILE_FUNC_ENTER()	profile_func_enter(NULL, NULL)
+#define PROFILE_FUNC_EXIT()		profile_func_exit(NULL, NULL)
 
 void profile_func_enter(void *func, void *caller);
 void profile_func_exit(void *func, void *caller);
