@@ -23,6 +23,7 @@ void __cyg_profile_func_exit(void *func, void *caller) {
 	}
 }
 
+ICACHE_FLASH_ATTR
 uint32_t profile_get() {
 	return overflow;
 }
