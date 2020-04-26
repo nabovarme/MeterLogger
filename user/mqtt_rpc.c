@@ -14,6 +14,10 @@
 #include "version.h"
 #include "user_main.h"
 
+#ifdef DEBUG_PROFILER
+#include "profiler.h"
+#endif	// DEBUG_PROFILER
+
 #ifdef EN61107
 #include "en61107_request.h"
 #elif defined IMPULSE
@@ -403,6 +407,31 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 #endif
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
+
+#ifdef DEBUG_PROFILER
+ICACHE_FLASH_ATTR
+void mqtt_rpc_profiler(MQTT_Client *client) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+		
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/profiler/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/profiler/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/profiler/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "owerflows=%u", profile_get());
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+}
+#endif	// DEBUG_PROFILER
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_crypto(MQTT_Client *client) {

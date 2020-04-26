@@ -155,6 +155,11 @@ ifneq ($(DEBUG_STACK_TRACE), 0)
     CFLAGS += -DDEBUG_STACK_TRACE
 endif
 
+ifeq ($(DEBUG_PROFILER), 1)
+ #   CFLAGS += -DDEBUG_PROFILER -finstrument-functions
+    CFLAGS += -DDEBUG_PROFILER
+endif
+
 ifeq ($(MC_66B), 1)
     EN61107 = 1
 	CFLAGS += -DMC_66B -DEN61107

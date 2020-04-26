@@ -50,6 +50,7 @@ bool en61107_etx_received;
 
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
+	PROFILE_FUNC_ENTER();
 	led_blink();	// DEBUG
 	// if no reply received, retransmit
 
@@ -80,20 +81,25 @@ void en61107_receive_timeout_timer_func(void *arg) {
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 		os_timer_arm(&en61107_meter_wake_up_timer, 60000, 0);         // wait 60 seconds
 	}
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
+	PROFILE_FUNC_ENTER();
 	uart_set_baudrate(UART0, uart_settings->baut_rate);
 //	uart_set_word_length(UART0, SEVEN_BITS);
 //	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, uart_settings->stop_bits);
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_meter_wake_up_timer_func(void *arg) {
+	PROFILE_FUNC_ENTER();
 //	en61107_uart_state = UART_STATE_EN61107_IDENT;
 	en61107_uart_send_en61107_ident();
+	PROFILE_FUNC_EXIT();
 }
 
 // define en61107_received_task() first
@@ -108,6 +114,7 @@ static void en61107_received_task(os_event_t *events) {
 	unsigned char message[EN61107_FRAME_L];
 	int message_l;
 
+	PROFILE_FUNC_ENTER();
 	// vars for aes encryption
 	uint8_t cleartext[EN61107_FRAME_L];
 
@@ -293,12 +300,14 @@ static void en61107_received_task(os_event_t *events) {
 			}
 			break;
 	}
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_request_init() {
 	unsigned int i;
 
+	PROFILE_FUNC_ENTER();
 	fifo_head = 0;
 	fifo_tail = 0;
 
@@ -324,23 +333,30 @@ void en61107_request_init() {
 #endif
 
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
+	PROFILE_FUNC_EXIT();
 }
 
 // helper function to pass mqtt client struct from user_main.c to here
 ICACHE_FLASH_ATTR
 void en61107_set_mqtt_client(MQTT_Client* client) {
+	PROFILE_FUNC_ENTER();
 	mqtt_client = client;
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_register_meter_is_ready_cb(meter_is_ready_cb cb) {
+	PROFILE_FUNC_ENTER();
 	en61107_meter_is_ready_cb = cb;
+	PROFILE_FUNC_EXIT();
 }
 
 // helper function to pass received kmp_serial to user_main.c
 ICACHE_FLASH_ATTR
 uint32_t en61107_get_received_serial() {
+	PROFILE_FUNC_ENTER();
 	return en61107_serial;
+	PROFILE_FUNC_EXIT();
 }
 
 #ifdef FLOW_METER
@@ -348,7 +364,9 @@ ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_volume_l() {
 	char v1_l_string[64];
 	
+	PROFILE_FUNC_ENTER();
 	multiply_str_by_1000(response.v1.value, v1_l_string);
+	PROFILE_FUNC_EXIT();
 	return atoi(v1_l_string);
 }
 #else
@@ -357,11 +375,14 @@ ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh() {
 	char e1_kwh[EN61107_VALUE_L];
 
+	PROFILE_FUNC_ENTER();
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
 		mw_to_kw_str(response.e1.value, e1_kwh);
+		PROFILE_FUNC_EXIT();
 		return atoi(e1_kwh);
 	}
 	else {
+		PROFILE_FUNC_EXIT();
 		return atoi(response.e1.value);
 	}
 }
@@ -369,35 +390,44 @@ unsigned int en61107_get_received_energy_kwh() {
 
 ICACHE_FLASH_ATTR
 void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb) {
+	PROFILE_FUNC_ENTER();
 	en61107_meter_sent_data_cb = cb;
+	PROFILE_FUNC_EXIT();
 }
 
 //ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c) {
+	PROFILE_FUNC_ENTER();
 	if (en61107_eod == 0x03) {
 		// we need to get the next char as well for this protocol
 		if (c == en61107_eod) {
 			en61107_etx_received = true;
+			PROFILE_FUNC_EXIT();
 			return false;
 		}
 		else if (en61107_etx_received) {
 //			en61107_etx_received = false;	// DEBUG: should really be here
+			PROFILE_FUNC_EXIT();
 			return true;
 		}
 	}
 	else {
 		if (c == en61107_eod) {
+			PROFILE_FUNC_EXIT();
 			return true;
 		}
 		else {
+			PROFILE_FUNC_EXIT();
 			return false;
 		}
 	}
+	PROFILE_FUNC_EXIT();
 	return false;
 }
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+	PROFILE_FUNC_ENTER();
 #ifndef DEBUG_NO_METER
 	unsigned char c;
 	unsigned int i;
@@ -442,10 +472,12 @@ void en61107_request_send() {
 	}
 
 #endif
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_en61107_ident() {
+	PROFILE_FUNC_ENTER();
 	en61107_eod = '\n';
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -474,10 +506,12 @@ void en61107_uart_send_en61107_ident() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 400, 0);	// 400 mS
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_en61107() {
+	PROFILE_FUNC_ENTER();
 	en61107_eod = 0x03;
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -506,10 +540,12 @@ void en61107_uart_send_en61107() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 400, 0);	// 400 mS
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_standard_data_1() {
+	PROFILE_FUNC_ENTER();
 	en61107_eod = '\r';
 
 	// 300 bps
@@ -537,10 +573,12 @@ void en61107_uart_send_standard_data_1() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
+	PROFILE_FUNC_EXIT();
 }
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_standard_data_2() {
+	PROFILE_FUNC_ENTER();
 	en61107_eod = '\r';
 
 	// 300 bps
@@ -568,11 +606,13 @@ void en61107_uart_send_standard_data_2() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 220, 0);	// 220 mS
+	PROFILE_FUNC_EXIT();
 }
 
 #ifndef MC_66B
 ICACHE_FLASH_ATTR
 void en61107_uart_send_inst_values() {
+	PROFILE_FUNC_ENTER();
 	en61107_eod = '\r';
 
 	// 300 bps
@@ -600,6 +640,7 @@ void en61107_uart_send_inst_values() {
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_setfn(&en61107_delayed_uart_change_setting_timer, (os_timer_func_t *)en61107_delayed_uart_change_setting_timer_func, &uart_settings);
 	os_timer_arm(&en61107_delayed_uart_change_setting_timer, 300, 0);	// 300 mS
+	PROFILE_FUNC_EXIT();
 }
 #endif
 
@@ -607,53 +648,66 @@ void en61107_uart_send_inst_values() {
 // fifo
 //ICACHE_FLASH_ATTR
 inline unsigned int en61107_fifo_in_use() {
+	PROFILE_FUNC_ENTER();
 	return fifo_head - fifo_tail;
+	PROFILE_FUNC_EXIT();
 }
 
 //ICACHE_FLASH_ATTR
 inline unsigned char en61107_fifo_put(unsigned char c) {
+	PROFILE_FUNC_ENTER();
 	if (en61107_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
 		if (fifo_head == QUEUE_SIZE) {
 			fifo_head = 0;
 		}
+		PROFILE_FUNC_EXIT();
 		return 1;
 	}
 	else {
+		PROFILE_FUNC_EXIT();
 		return 0;
 	}
 }
 
 ICACHE_FLASH_ATTR
 unsigned char en61107_fifo_get(unsigned char *c) {
+	PROFILE_FUNC_ENTER();
 	if (en61107_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
 		if (fifo_tail == QUEUE_SIZE) {
 			fifo_tail = 0;
 		}
+		PROFILE_FUNC_EXIT();
 		return 1;
 	}
 	else {
+		PROFILE_FUNC_EXIT();
 		return 0;
 	}
 }
 
 ICACHE_FLASH_ATTR
 unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
+	PROFILE_FUNC_ENTER();
 	if (en61107_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
+		PROFILE_FUNC_EXIT();
 		return 1;
 	}
 	else {
+		PROFILE_FUNC_EXIT();
 		return 0;
 	}
 }
 
 ICACHE_FLASH_ATTR
 void en61107_request_destroy() {
+	PROFILE_FUNC_ENTER();
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_disarm(&en61107_meter_wake_up_timer);
+	PROFILE_FUNC_EXIT();
 }
