@@ -156,7 +156,7 @@ ifneq ($(DEBUG_STACK_TRACE), 0)
 endif
 
 ifeq ($(DEBUG_PROFILER), 1)
-    CFLAGS += -DDEBUG_PROFILER -finstrument-functions
+    CFLAGS += -DDEBUG_PROFILER -finstrument-functions -finstrument-functions-exclude-file-list=driver,mqtt,modules,user/crypto,user/ac,user/en61107,user/kamstrup,user/cron,user/user_main.c,user/httpd.c,user/httpdespfs.c
 endif
 
 ifeq ($(MC_66B), 1)
