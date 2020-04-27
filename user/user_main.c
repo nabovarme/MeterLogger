@@ -795,10 +795,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found mem
 		mqtt_rpc_mem(&mqtt_client);
 	}
+#ifdef DEBUG_PROFILER
 	else if (strncmp(function_name, "profiler", FUNCTIONNAME_L) == 0) {
 		// found profile
 		mqtt_rpc_profiler(&mqtt_client);
 	}
+#endif	// DEBUG_PROFILER
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
 		mqtt_rpc_crypto(&mqtt_client);
