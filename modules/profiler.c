@@ -4,7 +4,7 @@
 #ifdef DEBUG_PROFILER
 
 uint32_t t0;
-uint32_t overflow = 0;
+uint32_t function_time_limit_exeeded_count = 0;
 
 __attribute__((no_instrument_function))
 void __cyg_profile_func_enter(void *func, void *caller) {
@@ -17,15 +17,18 @@ void __cyg_profile_func_exit(void *func, void *caller) {
 	if (t_diff > 10000) {
 		// took longer than 10 mS
 #ifdef DEBUG
-		printf("x %p %p %lu\n", func, caller, t_diff);
+		printf("x %p %p %u\n", func, caller, t_diff);
 #endif
-		overflow++;
+		function_time_limit_exeeded_count++;
 	}
 }
 
 ICACHE_FLASH_ATTR
 uint32_t profile_get() {
-	return overflow;
+#ifdef DEBUG
+		printf("function time limit exceeded: %u\n", function_time_limit_exeeded_count);
+#endif
+	return function_time_limit_exeeded_count;
 }
 
 #endif	// DEBUG_PROFILER
