@@ -16,9 +16,6 @@ void __cyg_profile_func_exit(void *func, void *caller) {
 	uint32_t t_diff = system_get_time() - t0;
 	if (t_diff > 10000) {
 		// took longer than 10 mS
-#ifdef DEBUG
-		printf("x %p %p %u\n", func, caller, t_diff);
-#endif
 		function_time_limit_exeeded_count++;
 	}
 }
