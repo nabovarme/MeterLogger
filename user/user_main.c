@@ -229,6 +229,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
 }
 
+#ifdef DEBUG_PROFILER
+__attribute__((no_instrument_function))
+#endif	// DEBUG_PROFILER
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	uint8_t ap_ssid[64];
 	uint8_t ap_password[64];
