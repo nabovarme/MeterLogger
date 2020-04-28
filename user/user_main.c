@@ -140,6 +140,9 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 	}
 }
 
+#ifdef DEBUG_PROFILER
+__attribute__((no_instrument_function))
+#endif	// DEBUG_PROFILER
 ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	unsigned char topic[MQTT_TOPIC_L];
 	// temp var for serial string
