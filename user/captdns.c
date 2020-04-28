@@ -340,7 +340,7 @@ void captdnsInit(void) {
 void ICACHE_FLASH_ATTR captdnsInit(void) {
 	static esp_udp udpconn;
 	
-	conn = malloc(sizeof(struct espconn));
+	conn = (struct espconn *)malloc(sizeof(struct espconn));
 	conn->type=ESPCONN_UDP;
 	conn->proto.udp=&udpconn;
 	conn->proto.udp->local_port = 53;
