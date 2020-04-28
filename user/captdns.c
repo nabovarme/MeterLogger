@@ -43,7 +43,7 @@ bool captdnsInitialized;
 #define DNS_LEN 512
 
 #ifndef FREERTOS
-static struct espconn *conn;	// allocate dynamically
+static struct espconn conn;
 #endif
 
 typedef struct __attribute__ ((packed)) {
@@ -339,20 +339,17 @@ void captdnsInit(void) {
 
 void ICACHE_FLASH_ATTR captdnsInit(void) {
 	static esp_udp udpconn;
-	
-	conn = (struct espconn *)malloc(sizeof(struct espconn));
-	conn->type=ESPCONN_UDP;
-	conn->proto.udp=&udpconn;
-	conn->proto.udp->local_port = 53;
-	espconn_regist_recvcb(conn, captdnsRecv);
-	espconn_create(conn);
+	conn.type=ESPCONN_UDP;
+	conn.proto.udp=&udpconn;
+	conn.proto.udp->local_port = 53;
+	espconn_regist_recvcb(&conn, captdnsRecv);
+	espconn_create(&conn);
 	captdnsInitialized = true;
 }
 
 void ICACHE_FLASH_ATTR captdnsStop(void) {
 	if (captdnsInitialized) {
-		espconn_delete(conn);
-		free(conn);
+		espconn_delete(&conn);
 		captdnsInitialized = false;
 	}
 }
