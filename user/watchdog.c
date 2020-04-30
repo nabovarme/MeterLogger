@@ -6,6 +6,7 @@
 #include "config.h"
 #include "led.h"
 #include <lwip/dns.h>
+#include "lwip_netstat.h"
 
 #include "debug.h"
 
@@ -44,6 +45,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 	}
 	else {
 		os_timer_disarm(&wifi_reconnect_timer);
+		lwip_netstat();
 		if (sys_cfg.ap_enabled) {
 			if (wifi_get_opmode() != STATIONAP_MODE) {
 				wifi_set_opmode_current(STATIONAP_MODE);
@@ -191,11 +193,13 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 // DEBUG: hack to get it to reconnect on weak wifi
 // force reconnect to wireless
 ICACHE_FLASH_ATTR void force_reset_wifi() {
+	lwip_netstat();
 	led_pattern_b();	// DEBUG to se if we ever try to restart network
 	wifi_stop_scan();
 	set_my_auto_connect(false);
 	wifi_station_disconnect();
-//	wifi_set_opmode_current(NULL_MODE);
+	wifi_set_opmode_current(NULL_MODE);
+	lwip_netstat();
 #ifdef DEBUG
 	printf("stopped wifi and wifi scanner\n");
 #endif				
