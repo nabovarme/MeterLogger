@@ -493,7 +493,7 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
-//	wifi_set_opmode_current(NULL_MODE);
+	wifi_set_opmode_current(NULL_MODE);
 
 	if (sys_cfg.ap_enabled) {
 		wifi_set_opmode_current(STATIONAP_MODE);
