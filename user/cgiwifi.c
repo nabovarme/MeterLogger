@@ -318,3 +318,12 @@ void ICACHE_FLASH_ATTR cgiWifiInit() {
 	memset(&cgiWifiAps, 0, sizeof(ScanResultData));
 	wifiStartScan();
 }
+
+void ICACHE_FLASH_ATTR cgiWifiDestroy() {
+	int n;
+	//Clear prev ap data if needed.
+	if (cgiWifiAps.apData!=NULL) {
+		for (n=0; n<cgiWifiAps.noAps; n++) os_free(cgiWifiAps.apData[n]);
+		os_free(cgiWifiAps.apData);
+	}
+}

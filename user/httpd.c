@@ -548,6 +548,8 @@ void httpdStop() {
 
 	INFO("Httpd stopping, state=%d conn=%p\n", httpdConn.state, &httpdConn);
 	
+	cgiWifiDestroy();
+	
 	if (httpdConn.state != ESPCONN_NONE) {
 		if (espconn_delete(&httpdConn) == 0) {
 		    os_timer_disarm(&httpdDisconnectTimer);
