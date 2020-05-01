@@ -13,11 +13,6 @@
 #include "driver/uart.h"
 #include "driver/uart_register.h"
 #include "user_interface.h"
-#ifndef EN61107
-	#include "kmp_request.h"
-#else
-	#include "en61107_request.h"
-#endif
 //#include "ssc.h"
 
 
@@ -224,17 +219,6 @@ uart0_rx_intr_handler(void *para)
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-#ifdef EN61107
-			en61107_fifo_put(RcvChar);
-			if (en61107_is_eod_char(RcvChar)) {							// if end of mc66 frame received
-				system_os_post(en61107_received_task_prio, 0, 0);
-			}
-#else
-			kmp_fifo_put(RcvChar);
-			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
-				system_os_post(kmp_received_task_prio, 0, 0);
-			}
-#endif		
 		}
 	}
 	else if (UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST)) {
@@ -242,17 +226,6 @@ uart0_rx_intr_handler(void *para)
 		while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S)) {
 			//WRITE_PERI_REG(0X60000914, 0x73); //WTD
 			RcvChar = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-#ifdef EN61107
-			en61107_fifo_put(RcvChar);
-			if (en61107_is_eod_char(RcvChar)) {							// if end of mc66 frame received
-				system_os_post(en61107_received_task_prio, 0, 0);
-			}
-#else
-			kmp_fifo_put(RcvChar);
-			if ((RcvChar == '\r')  || (RcvChar == 0x06)) {				// if end of kmp frame received or acknowledge
-				system_os_post(kmp_received_task_prio, 0, 0);
-			}
-#endif		
 		}
 	}
 
@@ -308,11 +281,7 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
   ETS_UART_INTR_ENABLE();
 
   // install uart1 putc callback
-#ifdef DEBUG
   os_install_putc1((void *)uart0_write_char);
-#else
-  os_install_putc1((void *)uart1_write_char);
-#endif
 }
 
 void ICACHE_FLASH_ATTR

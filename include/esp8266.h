@@ -23,7 +23,6 @@
 #endif
 
 #include "platform.h"
-#include "profiler.h"
 
 // missing from sdk supplied include files
 void ets_isr_unmask(unsigned intr);
