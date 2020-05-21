@@ -942,13 +942,28 @@ ICACHE_FLASH_ATTR void user_gpio_init() {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
+#ifndef IMPULSE_DEV_BOARD
+	// meterlogger impulse
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);			// Set GPIO4 function
 	GPIO_DIS_OUTPUT(GPIO_ID_PIN(5));								// Set GPIO4 as input
+#else
+	// node mcu board
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);			// Set GPIO0 function
+	GPIO_DIS_OUTPUT(GPIO_ID_PIN(0));								// Set GPIO0 as input
+#endif	// IMPULSE_DEV_BOARD
 	ETS_GPIO_INTR_DISABLE();										// Disable gpio interrupts
 	ETS_GPIO_INTR_ATTACH(gpio_int_handler, NULL);
+#ifndef IMPULSE_DEV_BOARD
+	// meterlogger impulse
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO5_U);							// pull - up pin
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(5));				// Clear GPIO4 status
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
+#else
+	// node mcu board
+	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
+#endif	// IMPULSE_DEV_BOARD
 	ETS_GPIO_INTR_ENABLE();											// Enable gpio interrupts
 }
 #endif
@@ -963,7 +978,13 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	gpio_intr_ack(interrupt_mask);
 
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
+#ifndef IMPULSE_DEV_BOARD
+	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
+#else
+	// node mcu board
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
+#endif	// IMPULSE_DEV_BOARD
 	//wdt_feed();
 	
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
@@ -1005,7 +1026,13 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	}
 
 	// enable gpio interrupt again
+#ifndef IMPULSE_DEV_BOARD
+	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
+#else
+	// node mcu board
+	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
+#endif	// IMPULSE_DEV_BOARD
 	ETS_GPIO_INTR_ENABLE();
 }
 
@@ -1088,7 +1115,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(NO_AUTO_CLOSE)\n\r");
 #endif
 
-#ifndef DEBUG_NO_METER
+#if !(defined(DEBUG_NO_METER) || defined(IMPULSE_DEV_BOARD))
 #ifdef EN61107
 	uart_init(BIT_RATE_300, BIT_RATE_300);
 #else
@@ -1099,7 +1126,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));
 
-#if !defined(DEBUG) || !defined(DEBUG_NO_METER)
+#if !(defined(DEBUG) || defined(DEBUG_NO_METER) || defined(IMPULSE_DEV_BOARD))
 	// disable serial debug
 	system_set_os_print(0);
 #endif

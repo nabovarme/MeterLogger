@@ -43,7 +43,10 @@ DEBUG=1
 enable serial debugging  
   
 DEBUG_NO_METER=1  
-dont wait for meter to answer  
+dont wait for meter to answer serial. Build for nodemcu board  
+  
+IMPULSE_DEV_BOARD=1  
+build for nodemcu board  
   
 DEBUG_SHORT_WEB_CONFIG_TIME=1  
 dont wait for web config  

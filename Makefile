@@ -177,6 +177,11 @@ else
     WIFI_SSID = "KAM_$(SERIAL)"
 endif
 
+ifeq ($(IMPULSE_DEV_BOARD), 1)
+    IMPULSE_DEV_BOARD = 1
+	CFLAGS += -DIMPULSE_DEV_BOARD
+endif
+
 ifneq ($(AUTO_CLOSE), 0)
     CFLAGS += -DAUTO_CLOSE=1
 endif
