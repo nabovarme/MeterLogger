@@ -965,7 +965,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
-	//wdt_feed();
+
+	//system_soft_wdt_feed();
+	WRITE_PERI_REG(0X60000914, 0X73);
 	
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
