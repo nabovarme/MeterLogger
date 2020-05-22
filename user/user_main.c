@@ -942,6 +942,7 @@ ICACHE_FLASH_ATTR void user_gpio_init() {
 
 #ifdef IMPULSE
 ICACHE_FLASH_ATTR void gpio_int_init() {
+	uint32_t gpio_status;
 #ifndef IMPULSE_DEV_BOARD
 	// meterlogger impulse
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5);			// Set GPIO4 function
@@ -956,12 +957,17 @@ ICACHE_FLASH_ATTR void gpio_int_init() {
 #ifndef IMPULSE_DEV_BOARD
 	// meterlogger impulse
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO5_U);							// pull - up pin
-	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(5));				// Clear GPIO4 status
-	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
 #else
 	// node mcu board
 	PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO0_U);							// pull - up pin
-	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(0));				// Clear GPIO0 status
+#endif	// IMPULSE_DEV_BOARD
+	//clear interrupt status
+	gpio_status = GPIO_REG_READ(GPIO_STATUS_W1TC_ADDRESS);
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
+
+#ifndef IMPULSE_DEV_BOARD
+	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO4 edge
+#else
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
 #endif	// IMPULSE_DEV_BOARD
 	ETS_GPIO_INTR_ENABLE();											// Enable gpio interrupts
