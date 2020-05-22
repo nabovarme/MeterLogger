@@ -978,9 +978,6 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	gpio_intr_ack(interrupt_mask);
 
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
-#ifdef DEBUG
-		printf(".\n");
-#endif	// DEBUG
 #ifndef IMPULSE_DEV_BOARD
 	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
@@ -988,8 +985,13 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	// node mcu board
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
 #endif	// IMPULSE_DEV_BOARD
-	//wdt_feed();
+	//system_soft_wdt_feed();
+	WRITE_PERI_REG(0X60000914, 0X73);
 	
+#ifdef DEBUG
+		printf(".\n");
+#endif	// DEBUG
+
 	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
