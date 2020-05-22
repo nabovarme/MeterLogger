@@ -978,6 +978,9 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	gpio_intr_ack(interrupt_mask);
 
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
+#ifdef DEBUG
+		printf(".\n");
+#endif	// DEBUG
 #ifndef IMPULSE_DEV_BOARD
 	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
@@ -995,18 +998,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT5;
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
-		
-		if (impulse_rising_edge_time > impulse_falling_edge_time) {
-			impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;
-		}
-		else {
-			// system time wrapped
-#ifdef DEBUG
-		printf("wrapped\n");
-#endif
-			impulse_edge_to_edge_time = UINT32_MAX - impulse_falling_edge_time + impulse_rising_edge_time;
-		}
-		
+		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;		
 		// check if impulse period is 100 mS...
 #ifdef DEBUG
 		printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
