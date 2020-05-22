@@ -982,28 +982,27 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	uint32_t impulse_edge_to_edge_time;
 
 	gpio_intr_ack(interrupt_mask);
-
 	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 #ifndef IMPULSE_DEV_BOARD
-	// meterlogger impulse
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
 #else
-	// node mcu board
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_DISABLE);
 #endif	// IMPULSE_DEV_BOARD
+	
 	//system_soft_wdt_feed();
 	WRITE_PERI_REG(0X60000914, 0X73);
 	
-#ifdef DEBUG
-		printf(".\n");
-#endif	// DEBUG
-
-	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	//clear interrupt status
+	gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
 	
 	os_delay_us(1000);	// wait 1 mS to avoid reading on slope
+	
+#ifndef IMPULSE_DEV_BOARD
 	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT5;
+#else
+	impulse_pin_state = GPIO_REG_READ(GPIO_IN_ADDRESS) & BIT0;
+#endif
 	if (impulse_pin_state) {	// rising edge
 		impulse_rising_edge_time = system_get_time();
 		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;		
