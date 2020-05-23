@@ -72,6 +72,7 @@ HttpdBuiltInUrl builtInUrls[]={
 
 
 //Main routine. Initialize stdout, the I/O and the webserver and we're done.
+ICACHE_FLASH_ATTR
 void httpd_user_init(void) {
 	httpdInit(builtInUrls, 80);
 	INFO("\nReady\n");

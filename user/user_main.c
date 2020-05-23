@@ -982,7 +982,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	uint32_t impulse_edge_to_edge_time;
 
 	gpio_intr_ack(interrupt_mask);
-	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
+//	ETS_GPIO_INTR_DISABLE(); // Disable gpio interrupts
 #ifndef IMPULSE_DEV_BOARD
 	gpio_pin_intr_state_set(GPIO_ID_PIN(5), GPIO_PIN_INTR_DISABLE);
 #else
@@ -1032,7 +1032,7 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 	// node mcu board
 	gpio_pin_intr_state_set(GPIO_ID_PIN(0), GPIO_PIN_INTR_ANYEDGE);	// Interrupt on falling GPIO0 edge
 #endif	// IMPULSE_DEV_BOARD
-	ETS_GPIO_INTR_ENABLE();
+//	ETS_GPIO_INTR_ENABLE();
 }
 
 ICACHE_FLASH_ATTR
@@ -1080,6 +1080,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(DEBUG_NO_METER)\n\r");
 #endif
 
+#ifdef IMPULSE_DEV_BOARD
+	printf("\t(IMPULSE_DEV_BOARD)\n\r");
+#endif
+	
 #ifdef DEBUG_SHORT_WEB_CONFIG_TIME
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif

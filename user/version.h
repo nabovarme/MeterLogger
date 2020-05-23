@@ -6,6 +6,8 @@
 #	define HW_MODEL_STRING "IMPULSE"
 #elif defined(DEBUG_NO_METER)
 #	define HW_MODEL_STRING "NO_METER"
+#elif defined(IMPULSE_DEV_BOARD)
+#	define HW_MODEL_STRING "IMPULSE_DEV_BOARD"
 #else
 #	define HW_MODEL_STRING "KMP"
 #endif

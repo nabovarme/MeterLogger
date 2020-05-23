@@ -1,1 +1,1 @@
-void httpd_user_init(void);
+ICACHE_FLASH_ATTR void httpd_user_init(void);

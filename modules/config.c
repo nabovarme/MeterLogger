@@ -26,11 +26,9 @@ char config_save_timer_running;
 
 bool ICACHE_FLASH_ATTR
 cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
-#ifdef IMPULSE
+#if !defined(IMPULSE_DEV_BOARD) && (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
 	uint32_t impulse_meter_count_temp;
-#endif // IMPULSE
 
-#if !defined(IMPULSE_DEV_BOARD) || (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
 	do {
 		// try to save until sys_cfg.impulse_meter_count does not change
 		impulse_meter_count_temp = sys_cfg.impulse_meter_count;
@@ -88,7 +86,7 @@ void ICACHE_FLASH_ATTR
 cfg_load() {
 	// DEBUG: we suppose nothing else is touching sys_cfg while saving otherwise checksum becomes wrong
 	INFO("\r\nload ...\r\n");
-#if !defined(IMPULSE_DEV_BOARD) || (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
+#if !defined(IMPULSE_DEV_BOARD) && (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
 	ext_spi_flash_read((EXT_CFG_LOCATION + 2) * EXT_SPI_RAM_SEC_SIZE,
 				   (uint32 *)&saveFlag, sizeof(SAVE_FLAG));
 	if (saveFlag.flag == 0) {
