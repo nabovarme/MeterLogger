@@ -400,6 +400,9 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #ifdef DEBUG
 	printf("current_units: %u\n", current_units);
 #endif // DEBUG
+
+	// blink led to show impulse received
+	led_blink_short();	// DEBUG
 }
 #endif // IMPULSE
 
@@ -1007,17 +1010,12 @@ void gpio_int_handler(uint32_t interrupt_mask, void *arg) {
 		impulse_rising_edge_time = system_get_time();
 		impulse_edge_to_edge_time = impulse_rising_edge_time - impulse_falling_edge_time;		
 		// check if impulse period is 100 mS...
-#ifdef DEBUG
-		printf("imp: %uuS\n", impulse_rising_edge_time - impulse_falling_edge_time);
-#endif	// DEBUG
 		if (((IMPULSE_EDGE_TO_EDGE_TIME_MIN == 0) || (IMPULSE_EDGE_TO_EDGE_TIME_MAX == 0)) || ((impulse_edge_to_edge_time > IMPULSE_EDGE_TO_EDGE_TIME_MIN * 1000) && (impulse_edge_to_edge_time < IMPULSE_EDGE_TO_EDGE_TIME_MAX * 1000))) {
 			// arm the debounce timer to enable GPIO interrupt again
 			sys_cfg.impulse_meter_count++;
 			os_timer_disarm(&impulse_meter_calculate_timer);
 			os_timer_setfn(&impulse_meter_calculate_timer, (os_timer_func_t *)impulse_meter_calculate_timer_func, NULL);
 			os_timer_arm(&impulse_meter_calculate_timer, 100, 0);
-			// blink led to show impulse received
-			led_blink_short();	// DEBUG
 		}
 	}
 	else {						// falling edge
