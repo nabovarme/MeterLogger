@@ -99,7 +99,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
 							value_string_length = pos - rid_value_unit_string_ptr;
-							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+							cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length + 1);
 							en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
 							rid_value_unit_string_ptr += value_string_length + 1;
 						}
@@ -143,7 +143,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string_ptr, "*");
 					if (pos != NULL) {
 						value_string_length = pos - rid_value_unit_string_ptr;
-						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length);
+						cleanup_decimal_str(rid_value_unit_string_ptr, decimal_str, value_string_length + 1);
 						en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
 						rid_value_unit_string_ptr += value_string_length + 1;
 					}
@@ -200,7 +200,7 @@ bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *fra
 				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
 				break;
 			case 7:
-				cleanup_decimal_str(p, decimal_str, strlen(p));
+				cleanup_decimal_str(p, decimal_str, strlen(p) + 1);
 				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%s", decimal_str);
 				tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
 				break;
