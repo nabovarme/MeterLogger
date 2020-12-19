@@ -48,6 +48,7 @@ static uint32_t get_bits(heatshrink_decoder *hsd, uint8_t count);
 static void push_byte(heatshrink_decoder *hsd, output_info *oi, uint8_t byte);
 
 #if HEATSHRINK_DYNAMIC_ALLOC
+ICACHE_FLASH_ATTR
 heatshrink_decoder *heatshrink_decoder_alloc(uint16_t input_buffer_size,
                                              uint8_t window_sz2,
                                              uint8_t lookahead_sz2) {
@@ -71,6 +72,7 @@ heatshrink_decoder *heatshrink_decoder_alloc(uint16_t input_buffer_size,
     return hsd;
 }
 
+ICACHE_FLASH_ATTR
 void heatshrink_decoder_free(heatshrink_decoder *hsd) {
     size_t buffers_sz = (1 << hsd->window_sz2) + hsd->input_buffer_size;
     size_t sz = sizeof(heatshrink_decoder) + buffers_sz;
@@ -79,6 +81,7 @@ void heatshrink_decoder_free(heatshrink_decoder *hsd) {
 }
 #endif
 
+ICACHE_FLASH_ATTR
 void heatshrink_decoder_reset(heatshrink_decoder *hsd) {
     size_t buf_sz = 1 << HEATSHRINK_DECODER_WINDOW_BITS(hsd);
     size_t input_sz = HEATSHRINK_DECODER_INPUT_BUFFER_SIZE(hsd);
@@ -95,7 +98,7 @@ void heatshrink_decoder_reset(heatshrink_decoder *hsd) {
 }
 
 /* Copy SIZE bytes into the decoder's input buffer, if it will fit. */
-HSD_sink_res heatshrink_decoder_sink(heatshrink_decoder *hsd,
+cHSD_sink_res heatshrink_decoder_sink(heatshrink_decoder *hsd,
         uint8_t *in_buf, size_t size, size_t *input_size) {
     if ((hsd == NULL) || (in_buf == NULL) || (input_size == NULL)) {
         return HSDR_SINK_ERROR_NULL;
@@ -140,6 +143,7 @@ static HSD_state st_yield_backref(heatshrink_decoder *hsd,
     output_info *oi);
 static HSD_state st_check_for_input(heatshrink_decoder *hsd);
 
+ICACHE_FLASH_ATTR
 HSD_poll_res heatshrink_decoder_poll(heatshrink_decoder *hsd,
         uint8_t *out_buf, size_t out_buf_size, size_t *output_size) {
     if ((hsd == NULL) || (out_buf == NULL) || (output_size == NULL)) {
@@ -196,6 +200,7 @@ HSD_poll_res heatshrink_decoder_poll(heatshrink_decoder *hsd,
     }
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_input_available(heatshrink_decoder *hsd) {
     uint32_t bits = get_bits(hsd, 1);  // get tag bit
     if (bits) {
@@ -208,6 +213,7 @@ static HSD_state st_input_available(heatshrink_decoder *hsd) {
     }
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_yield_literal(heatshrink_decoder *hsd,
         output_info *oi) {
     /* Emit a repeated section from the window buffer, and add it (again)
@@ -228,6 +234,7 @@ static HSD_state st_yield_literal(heatshrink_decoder *hsd,
     }
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_backref_index_msb(heatshrink_decoder *hsd) {
     uint8_t bit_ct = BACKREF_INDEX_BITS(hsd);
     ASSERT(bit_ct > 8);
@@ -238,6 +245,7 @@ static HSD_state st_backref_index_msb(heatshrink_decoder *hsd) {
     return HSDS_BACKREF_INDEX_LSB;
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_backref_index_lsb(heatshrink_decoder *hsd) {
     uint8_t bit_ct = BACKREF_INDEX_BITS(hsd);
     uint32_t bits = get_bits(hsd, bit_ct < 8 ? bit_ct : 8);
@@ -250,6 +258,7 @@ static HSD_state st_backref_index_lsb(heatshrink_decoder *hsd) {
     return (br_bit_ct > 8) ? HSDS_BACKREF_COUNT_MSB : HSDS_BACKREF_COUNT_LSB;
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_backref_count_msb(heatshrink_decoder *hsd) {
     uint8_t br_bit_ct = BACKREF_COUNT_BITS(hsd);
     ASSERT(br_bit_ct > 8);
@@ -260,6 +269,7 @@ static HSD_state st_backref_count_msb(heatshrink_decoder *hsd) {
     return HSDS_BACKREF_COUNT_LSB;
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_backref_count_lsb(heatshrink_decoder *hsd) {
     uint8_t br_bit_ct = BACKREF_COUNT_BITS(hsd);
     uint32_t bits = get_bits(hsd, br_bit_ct < 8 ? br_bit_ct : 8);
@@ -270,6 +280,7 @@ static HSD_state st_backref_count_lsb(heatshrink_decoder *hsd) {
     return HSDS_YIELD_BACKREF;
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_yield_backref(heatshrink_decoder *hsd,
         output_info *oi) {
     size_t count = oi->buf_size - *oi->output_size;
@@ -296,12 +307,14 @@ static HSD_state st_yield_backref(heatshrink_decoder *hsd,
     return HSDS_YIELD_BACKREF;
 }
 
+ICACHE_FLASH_ATTR
 static HSD_state st_check_for_input(heatshrink_decoder *hsd) {
     return (hsd->input_size == 0) ? HSDS_EMPTY : HSDS_INPUT_AVAILABLE;
 }
     
 /* Get the next COUNT bits from the input buffer, saving incremental progress.
  * Returns NO_BITS on end of input, or if more than 31 bits are requested. */
+ICACHE_FLASH_ATTR
 static uint32_t get_bits(heatshrink_decoder *hsd, uint8_t count) {
 	int i;
     if (count > 31) { return NO_BITS; }
@@ -351,6 +364,7 @@ static uint32_t get_bits(heatshrink_decoder *hsd, uint8_t count) {
     return res;
 }
 
+ICACHE_FLASH_ATTR
 HSD_finish_res heatshrink_decoder_finish(heatshrink_decoder *hsd) {
     if (hsd == NULL) { return HSDR_FINISH_ERROR_NULL; }
     switch (hsd->state) {
@@ -377,6 +391,7 @@ HSD_finish_res heatshrink_decoder_finish(heatshrink_decoder *hsd) {
     }
 }
 
+ICACHE_FLASH_ATTR
 static void push_byte(heatshrink_decoder *hsd, output_info *oi, uint8_t byte) {
     LOG(" -- pushing byte: 0x%02x ('%c')\n", byte, isprint(byte) ? byte : '.');
     oi->buf[(*oi->output_size)++] = byte;
