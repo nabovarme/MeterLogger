@@ -98,7 +98,8 @@ void heatshrink_decoder_reset(heatshrink_decoder *hsd) {
 }
 
 /* Copy SIZE bytes into the decoder's input buffer, if it will fit. */
-cHSD_sink_res heatshrink_decoder_sink(heatshrink_decoder *hsd,
+ICACHE_FLASH_ATTR
+HSD_sink_res heatshrink_decoder_sink(heatshrink_decoder *hsd,
         uint8_t *in_buf, size_t size, size_t *input_size) {
     if ((hsd == NULL) || (in_buf == NULL) || (input_size == NULL)) {
         return HSDR_SINK_ERROR_NULL;
