@@ -256,7 +256,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_softap_ip_config();
 
 			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
-			wifi_station_set_reconnect_policy(0);
+			wifi_station_set_reconnect_policy(1);
 			wifi_cb(wifi_status);
 			break;
 		case EVENT_STAMODE_DHCP_TIMEOUT:
