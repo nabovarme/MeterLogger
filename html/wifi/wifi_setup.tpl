@@ -11,7 +11,7 @@ function createInputForAp(ap) {
 	var div=document.createElement("div");
 	div.id="apdiv";
 	var rssi=document.createElement("div");
-	var rssiVal=-Math.floor((Number(ap.rssi)+3)/-21)*32;
+	var rssiVal=-Math.floor((Number(ap.rssi)+3)/-21)*32 - 1;
 	rssi.className="icon";
 	rssi.style.backgroundPosition="0px "+rssiVal+"px";
 	var encrypt=document.createElement("div");
