@@ -61,11 +61,15 @@ user_rf_cal_sector_set(void)
 void __attribute__((weak))
 user_rf_pre_init(void)
 {
+  system_update_cpu_freq(160);
   // Warning: IF YOU DON'T KNOW WHAT YOU ARE DOING, DON'T TOUCH THESE CODE
 
   // Control RF_CAL by esp_init_data_default.bin(0~127byte) 108 byte when wakeup
   // Will low current
   // system_phy_set_rfoption(0)；
+
+  // 3: full RF calibration on reset (200ms)
+  system_phy_set_powerup_option(3);
 
   // Process RF_CAL when wakeup.
   // Will high current
