@@ -28,7 +28,7 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb);
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode);
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void);
 sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
-uint8_t ICACHE_FLASH_ATTR wifi_get_status();
+uint32_t ICACHE_FLASH_ATTR wifi_get_status();
 void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval);
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();

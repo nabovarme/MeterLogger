@@ -41,7 +41,7 @@ volatile bool wifi_scan_runnning = false;
 volatile sint8_t rssi = 31;	// set rssi to fail state at init time
 volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false;
-volatile uint8_t wifi_default_status = STATION_IDLE;
+volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
 
 static netif_input_fn orig_input_ap;
@@ -212,7 +212,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set default network status
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
-				wifi_default_status = wifi_status;
+				wifi_default_status = evt->event_info.disconnected.reason;
 			}
 			break;
 		case EVENT_STAMODE_DISCONNECTED:
@@ -222,7 +222,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set default network status
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
-				wifi_default_status = wifi_status;
+				wifi_default_status = evt->event_info.disconnected.reason;
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
@@ -250,7 +250,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
-				wifi_default_status = wifi_status;
+				wifi_default_status = evt->event_info.disconnected.reason;
 			}
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
@@ -270,7 +270,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set default network status
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
-				wifi_default_status = wifi_status;
+				wifi_default_status = evt->event_info.disconnected.reason;
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
@@ -623,7 +623,7 @@ sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
 	return rssi;
 }
 
-uint8_t ICACHE_FLASH_ATTR wifi_get_status() {
+uint32_t ICACHE_FLASH_ATTR wifi_get_status() {
 	return wifi_default_status;
 }
 
