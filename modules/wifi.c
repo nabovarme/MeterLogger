@@ -378,7 +378,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 //				printf("channel set to %d\n\r", channel);
 //#endif
 			}
-			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(STA_FALLBACK_SSID)) == 0)) {
+			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(info->ssid)) == 0)) {
 				wifi_fallback_present = true;
 			}
 //#ifdef DEBUG
