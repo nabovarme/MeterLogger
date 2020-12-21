@@ -313,7 +313,35 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", wifi_get_status() ? "connected" : "disconnected");
+	switch (wifi_get_status()) {
+		case STATION_IDLE:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "idle");
+			break;
+		
+		case STATION_CONNECTING:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connecting");
+			break;
+	
+		case STATION_WRONG_PASSWORD:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "wrong_password");
+			break;
+
+		case STATION_NO_AP_FOUND:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "no_ap_found");
+			break;
+
+		case STATION_CONNECT_FAIL:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connect_fail");
+			break;
+
+		case STATION_GOT_IP:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "got_ip");
+			break;
+			
+		default:
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "unknown");
+	}
+//	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", wifi_get_status() ? "connected" : "disconnected");
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
