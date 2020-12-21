@@ -317,91 +317,91 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	wifi_status = wifi_get_status();
 	switch (wifi_status) {
 		case REASON_UNSPECIFIED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "UNSPECIFIED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "unspecified");
 			break;
 		case REASON_AUTH_EXPIRE:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "AUTH_EXPIRE");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "auth_expire");
 			break;
 		case REASON_AUTH_LEAVE:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "AUTH_LEAVE");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "auth_leave");
 			break;
 		case REASON_ASSOC_EXPIRE:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ASSOC_EXPIRE");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "assoc_expire");
 			break;
 		case REASON_ASSOC_TOOMANY:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ASSOC_TOOMANY");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "assoc_toomany");
 			break;
 		case REASON_NOT_AUTHED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "NOT_AUTHED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "not_authed");
 			break;
 		case REASON_NOT_ASSOCED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "NOT_ASSOCED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "not_assoced");
 			break;
 		case REASON_ASSOC_LEAVE:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ASSOC_LEAVE");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "assoc_leave");
 			break;
 		case REASON_ASSOC_NOT_AUTHED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ASSOC_NOT_AUTHED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "assoc_not_authed");
 			break;
 		case REASON_DISASSOC_PWRCAP_BAD:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "DISASSOC_PWRCAP_BAD");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "disassoc_pwrcap_bad");
 			break;
 		case REASON_DISASSOC_SUPCHAN_BAD:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "DISASSOC_SUPCHAN_BAD");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "disassoc_supchan_bad");
 			break;
 		case REASON_IE_INVALID:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "IE_INVALID");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ie_invalid");
 			break;
 		case REASON_MIC_FAILURE:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "MIC_FAILURE");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "mic_failure");
 			break;
 		case REASON_4WAY_HANDSHAKE_TIMEOUT:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "4WAY_HANDSHAKE_TIMEOUT");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "4way_handshake_timeout");
 			break;
 		case REASON_GROUP_KEY_UPDATE_TIMEOUT:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "GROUP_KEY_UPDATE_TIMEOUT");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "group_key_update_timeout");
 			break;
 		case REASON_IE_IN_4WAY_DIFFERS:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "IE_IN_4WAY_DIFFERS");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ie_in_4way_differs");
 			break;
 		case REASON_GROUP_CIPHER_INVALID:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "GROUP_CIPHER_INVALID");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "group_cipher_invalid");
 			break;
 		case REASON_PAIRWISE_CIPHER_INVALID:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "PAIRWISE_CIPHER_INVALID");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "pairwise_cipher_invalid");
 			break;
 		case REASON_AKMP_INVALID:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "AKMP_INVALID");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "akmp_invalid");
 			break;
 		case REASON_UNSUPP_RSN_IE_VERSION:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "UNSUPP_RSN_IE_VERSION");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "unsupp_rsn_ie_version");
 			break;
 		case REASON_INVALID_RSN_IE_CAP:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "INVALID_RSN_IE_CAP");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "invalid_rsn_ie_cap");
 			break;
 		case REASON_802_1X_AUTH_FAILED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "802_1X_AUTH_FAILED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "802_1x_auth_failed");
 			break;
 		case REASON_CIPHER_SUITE_REJECTED:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "CIPHER_SUITE_REJECTED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "cipher_suite_rejected");
 			break;
 		case REASON_BEACON_TIMEOUT:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "BEACON_TIMEOUT");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "beacon_timeout");
 			break;
 		case REASON_NO_AP_FOUND:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "NO_AP_FOUND");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "no_ap_found");
 			break;
 		case REASON_AUTH_FAIL:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "AUTH_FAIL");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "auth_fail");
 			break;
 		case REASON_ASSOC_FAIL:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "ASSOC_FAIL");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "assoc_fail");
 			break;
 		case REASON_HANDSHAKE_TIMEOUT:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "HANDSHAKE_TIMEOUT");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "handshake_timeout");
 			break;
 		default:
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "CONNECTED");
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connected");
 	}
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
