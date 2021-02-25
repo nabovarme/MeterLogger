@@ -224,6 +224,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
+	add_watchdog(MQTT_WATCHDOG_REBOOT_ID, REBOOT, MQTT_WATCHDOG_REBOOT_TIMEOUT);
 }
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
