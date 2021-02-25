@@ -3,7 +3,7 @@
 #define MQTT_WATCHDOG_ID				1
 #define MQTT_WATCHDOG_REBOOT_ID			2
 #define MQTT_WATCHDOG_TIMEOUT			120		// restart wifi after 2 minutes without being able to send mqtt
-#define MQTT_WATCHDOG_REBOOT_TIMEOUT	7200	// reboot after 120 minutes without being able to send mqtt
+#define MQTT_WATCHDOG_REBOOT_TIMEOUT	86400	// reboot after 24 hours without being able to send mqtt
 
 #define NETWORK_RESTART_DELAY			6000	// wait 6 seconds between calling wifi_station_disconnect() and wifi_station_connect()
 
