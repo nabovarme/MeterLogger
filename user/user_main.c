@@ -655,10 +655,12 @@ ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 
 ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
+	reset_watchdog(MQTT_WATCHDOG_REBOOT_ID);
 }
 
 ICACHE_FLASH_ATTR void mqtt_ping_response_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
+	reset_watchdog(MQTT_WATCHDOG_REBOOT_ID);
 }
 
 ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args) {
