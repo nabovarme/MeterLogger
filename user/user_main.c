@@ -224,7 +224,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);
+#ifndef IMPULSE
 	add_watchdog(MQTT_WATCHDOG_REBOOT_ID, REBOOT, MQTT_WATCHDOG_REBOOT_TIMEOUT);
+#endif
 }
 
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
@@ -655,12 +657,16 @@ ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 
 ICACHE_FLASH_ATTR void mqtt_published_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
+#ifndef IMPULSE
 	reset_watchdog(MQTT_WATCHDOG_REBOOT_ID);
+#endif
 }
 
 ICACHE_FLASH_ATTR void mqtt_ping_response_cb(uint32_t *args) {
 	reset_watchdog(MQTT_WATCHDOG_ID);
+#ifndef IMPULSE
 	reset_watchdog(MQTT_WATCHDOG_REBOOT_ID);
+#endif
 }
 
 ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args) {
