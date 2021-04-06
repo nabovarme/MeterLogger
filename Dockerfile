@@ -17,7 +17,7 @@ FROM debian:stretch
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
 # unrar is non-free
-RUN "echo" "deb http://http.us.debian.org/debian stretch non-free" >> /etc/apt/sources.list
+RUN echo "deb http://http.us.debian.org/debian stretch non-free" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
@@ -56,11 +56,11 @@ RUN apt-get update && apt-get install -y \
 	software-properties-common
 
 # Java
-RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > /etc/apt/sources.list.d/linuxuprising-java.list && apt-get update
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EA8CACC073C3DB2A
+RUN echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main" > /etc/apt/sources.list.d/linuxuprising-java.list && apt-get update
 RUN echo oracle-java15-installer shared/accepted-oracle-license-v1-2 select true | sudo /usr/bin/debconf-set-selections
 RUN echo oracle-java15-installer shared/accepted-oracle-licence-v1-2 boolean true | sudo /usr/bin/debconf-set-selections
-RUN apt-get install -y --allow-unauthenticated oracle-java15-set-default
+RUN apt-get install -y --allow-unauthenticated oracle-java16-set-default
 
 # Adduser `meterlogger`
 RUN perl -pi -e 's/^#?\%sudo\W+ALL=\(ALL\:ALL\)\W+ALL/\%sudo\tALL=\(ALL\:ALL\) NOPASSWD\: ALL/' /etc/sudoers
@@ -80,7 +80,10 @@ RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-op
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
     cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout no_igmp_mdns
-RUN cd /meterlogger/esp-open-sdk && make STANDALONE=y
+RUN cd /meterlogger/esp-open-sdk && \
+    perl -pi -e 's/2\.1\.0/2\.3\.0/' crosstool-NG/config/companion_libs/expat.in && \
+    perl -pi -e 's/2_1_0/2_3_0/' crosstool-NG/config/companion_libs/expat.in && \
+    make STANDALONE=y
 
 # EspStackTraceDecoder.jar
 RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
