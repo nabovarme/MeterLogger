@@ -487,6 +487,7 @@ void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
             break;
             
         default:
+            strcpy(unit_string, "unknown");
             break;
     }
 }
