@@ -404,9 +404,9 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 	factor = int_pow(10, exponent);
     if (sign_i) {
         if (sign_e) {
-            result = value / int_pow(10, exponent);
+            result = value / factor;
             result_int = (int32_t)result;
-			result_frac = value - result_int * int_pow(10, exponent);
+			result_frac = value - result_int * factor;
             
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
@@ -421,9 +421,9 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
     }
     else {
         if (sign_e) {
-            result = value / int_pow(10, exponent);
+            result = value / factor;
             result_int = (int32_t)result;
-			result_frac = value - result_int * int_pow(10, exponent);
+			result_frac = value - result_int * factor;
             
 			// prepare decimal string
 			strcpy(leading_zeroes, "");
