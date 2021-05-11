@@ -38,7 +38,7 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
 
 
 ICACHE_FLASH_ATTR
-void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_string);
+bool kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_string);
 
 ICACHE_FLASH_ATTR
 void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string);

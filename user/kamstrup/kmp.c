@@ -363,7 +363,7 @@ uint16_t kmp_crc16() {
 }
 
 ICACHE_FLASH_ATTR
-void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_string) {
+bool kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_string) {
     double result;
     uint32_t result_int, result_frac;
     int8_t sign_i = (si_ex & 0x80) >> 7;
@@ -372,6 +372,10 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
 	uint32_t factor;
 	unsigned char leading_zeroes[16];
 	unsigned int i;
+	
+	if (exponent > 9) {
+		return false;
+	}
 	
 	factor = int_pow(10, exponent);
     if (sign_i) {
@@ -408,6 +412,8 @@ void kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_stri
             tfp_snprintf(value_string, 11, "%u", value * factor);
         }
     }
+	
+	return true;
 }
 
 ICACHE_FLASH_ATTR
