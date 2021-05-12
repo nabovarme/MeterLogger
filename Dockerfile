@@ -91,6 +91,7 @@ RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/r
 # meterlogger
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/MeterLogger.git && \
     cd /meterlogger/MeterLogger && git checkout master
+RUN cd /tmp && git clone https://github.com/espressif/esptool.git
 
 USER root
 
@@ -100,6 +101,6 @@ ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 
 WORKDIR /meterlogger/MeterLogger
-CMD cp /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py /meterlogger/MeterLogger/tools/ && \
+CMD cp /tmp/esptool/esptool.py /meterlogger/MeterLogger/tools/ && \
 	cd /meterlogger/MeterLogger && \
 	eval $BUILD_ENV make clean all
