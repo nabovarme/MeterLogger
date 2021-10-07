@@ -83,7 +83,7 @@ RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-o
 RUN cd /meterlogger/esp-open-sdk && \
     perl -pi -e 's/2\.1\.0/2\.4\.1/' crosstool-NG/config/companion_libs/expat.in && \
     perl -pi -e 's/2_1_0/2_4_1/' crosstool-NG/config/companion_libs/expat.in && \
-    perl -pi -e 's/http:\/\/isl\.gforge\.inria\.fr/https:\/\/github.com\/st0ff3r\/stuff\/raw\/master/' crosstool-NG/scripts/build/companion_libs/121-isl.sh && \
+    perl -pi -e 's/http:\/\/isl\.gforge\.inria\.fr/https:\/\/master\.dl\.sourceforge\.net\/project\/libisl/' crosstool-NG/scripts/build/companion_libs/121-isl.sh && \
     make STANDALONE=y
 
 # EspStackTraceDecoder.jar
