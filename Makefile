@@ -320,10 +320,10 @@ size:
 getstacktrace:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
 	
-stacktracedecode:
-	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
-	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
-	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
+#stacktracedecode:
+#	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
+#	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
+#	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
 
 objdump:
 	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
