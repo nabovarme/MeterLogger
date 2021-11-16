@@ -907,6 +907,9 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 		case AUTH_MAX:
 			strcpy(auth_mode_string, "MAX");
 			break;
+		default:
+			strcpy(auth_mode_string, "");
+			break;
 	}
 
 	switch (info->pairwise_cipher) {
@@ -931,6 +934,9 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 		case CIPHER_UNKNOWN:
 			strcpy(pairwise_cipher_string, "UNKNOWN");
 			break;
+		default:
+			strcpy(pairwise_cipher_string, "");
+			break;
 	}
 
 	switch (info->group_cipher) {
@@ -954,6 +960,9 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 			break;
 		case CIPHER_UNKNOWN:
 			strcpy(group_cipher_string, "UNKNOWN");
+			break;
+		default:
+			strcpy(group_cipher_string, "");
 			break;
 	}
 
