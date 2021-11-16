@@ -883,6 +883,79 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 
 	char ssid_escaped[SSID_ESCAPED_LENGTH + 1];
 	size_t i, j;
+	
+	char auth_mode_string[13];
+	char pairwise_cipher_string[10];
+	char group_cipher_string[10];
+
+	switch (info->authmode) {
+		case AUTH_OPEN:
+			strcpy(auth_mode_string, "OPEN");
+			break;
+		case AUTH_WEP:
+			strcpy(auth_mode_string, "WEP");
+			break;
+		case AUTH_WPA_PSK:
+			strcpy(auth_mode_string, "WPA_PSK");
+			break;
+		case AUTH_WPA2_PSK:
+			strcpy(auth_mode_string, "WPA2_PSK");
+			break;
+		case AUTH_WPA_WPA2_PSK:
+			strcpy(auth_mode_string, "WPA_WPA2_PSK");
+			break;
+		case AUTH_MAX:
+			strcpy(auth_mode_string, "MAX");
+			break;
+	}
+
+	switch (info->pairwise_cipher) {
+		case CIPHER_NONE:
+			strcpy(pairwise_cipher_string, "NONE");
+			break;
+		case CIPHER_WEP40:
+			strcpy(pairwise_cipher_string, "WEP40");
+			break;
+		case CIPHER_WEP104:
+			strcpy(pairwise_cipher_string, "WEP104");
+			break;
+		case CIPHER_TKIP:
+			strcpy(pairwise_cipher_string, "TKIP");
+			break;
+		case CIPHER_CCMP:
+			strcpy(pairwise_cipher_string, "CCMP");
+			break;
+		case CIPHER_TKIP_CCMP:
+			strcpy(pairwise_cipher_string, "TKIP_CCMP");
+			break;
+		case CIPHER_UNKNOWN:
+			strcpy(pairwise_cipher_string, "UNKNOWN");
+			break;
+	}
+
+	switch (info->group_cipher) {
+		case CIPHER_NONE:
+			strcpy(group_cipher_string, "NONE");
+			break;
+		case CIPHER_WEP40:
+			strcpy(group_cipher_string, "WEP40");
+			break;
+		case CIPHER_WEP104:
+			strcpy(group_cipher_string, "WEP104");
+			break;
+		case CIPHER_TKIP:
+			strcpy(group_cipher_string, "TKIP");
+			break;
+		case CIPHER_CCMP:
+			strcpy(group_cipher_string, "CCMP");
+			break;
+		case CIPHER_TKIP_CCMP:
+			strcpy(group_cipher_string, "TKIP_CCMP");
+			break;
+		case CIPHER_UNKNOWN:
+			strcpy(group_cipher_string, "UNKNOWN");
+			break;
+	}
 
 	// escape '&' since we are using it as separator
 	memset(ssid_escaped, 0, SSID_ESCAPED_LENGTH + 1);
@@ -898,7 +971,7 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 	}
 
 #ifdef DEBUG
-	os_printf("ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d\n", 
+	os_printf("ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d&auth_mode=%s&pairwise_cipher=%s&group_cipher=%s&phy_11b=%d&phy_11g=%d&phy_11n=%d&wps=%d\n", 
 		ssid_escaped, 
 		info->bssid[0], 
 		info->bssid[1], 
@@ -907,7 +980,14 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 		info->bssid[4], 
 		info->bssid[5], 
 		info->rssi, 
-		info->channel
+		info->channel,
+		auth_mode_string,
+		pairwise_cipher_string,
+		group_cipher_string,
+		info->phy_11b,
+		info->phy_11g,
+		info->phy_11n,
+		info->wps
 	);
 #endif
 
@@ -920,7 +1000,7 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d", 
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=%s&bssid=%02x:%02x:%02x:%02x:%02x:%02x&rssi=%d&channel=%d&auth_mode=%s&pairwise_cipher=%s&group_cipher=%s&phy_11b=%d&phy_11g=%d&phy_11n=%d&wps=%d", 
 		ssid_escaped, 
 		info->bssid[0], 
 		info->bssid[1], 
@@ -929,7 +1009,14 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 		info->bssid[4], 
 		info->bssid[5], 
 		info->rssi, 
-		info->channel
+		info->channel,
+		auth_mode_string,
+		pairwise_cipher_string,
+		group_cipher_string,
+		info->phy_11b,
+		info->phy_11g,
+		info->phy_11n,
+		info->wps
 	);
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
