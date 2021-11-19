@@ -809,7 +809,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "flash_size", FUNCTIONNAME_L) == 0) {
 		// found mem
-		mqtt_rpc_mem(&mqtt_client);
+		mqtt_rpc_flash_size(&mqtt_client);
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
