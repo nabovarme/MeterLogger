@@ -807,6 +807,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found mem
 		mqtt_rpc_mem(&mqtt_client);
 	}
+	else if (strncmp(function_name, "flash_size", FUNCTIONNAME_L) == 0) {
+		// found mem
+		mqtt_rpc_mem(&mqtt_client);
+	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
 		// found aes
 		mqtt_rpc_crypto(&mqtt_client);
@@ -1169,7 +1173,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("Software version: %s\n\r", VERSION);
 	printf("LWIP version: %s\n\r", LWIP_VERSION);
 	printf("Hardware model: %s\n\r", HW_MODEL);
-	printf("Flash id: 0x%x%s, size: %u kB\n\r", spi_flash_get_id(), flash_size ? "" : " (unknown manufacturer)", flash_size / 1024 / 8);
+	printf("Flash id: 0x%x%s, size: %u kB\n\r", spi_flash_get_id(), flash_size ? "" : " (unknown manufacturer)", flash_size / 1024);
 
 #ifdef DEBUG
 	printf("\t(DEBUG)\n\r");

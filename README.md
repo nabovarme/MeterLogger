@@ -178,6 +178,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
 | /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
 | /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
+| /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
 | /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
   
@@ -205,6 +206,7 @@ hmac sha256 key
 | /ap_status/v2/9999999/[unix time]               | [started or stopped]                                                                                 |
 | /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v2/9999999/[unix time]                     | heap=9672                                                                                            |
+| /flash_size/v2/9999999/[unix time]              | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
 
 
