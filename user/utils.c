@@ -338,7 +338,7 @@ size_t spi_flash_size() {					// returns the flash chip's size, in BYTES
 	else if (manufacturer_id == 0xe0) {		// LG Semi (Goldstar)
 		return 1 << size_id;
 	}
-	else if (manufacturer_id == 0x20) {		// Unknown nodeMCU flash chip
+	else if (manufacturer_id == 0x20) {		// XMC - Wuhan Xinxin Semiconductor Manufacturing Corp
 		return 1 << size_id;
 	}
 //	else if (manufacturer_id == 0x1c) {		// Mitsubishi
