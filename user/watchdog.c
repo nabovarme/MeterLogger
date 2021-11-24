@@ -211,4 +211,7 @@ ICACHE_FLASH_ATTR void force_reset_wifi() {
 	printf("scheduled wifi for restart...\n");
 #endif
 	disconnect_count++;
+#ifdef DEBUG
+	printf("disconnect_count: %u\n", disconnect_count);
+#endif
 }

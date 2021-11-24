@@ -227,6 +227,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
 				disconnect_count++;
+#ifdef DEBUG
+				printf("disconnect_count: %u\n", disconnect_count);
+#endif
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
@@ -277,6 +280,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
 				disconnect_count++;
+#ifdef DEBUG
+				printf("disconnect_count: %u\n", disconnect_count);
+#endif
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
