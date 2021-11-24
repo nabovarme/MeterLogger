@@ -771,6 +771,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found set_ssid
 		mqtt_rpc_scan(&mqtt_client);
 	}
+#ifdef DEBUG
+	else if (strncmp(function_name, "icmp_ping", FUNCTIONNAME_L) == 0) {
+		// found icmp_ping
+		mqtt_rpc_icmp_ping(&mqtt_client);
+	}
+#endif
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
 		// found set_ssid
 		mqtt_rpc_set_ssid(&mqtt_client, cleartext);
@@ -785,6 +791,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
 		// found reconnect
+		mqtt_rpc_reconnect(&mqtt_client);
+	}
+	else if (strncmp(function_name, "disconnect_count", FUNCTIONNAME_L) == 0) {
+		// found disconnect_count
 		mqtt_rpc_reconnect(&mqtt_client);
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {

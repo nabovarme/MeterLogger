@@ -44,6 +44,8 @@ volatile bool wifi_default_ok = false;
 volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
 
+uint32_t disconnect_count = 0;
+
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
@@ -223,6 +225,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
+				
+				disconnect_count++;
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
@@ -271,6 +275,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
+				
+				disconnect_count++;
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG

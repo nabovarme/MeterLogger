@@ -14,6 +14,8 @@ static os_timer_t watchdog_timer;
 static os_timer_t ext_watchdog_timer;
 static os_timer_t wifi_reconnect_timer;
 
+extern uint32_t disconnect_count;	// defined in wifi.c
+
 typedef struct{
 	volatile uint32_t id;
 	volatile watchdog_type_t type;
@@ -207,5 +209,6 @@ ICACHE_FLASH_ATTR void force_reset_wifi() {
 	os_timer_arm(&wifi_reconnect_timer, NETWORK_RESTART_DELAY, 0);
 #ifdef DEBUG
 	printf("scheduled wifi for restart...\n");
-#endif	
+#endif
+	disconnect_count++;
 }
