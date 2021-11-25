@@ -176,7 +176,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                                                                |
 | /config/v2/9999999/[unix time]/ap_status               |                                                                                                     |
 | /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
-| /config/v2/9999999/[unix time]/disconnect_count        |                                                                                                     |
+| /config/v2/9999999/[unix time]/network_quality         |                                                                                                     |
 | /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
 | /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
 | /config/v2/9999999/[unix time]/flash_id                |                                                                                                     |
@@ -206,7 +206,7 @@ hmac sha256 key
 | /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
 | /ap_status/v2/9999999/[unix time]               | [started or stopped]                                                                                 |
-| /disconnect_count/v2/9999999/[unix time]        | [number of times wifi has disconnected]                                                              |
+| /network_quality/v2/9999999/[unix time]         | [ping_response_time=2.000 mS&ping_error_count=0&disconnect_count=0]                                  |
 | /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
 | /mem/v2/9999999/[unix time]                     | heap=9672                                                                                            |
 | /flash_id/v2/9999999/[unix time]                | 0x164020                                                                                             |

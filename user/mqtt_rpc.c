@@ -173,13 +173,6 @@ void mqtt_rpc_scan(MQTT_Client *client) {
 	wifi_scan_result_cb_register(mqtt_send_wifi_scan_results_cb);
 }
 
-#ifdef DEBUG
-ICACHE_FLASH_ATTR
-void mqtt_rpc_icmp_ping(MQTT_Client *client) {
-	icmp_ping_mqtt_host();
-}
-#endif
-
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
