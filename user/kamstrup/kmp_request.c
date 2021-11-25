@@ -23,6 +23,7 @@ meter_sent_data_cb kmp_meter_sent_data_cb = NULL;
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
 volatile unsigned char fifo_buffer[QUEUE_SIZE];
+volatile size_t fifo_buffer_fill_count = 0;
 
 // allocate frame to send
 unsigned char frame[KMP_FRAME_L];
@@ -489,44 +490,46 @@ void kmp_request_destroy() {
 }
 
 // fifo
-unsigned int kmp_fifo_in_use() {
-	return fifo_head - fifo_tail;
+size_t kmp_fifo_in_use() {
+	return fifo_buffer_fill_count;
 }
 
-unsigned char kmp_fifo_put(unsigned char c) {
+bool kmp_fifo_put(unsigned char c) {
 	if (kmp_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
 		if (fifo_head == QUEUE_SIZE) {
 			fifo_head = 0;
 		}
-		return 1;
+		fifo_buffer_fill_count++;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
-unsigned char kmp_fifo_get(unsigned char *c) {
+bool kmp_fifo_get(unsigned char *c) {
 	if (kmp_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
 		if (fifo_tail == QUEUE_SIZE) {
 			fifo_tail = 0;
 		}
-		return 1;
+		fifo_buffer_fill_count--;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
-unsigned char kmp_fifo_snoop(unsigned char *c, unsigned int pos) {
+bool kmp_fifo_snoop(unsigned char *c, unsigned int pos) {
 	if (kmp_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
-		return 1;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }

@@ -27,6 +27,7 @@ meter_sent_data_cb en61107_meter_sent_data_cb = NULL;
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
 volatile unsigned char fifo_buffer[QUEUE_SIZE];
+volatile size_t fifo_buffer_fill_count = 0;
 
 // allocate frame to send
 char frame[EN61107_FRAME_L];
@@ -606,48 +607,50 @@ void en61107_uart_send_inst_values() {
 
 // fifo
 //ICACHE_FLASH_ATTR
-inline unsigned int en61107_fifo_in_use() {
-	return fifo_head - fifo_tail;
+inline size_t en61107_fifo_in_use() {
+	return fifo_buffer_fill_count;
 }
 
 //ICACHE_FLASH_ATTR
-inline unsigned char en61107_fifo_put(unsigned char c) {
+inline bool en61107_fifo_put(unsigned char c) {
 	if (en61107_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
 		if (fifo_head == QUEUE_SIZE) {
 			fifo_head = 0;
 		}
-		return 1;
+		fifo_buffer_fill_count++;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
 ICACHE_FLASH_ATTR
-unsigned char en61107_fifo_get(unsigned char *c) {
+bool en61107_fifo_get(unsigned char *c) {
 	if (en61107_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
 		if (fifo_tail == QUEUE_SIZE) {
 			fifo_tail = 0;
 		}
-		return 1;
+		fifo_buffer_fill_count--;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 
 ICACHE_FLASH_ATTR
-unsigned char en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
+bool en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
 	if (en61107_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
-		return 1;
+		return true;
 	}
 	else {
-		return 0;
+		return false;
 	}
 }
 

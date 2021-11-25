@@ -38,10 +38,10 @@ ICACHE_FLASH_ATTR
 void kmp_request_destroy();
 	
 // fifo
-unsigned int kmp_fifo_in_use();
+size_t kmp_fifo_in_use();
 
-unsigned char kmp_fifo_put(unsigned char c);
+bool kmp_fifo_put(unsigned char c);
 
-unsigned char kmp_fifo_get(unsigned char *c);
+bool kmp_fifo_get(unsigned char *c);
 
-unsigned char kmp_fifo_snoop(unsigned char *c, unsigned int pos);
+bool kmp_fifo_snoop(unsigned char *c, unsigned int pos);
