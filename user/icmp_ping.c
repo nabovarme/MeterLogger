@@ -67,11 +67,11 @@ void icmp_ping_recv(void *arg, void *pdata) {
 		printf("ping recv: byte = %d, time = %d ms \r\n", ping_resp->bytes, ping_resp->resp_time);
 #endif
 		// calculate moving average with fifo buffer
-		if (fifo_in_use() == MOVING_AVERAGE_BUFFER_SIZE) {
+		ping_response_count = fifo_in_use();
+		if (ping_response_count == MOVING_AVERAGE_BUFFER_SIZE) {
 			fifo_remove_last();
 		}
 		fifo_put(ping_resp->resp_time);
-		ping_response_count = fifo_in_use();
 		for (i = 0; i < ping_response_count; i++) {
 			fifo_snoop(&reponse_time, i);
 			network_response_time_sum += reponse_time * 1000;
