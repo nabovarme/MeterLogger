@@ -20,9 +20,6 @@ void icmp_ping_mqtt_host(void);
 
 // fifo
 ICACHE_FLASH_ATTR
-uint8_t fifo_in_use();
-
-ICACHE_FLASH_ATTR
 bool fifo_put(uint32_t c);
 
 ICACHE_FLASH_ATTR

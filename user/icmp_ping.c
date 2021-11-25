@@ -21,6 +21,7 @@ uint32_t network_average_response_time_us = 0;
 uint32_t network_response_time_error_count = 0;
 
 uint32_t network_moving_average_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
+uint8_t network_moving_average_buffer_fill_count;
 uint8_t h = 0;
 uint8_t t = 0;
 
@@ -50,7 +51,6 @@ ICACHE_FLASH_ATTR
 void icmp_ping_recv(void *arg, void *pdata) {
 	struct ping_resp *ping_resp = pdata;
 //	struct ping_option *ping_opt = arg;
-	uint8_t ping_response_count;
 	uint32_t network_response_time_sum = 0;
 	uint32_t reponse_time = 0;
 	uint8_t i;
@@ -67,18 +67,17 @@ void icmp_ping_recv(void *arg, void *pdata) {
 		printf("ping recv: byte = %d, time = %d ms \r\n", ping_resp->bytes, ping_resp->resp_time);
 #endif
 		// calculate moving average with fifo buffer
-		if (fifo_in_use() == MOVING_AVERAGE_BUFFER_SIZE) {
+		if (network_moving_average_buffer_fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
 			fifo_remove_last();
 		}
 		fifo_put(ping_resp->resp_time);
 		
-		ping_response_count = fifo_in_use();
-		if (ping_response_count > 0) {	// just to be sure
-			for (i = 0; i < ping_response_count; i++) {
+		if (network_moving_average_buffer_fill_count > 0) {	// just to be sure
+			for (i = 0; i < network_moving_average_buffer_fill_count; i++) {
 				fifo_snoop(&reponse_time, i);
 				network_response_time_sum += reponse_time * 1000;
 			}
-			network_average_response_time_us = network_response_time_sum / ping_response_count;
+			network_average_response_time_us = network_response_time_sum / network_moving_average_buffer_fill_count;
 			tfp_snprintf(network_average_response_time_us_str, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH, "%u", network_average_response_time_us);
 			divide_str_by_1000(network_average_response_time_us_str, network_average_response_time_ms_str);
 		}
@@ -129,18 +128,14 @@ void icmp_ping_mqtt_host(void) {
 
 // fifo
 ICACHE_FLASH_ATTR
-uint8_t fifo_in_use() {
-	return h - t;
-}
-
-ICACHE_FLASH_ATTR
 bool fifo_put(uint32_t c) {
-	if (fifo_in_use() != MOVING_AVERAGE_BUFFER_SIZE) {
+	if (network_moving_average_buffer_fill_count != MOVING_AVERAGE_BUFFER_SIZE) {
 		network_moving_average_buffer[h++ % MOVING_AVERAGE_BUFFER_SIZE] = c;
 		// wrap
 		if (h == MOVING_AVERAGE_BUFFER_SIZE) {
 			h = 0;
 		}
+		network_moving_average_buffer_fill_count++;
 		return true;
 	}
 	else {
@@ -150,12 +145,13 @@ bool fifo_put(uint32_t c) {
 
 ICACHE_FLASH_ATTR
 bool fifo_remove_last() {
-	if (fifo_in_use() != 0) {
+	if (network_moving_average_buffer_fill_count != 0) {
 		t++;
 		// wrap
 		if (t == MOVING_AVERAGE_BUFFER_SIZE) {
 			t = 0;
 		}
+		network_moving_average_buffer_fill_count--;
 		return true;
 	}
 	else {
@@ -165,8 +161,8 @@ bool fifo_remove_last() {
 
 ICACHE_FLASH_ATTR
 bool fifo_snoop(uint32_t *c, uint8_t pos) {
-	if (fifo_in_use() > (pos)) {
-        *c = network_moving_average_buffer[(t + pos) % MOVING_AVERAGE_BUFFER_SIZE];
+	if (network_moving_average_buffer_fill_count > (pos)) {
+		*c = network_moving_average_buffer[(t + pos) % MOVING_AVERAGE_BUFFER_SIZE];
 		return true;
 	}
 	else {
@@ -178,5 +174,5 @@ ICACHE_FLASH_ATTR
 void init_icmp_ping(void) {
 	// clear network_average_response_time_ms_str before use
 	memset(network_average_response_time_ms_str, 0, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH);
+	network_moving_average_buffer_fill_count = 0;
 }
-
