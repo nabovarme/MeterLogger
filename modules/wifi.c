@@ -24,6 +24,8 @@
 #include "config.h"
 #include "led.h"
 #include "tinyprintf.h"
+#include "unix_time.h"
+#include "icmp_ping.h"
 
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
@@ -45,6 +47,7 @@ volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
 
 uint32_t disconnect_count = 0;
+uint32_t last_uptime = 0;
 
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
@@ -640,9 +643,18 @@ uint32_t ICACHE_FLASH_ATTR wifi_get_status() {
 }
 
 void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
+	uint32_t uptime;
 #ifdef DEBUG
 	printf ("\t-> %s(%s)\n\r", __FUNCTION__, (interval == WIFI_SCAN_INTERVAL) ? "WIFI_SCAN_INTERVAL" : "WIFI_SCAN_INTERVAL_LONG");
 #endif
+	// update network_quality before we scan
+	// only ping once a minute
+	uptime = get_uptime();
+	if (last_uptime + 60 < uptime) {
+		icmp_ping_mqtt_host();
+		last_uptime = uptime;
+	}
+	
 	// start wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);

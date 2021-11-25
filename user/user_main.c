@@ -797,6 +797,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found disconnect_count
 		mqtt_rpc_disconnect_count(&mqtt_client);
 	}
+	else if (strncmp(function_name, "network_quality", FUNCTIONNAME_L) == 0) {
+		// found network_quality
+		mqtt_rpc_network_quality(&mqtt_client);
+	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {
 		// found uptime
 		mqtt_rpc_wifi_status(&mqtt_client);

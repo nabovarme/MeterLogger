@@ -29,6 +29,9 @@
 
 extern uint32_t disconnect_count;	// defined in wifi.c
 
+extern uint32_t network_average_response_time_ms;		// defined in icmp_ping.c
+extern uint32_t network_response_time_error_count;			// defined in icmp_ping.c
+
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -178,7 +181,7 @@ void mqtt_rpc_scan(MQTT_Client *client) {
 #ifdef DEBUG
 ICACHE_FLASH_ATTR
 void mqtt_rpc_icmp_ping(MQTT_Client *client) {
-	user_test_ping();
+	icmp_ping_mqtt_host();
 }
 #endif
 
@@ -325,6 +328,29 @@ void mqtt_rpc_disconnect_count(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", disconnect_count);
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_network_quality(MQTT_Client *client) {
+	// send disconnect count
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+		
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=%u mS&ping_error_count=%u&disconnect_count=%u", network_average_response_time_ms, network_response_time_error_count, disconnect_count);
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
