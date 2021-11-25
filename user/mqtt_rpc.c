@@ -338,7 +338,13 @@ void mqtt_rpc_network_quality(MQTT_Client *client) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=%s mS&ping_error_count=%u&disconnect_count=%u", network_average_response_time_ms_str, network_response_time_error_count, disconnect_count);
+	if (network_average_response_time_ms_str[0] == 0) {
+		// we have not received ping reply yet
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=unknown&ping_error_count=%u&disconnect_count=%u", network_response_time_error_count, disconnect_count);
+	}
+	else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=%s mS&ping_error_count=%u&disconnect_count=%u", network_average_response_time_ms_str, network_response_time_error_count, disconnect_count);
+	}
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
