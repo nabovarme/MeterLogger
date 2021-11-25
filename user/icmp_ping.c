@@ -171,3 +171,9 @@ bool fifo_snoop(uint32_t *c, uint8_t pos) {
 	}
 }
 
+ICACHE_FLASH_ATTR
+void init_icmp_ping(void) {
+	// clear network_average_response_time_ms_str before use
+	tfp_snprintf(network_average_response_time_ms_str, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH, "unknown");
+}
+

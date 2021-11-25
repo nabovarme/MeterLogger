@@ -22,6 +22,7 @@
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
 #include "watchdog.h"
+#include "icmp_ping.h"
 #include "version.h"
 
 #ifdef EN61107
@@ -1329,6 +1330,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #endif	
 	
 	init_unix_time();
+	
+	init_icmp_ping();
 
 	// start config mode/sample mode in meter_is_ready() via callback
 #ifdef EN61107

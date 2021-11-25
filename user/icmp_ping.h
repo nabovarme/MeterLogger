@@ -30,3 +30,6 @@ bool fifo_remove_last();
 
 ICACHE_FLASH_ATTR
 bool fifo_snoop(uint32_t *c, uint8_t pos);
+
+ICACHE_FLASH_ATTR
+void init_icmp_ping(void);
