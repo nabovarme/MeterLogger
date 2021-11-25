@@ -14,9 +14,6 @@
 static os_timer_t minute_timer;
 char sec_drift;
 
-extern MQTT_Client mqtt_client;					// declared in user_main.c
-extern uint8_t mesh_ssid[AP_SSID_LENGTH + 1];	// declared in user_main.c
-
 ICACHE_FLASH_ATTR
 void static minute_timer_func(void *arg) {
 	struct tm *dt;

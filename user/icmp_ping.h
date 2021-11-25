@@ -1,3 +1,8 @@
+#define NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH 8
+
+extern char network_average_response_time_ms_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
+extern uint32_t network_response_time_error_count;
+
 ICACHE_FLASH_ATTR
 void dns_found(const char *name, ip_addr_t *ip, void *arg);
 
@@ -20,10 +25,8 @@ uint8_t fifo_in_use();
 ICACHE_FLASH_ATTR
 bool fifo_put(uint32_t c);
 
-/*
 ICACHE_FLASH_ATTR
-bool fifo_get(uint32_t *c);
-*/
+bool fifo_remove_last();
 
 ICACHE_FLASH_ATTR
 bool fifo_snoop(uint32_t *c, uint8_t pos);

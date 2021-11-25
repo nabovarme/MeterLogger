@@ -10,11 +10,14 @@
 #include <lwip/opt.h>
 #include <espconn.h>
 
+#include "tinyprintf.h"
+#include "utils.h"
 #include "icmp_ping.h"
 
 #define MOVING_AVERAGE_BUFFER_SIZE 60
 
-uint32_t network_average_response_time_ms = 0;
+char network_average_response_time_ms_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
+uint32_t network_average_response_time_us = 0;
 uint32_t network_response_time_error_count = 0;
 
 uint32_t network_moving_average_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
@@ -51,6 +54,7 @@ void icmp_ping_recv(void *arg, void *pdata) {
 	uint32_t network_response_time_sum = 0;
 	uint32_t reponse_time = 0;
 	uint8_t i;
+	char network_average_response_time_us_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
 
 	if (ping_resp->ping_err == -1) {
 #ifdef DEBUG
@@ -63,13 +67,18 @@ void icmp_ping_recv(void *arg, void *pdata) {
 		printf("ping recv: byte = %d, time = %d ms \r\n", ping_resp->bytes, ping_resp->resp_time);
 #endif
 		// calculate moving average with fifo buffer
+		if (fifo_in_use() == MOVING_AVERAGE_BUFFER_SIZE) {
+			fifo_remove_last();
+		}
 		fifo_put(ping_resp->resp_time);
 		ping_response_count = fifo_in_use();
 		for (i = 0; i < ping_response_count; i++) {
 			fifo_snoop(&reponse_time, i);
 			network_response_time_sum += reponse_time * 1000;
 		}
-		network_average_response_time_ms = network_response_time_sum / ping_response_count / 1000;
+		network_average_response_time_us = network_response_time_sum / ping_response_count;
+		tfp_snprintf(network_average_response_time_us_str, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH, "%u", network_average_response_time_us);
+		divide_str_by_1000(network_average_response_time_us_str, network_average_response_time_ms_str);
 	}
 }
 
@@ -136,11 +145,10 @@ bool fifo_put(uint32_t c) {
 	}
 }
 
-/*
 ICACHE_FLASH_ATTR
-bool fifo_get(uint32_t *c) {
+bool fifo_remove_last() {
 	if (fifo_in_use() != 0) {
-		*c = network_moving_average_buffer[t++ % MOVING_AVERAGE_BUFFER_SIZE];
+		t++;
 		// wrap
 		if (t == MOVING_AVERAGE_BUFFER_SIZE) {
 			t = 0;
@@ -151,7 +159,6 @@ bool fifo_get(uint32_t *c) {
 		return false;
 	}
 }
-*/
 
 ICACHE_FLASH_ATTR
 bool fifo_snoop(uint32_t *c, uint8_t pos) {

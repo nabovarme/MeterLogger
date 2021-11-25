@@ -14,8 +14,6 @@ static os_timer_t watchdog_timer;
 static os_timer_t ext_watchdog_timer;
 static os_timer_t wifi_reconnect_timer;
 
-extern uint32_t disconnect_count;	// defined in wifi.c
-
 typedef struct{
 	volatile uint32_t id;
 	volatile watchdog_type_t type;

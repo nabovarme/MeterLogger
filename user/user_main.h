@@ -1,3 +1,6 @@
+extern MQTT_Client mqtt_client;
+extern uint8_t mesh_ssid[AP_SSID_LENGTH + 1];
+
 ICACHE_FLASH_ATTR void meter_is_ready(void);
 #ifndef IMPULSE
 ICACHE_FLASH_ATTR void meter_sent_data(void);

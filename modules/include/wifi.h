@@ -15,6 +15,8 @@
 #define WIFI_SCAN_TIMEOUT 60000
 #define RSSI_CHECK_INTERVAL 10000
 
+extern uint32_t disconnect_count;
+
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
