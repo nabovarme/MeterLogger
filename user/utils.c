@@ -67,7 +67,19 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 	}
 	return crc16;
 }
+
+ICACHE_FLASH_ATTR
+unsigned int decimal_number_length(int n) {
+	int digits;
 	
+	digits = n < 0;	//count "minus"
+	do {
+		digits++;
+	} while (n /= 10);
+	
+	return digits;
+}
+
 ICACHE_FLASH_ATTR
 int int_pow(int x, int y) {
 	int i;
