@@ -611,7 +611,9 @@ int tfp_vsscanf(const char *str, const char *format, ...) {
   int count = 0;
   int pos;
   char neg, fmt_code;
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
   const char *pf;
+#pragma GCC diagnostic pop
 
   va_start(ap, format);
 
