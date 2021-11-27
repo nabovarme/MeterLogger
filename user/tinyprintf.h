@@ -116,47 +116,46 @@ Update from  Cebotari Vladislav
 
 /* Global configuration */
 
-
 /* Set this to 0 if you do not want to provide tfp_printf */
 #ifndef TINYPRINTF_DEFINE_TFP_PRINTF
-# define TINYPRINTF_DEFINE_TFP_PRINTF 1
+  #define TINYPRINTF_DEFINE_TFP_PRINTF 1
 #endif
 
 /* Set this to 0 if you do not want to provide
    tfp_sprintf/snprintf/vsprintf/vsnprintf */
 #ifndef TINYPRINTF_DEFINE_TFP_SPRINTF
-# define TINYPRINTF_DEFINE_TFP_SPRINTF 1
+  #define TINYPRINTF_DEFINE_TFP_SPRINTF 1
 #endif
 
 /* Set this to 0 if you do not want tfp_printf and
    tfp_{vsn,sn,vs,s}printf to be also available as
    printf/{vsn,sn,vs,s}printf */
 #ifndef TINYPRINTF_OVERRIDE_LIBC
-# define TINYPRINTF_OVERRIDE_LIBC 0
+  #define TINYPRINTF_OVERRIDE_LIBC 0
 #endif
 
-# define TINY_PRINTF_FP_PRECISION 6
+#define TINY_PRINTF_FP_PRECISION 6
 
 /* Optional external types dependencies */
 
 #if TINYPRINTF_DEFINE_TFP_SPRINTF
-# include <sys/types.h>  /* size_t */
+  #include <sys/types.h> /* size_t */
 #endif
 
 /* Declarations */
 
 #ifdef __GNUC__
-# define _TFP_SPECIFY_PRINTF_FMT(fmt_idx,arg1_idx) \
-    __attribute__((format (printf, fmt_idx, arg1_idx)))
+  #define _TFP_SPECIFY_PRINTF_FMT(fmt_idx, arg1_idx) \
+    __attribute__((format(printf, fmt_idx, arg1_idx)))
 #else
-# define _TFP_SPECIFY_PRINTF_FMT(fmt_idx,arg1_idx)
+  #define _TFP_SPECIFY_PRINTF_FMT(fmt_idx, arg1_idx)
 #endif
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef void (*putcf) (void *, char);
+typedef void (*putcf)(void *, char);
 
 /*
    'tfp_format' really is the central function for all tinyprintf. For
@@ -172,29 +171,28 @@ ICACHE_FLASH_ATTR
 void tfp_format(void *putp, putcf putf, const char *fmt, va_list va);
 
 ICACHE_FLASH_ATTR
-int  tfp_vsscanf(const char* str, const char* format, ...);
+int tfp_vsscanf(const char *str, const char *format, ...);
 
 #if TINYPRINTF_DEFINE_TFP_SPRINTF
 ICACHE_FLASH_ATTR
 int tfp_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 
 ICACHE_FLASH_ATTR
-int tfp_snprintf(char *str, size_t size, const char *fmt, ...) \
-     _TFP_SPECIFY_PRINTF_FMT(3, 4);
+int tfp_snprintf(char *str, size_t size, const char *fmt, ...)
+    _TFP_SPECIFY_PRINTF_FMT(3, 4);
 
 ICACHE_FLASH_ATTR
 int tfp_vsprintf(char *str, const char *fmt, va_list ap);
 
 ICACHE_FLASH_ATTR
-int tfp_sprintf(char *str, const char *fmt, ...) \
-    _TFP_SPECIFY_PRINTF_FMT(2, 3);
+int tfp_sprintf(char *str, const char *fmt, ...) _TFP_SPECIFY_PRINTF_FMT(2, 3);
 
-# if TINYPRINTF_OVERRIDE_LIBC
-#  define vsnprintf tfp_vsnprintf
-#  define snprintf tfp_snprintf
-#  define vsprintf tfp_vsprintf
-#  define sprintf tfp_sprintf
-# endif
+#if TINYPRINTF_OVERRIDE_LIBC
+  #define vsnprintf tfp_vsnprintf
+  #define snprintf tfp_snprintf
+  #define vsprintf tfp_vsprintf
+  #define sprintf tfp_sprintf
+#endif
 #endif
 
 #if TINYPRINTF_DEFINE_TFP_PRINTF
@@ -204,12 +202,12 @@ void init_printf(void *putp, putcf putf);
 ICACHE_FLASH_ATTR
 void tfp_printf(char *fmt, ...) _TFP_SPECIFY_PRINTF_FMT(1, 2);
 
-# if TINYPRINTF_OVERRIDE_LIBC
-#  define printf tfp_printf
-# endif
+#if TINYPRINTF_OVERRIDE_LIBC
+  #define printf tfp_printf
+#endif
 #endif
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
