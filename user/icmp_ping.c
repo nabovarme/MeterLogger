@@ -75,7 +75,7 @@ void icmp_ping_recv(void *arg, void *pdata) {
 				fifo_snoop(&reponse_time, i);
 				network_response_time_sum += reponse_time;
 			}
-			network_average_response_time_ms = network_response_time_sum / network_moving_average_buffer_fill_count;
+			network_average_response_time_ms = (float)network_response_time_sum / (float)network_moving_average_buffer_fill_count;
 		}
 	}
 }
