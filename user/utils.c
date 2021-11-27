@@ -68,64 +68,6 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 	return crc16;
 }
 	
-ICACHE_FLASH_ATTR void cleanup_decimal_str(char *decimal_str, char *cleaned_up_str, unsigned int length) {
-	int32_t value_int, value_frac;
-	char *pos;
-	uint8_t decimals = 0;
-	int8_t prepend_zeroes;
-	char zeroes[8];
-	
-	memcpy(cleaned_up_str, decimal_str, length);
-	cleaned_up_str[length] = 0;	// null terminate
-	
-	pos = strstr(cleaned_up_str, ".");
-	if (pos == NULL) {
-		// non fractional number
-		value_int = atoi(cleaned_up_str);
-		tfp_snprintf(cleaned_up_str, length, "%d", value_int);
-	}
-	else {
-		// parse frac
-		while ((*(pos + 1 + decimals) >= '0') && (*(pos + 1 + decimals) <= '9')) {
-			// count the decimals
-			decimals++;
-		}
-		value_frac = atoi(pos + 1);
-		if (value_frac) {
-			prepend_zeroes = decimals - decimal_number_length(atoi(pos + 1));
-		
-			zeroes[0] = 0;	// null terminate
-			while (prepend_zeroes-- > 0) {
-				strcat(zeroes, "0");
-			}
-		}
-
-		// parse int
-		strncpy(cleaned_up_str, decimal_str, (pos - cleaned_up_str));
-		cleaned_up_str[cleaned_up_str - pos] = 0;	// null terminate
-		value_int = atoi(cleaned_up_str);
-
-		if (value_frac) {
-			tfp_snprintf(cleaned_up_str, length, "%d.%s%u", value_int, zeroes, value_frac);
-		}
-		else {
-			tfp_snprintf(cleaned_up_str, length, "%d", value_int);
-		}
-	}
-}
-
-ICACHE_FLASH_ATTR
-unsigned int decimal_number_length(int n) {
-	int digits;
-	
-	digits = n < 0;	//count "minus"
-	do {
-		digits++;
-	} while (n /= 10);
-	
-	return digits;
-}
-
 ICACHE_FLASH_ATTR
 int int_pow(int x, int y) {
 	int i;
