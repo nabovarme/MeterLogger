@@ -204,7 +204,7 @@ bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *fra
 				break;
 			case 7:
 				tfp_vsscanf(p, "%f", &value);
-				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%.0f", value);
+				tfp_snprintf(response->flow1.value, EN61107_VALUE_L, "%d", (int)value);
 				tfp_snprintf(response->flow1.unit, EN61107_UNIT_L, "%s", "l/h");
 				break;
 		}
