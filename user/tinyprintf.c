@@ -76,15 +76,17 @@ struct param {
     char alt:1;         /**<  alternate form */
     char uc:1;          /**<  Upper case (for base16 only) */
     char align_left:1;  /**<  0 == align right (default), 1 == align left */
-    unsigned int width; /**<  field width */
+    int width; /**<  field width */
     char sign;          /**<  The sign to display (if any) */
     unsigned int base;  /**<  number base (e.g.: 8, 10, 16) */
     char *bf;           /**<  Buffer to output */
+    char prec;          /**<  Floating point precision */
 };
 
 
 #ifdef PRINTF_LONG_LONG_SUPPORT
-ICACHE_FLASH_ATTR static void _TFP_GCC_NO_INLINE_ ulli2a(
+ICACHE_FLASH_ATTR
+static void _TFP_GCC_NO_INLINE_ ulli2a(
     unsigned long long int num, struct param *p)
 {
     int n = 0;
@@ -104,7 +106,8 @@ ICACHE_FLASH_ATTR static void _TFP_GCC_NO_INLINE_ ulli2a(
     *bf = 0;
 }
 
-ICACHE_FLASH_ATTR static void lli2a(long long int num, struct param *p)
+ICACHE_FLASH_ATTR
+static void lli2a(long long int num, struct param *p)
 {
     if (num < 0) {
         num = -num;
@@ -115,7 +118,8 @@ ICACHE_FLASH_ATTR static void lli2a(long long int num, struct param *p)
 #endif
 
 #ifdef PRINTF_LONG_SUPPORT
-ICACHE_FLASH_ATTR static void uli2a(unsigned long int num, struct param *p)
+ICACHE_FLASH_ATTR
+static void uli2a(unsigned long int num, struct param *p)
 {
     int n = 0;
     unsigned long int d = 1;
@@ -134,7 +138,8 @@ ICACHE_FLASH_ATTR static void uli2a(unsigned long int num, struct param *p)
     *bf = 0;
 }
 
-ICACHE_FLASH_ATTR static void li2a(long num, struct param *p)
+ICACHE_FLASH_ATTR
+static void li2a(long num, struct param *p)
 {
     if (num < 0) {
         num = -num;
@@ -144,7 +149,8 @@ ICACHE_FLASH_ATTR static void li2a(long num, struct param *p)
 }
 #endif
 
-ICACHE_FLASH_ATTR static void ui2a(unsigned int num, struct param *p)
+ICACHE_FLASH_ATTR
+static void ui2a(unsigned int num, struct param *p)
 {
     int n = 0;
     unsigned int d = 1;
@@ -163,7 +169,8 @@ ICACHE_FLASH_ATTR static void ui2a(unsigned int num, struct param *p)
     *bf = 0;
 }
 
-ICACHE_FLASH_ATTR static void i2a(int num, struct param *p)
+ICACHE_FLASH_ATTR
+static void i2a(int num, struct param *p)
 {
     if (num < 0) {
         num = -num;
@@ -172,7 +179,8 @@ ICACHE_FLASH_ATTR static void i2a(int num, struct param *p)
     ui2a(num, p);
 }
 
-ICACHE_FLASH_ATTR static int a2d(char ch)
+ICACHE_FLASH_ATTR
+static int a2d(char ch)
 {
     if (ch >= '0' && ch <= '9')
         return ch - '0';
@@ -184,7 +192,8 @@ ICACHE_FLASH_ATTR static int a2d(char ch)
         return -1;
 }
 
-ICACHE_FLASH_ATTR static char a2u(char ch, const char **src, int base, unsigned int *nump)
+ICACHE_FLASH_ATTR
+static char a2u(char ch, const char **src, int base, unsigned int *nump)
 {
     const char *p = *src;
     unsigned int num = 0;
@@ -200,7 +209,8 @@ ICACHE_FLASH_ATTR static char a2u(char ch, const char **src, int base, unsigned 
     return ch;
 }
 
-ICACHE_FLASH_ATTR static void putchw(void *putp, putcf putf, struct param *p)
+ICACHE_FLASH_ATTR
+static void putchw(void *putp, putcf putf, struct param *p)
 {
     char ch;
     int n = p->width;
@@ -252,9 +262,16 @@ ICACHE_FLASH_ATTR static void putchw(void *putp, putcf putf, struct param *p)
     }
 }
 
-ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_list va)
+ICACHE_FLASH_ATTR
+void tfp_format(void *putp, putcf putf, const char *fmt, va_list va)
 {
     struct param p;
+    double fval;
+    int    temp_buffer[16];
+    int    fpart;
+    int    fiter;
+    int    ffactor;
+    int    sign;
 #ifdef PRINTF_LONG_SUPPORT
     char bf[23];  /* long = 64b on some architectures */
 #else
@@ -276,7 +293,8 @@ ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_li
             p.width = 0;
             p.align_left = 0;
             p.sign = 0;
-
+            p.prec = TINY_PRINTF_FP_PRECISION;
+            
             /* Flags */
             while ((ch = *(fmt++))) {
                 switch (ch) {
@@ -288,6 +306,9 @@ ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_li
                     continue;
                 case '#':
                     p.alt = 1;
+                    continue;
+                case '+':
+                    p.sign = 1;
                     continue;
                 default:
                     break;
@@ -304,11 +325,16 @@ ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_li
              * we ignore the 'y' digit => this ignores 0-fill
              * size and makes it == width (ie. 'x') */
             if (ch == '.') {
-              p.lz = 1;  /* zero-padding */
+              //p.lz = 1;  /* zero-padding */
               /* ignore actual 0-fill size: */
-              do {
-                ch = *(fmt++);
-              } while ((ch >= '0') && (ch <= '9'));
+              ch = *(fmt++);
+              if (ch >= '0' && ch <= '9')
+                  p.prec = ch - '0';
+              do
+              {
+                  ch = *(fmt++);
+              }   while (ch >= '0' && ch <= '9');
+              
             }
 
 #ifdef PRINTF_SIZE_T_SUPPORT
@@ -414,6 +440,91 @@ ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_li
                 break;
             case '%':
                 putf(putp, ch);
+                break;
+            case 'f':
+            case 'F':
+                fval  = va_arg(va, double);
+                sign = 0;
+                if (fval < 0)
+                   {
+                       sign    = 1;
+                       p.width--;
+                       fval    = - fval;
+                   }
+                   else if (p.sign) {
+                       sign = 2;
+                       p.width--;
+                   }
+        
+                fpart = (int)fval;
+        
+                fiter = 0;
+                while (fpart != 0)
+                {
+                    temp_buffer[fiter++] = fpart % 10;
+                    fpart = fpart / 10;
+        
+                }
+                fiter--;
+                if (fiter == -1)
+                    p.width--;
+                /* Leading zeros */
+                if (p.lz) {
+        
+                    if (sign == 1)
+                        putf(putp, '-');
+                    else if (sign == 2)
+                        putf(putp, '+');
+        
+                    while (p.width-- > p.prec + fiter + 2)
+                    {
+                        putf(putp, '0');
+                    }
+                }
+                else
+                {
+        
+                    while (p.width-- > p.prec + fiter + 2)
+                    {
+                        putf(putp, ' ');
+                    }
+        
+                    if (sign == 1)
+                       putf(putp, '-');
+                    else if (sign == 2)
+                       putf(putp, '+');
+        
+                }
+        
+                if (fiter == -1)
+                    putf(putp, '0');
+                while (fiter > -1)
+                {
+                    putf(putp, '0' + (temp_buffer[fiter--]));
+                }
+        
+                putf(putp, '.');
+                ffactor = 1;
+                while (p.prec-- > 0)
+                {
+                    ffactor *= 10;
+                    fpart = (int)((fval - (int)fval)*ffactor);
+                    if (fpart == 0)
+                        putf(putp, '0');
+                }
+                fiter = 0;
+                while (fpart != 0)
+                {
+                    temp_buffer[fiter++] = fpart % 10;
+                    fpart = fpart / 10;
+        
+                }
+                fiter--;
+                while (fiter > -1)
+                {
+                    putf(putp, '0' + (temp_buffer[fiter--]));
+                }
+                break;
             default:
                 break;
             }
@@ -426,13 +537,15 @@ ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_li
 static putcf stdout_putf;
 static void *stdout_putp;
 
-ICACHE_FLASH_ATTR void init_printf(void *putp, putcf putf)
+ICACHE_FLASH_ATTR
+void init_printf(void *putp, putcf putf)
 {
     stdout_putf = putf;
     stdout_putp = putp;
 }
 
-ICACHE_FLASH_ATTR void tfp_printf(char *fmt, ...)
+ICACHE_FLASH_ATTR
+void tfp_printf(char *fmt, ...)
 {
     va_list va;
     va_start(va, fmt);
@@ -449,7 +562,8 @@ struct _vsnprintf_putcf_data
   size_t num_chars;
 };
 
-ICACHE_FLASH_ATTR static void _vsnprintf_putcf(void *p, char c)
+ICACHE_FLASH_ATTR
+static void _vsnprintf_putcf(void *p, char c)
 {
   struct _vsnprintf_putcf_data *data = (struct _vsnprintf_putcf_data*)p;
   if (data->num_chars < data->dest_capacity)
@@ -457,7 +571,8 @@ ICACHE_FLASH_ATTR static void _vsnprintf_putcf(void *p, char c)
   data->num_chars ++;
 }
 
-ICACHE_FLASH_ATTR int tfp_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+ICACHE_FLASH_ATTR
+int tfp_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 {
   struct _vsnprintf_putcf_data data;
 
@@ -477,7 +592,8 @@ ICACHE_FLASH_ATTR int tfp_vsnprintf(char *str, size_t size, const char *format, 
   return data.num_chars;
 }
 
-ICACHE_FLASH_ATTR int tfp_snprintf(char *str, size_t size, const char *format, ...)
+ICACHE_FLASH_ATTR
+int tfp_snprintf(char *str, size_t size, const char *format, ...)
 {
   va_list ap;
   int retval;
@@ -494,13 +610,15 @@ struct _vsprintf_putcf_data
   size_t num_chars;
 };
 
-ICACHE_FLASH_ATTR static void _vsprintf_putcf(void *p, char c)
+ICACHE_FLASH_ATTR
+static void _vsprintf_putcf(void *p, char c)
 {
   struct _vsprintf_putcf_data *data = (struct _vsprintf_putcf_data*)p;
   data->dest[data->num_chars++] = c;
 }
 
-ICACHE_FLASH_ATTR int tfp_vsprintf(char *str, const char *format, va_list ap)
+ICACHE_FLASH_ATTR
+int tfp_vsprintf(char *str, const char *format, va_list ap)
 {
   struct _vsprintf_putcf_data data;
   data.dest = str;
@@ -510,7 +628,8 @@ ICACHE_FLASH_ATTR int tfp_vsprintf(char *str, const char *format, va_list ap)
   return data.num_chars;
 }
 
-ICACHE_FLASH_ATTR int tfp_sprintf(char *str, const char *format, ...)
+ICACHE_FLASH_ATTR
+int tfp_sprintf(char *str, const char *format, ...)
 {
   va_list ap;
   int retval;
@@ -520,4 +639,222 @@ ICACHE_FLASH_ATTR int tfp_sprintf(char *str, const char *format, ...)
   va_end(ap);
   return retval;
 }
+
+ICACHE_FLASH_ATTR
+int tfp_vsscanf(const char* str, const char* format, ...)
+{
+    va_list ap;
+    int value, tmp;
+    float  fvalue;
+    double Fvalue;
+    int count = 0;
+    int pos;
+    char neg, fmt_code;
+    const char* pf;
+
+    va_start(ap, format);
+
+    for (pf = format, count = 0; *format != 0 && *str != 0; format++, str++)
+    {
+            while (*format == ' ' && *format != 0)  format++;
+            
+            if (*format == 0)
+                    break;
+
+            while (*str == ' ' && *str != 0)    str++;
+            
+            if (*str == 0)
+                    break;
+
+            if (*format == '%')
+            {
+                format++;
+                if (*format == 'n')
+                {
+                    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+                    {
+                        fmt_code = 'x';
+                        str += 2;
+                    }
+                    else
+                    if (str[0] == 'b')
+                    {
+                        fmt_code = 'b';
+                        str++;
+                    }
+                    else
+                        fmt_code = 'd';
+                }
+                    else
+                        fmt_code = *format;
+
+                switch (fmt_code)
+                {
+                    case 'x':
+                    case 'X':
+                        for (value = 0, pos = 0; *str != 0; str++, pos++)
+                        {
+                            if ('0' <= *str && *str <= '9')
+                                    tmp = *str - '0';
+                            else
+                            if ('a' <= *str && *str <= 'f')
+                                    tmp = *str - 'a' + 10;
+                            else
+                            if ('A' <= *str && *str <= 'F')
+                                    tmp = *str - 'A' + 10;
+                            else
+                                    break;
+
+                            value *= 16;
+                            value += tmp;
+                        }
+                        if (pos == 0)
+                            return count;
+                        *(va_arg(ap, int*)) = value;
+                        count++;
+                        break;
+
+                    case 'b':
+                        for (value = 0, pos = 0; *str != 0; str++, pos++)
+                        {
+                             if (*str != '0' && *str != '1')
+                                break;
+
+                            value *= 2;
+                            value += *str - '0';
+                        }
+
+                        if (pos == 0)
+                            return count;
+
+                        *(va_arg(ap, int*)) = value;
+                        count++;
+                        break;
+
+                    case 'd':
+                        if (*str == '-')
+                        {
+                            neg = 1;
+                            str++;
+                        }
+                        else
+                            neg = 0;
+                        for (value = 0, pos = 0; *str != 0; str++, pos++)
+                        {
+                            if ('0' <= *str && *str <= '9')
+                                    value = value*10 + (int)(*str - '0');
+                            else
+                                 break;
+                        }
+                        if (pos == 0)
+                            return count;
+                        *(va_arg(ap, int*)) = neg ? -value : value;
+                        count++;
+                        break;
+
+                    case 'f':
+                        if (*str == '-')
+                        {
+                            neg = 1;
+                            str++;
+                        }
+                        else
+                            neg = 0;
+
+                        int point_flag = 0;
+                        int exp        = 0;
+                        for (fvalue = 0, pos = 0; *str != 0 ; str++, pos++)
+                        {
+                            if (*str == '.')
+                            {
+                                point_flag = 1;
+                                str++;
+                            }
+                            if ('0' <= *str && *str <= '9')
+                                fvalue = fvalue*10 + (int)(*str - '0');
+                            else
+                                 break;
+
+                            if (point_flag == 1)
+                                exp++;
+
+                        }
+
+                        if (pos == 0)
+                            return count;
+
+                        for (pos = 0; pos < exp; pos++)
+                            fvalue = fvalue/10.0;
+
+                        *(va_arg(ap, float*)) = neg ? -fvalue : fvalue;
+                        count++;
+                        break;
+
+                    case 'F':
+                       if (*str == '-')
+                       {
+                           neg = 1;
+                           str++;
+                       }
+                       else
+                           neg = 0;
+
+                       int Fpoint_flag = 0;
+                       int Fexp        = 0;
+                       for (Fvalue = 0, pos = 0; *str != 0 ; str++, pos++)
+                       {
+
+                           if (*str == '.')
+                           {
+                               Fpoint_flag = 1;
+                               str++;
+                           }
+                           if ('0' <= *str && *str <= '9')
+                                Fvalue = Fvalue*10 + (int)(*str - '0');
+                           else
+                                break;
+
+                           if (Fpoint_flag == 1)
+                               Fexp++;
+
+                       }
+
+                       if (pos == 0)
+                            return count;
+                       for (pos = 0; pos < Fexp; pos++)
+                           Fvalue = Fvalue/10.0;
+                       *(va_arg(ap, double*)) = neg ? -Fvalue : Fvalue;
+                       count++;
+                       break;
+
+                    case 'c':
+                        *(va_arg(ap, char*)) = *str;
+                        count++;
+                        break;
+
+                    case 's':
+                        pos = 0;
+                        char* tab = va_arg(ap, char**);
+                        while (*str != ' ' && *str != 0)
+                            *(tab++) = *str++;
+                        *tab = 0;
+                        count++;
+                        break;
+
+                    default:
+                        return count;
+                    }
+            }
+            else
+            {
+                if (*format != *str)
+                    break;
+            }
+        }
+
+    va_end(ap);
+
+    return count;
+}
+
 #endif

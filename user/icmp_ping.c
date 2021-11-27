@@ -16,8 +16,7 @@
 
 #define MOVING_AVERAGE_BUFFER_SIZE 60
 
-char network_average_response_time_ms_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
-uint32_t network_average_response_time_us = 0;
+float network_average_response_time_ms = 0.0;
 uint32_t network_response_time_error_count = 0;
 
 uint32_t network_moving_average_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
@@ -54,7 +53,6 @@ void icmp_ping_recv(void *arg, void *pdata) {
 	uint32_t network_response_time_sum = 0;
 	uint32_t reponse_time = 0;
 	uint8_t i;
-	char network_average_response_time_us_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
 
 	if (ping_resp->ping_err == -1) {
 #ifdef DEBUG
@@ -75,11 +73,9 @@ void icmp_ping_recv(void *arg, void *pdata) {
 		if (network_moving_average_buffer_fill_count > 0) {	// just to be sure
 			for (i = 0; i < network_moving_average_buffer_fill_count; i++) {
 				fifo_snoop(&reponse_time, i);
-				network_response_time_sum += reponse_time * 1000;
+				network_response_time_sum += reponse_time;
 			}
-			network_average_response_time_us = network_response_time_sum / network_moving_average_buffer_fill_count;
-			tfp_snprintf(network_average_response_time_us_str, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH, "%u", network_average_response_time_us);
-			divide_str_by_1000(network_average_response_time_us_str, network_average_response_time_ms_str);
+			network_average_response_time_ms = network_response_time_sum / network_moving_average_buffer_fill_count;
 		}
 	}
 }
@@ -172,7 +168,5 @@ bool fifo_snoop(uint32_t *c, uint8_t pos) {
 
 ICACHE_FLASH_ATTR
 void init_icmp_ping(void) {
-	// clear network_average_response_time_ms_str before use
-	memset(network_average_response_time_ms_str, 0, NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH);
 	network_moving_average_buffer_fill_count = 0;
 }

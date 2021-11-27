@@ -96,6 +96,17 @@ functions.
 For further details see source code.
 
 regs Kusti, 23.10.2004
+
+
+31.01.2015
+Update from  Cebotari Vladislav
+       cebotari.vladislav@gmail.com
+
+- Added floating point support with different precision in x.y format
+       also with leading zeros possibility (like standard printf function).
+       Floating point printf is tested on tiva launchpad (tm4c123gh6pm TI mcu)
+- Also vsscanf for floats and double %f - float, %F - double
+
 */
 
 #ifndef __TFP_PRINTF__
@@ -104,6 +115,7 @@ regs Kusti, 23.10.2004
 #include <stdarg.h>
 
 /* Global configuration */
+
 
 /* Set this to 0 if you do not want to provide tfp_printf */
 #ifndef TINYPRINTF_DEFINE_TFP_PRINTF
@@ -122,6 +134,8 @@ regs Kusti, 23.10.2004
 #ifndef TINYPRINTF_OVERRIDE_LIBC
 # define TINYPRINTF_OVERRIDE_LIBC 0
 #endif
+
+# define TINY_PRINTF_FP_PRECISION 6
 
 /* Optional external types dependencies */
 
@@ -154,15 +168,27 @@ typedef void (*putcf) (void *, char);
    The 'tfp_printf' and 'tfp_sprintf' functions simply define their own
    callback and pass to it the right 'putp' it is expecting.
 */
-ICACHE_FLASH_ATTR void tfp_format(void *putp, putcf putf, const char *fmt, va_list va);
+ICACHE_FLASH_ATTR
+void tfp_format(void *putp, putcf putf, const char *fmt, va_list va);
+
+ICACHE_FLASH_ATTR
+int  tfp_vsscanf(const char* str, const char* format, ...);
 
 #if TINYPRINTF_DEFINE_TFP_SPRINTF
-ICACHE_FLASH_ATTR int tfp_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
-ICACHE_FLASH_ATTR int tfp_snprintf(char *str, size_t size, const char *fmt, ...) \
+ICACHE_FLASH_ATTR
+int tfp_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
+
+ICACHE_FLASH_ATTR
+int tfp_snprintf(char *str, size_t size, const char *fmt, ...) \
      _TFP_SPECIFY_PRINTF_FMT(3, 4);
-ICACHE_FLASH_ATTR int tfp_vsprintf(char *str, const char *fmt, va_list ap);
-ICACHE_FLASH_ATTR int tfp_sprintf(char *str, const char *fmt, ...) \
+
+ICACHE_FLASH_ATTR
+int tfp_vsprintf(char *str, const char *fmt, va_list ap);
+
+ICACHE_FLASH_ATTR
+int tfp_sprintf(char *str, const char *fmt, ...) \
     _TFP_SPECIFY_PRINTF_FMT(2, 3);
+
 # if TINYPRINTF_OVERRIDE_LIBC
 #  define vsnprintf tfp_vsnprintf
 #  define snprintf tfp_snprintf
@@ -172,8 +198,12 @@ ICACHE_FLASH_ATTR int tfp_sprintf(char *str, const char *fmt, ...) \
 #endif
 
 #if TINYPRINTF_DEFINE_TFP_PRINTF
-ICACHE_FLASH_ATTR void init_printf(void *putp, putcf putf);
-ICACHE_FLASH_ATTR void tfp_printf(char *fmt, ...) _TFP_SPECIFY_PRINTF_FMT(1, 2);
+ICACHE_FLASH_ATTR
+void init_printf(void *putp, putcf putf);
+
+ICACHE_FLASH_ATTR
+void tfp_printf(char *fmt, ...) _TFP_SPECIFY_PRINTF_FMT(1, 2);
+
 # if TINYPRINTF_OVERRIDE_LIBC
 #  define printf tfp_printf
 # endif

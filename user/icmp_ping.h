@@ -1,6 +1,6 @@
 #define NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH 8
 
-extern char network_average_response_time_ms_str[NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH];
+extern float network_average_response_time_ms;
 extern uint32_t network_response_time_error_count;
 
 ICACHE_FLASH_ATTR
