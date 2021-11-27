@@ -191,7 +191,7 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 #ifdef IMPULSE
 	char impulse_meter_serial[32 + 1];
 	char impulse_meter_units_string[32 + 1];
-	char impulse_meter_units[32 + 1];
+	float impulse_meter_units;
 	char impulses_per_unit[8 + 1];
 #endif
 	
@@ -214,8 +214,9 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	os_strncpy((char*)sys_cfg.mqtt_host, mqtthost, 64);
 #ifdef IMPULSE
 	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
-	kw_to_w_str(impulse_meter_units_string, impulse_meter_units);
-	os_strncpy((char*)sys_cfg.impulse_meter_units, impulse_meter_units, 32 + 1);
+	tfp_vsscanf(impulse_meter_units_string, "%f", &impulse_meter_units);
+	tfp_snprintf(impulse_meter_units_string, 32 + 1, "%.3f", impulse_meter_units / 1000.0);
+	os_strncpy((char*)sys_cfg.impulse_meter_units, impulse_meter_units_string, 32 + 1);
 	os_strncpy((char*)sys_cfg.impulses_per_unit, impulses_per_unit, 8 + 1);
 	sys_cfg.impulse_meter_count = 0;
 #endif
@@ -264,9 +265,6 @@ int ICACHE_FLASH_ATTR cgiWifiSetMode(HttpdConnData *connData) {
 //Template code for the WLAN page.
 void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg) {
 	char buff[1024];
-#ifdef IMPULSE
-	char impulse_meter_units[32 + 1];
-#endif // IMPULSE
 	int x;
 	//static struct station_config stconf;
 	if (token==NULL) return;
@@ -303,8 +301,7 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
 	}
 	else if (os_strcmp(token, "ImpulseMeterUnits") == 0) {
-		tfp_snprintf(impulse_meter_units, 32 + 1, "%u", atoi(sys_cfg.impulse_meter_units) + sys_cfg.impulse_meter_count * (1000 / atoi(sys_cfg.impulses_per_unit)));
-		divide_str_by_1000(impulse_meter_units, buff);
+		tfp_snprintf(buff, 32 + 1, "%.3f", (atoi(sys_cfg.impulse_meter_units) + sys_cfg.impulse_meter_count * (1000.0 / atoi(sys_cfg.impulses_per_unit))) / 1000.0);	
 	}
 	else if (os_strcmp(token, "ImpulsesPerUnit") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.impulses_per_unit);

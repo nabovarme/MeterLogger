@@ -43,9 +43,9 @@ static os_timer_t kmp_receive_timeout_timer;
 unsigned int kmp_requests_sent;
 
 #ifdef FLOW_METER
-volatile uint32_t v1_l = 0;
+volatile float v1_l = 0.0;
 #else
-volatile uint32_t e1_kwh = 0;
+volatile float e1_kwh = 0.0;
 #endif
 
 #ifdef DEBUG_NO_METER
@@ -70,12 +70,6 @@ static void kmp_received_task(os_event_t *events) {
     kmp_response_t response;
     unsigned char kmp_unit_string[16];
 	unsigned char kmp_value_string[64];
-
-#ifdef FLOW_METER
-	char v1_l_string[64];
-#else
-	char e1_kwh_string[64];
-#endif	// FLOW_METER
 
 	//ETS_UART_INTR_DISABLE();
 
@@ -232,8 +226,8 @@ static void kmp_received_task(os_event_t *events) {
 
 #ifdef FLOW_METER
 			// save volume for later use in kmp_get_received_volume_m3()
-			multiply_str_by_1000(kmp_value_string, v1_l_string);
-			v1_l = atoi(v1_l_string);
+			tfp_vsscanf(kmp_value_string, "%f", &v1_l);
+			v1_l = v1_l * 1000.0;
 #endif
         	
 #ifndef FLOW_METER
@@ -250,12 +244,9 @@ static void kmp_received_task(os_event_t *events) {
 
 #ifndef FLOW_METER
 			// save energy for later use in kmp_get_received_energy_kwh()
+			tfp_vsscanf(kmp_value_string, "%f", &e1_kwh);
 			if (strncmp(kmp_unit_string, "MWh", 3) == 0) {
-				mw_to_kw_str(kmp_value_string, e1_kwh_string);
-				e1_kwh = atoi(e1_kwh_string);
-			}
-			else {
-				e1_kwh = atoi(kmp_value_string);
+				e1_kwh = e1_kwh * 1000.0;
 			}
 #endif
         	
@@ -325,7 +316,7 @@ uint32_t kmp_get_received_volume_l() {
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	return v1_l;
+	return (int32_t)v1_l;
 #endif
 }
 #else
@@ -335,7 +326,7 @@ uint32_t kmp_get_received_energy_kwh() {
 #ifdef DEBUG_NO_METER
 	return pseudo_data_debug_no_meter;
 #else
-	return e1_kwh;
+	return (uint32_t)e1_kwh;
 #endif
 }
 #endif	// FLOW_METER
@@ -453,7 +444,7 @@ void kmp_request_send() {
 		pseudo_data_debug_no_meter,										// v1
 		pseudo_data_debug_no_meter										// e1
 	);
-	e1_kwh = pseudo_data_debug_no_meter;
+	e1_kwh = (float)pseudo_data_debug_no_meter;
 
 	// tell user_main we got a serial
 	if (kmp_meter_is_ready_cb && !meter_is_ready_cb_called) {

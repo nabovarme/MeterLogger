@@ -174,29 +174,30 @@ ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	char *p;
 	int i = 0;
+	float value;
 	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
 	p = strtok(frame, " ");	// returns null terminated string
 	while (p != NULL) {
 		switch (i) {
 			case 3:
-				divide_str_by_100(p, decimal_str);
-				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_vsscanf(p, "%f", &value);
+				tfp_snprintf(response->t1.value, EN61107_VALUE_L, "%.2f", value / 100.0);
 				tfp_snprintf(response->t1.unit, EN61107_UNIT_L, "%s", "C");
 				break;
 			case 4:
-				divide_str_by_100(p, decimal_str);
-				tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_vsscanf(p, "%f", &value);
+				tfp_snprintf(response->t2.value, EN61107_VALUE_L, "%.2f", value / 100.0);
 				tfp_snprintf(response->t2.unit, EN61107_UNIT_L, "%s", "C");
 				break;
 			case 5:
-				divide_str_by_100(p, decimal_str);
-				tfp_snprintf(response->tdif.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_vsscanf(p, "%f", &value);
+				tfp_snprintf(response->tdif.value, EN61107_VALUE_L, "%.2f", value / 100.0);
 				tfp_snprintf(response->tdif.unit, EN61107_UNIT_L, "%s", "C");
 				break;
 			case 6:
-				divide_str_by_10(p, decimal_str);
-				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%s", decimal_str);
+				tfp_vsscanf(p, "%f", &value);
+				tfp_snprintf(response->effect1.value, EN61107_VALUE_L, "%.3f", value / 10.0);
 				tfp_snprintf(response->effect1.unit, EN61107_UNIT_L, "%s", "kW");
 				break;
 			case 7:
@@ -270,15 +271,16 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	char *p;
+	float value;
 	int i = 0;
-	char decimal_str[EN61107_VALUE_L + 1];	// 1 char more for .
 
 	p = strtok(frame, " ");	// returns null terminated string
 	while (p != NULL) {
 		switch (i) {
 			case 1:
-				divide_str_by_100(p, decimal_str);	// t3 resolution of 0.01°C.
-				tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%s", decimal_str);
+				// t3 resolution of 0.01°C.
+				tfp_vsscanf(p, "%f", &value);
+				tfp_snprintf(response->t3.value, EN61107_VALUE_L, "%.3f", value / 100.0);
 				tfp_snprintf(response->t3.unit, EN61107_UNIT_L, "%s", "C");
 				break;
 		}

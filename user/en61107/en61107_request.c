@@ -356,11 +356,12 @@ unsigned int en61107_get_received_volume_l() {
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 unsigned int en61107_get_received_energy_kwh() {
-	char e1_kwh[EN61107_VALUE_L];
+	float e1_kwh;
 
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
-		mw_to_kw_str(response.e1.value, e1_kwh);
-		return atoi(e1_kwh);
+		tfp_vsscanf(response.e1.value, "%f", &e1_kwh);
+		e1_kwh = e1_kwh / 1000.0;
+		return (int)e1_kwh;
 	}
 	else {
 		return atoi(response.e1.value);

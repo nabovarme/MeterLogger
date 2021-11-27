@@ -101,7 +101,6 @@ void mqtt_rpc_vdd(MQTT_Client *client) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	
-	char decimal_str[8];	// temp var for divide_str_by_ functions
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
@@ -112,8 +111,7 @@ void mqtt_rpc_vdd(MQTT_Client *client) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(decimal_str, 8, "%u", system_get_vdd33());
-	divide_str_by_1000(decimal_str, cleartext);
+	tfp_snprintf(cleartext, 8, "%.3f", (float)system_get_vdd33() / 1000.0);
 #ifdef DEBUG
 	printf("vdd: %s\n", cleartext);
 #endif
@@ -776,8 +774,6 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
 	char volume_string[32];
-	char offline_close_at_string[32];
-	char offline_close_at_m3_string[32];
 	
 	multiply_str_by_1000(value, volume_string);
 	int_value = atoi(volume_string);
@@ -808,9 +804,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	memset(cleartext, 0, sizeof(cleartext));
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
-	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at);
-	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)sys_cfg.offline_close_at / 1000.0);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at);
 #endif	// FLOW_METER
@@ -845,8 +839,6 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
 	char volume_string[32];
-	char offline_close_at_string[32];
-	char offline_close_at_m3_string[32];
 	
 	multiply_str_by_1000(value, volume_string);
 	int_value = atoi(volume_string);
@@ -885,18 +877,14 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 #ifdef EN61107
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
-	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at - en61107_get_received_volume_l());
-	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)(sys_cfg.offline_close_at - en61107_get_received_volume_l()) / 1000.0);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
 #endif	// FLOW_METER
 #else
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
-	tfp_snprintf(offline_close_at_string, 32, "%d", sys_cfg.offline_close_at - kmp_get_received_volume_l());
-	divide_str_by_1000(offline_close_at_string, offline_close_at_m3_string);
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", offline_close_at_m3_string);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)(sys_cfg.offline_close_at - kmp_get_received_volume_l()) / 1000.0);
 #else
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
 #endif	// FLOW_METER
