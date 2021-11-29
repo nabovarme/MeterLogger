@@ -262,7 +262,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -288,14 +288,19 @@ $(BUILD_DIR):
 firmware:
 	$(Q) mkdir -p $@
 
-flash: $(FW_FILE_1)  $(FW_FILE_2)
+patch:
+	$(vecho) "PATCH $(TARGET_OUT) (ieee80211_add_csa(): 3177ef -> 0df000)"
+	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/3177ef/0df000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
+
+flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
-	cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
+	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
 
 mkespfsimage/mkespfsimage: mkespfsimage/
-	make -C mkespfsimage
+	$(Q) make -C mkespfsimage
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
@@ -314,8 +319,8 @@ flash107th_bit_0xff:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
 
 size:
-	$(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
-	$(SIZE) -B -t -d $(APP_AR) | tee -a $(BUILD_BASE)/../app_app.size
+	$(Q) $(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
+	$(Q) $(SIZE) -B -t -d $(APP_AR) | tee -a $(BUILD_BASE)/../app_app.size
 
 getstacktrace:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
