@@ -262,7 +262,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) patch_firmware
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -292,11 +292,9 @@ patch:
 	$(vecho) "PATCH $(TARGET_OUT) (ieee80211_add_csa(): 3177ef -> 0df000)"
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/3177ef/0df000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
-
-patch_firmware:
-	$(vecho) "PATCH $(FW_FILE_1) (add -patched to version)"
-	$(Q) xxd -e -p $(FW_FILE_1) | tr -d '\n' | perl -p -e 's/2838316264653639290000000000000000/28383162646536392d7061746368656429/' | xxd -r -e -p  > $(FW_FILE_1)-patched
-	$(Q) mv $(FW_FILE_1)-patched $(FW_FILE_1)
+	$(vecho) "PATCH $(TARGET_OUT) (add -patched to version)"
+	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/2838316264653639290000000000000000/28383162646536392d7061746368656429/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
