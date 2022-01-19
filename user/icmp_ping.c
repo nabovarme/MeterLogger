@@ -57,8 +57,8 @@ void icmp_ping_recv(void *arg, void *pdata) {
 	if (ping_resp->ping_err == -1) {
 #ifdef DEBUG
 		printf("ping host fail \r\n");
-		network_response_time_error_count++;
 #endif
+		network_response_time_error_count++;
 	}
 	else {
 #ifdef DEBUG
