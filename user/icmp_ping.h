@@ -1,7 +1,8 @@
 #define NETWORK_AVERAGE_RESPONSE_TIME_MS_LENGTH 8
 
-extern float network_average_response_time_ms;
-extern uint32_t network_response_time_error_count;
+extern float ping_average_response_time_ms;
+extern uint32_t ping_error_count;
+//extern float ping_average_error_rate;
 
 ICACHE_FLASH_ATTR
 void dns_found(const char *name, ip_addr_t *ip, void *arg);
