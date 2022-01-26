@@ -22,10 +22,8 @@ float ping_average_response_time_ms = 0.0;
 uint32_t ping_error_count = 0;
 //float ping_average_error_rate = 0.0;
 
-uint32_t ping_moving_average_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
-uint8_t ping_moving_average_buffer_fill_count;
-uint8_t h = 0;
-uint8_t t = 0;
+ring_buffer_t ping_response_time_ring_buffer;
+uint32_t buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
 
 struct ping_option ping_opt;
 
@@ -68,17 +66,17 @@ void icmp_ping_recv(void *arg, void *pdata) {
 		printf("ping recv: byte = %d, time = %d ms \r\n", ping_resp->bytes, ping_resp->resp_time);
 #endif
 		// calculate moving average with fifo buffer
-		if (ping_moving_average_buffer_fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
-			fifo_remove_last();
+		if (ping_response_time_ring_buffer.fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
+			ring_buffer_remove_last(&ping_response_time_ring_buffer);
 		}
-		fifo_put(ping_resp->resp_time);
+		ring_buffer_put(&ping_response_time_ring_buffer, ping_resp->resp_time);
 		
-		if (ping_moving_average_buffer_fill_count > 0) {	// just to be sure
-			for (i = 0; i < ping_moving_average_buffer_fill_count; i++) {
-				fifo_snoop(&reponse_time, i);
+		if (ping_response_time_ring_buffer.fill_count > 0) {	// just to be sure
+			for (i = 0; i < ping_response_time_ring_buffer.fill_count; i++) {
+				ring_buffer_snoop(&ping_response_time_ring_buffer, &reponse_time, i);
 				network_response_time_sum += reponse_time;
 			}
-			ping_average_response_time_ms = (float)network_response_time_sum / (float)ping_moving_average_buffer_fill_count;
+			ping_average_response_time_ms = (float)network_response_time_sum / (float)ping_response_time_ring_buffer.fill_count;
 		}
 	}
 	
@@ -132,16 +130,16 @@ void icmp_ping_mqtt_host(void) {
 	}
 }
 
-// fifo
+// ring buffer
 ICACHE_FLASH_ATTR
-bool fifo_put(uint32_t c) {
-	if (ping_moving_average_buffer_fill_count != MOVING_AVERAGE_BUFFER_SIZE) {
-		ping_moving_average_buffer[h++ % MOVING_AVERAGE_BUFFER_SIZE] = c;
+bool ring_buffer_put(ring_buffer_t *rb, uint32_t c) {
+	if (rb->fill_count != MOVING_AVERAGE_BUFFER_SIZE) {
+		rb->buffer[rb->h++ % MOVING_AVERAGE_BUFFER_SIZE] = c;
 		// wrap
-		if (h == MOVING_AVERAGE_BUFFER_SIZE) {
-			h = 0;
+		if (rb->h == MOVING_AVERAGE_BUFFER_SIZE) {
+			rb->h = 0;
 		}
-		ping_moving_average_buffer_fill_count++;
+		rb->fill_count++;
 		return true;
 	}
 	else {
@@ -150,14 +148,14 @@ bool fifo_put(uint32_t c) {
 }
 
 ICACHE_FLASH_ATTR
-bool fifo_remove_last() {
-	if (ping_moving_average_buffer_fill_count != 0) {
-		t++;
+bool ring_buffer_remove_last(ring_buffer_t *rb) {
+	if (rb->fill_count != 0) {
+		rb->t++;
 		// wrap
-		if (t == MOVING_AVERAGE_BUFFER_SIZE) {
-			t = 0;
+		if (rb->t == MOVING_AVERAGE_BUFFER_SIZE) {
+			rb->t = 0;
 		}
-		ping_moving_average_buffer_fill_count--;
+		rb->fill_count--;
 		return true;
 	}
 	else {
@@ -166,9 +164,9 @@ bool fifo_remove_last() {
 }
 
 ICACHE_FLASH_ATTR
-bool fifo_snoop(uint32_t *c, uint8_t pos) {
-	if (ping_moving_average_buffer_fill_count > (pos)) {
-		*c = ping_moving_average_buffer[(t + pos) % MOVING_AVERAGE_BUFFER_SIZE];
+bool ring_buffer_snoop(ring_buffer_t *rb, uint32_t *c, uint8_t pos) {
+	if (rb->fill_count > (pos)) {
+		*c = rb->buffer[(rb->t + pos) % MOVING_AVERAGE_BUFFER_SIZE];
 		return true;
 	}
 	else {
@@ -178,5 +176,8 @@ bool fifo_snoop(uint32_t *c, uint8_t pos) {
 
 ICACHE_FLASH_ATTR
 void init_icmp_ping(void) {
-	ping_moving_average_buffer_fill_count = 0;
+	ping_response_time_ring_buffer.fill_count = 0;
+	ping_response_time_ring_buffer.h = 0;
+	ping_response_time_ring_buffer.t = 0;
+	ping_response_time_ring_buffer.buffer = (uint32_t *)&buffer;
 }

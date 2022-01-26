@@ -19,15 +19,25 @@ void icmp_ping(ip_addr_t *ip);
 ICACHE_FLASH_ATTR
 void icmp_ping_mqtt_host(void);
 
+
 // fifo
-ICACHE_FLASH_ATTR
-bool fifo_put(uint32_t c);
+
+typedef struct {
+	uint32_t *buffer;
+	uint8_t fill_count;
+	uint8_t h;
+	uint8_t t;
+} ring_buffer_t;
 
 ICACHE_FLASH_ATTR
-bool fifo_remove_last();
+bool ring_buffer_put(ring_buffer_t *rb, uint32_t c);
 
 ICACHE_FLASH_ATTR
-bool fifo_snoop(uint32_t *c, uint8_t pos);
+bool ring_buffer_remove_last(ring_buffer_t *rb);
+
+ICACHE_FLASH_ATTR
+bool ring_buffer_snoop(ring_buffer_t *rb, uint32_t *c, uint8_t pos);
+
 
 ICACHE_FLASH_ATTR
 void init_icmp_ping(void);
