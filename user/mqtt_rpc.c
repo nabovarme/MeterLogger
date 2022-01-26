@@ -341,7 +341,7 @@ void mqtt_rpc_network_quality(MQTT_Client *client) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=unknown&ping_average_packet_loss=unknown&disconnect_count=%u", disconnect_count);
 	}
 	else {
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=%.3f mS&ping_average_packet_loss=%.3f\%&disconnect_count=%u", ping_average_response_time_ms, (100.0 * ping_average_packet_loss), disconnect_count);
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ping_response_time=%.3f mS&ping_average_packet_loss=%.3f%%&disconnect_count=%u", ping_average_response_time_ms, (100.0 * ping_average_packet_loss), disconnect_count);
 	}
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
