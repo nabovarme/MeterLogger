@@ -19,11 +19,13 @@
 uint32_t ping_count = 0;
 
 float ping_average_response_time_ms = 0.0;
-uint32_t ping_error_count = 0;
-//float ping_average_error_rate = 0.0;
+float ping_average_packet_loss = 0.0;
 
 ring_buffer_t ping_response_time_ring_buffer;
-uint32_t buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
+uint32_t response_time_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
+
+ring_buffer_t ping_packet_loss_ring_buffer;
+uint32_t packet_loss_buffer[MOVING_AVERAGE_BUFFER_SIZE];	// 1 hour moving average
 
 struct ping_option ping_opt;
 
@@ -51,39 +53,55 @@ ICACHE_FLASH_ATTR
 void icmp_ping_recv(void *arg, void *pdata) {
 	struct ping_resp *ping_resp = pdata;
 //	struct ping_option *ping_opt = arg;
-	uint32_t network_response_time_sum = 0;
-	uint32_t reponse_time = 0;
+	uint32_t data = 0;
+	uint32_t ping_response_time_sum = 0;
+	uint32_t ping_packet_loss_sum = 0;
 	uint8_t i;
 
 	if (ping_resp->ping_err == -1) {
 #ifdef DEBUG
 		printf("ping host fail \r\n");
 #endif
-		ping_error_count++;
+		// count packets lost
+		if (ping_packet_loss_ring_buffer.fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
+			ring_buffer_remove_last(&ping_packet_loss_ring_buffer);
+		}
+		ring_buffer_put(&ping_packet_loss_ring_buffer, 1);
 	}
 	else {
 #ifdef DEBUG
 		printf("ping recv: byte = %d, time = %d ms \r\n", ping_resp->bytes, ping_resp->resp_time);
 #endif
-		// calculate moving average with fifo buffer
+		// count packets received
+		if (ping_packet_loss_ring_buffer.fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
+			ring_buffer_remove_last(&ping_packet_loss_ring_buffer);
+		}
+		ring_buffer_put(&ping_packet_loss_ring_buffer, 0);
+		
+		// add to ping_response_time_ring_buffer
 		if (ping_response_time_ring_buffer.fill_count == MOVING_AVERAGE_BUFFER_SIZE) {
 			ring_buffer_remove_last(&ping_response_time_ring_buffer);
 		}
 		ring_buffer_put(&ping_response_time_ring_buffer, ping_resp->resp_time);
 		
+		// calculate moving average with ring buffer for ping_response_time
 		if (ping_response_time_ring_buffer.fill_count > 0) {	// just to be sure
 			for (i = 0; i < ping_response_time_ring_buffer.fill_count; i++) {
-				ring_buffer_snoop(&ping_response_time_ring_buffer, &reponse_time, i);
-				network_response_time_sum += reponse_time;
+				ring_buffer_snoop(&ping_response_time_ring_buffer, &data, i);
+				ping_response_time_sum += data;
 			}
-			ping_average_response_time_ms = (float)network_response_time_sum / (float)ping_response_time_ring_buffer.fill_count;
+			ping_average_response_time_ms = (float)ping_response_time_sum / (float)ping_response_time_ring_buffer.fill_count;
 		}
 	}
-	
-	// update ping_average_error_rate
-//	if (ping_count) {
-//		ping_average_error_rate = (float)ping_error_count / (float)ping_count;
-//	}
+		
+	// calculate moving average with ring buffer for ping_packet_loss
+	if (ping_packet_loss_ring_buffer.fill_count > 0) {	// just to be sure
+		for (i = 0; i < ping_packet_loss_ring_buffer.fill_count; i++) {
+			ring_buffer_snoop(&ping_packet_loss_ring_buffer, &data, i);
+			ping_packet_loss_sum += data;
+		}
+		ping_average_packet_loss = (float)ping_packet_loss_sum / (float)ping_response_time_ring_buffer.fill_count;
+	}
 }
 
 ICACHE_FLASH_ATTR
@@ -176,8 +194,14 @@ bool ring_buffer_snoop(ring_buffer_t *rb, uint32_t *c, uint8_t pos) {
 
 ICACHE_FLASH_ATTR
 void init_icmp_ping(void) {
+	// init ring buffers
 	ping_response_time_ring_buffer.fill_count = 0;
 	ping_response_time_ring_buffer.h = 0;
 	ping_response_time_ring_buffer.t = 0;
-	ping_response_time_ring_buffer.buffer = (uint32_t *)&buffer;
+	ping_response_time_ring_buffer.buffer = (uint32_t *)&response_time_buffer;
+
+	ping_packet_loss_ring_buffer.fill_count = 0;
+	ping_packet_loss_ring_buffer.h = 0;
+	ping_packet_loss_ring_buffer.t = 0;
+	ping_packet_loss_ring_buffer.buffer = (uint32_t *)&packet_loss_buffer;
 }
