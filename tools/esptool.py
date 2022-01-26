@@ -541,7 +541,7 @@ class ESPLoader(object):
         active_port = self._port.port
 
         # Pyserial only identifies regular ports, URL handlers are not supported
-        if not active_port.startswith(("COM", "/dev/")):
+        if not active_port.lower().startswith(("com", "/dev/")):
             print("\nDevice PID identification is only supported on COM and /dev/ serial ports.")
             return
         # Return the real path if the active port is a symlink
@@ -674,7 +674,8 @@ class ESPLoader(object):
                 chip_magic_value = self.read_reg(ESPLoader.CHIP_DETECT_MAGIC_REG_ADDR)
                 if chip_magic_value not in self.CHIP_DETECT_MAGIC_VALUE:
                     actually = None
-                    for cls in [ESP8266ROM, ESP32ROM, ESP32S2ROM, ESP32S3BETA2ROM, ESP32S3ROM, ESP32C3ROM, ESP32H2BETA1ROM, ESP32C2ROM, ESP32H2BETA2ROM]:
+                    for cls in [ESP8266ROM, ESP32ROM, ESP32S2ROM, ESP32S3BETA2ROM, ESP32S3ROM,
+                                ESP32C3ROM, ESP32H2BETA1ROM, ESP32H2BETA2ROM, ESP32C2ROM, ESP32C6BETAROM]:
                         if chip_magic_value in cls.CHIP_DETECT_MAGIC_VALUE:
                             actually = cls
                             break
@@ -1043,7 +1044,7 @@ class ESPLoader(object):
         self.check_command("set SPI params", ESP32ROM.ESP_SPI_SET_PARAMS,
                            struct.pack('<IIIIII', fl_id, total_size, block_size, sector_size, page_size, status_mask))
 
-    def run_spiflash_command(self, spiflash_command, data=b"", read_bits=0):
+    def run_spiflash_command(self, spiflash_command, data=b"", read_bits=0, addr=None, addr_len=0, dummy_len=0):
         """Run an arbitrary SPI flash command.
 
         This function uses the "USR_COMMAND" functionality in the ESP
@@ -1057,12 +1058,15 @@ class ESPLoader(object):
 
         # SPI_USR register flags
         SPI_USR_COMMAND = (1 << 31)
+        SPI_USR_ADDR    = (1 << 30)
+        SPI_USR_DUMMY   = (1 << 29)
         SPI_USR_MISO    = (1 << 28)
         SPI_USR_MOSI    = (1 << 27)
 
         # SPI registers, base address differs ESP32* vs 8266
         base = self.SPI_REG_BASE
         SPI_CMD_REG       = base + 0x00
+        SPI_ADDR_REG      = base + 0x04
         SPI_USR_REG       = base + self.SPI_USR_OFFS
         SPI_USR1_REG      = base + self.SPI_USR1_OFFS
         SPI_USR2_REG      = base + self.SPI_USR2_OFFS
@@ -1078,23 +1082,33 @@ class ESPLoader(object):
                     self.write_reg(SPI_MOSI_DLEN_REG, mosi_bits - 1)
                 if miso_bits > 0:
                     self.write_reg(SPI_MISO_DLEN_REG, miso_bits - 1)
+                flags = 0
+                if dummy_len > 0:
+                    flags |= (dummy_len - 1)
+                if addr_len > 0:
+                    flags |= (addr_len - 1) << SPI_USR_ADDR_LEN_SHIFT
+                if flags:
+                    self.write_reg(SPI_USR1_REG, flags)
         else:
-
             def set_data_lengths(mosi_bits, miso_bits):
                 SPI_DATA_LEN_REG = SPI_USR1_REG
                 SPI_MOSI_BITLEN_S = 17
                 SPI_MISO_BITLEN_S = 8
                 mosi_mask = 0 if (mosi_bits == 0) else (mosi_bits - 1)
                 miso_mask = 0 if (miso_bits == 0) else (miso_bits - 1)
-                self.write_reg(SPI_DATA_LEN_REG,
-                               (miso_mask << SPI_MISO_BITLEN_S) | (
-                                   mosi_mask << SPI_MOSI_BITLEN_S))
+                flags = (miso_mask << SPI_MISO_BITLEN_S) | (mosi_mask << SPI_MOSI_BITLEN_S)
+                if dummy_len > 0:
+                    flags |= (dummy_len - 1)
+                if addr_len > 0:
+                    flags |= (addr_len - 1) << SPI_USR_ADDR_LEN_SHIFT
+                self.write_reg(SPI_DATA_LEN_REG, flags)
 
         # SPI peripheral "command" bitmasks for SPI_CMD_REG
         SPI_CMD_USR  = (1 << 18)
 
         # shift values
         SPI_USR2_COMMAND_LEN_SHIFT = 28
+        SPI_USR_ADDR_LEN_SHIFT = 26
 
         if read_bits > 32:
             raise FatalError("Reading more than 32 bits back from a SPI flash operation is unsupported")
@@ -1109,10 +1123,16 @@ class ESPLoader(object):
             flags |= SPI_USR_MISO
         if data_bits > 0:
             flags |= SPI_USR_MOSI
+        if addr_len > 0:
+            flags |= SPI_USR_ADDR
+        if dummy_len > 0:
+            flags |= SPI_USR_DUMMY
         set_data_lengths(data_bits, read_bits)
         self.write_reg(SPI_USR_REG, flags)
         self.write_reg(SPI_USR2_REG,
                        (7 << SPI_USR2_COMMAND_LEN_SHIFT) | spiflash_command)
+        if addr and addr_len > 0:
+            self.write_reg(SPI_ADDR_REG, addr)
         if data_bits == 0:
             self.write_reg(SPI_W0_REG, 0)  # clear data register before we read it
         else:
@@ -1136,6 +1156,10 @@ class ESPLoader(object):
         self.write_reg(SPI_USR_REG, old_spi_usr)
         self.write_reg(SPI_USR2_REG, old_spi_usr2)
         return status
+
+    def read_spiflash_sfdp(self, addr, read_bits):
+        CMD_RDSFDP = 0x5A
+        return self.run_spiflash_command(CMD_RDSFDP, read_bits=read_bits, addr=addr, addr_len=24, dummy_len=8)
 
     def read_status(self, num_bytes=2):
         """Read up to 24 bits (num_bytes) of SPI flash status register contents
@@ -4656,6 +4680,55 @@ def main(argv=None, esp=None):
             # ROM loader doesn't enable flash unless we explicitly do it
             esp.flash_spi_attach(0)
 
+        # XMC chip startup sequence
+        XMC_VENDOR_ID = 0x20
+
+        def is_xmc_chip_strict():
+            id = esp.flash_id()
+            rdid = ((id & 0xff) << 16) | ((id >> 16) & 0xff) | (id & 0xff00)
+
+            vendor_id = ((rdid >> 16) & 0xFF)
+            mfid = ((rdid >> 8) & 0xFF)
+            cpid = (rdid & 0xFF)
+
+            if vendor_id != XMC_VENDOR_ID:
+                return False
+
+            matched = False
+            if mfid == 0x40:
+                if cpid >= 0x13 and cpid <= 0x20:
+                    matched = True
+            elif mfid == 0x41:
+                if cpid >= 0x17 and cpid <= 0x20:
+                    matched = True
+            elif mfid == 0x50:
+                if cpid >= 0x15 and cpid <= 0x16:
+                    matched = True
+            return matched
+
+        def flash_xmc_startup():
+            # If the RDID value is a valid XMC one, may skip the flow
+            fast_check = True
+            if fast_check and is_xmc_chip_strict():
+                return  # Successful XMC flash chip boot-up detected by RDID, skipping.
+
+            sfdp_mfid_addr = 0x10
+            mf_id = esp.read_spiflash_sfdp(sfdp_mfid_addr, 8)
+            if mf_id != XMC_VENDOR_ID:  # Non-XMC chip detected by SFDP Read, skipping.
+                return
+
+            print("WARNING: XMC flash chip boot-up failure detected! Running XMC25QHxxC startup flow")
+            esp.run_spiflash_command(0xB9)  # Enter DPD
+            esp.run_spiflash_command(0x79)  # Enter UDPD
+            esp.run_spiflash_command(0xFF)  # Exit UDPD
+            time.sleep(0.002)               # Delay tXUDPD
+            esp.run_spiflash_command(0xAB)  # Release Power-Down
+            time.sleep(0.00002)
+            # Check for success
+            if not is_xmc_chip_strict():
+                print("WARNING: XMC flash boot-up fix failed.")
+            print("XMC flash chip boot-up fix successful!")
+
         # Check flash chip connection
         try:
             flash_id = esp.flash_id()
@@ -4664,6 +4737,9 @@ def main(argv=None, esp=None):
                       'Try checking the chip connections or removing any other hardware connected to IOs.')
         except Exception as e:
             esp.trace('Unable to verify flash chip connection ({}).'.format(e))
+
+        # Check if XMC SPI flash chip booted-up successfully, fix if not
+        flash_xmc_startup()
 
         if hasattr(args, "flash_size"):
             print("Configuring flash size...")
