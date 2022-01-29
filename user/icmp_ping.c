@@ -100,7 +100,7 @@ void icmp_ping_recv(void *arg, void *pdata) {
 			ring_buffer_snoop(&ping_packet_loss_ring_buffer, &data, i);
 			ping_packet_loss_sum += data;
 		}
-		ping_average_packet_loss = (float)ping_packet_loss_sum / (float)ping_response_time_ring_buffer.fill_count;
+		ping_average_packet_loss = (float)ping_packet_loss_sum / (float)ping_packet_loss_ring_buffer.fill_count;
 	}
 }
 
