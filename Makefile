@@ -262,8 +262,8 @@ endef
 
 .PHONY: all checkdirs clean
 
-#all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
+#all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -290,11 +290,11 @@ firmware:
 	$(Q) mkdir -p $@
 
 patch:
-	$(vecho) "PATCH $(TARGET_OUT) (ieee80211_add_csa(): 3177ef -> 0df000)"
-	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/3177ef/0df000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+	$(vecho) "PATCH $(TARGET_OUT) (cnx_csa_fn(): 12c1f0d911d1f2e1 -> 0df0000000000000)"
+	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/12c1f0d911d1f2e1/0df0000000000000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
-	$(vecho) "PATCH $(TARGET_OUT) (add -patched to version)"
-	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/2838316264653639290000000000000000/28383162646536392d7061746368656429/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+	$(vecho) "PATCH $(TARGET_OUT) (add + to version)"
+	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
