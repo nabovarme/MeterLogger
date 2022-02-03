@@ -200,7 +200,7 @@ static void en61107_received_task(os_event_t *events) {
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
    					// format /sample/v2/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
-					tfp_snprintf(current_unix_time_string, 64, "%u", current_unix_time);
+					tfp_snprintf(current_unix_time_string, 64, "%llu", current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%07u/%s", en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(message));			// clear it

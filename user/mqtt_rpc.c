@@ -35,11 +35,11 @@ void mqtt_rpc_ping(MQTT_Client *client) {
 	int mqtt_message_l;
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -56,11 +56,11 @@ void mqtt_rpc_version(MQTT_Client *client) {
 	int mqtt_message_l;
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -80,15 +80,15 @@ void mqtt_rpc_uptime(MQTT_Client *client) {
 	int mqtt_message_l;
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", get_uptime());
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%llu", get_uptime());
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -103,11 +103,11 @@ void mqtt_rpc_vdd(MQTT_Client *client) {
 	
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -128,11 +128,11 @@ void mqtt_rpc_rssi(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -150,11 +150,11 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -191,11 +191,11 @@ void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 
 	// send mqtt reply
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -225,11 +225,11 @@ void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 
 	// send mqtt reply
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -258,11 +258,11 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	
 	// send mqtt reply
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -305,11 +305,11 @@ void mqtt_rpc_disconnect_count(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -328,11 +328,11 @@ void mqtt_rpc_network_quality(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -357,11 +357,11 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	uint32_t wifi_status;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -467,11 +467,11 @@ void mqtt_rpc_ap_status(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -526,11 +526,11 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -552,11 +552,11 @@ void mqtt_rpc_flash_id(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -578,11 +578,11 @@ void mqtt_rpc_flash_size(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -604,11 +604,11 @@ void mqtt_rpc_crypto(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/crypto/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -631,11 +631,11 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	rtc_info = system_get_rst_info();
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -666,11 +666,11 @@ void mqtt_rpc_stack_trace(MQTT_Client *client) {
 	exception_handler_init();
 	
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -694,11 +694,11 @@ void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 	add_cron_job_from_query(query);
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -718,11 +718,11 @@ void mqtt_rpc_clear_cron(MQTT_Client *client) {
 	clear_cron_jobs();
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));	// empty reply
@@ -743,9 +743,9 @@ void mqtt_rpc_cron(MQTT_Client *client) {
 #endif
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cron/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -796,9 +796,9 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 		}
 	}
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -814,9 +814,9 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 
 	// send status
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -868,9 +868,9 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 		}
 	}
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/open_until_delta/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -895,9 +895,9 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 
 	// send status
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -921,9 +921,9 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	int mqtt_message_l;
 		
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));

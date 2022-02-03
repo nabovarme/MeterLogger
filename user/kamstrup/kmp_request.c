@@ -106,7 +106,7 @@ static void kmp_received_task(os_event_t *events) {
 		printf("scanner: %s\n\r", wifi_scan_is_running() ? "running" : "not running");
 	}
 	else if (message[0] == 'u') {
-		printf("unix_time: %d\n\r", get_unix_time());
+		printf("unix_time: %llu\n\r", get_unix_time());
 	}
 	else if (message[0] == 'q') {
 		// print queue
@@ -140,7 +140,7 @@ static void kmp_received_task(os_event_t *events) {
 			// BUG here.                        returns 0 -^
 			// this is a fix
 			memset(topic, 0, sizeof(topic));			// clear it
-			tfp_snprintf(current_unix_time_string, 64, "%u", current_unix_time);
+			tfp_snprintf(current_unix_time_string, 64, "%llu", current_unix_time);
 			tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
 
 			memset(message, 0, sizeof(message));			// clear it
@@ -430,7 +430,7 @@ void kmp_request_send() {
 	// fake serial for testing without meter
 	kmp_serial = atoi(DEFAULT_METER_SERIAL);
 
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%u", kmp_serial, get_unix_time());
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%llu", kmp_serial, get_unix_time());
 	memset(cleartext, 0, sizeof(cleartext));
 	pseudo_data_debug_no_meter = (get_unix_time() / 60) % 256;
 	tfp_snprintf(cleartext, KMP_FRAME_L, "heap=%u&t1=%u.00 C&t2=%u.00 C&tdif=%u.00 K&flow1=%u l/h&effect1=%u.0 kW&hr=%u h&v1=%u.00 m3&e1=%u kWh&",

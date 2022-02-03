@@ -47,7 +47,7 @@ volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
 
 uint32_t disconnect_count = 0;
-uint32_t last_uptime = 0;
+uint64_t last_uptime = 0;
 
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
@@ -645,7 +645,7 @@ uint32_t ICACHE_FLASH_ATTR wifi_get_status() {
 }
 
 void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
-	uint32_t uptime;
+	uint64_t uptime;
 #ifdef DEBUG
 	printf ("\t-> %s(%s)\n\r", __FUNCTION__, (interval == WIFI_SCAN_INTERVAL) ? "WIFI_SCAN_INTERVAL" : "WIFI_SCAN_INTERVAL_LONG");
 #endif

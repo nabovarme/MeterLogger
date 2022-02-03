@@ -5,14 +5,14 @@
 
 static os_timer_t sntp_check_timer;
 
-uint32_t init_time = 0;
-uint32_t current_unix_time;
-uint32_t ntp_offline_second_counter = 0;
+uint64_t init_time = 0;
+uint64_t current_unix_time;
+uint64_t ntp_offline_second_counter = 0;
 
 static os_timer_t ntp_offline_second_counter_timer;
 
 ICACHE_FLASH_ATTR void static sntp_check_timer_func(void *arg) {
-	current_unix_time = sntp_get_current_timestamp();
+	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
 	
 	if (current_unix_time == 0) {
 		os_timer_disarm(&sntp_check_timer);
@@ -49,14 +49,14 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 	os_timer_arm(&ntp_offline_second_counter_timer, 1000, 1);		// every seconds
 }
 
-ICACHE_FLASH_ATTR uint32_t get_unix_time(void) {
-	current_unix_time = sntp_get_current_timestamp();
+ICACHE_FLASH_ATTR uint64_t get_unix_time(void) {
+	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
 
 	return current_unix_time;
 }
 
-ICACHE_FLASH_ATTR uint32_t get_uptime(void) {
-	current_unix_time = sntp_get_current_timestamp();
+ICACHE_FLASH_ATTR uint64_t get_uptime(void) {
+	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
 	if (init_time == 0) {	// just booted
 		return ntp_offline_second_counter;
 	}

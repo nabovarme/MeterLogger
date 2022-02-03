@@ -323,7 +323,7 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 		tfp_snprintf(current_units_string, 32, "%u", current_units);
 #endif	// FLOW_METER
 
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/sample/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 
 #ifndef FLOW_METER
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "heap=%u&effect1=%s kW&e1=%s kWh&hr=%u&", system_get_free_heap_size(), current_units_string, acc_units_string, (uint32_t)(sys_cfg.operating_time / 3600));
@@ -491,7 +491,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			memset(mqtt_message, 0, sizeof(mqtt_message));
 			memset(cleartext, 0, sizeof(cleartext));
 
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 			// encrypt and send
@@ -517,7 +517,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			memset(mqtt_message, 0, sizeof(mqtt_message));
 			memset(cleartext, 0, sizeof(cleartext));
 
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 			// encrypt and send
@@ -545,7 +545,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			memset(mqtt_message, 0, sizeof(mqtt_message));
 			memset(cleartext, 0, sizeof(cleartext));
 
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 			// encrypt and send
@@ -571,7 +571,7 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			memset(mqtt_message, 0, sizeof(mqtt_message));
 			memset(cleartext, 0, sizeof(cleartext));
 
-			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ac_thermo_state ? "open" : "close");
 
 			// encrypt and send
@@ -685,7 +685,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
 
-	uint32_t received_unix_time = 0;
+	uint64_t received_unix_time = 0;
 	
 	uint8_t i;
 
@@ -1018,11 +1018,11 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 #endif
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
@@ -1380,11 +1380,11 @@ ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_
 	memset(cleartext, 0, sizeof(cleartext));
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%s/%u", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%u", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_error/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "calculated_crc=0x%x&saved_crc=0x%x", calculated_crc, saved_crc);
 

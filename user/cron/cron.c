@@ -17,7 +17,7 @@ char sec_drift;
 ICACHE_FLASH_ATTR
 void static minute_timer_func(void *arg) {
 	struct tm *dt;
-	time_t unix_time;
+	uint64_t unix_time;
 	unsigned char i;
 	unsigned char run_command;
 	
