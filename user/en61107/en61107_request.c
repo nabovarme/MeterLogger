@@ -286,11 +286,10 @@ static void en61107_received_task(os_event_t *events) {
 					if (en61107_meter_sent_data_cb) {
 						en61107_meter_sent_data_cb();
 					}
-
-					// change to last state - idle state
-					en61107_uart_state = UART_STATE_NONE;
-					en61107_request_num = 0;
 				}
+				// change to last state - idle state
+				en61107_uart_state = UART_STATE_NONE;
+				en61107_request_num = 0;
 			}
 			break;
 	}
