@@ -127,7 +127,7 @@ static void kmp_received_task(os_event_t *events) {
 		}
 #endif
 		message_l = 0;		// zero it so we can reuse it for mqtt string
-		current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+		current_unix_time = get_unix_time();
 	
 		if (response.kmp_response_serial) {
 			kmp_serial = response.kmp_response_serial;	// save it for later use
@@ -140,7 +140,7 @@ static void kmp_received_task(os_event_t *events) {
 			// BUG here.                        returns 0 -^
 			// this is a fix
 			memset(topic, 0, sizeof(topic));			// clear it
-			tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
+			tfp_snprintf(current_unix_time_string, 64, "%u", current_unix_time);
 			tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
 
 			memset(message, 0, sizeof(message));			// clear it

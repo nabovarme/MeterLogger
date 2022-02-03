@@ -196,11 +196,11 @@ static void en61107_received_task(os_event_t *events) {
 					os_printf("tried to call en61107_meter_is_ready_cb() before it was set - should not happen\n");
 				}
 #endif
-				current_unix_time = (uint32)(get_unix_time());		// TODO before 2038 ,-)
+				current_unix_time = get_unix_time();
 				if (current_unix_time) {	// only send mqtt if we got current time via ntp
    					// format /sample/v2/serial/unix_time => val1=23&val2=val3&baz=blah
 					memset(topic, 0, sizeof(topic));			// clear it
-					tfp_snprintf(current_unix_time_string, 64, "%u", (uint32_t)current_unix_time);
+					tfp_snprintf(current_unix_time_string, 64, "%u", current_unix_time);
 					tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%07u/%s", en61107_serial, current_unix_time_string);
 
 					memset(message, 0, sizeof(message));			// clear it
