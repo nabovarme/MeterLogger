@@ -231,7 +231,9 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
-				disconnect_count++;
+				if (wifi_fallback_present == false) {
+					disconnect_count++;
+				}
 #ifdef DEBUG
 				printf("disconnect_count: %u\n", disconnect_count);
 #endif
