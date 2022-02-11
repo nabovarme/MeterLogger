@@ -132,6 +132,10 @@ static void en61107_received_task(os_event_t *events) {
 			}
 
 			en61107_serial = atoi(response.customer_no);
+			if (en61107_serial == 0) {
+				// timeout if we didn't got a serial number
+				break;
+			}
 			en61107_serial_set = true;
 
 #ifndef MC_66B
