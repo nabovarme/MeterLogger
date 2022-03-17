@@ -363,7 +363,7 @@ unsigned int en61107_get_received_energy_kwh() {
 
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
 		tfp_vsscanf(response.e1.value, "%f", &e1_kwh);
-		e1_kwh = e1_kwh / 1000.0;
+		e1_kwh = e1_kwh * 1000.0;
 		return (int)e1_kwh;
 	}
 	else {
