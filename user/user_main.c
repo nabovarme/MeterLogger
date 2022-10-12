@@ -1328,6 +1328,10 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 //	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
 //	os_timer_arm(&spi_test_timer, 2000, 1);
 #endif	
+
+#ifdef AC_TEST
+	ac_test();
+#endif
 	
 	init_unix_time();
 	

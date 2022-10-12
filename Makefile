@@ -202,6 +202,10 @@ ifeq ($(LED_ON_AC), 1)
     CFLAGS += -DLED_ON_AC
 endif
 
+ifeq ($(AC_TEST), 1)
+    CFLAGS += -DAC_TEST -DLED_ON_AC
+endif
+
 ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
     CFLAGS += -DEXT_SPI_RAM_IS_NAND
 endif
