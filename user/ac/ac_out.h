@@ -1,3 +1,5 @@
+#define AC_TEST_TIMER_INTERVAL	12000
+
 ICACHE_FLASH_ATTR void ac_out_init();
 ICACHE_FLASH_ATTR void ac_test();
 ICACHE_FLASH_ATTR void ac_motor_valve_open();

@@ -1237,6 +1237,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 #ifndef AUTO_CLOSE	// reversed!
 	printf("\t(NO_AUTO_CLOSE)\n\r");
 #endif
+	
+#ifdef AC_TEST
+	printf("\t(AC_TEST)\n\r");
+#endif
 
 #if !(defined(DEBUG_NO_METER) || defined(IMPULSE_DEV_BOARD))
 #ifdef EN61107
@@ -1328,6 +1332,10 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 //	os_timer_setfn(&spi_test_timer, (os_timer_func_t *)spi_test_timer_func, NULL);
 //	os_timer_arm(&spi_test_timer, 2000, 1);
 #endif	
+
+#ifdef AC_TEST
+	ac_test();
+#endif
 	
 	init_unix_time();
 	

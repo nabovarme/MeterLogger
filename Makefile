@@ -202,6 +202,10 @@ ifeq ($(LED_ON_AC), 1)
     CFLAGS += -DLED_ON_AC
 endif
 
+ifeq ($(AC_TEST), 1)
+    CFLAGS += -DLED_ON_AC -DAC_TEST
+endif
+
 ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
     CFLAGS += -DEXT_SPI_RAM_IS_NAND
 endif
@@ -298,7 +302,7 @@ patch:
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
@@ -308,19 +312,19 @@ mkespfsimage/mkespfsimage: mkespfsimage/
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(ESPFS) webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0xFE000 $(SDK_BASE)/bin/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 $(SDK_BASE)/bin/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
 
 flashblank:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
 
 wifisetup:
 	until nmcli d wifi connect "$(WIFI_SSID)" password "$(CUSTOM_AP_PASSWORD)"; do echo "retrying to connect to wifi"; done && sleep 2; firefox 'http://192.168.4.1/'
 
 flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
 
 size:
 	$(Q) $(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size

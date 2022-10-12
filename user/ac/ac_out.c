@@ -128,7 +128,7 @@ void ac_test() {
 	
 	os_timer_disarm(&ac_test_timer);
 	os_timer_setfn(&ac_test_timer, (os_timer_func_t *)ac_test_timer_func, NULL);
-	os_timer_arm(&ac_test_timer, 120000, 1);
+	os_timer_arm(&ac_test_timer, AC_TEST_TIMER_INTERVAL, 1);
 }
 
 ICACHE_FLASH_ATTR
