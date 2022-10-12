@@ -1333,14 +1333,14 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 //	os_timer_arm(&spi_test_timer, 2000, 1);
 #endif	
 
-#ifdef AC_TEST
-	ac_test();
-#endif
-	
 	init_unix_time();
 	
 	init_icmp_ping();
 
+#ifdef AC_TEST
+	ac_test();
+#endif	// AC_TEST
+	
 	// start config mode/sample mode in meter_is_ready() via callback
 #ifdef EN61107
 	en61107_register_meter_is_ready_cb(meter_is_ready);
@@ -1354,7 +1354,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef AUTO_CLOSE
 	kmp_register_meter_sent_data_cb(meter_sent_data);
 #endif	// AUTO_CLOSE
-#endif
+#endif	// EN61107
 
 	// wait 10 seconds before starting wifi and let the meter boot
 	// and send serial number request
@@ -1368,7 +1368,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
 	os_timer_arm(&kmp_request_send_timer, 10000, 0);
-#endif
+#endif	// EN61107
 }
 
 ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_crc) {
