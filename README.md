@@ -87,6 +87,9 @@ thermo actuator connected on ac 2
 LED_ON_AC=1  
 use led to indicate ac state  
 
+AC_TEST_=1  
+run a test pattern on ac out and blink led  
+
 SERIAL=9999999  
 serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1 
 
