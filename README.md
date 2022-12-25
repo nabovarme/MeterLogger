@@ -87,7 +87,7 @@ thermo actuator connected on ac 2
 LED_ON_AC=1  
 use led to indicate ac state  
 
-AC_TEST_=1  
+AC_TEST=1  
 run a test pattern on ac out and blink led  
 
 SERIAL=9999999  
