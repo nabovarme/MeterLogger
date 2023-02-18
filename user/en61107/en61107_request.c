@@ -349,7 +349,7 @@ uint32_t en61107_get_received_serial() {
 
 #ifdef FLOW_METER
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_volume_l() {
+uint32_t en61107_get_received_volume_l() {
 	char v1_l_string[64];
 	
 	multiply_str_by_1000(response.v1.value, v1_l_string);
@@ -358,13 +358,13 @@ unsigned int en61107_get_received_volume_l() {
 #else
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_energy_kwh() {
+uint32_t en61107_get_received_energy_kwh() {
 	float e1_kwh;
 
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
 		tfp_vsscanf(response.e1.value, "%f", &e1_kwh);
 		e1_kwh = e1_kwh * 1000.0;
-		return (int)e1_kwh;
+		return (uint32_t)e1_kwh;
 	}
 	else {
 		return atoi(response.e1.value);

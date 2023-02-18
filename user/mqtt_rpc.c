@@ -749,7 +749,7 @@ void mqtt_rpc_cron(MQTT_Client *client) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.cron_jobs.n);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", sys_cfg.cron_jobs.n);
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
@@ -806,7 +806,7 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	// use liters internally for FLOW_METER
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)sys_cfg.offline_close_at / 1000.0);
 #else
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", sys_cfg.offline_close_at);
 #endif	// FLOW_METER
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -879,14 +879,14 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	// use liters internally for FLOW_METER
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)(sys_cfg.offline_close_at - en61107_get_received_volume_l()) / 1000.0);
 #else
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", sys_cfg.offline_close_at - en61107_get_received_energy_kwh());
 #endif	// FLOW_METER
 #else
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%.3f", (float)(sys_cfg.offline_close_at - kmp_get_received_volume_l()) / 1000.0);
 #else
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%d", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", sys_cfg.offline_close_at - kmp_get_received_energy_kwh());
 #endif	// FLOW_METER
 #endif
 	// encrypt and send

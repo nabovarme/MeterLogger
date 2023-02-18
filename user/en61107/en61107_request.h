@@ -25,14 +25,14 @@ ICACHE_FLASH_ATTR
 void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb);
 
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_serial();
+uint32_t en61107_get_received_serial();
 
 #ifdef FLOW_METER
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_volume_l();
+uint32_t en61107_get_received_volume_l();
 #else
 ICACHE_FLASH_ATTR
-unsigned int en61107_get_received_energy_kwh();
+uint32_t en61107_get_received_energy_kwh();
 #endif	// FLOW_METER
 
 //ICACHE_FLASH_ATTR
