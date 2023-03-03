@@ -132,7 +132,7 @@ static void kmp_received_task(os_event_t *events) {
 		if (response.kmp_response_serial) {
 			kmp_serial = response.kmp_response_serial;	// save it for later use
 		}
-		else if (current_unix_time) {	// only send mqtt if we got current time via ntp
+		else {
 			// prepare for mqtt transmission if we got serial number from meter
         	
 			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
