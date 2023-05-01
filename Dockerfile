@@ -12,12 +12,17 @@
 # 4. # docker run -i -t -u $UID -v $(pwd):/data/riotbuild uiota-build ./dist/tools/compile_test/compile_test.py
 
 
-FROM debian:bullseye
+FROM debian:stretch
 
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
 # unrar is non-free
-RUN echo "deb http://http.us.debian.org/debian bullseye non-free" >> /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian stretch non-free" >> /etc/apt/sources.list
+
+#Update stretch repositories
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
@@ -43,7 +48,7 @@ RUN apt-get update && apt-get install -y \
 	nano \
 	python \
 	python-dev \
-	python3-serial \
+	python-serial \
 	sed \
 	texinfo \
 	unrar \
@@ -84,7 +89,6 @@ RUN cd /meterlogger/esp-open-sdk && \
     perl -pi -e 's/2\.1\.0/2\.5\.0/' crosstool-NG/config/companion_libs/expat.in && \
     perl -pi -e 's/2_1_0/2_5_0/' crosstool-NG/config/companion_libs/expat.in && \
     perl -pi -e 's/http:\/\/isl\.gforge\.inria\.fr/https:\/\/master\.dl\.sourceforge\.net\/project\/libisl/' crosstool-NG/scripts/build/companion_libs/121-isl.sh && \
-    perl -pi -e 's/\^GNU bash, version \(3\\\.\[1\-9\]\|4\)/\^GNU bash, version \(3\\\.\[1\-9\]\|4\|5\)/' crosstool-NG/configure.ac && \
     make STANDALONE=y
 
 # EspStackTraceDecoder.jar
