@@ -108,5 +108,6 @@ ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
 
 WORKDIR /meterlogger/MeterLogger
 CMD cp /tmp/esptool/esptool.py /meterlogger/MeterLogger/tools/ && \
+	cp -a /tmp/esptool/esptool /meterlogger/MeterLogger/tools/ && \
 	cd /meterlogger/MeterLogger && \
 	eval $BUILD_ENV make clean all

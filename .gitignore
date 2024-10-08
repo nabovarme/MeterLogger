@@ -3,6 +3,7 @@
 build/*
 build/*/*
 user/*.o
+tools/*
 firmware/0x00000.bin
 firmware/0x10000.bin
 firmware/stack_trace.dump
