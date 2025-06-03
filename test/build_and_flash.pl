@@ -3,8 +3,7 @@
 use strict;
 use Data::Dumper;
 
-use lib qw( /etc/apache2/perl );
-#use lib qw( /opt/local/apache2/perl/ );
+use lib qw( ./perl );
 use Nabovarme::Db;
 
 use constant SERIAL_PORT => $ENV{SERIAL_PORT} || '/dev/ttyUSB0';
