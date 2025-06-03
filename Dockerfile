@@ -81,15 +81,11 @@ USER meterlogger
 
 # esp-open-sdk
 RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-open-sdk.git && \
-    cd /meterlogger/esp-open-sdk && git checkout sdk-v3.1.0-dev
+	cd /meterlogger/esp-open-sdk && git checkout sdk-v3.1.0-dev
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
-    cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout no_igmp_mdns
-RUN cd /meterlogger/esp-open-sdk && \
-    perl -pi -e 's/2\.1\.0/2\.6\.4/' crosstool-NG/config/companion_libs/expat.in && \
-    perl -pi -e 's/2_1_0/2_6_4/' crosstool-NG/config/companion_libs/expat.in && \
-    perl -pi -e 's/http:\/\/isl\.gforge\.inria\.fr/https:\/\/master\.dl\.sourceforge\.net\/project\/libisl/' crosstool-NG/scripts/build/companion_libs/121-isl.sh && \
-    make STANDALONE=y
+	cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout no_igmp_mdns
+RUN make STANDALONE=y
 
 # EspStackTraceDecoder.jar
 #RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
