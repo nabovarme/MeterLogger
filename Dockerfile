@@ -85,7 +85,8 @@ RUN cd /meterlogger && git clone --recursive https://github.com/nabovarme/esp-op
 RUN rm -fr /meterlogger/esp-open-sdk/esp-open-lwip
 RUN cd /meterlogger/esp-open-sdk && git clone https://github.com/nabovarme/esp-open-lwip.git && \
 	cd /meterlogger/esp-open-sdk/esp-open-lwip && git checkout no_igmp_mdns
-RUN make STANDALONE=y
+RUN cd /meterlogger/esp-open-sdk && \
+	make STANDALONE=y
 
 # EspStackTraceDecoder.jar
 #RUN cd /meterlogger && wget https://github.com/littleyoda/EspStackTraceDecoder/releases/download/untagged-59a763238a6cedfe0362/EspStackTraceDecoder.jar
