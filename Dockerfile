@@ -12,12 +12,17 @@
 # 4. # docker run -i -t -u $UID -v $(pwd):/data/riotbuild uiota-build ./dist/tools/compile_test/compile_test.py
 
 
-FROM debian:bullseye
+FROM debian:stretch
 
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
-RUN sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list && \
-	sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list.d/debian.sources || true
+# unrar is non-free
+RUN echo "deb http://archive.debian.org/debian stretch non-free" >> /etc/apt/sources.list
+
+#Update stretch repositories
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
@@ -43,8 +48,7 @@ RUN apt-get update && apt-get install -y \
 	nano \
 	python \
 	python-dev \
-	python3-serial \
-	python3-pip \
+	python-serial \
 	sed \
 	texinfo \
 	unrar \
@@ -55,8 +59,6 @@ RUN apt-get update && apt-get install -y \
 	sudo \
 	screen \
 	software-properties-common
-
-RUN pip3 install pyserial
 
 # Java
 #RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EA8CACC073C3DB2A
@@ -101,8 +103,6 @@ USER root
 ENV PATH /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
-
-RUN git config --global --add safe.directory /meterlogger/esp-open-sdk/esp-open-lwip
 
 WORKDIR /meterlogger/MeterLogger
 CMD cp /tmp/esptool/esptool.py /meterlogger/MeterLogger/tools/ && \
