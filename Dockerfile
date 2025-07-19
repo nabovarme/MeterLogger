@@ -44,6 +44,7 @@ RUN apt-get update && apt-get install -y \
 	python \
 	python-dev \
 	python3-serial \
+	python3-pip \
 	sed \
 	texinfo \
 	unrar \
@@ -54,6 +55,8 @@ RUN apt-get update && apt-get install -y \
 	sudo \
 	screen \
 	software-properties-common
+
+RUN pip3 install pyserial
 
 # Java
 #RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EA8CACC073C3DB2A
@@ -98,6 +101,8 @@ USER root
 ENV PATH /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin
 ENV SDK_BASE /meterlogger/esp-open-sdk/sdk
+
+RUN git config --global --add safe.directory /meterlogger/esp-open-sdk/esp-open-lwip
 
 WORKDIR /meterlogger/MeterLogger
 CMD cp /tmp/esptool/esptool.py /meterlogger/MeterLogger/tools/ && \
