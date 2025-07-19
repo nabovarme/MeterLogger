@@ -12,17 +12,12 @@
 # 4. # docker run -i -t -u $UID -v $(pwd):/data/riotbuild uiota-build ./dist/tools/compile_test/compile_test.py
 
 
-FROM debian:stretch
+FROM debian:bullseye
 
 MAINTAINER Kristoffer Ek <stoffer@skulp.net>
 
-# unrar is non-free
-RUN echo "deb http://archive.debian.org/debian stretch non-free" >> /etc/apt/sources.list
-
-#Update stretch repositories
-RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
-RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
-RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+RUN sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list && \
+	sed -i 's/main$/main contrib non-free/' /etc/apt/sources.list.d/debian.sources || true
 
 RUN apt-get update && apt-get install -y \
 	aptitude \
@@ -48,7 +43,7 @@ RUN apt-get update && apt-get install -y \
 	nano \
 	python \
 	python-dev \
-	python-serial \
+	python3-serial \
 	sed \
 	texinfo \
 	unrar \

@@ -9,7 +9,7 @@
 #include "config.h"
 #include "crypto/crypto.h"
 #include "crypto/aes.h"
-#include "watchdog.c"
+#include "watchdog.h"
 
 #define QUEUE_SIZE 256
 
