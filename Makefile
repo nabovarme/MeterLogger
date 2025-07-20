@@ -346,9 +346,12 @@ objdump:
 	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
 	$(OBJDUMP) -f -s -d --source $(TARGET_OUT) > $(TARGET).S
 
-copy_release: $(FW_FILE_1) $(FW_FILE_2) | $(RELEASE_BASE)
-	$(vecho) "Copying firmware to $(RELEASE_BASE)"
-	$(Q) cp $(FW_FILE_1) $(FW_FILE_2) $(RELEASE_BASE)/
+copy_release: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
+	$(vecho) "Copying firmware and support files to $(RELEASE_BASE)"
+	$(Q) cp $(FW_FILE_1) $(FW_FILE_2) webpages.espfs \
+		firmware/blank.bin \
+		firmware/esp_init_data_default_112th_byte_0x03.bin \
+		$(RELEASE_BASE)/
 
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
