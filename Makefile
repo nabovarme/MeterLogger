@@ -9,6 +9,7 @@
 # relative to the project directory
 BUILD_BASE	= build
 FW_BASE = firmware
+RELEASE_BASE = release
 ESPTOOL = esptool.py
 BAUDRATE = 1500000
 DEBUG_SPEED = 1200
@@ -266,7 +267,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
 #all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 $(FW_FILE_1): $(TARGET_OUT)
@@ -290,7 +291,10 @@ checkdirs: $(BUILD_DIR) $(FW_BASE)
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
-firmware:
+$(RELEASE_BASE):
+	$(Q) mkdir -p $@
+
+$(FW_BASE):
 	$(Q) mkdir -p $@
 
 patch:
@@ -341,7 +345,11 @@ getstacktrace:
 objdump:
 	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
 	$(OBJDUMP) -f -s -d --source $(TARGET_OUT) > $(TARGET).S
-	
+
+copy_release: $(FW_FILE_1) $(FW_FILE_2) | $(RELEASE_BASE)
+	$(vecho) "Copying firmware to $(RELEASE_BASE)"
+	$(Q) cp $(FW_FILE_1) $(FW_FILE_2) $(RELEASE_BASE)/
+
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
 minicom:
