@@ -68,38 +68,48 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 	uint32_t i;
-	uint32_t uptime;
-	
-	uptime = get_uptime();
-//	if (uptime) {	// only run watchdog if we have unix time
+	uint32_t uptime = get_uptime();
+
 	for (i = 0; i < WATCHDOG_MAX; i++) {
-		if ((watchdog_list[i].type != NOT_ENABLED) && 
-			(watchdog_list[i].last_reset) && 
-			((int32_t)watchdog_list[i].last_reset < (int32_t)(uptime - watchdog_list[i].timeout))) {
+		// Skip disabled entries
+		if (watchdog_list[i].type == NOT_ENABLED || watchdog_list[i].last_reset == 0) {
+			continue;
+		}
+
+		// Use unsigned-safe wraparound check
+		if ((uptime - watchdog_list[i].last_reset) > watchdog_list[i].timeout) {
 #ifdef DEBUG
-			printf("watchdog timeout, id: %d\n", watchdog_list[i].id);
-#endif			
+			printf("watchdog timeout, id: %u\n", watchdog_list[i].id);
+#endif
 			switch (watchdog_list[i].type) {
 				case REBOOT:
-//					system_restart();
 					system_restart_defered();
 #ifdef DEBUG
-					printf("reboot\n");
-#endif	
+					printf("triggered system reboot\n");
+#endif
 					break;
-					
+
 				case NETWORK_RESTART:
 					force_reset_wifi();
-					break;
-					
-				case REBOOT_VIA_EXT_WD:
-					os_timer_disarm(&ext_watchdog_timer);
 #ifdef DEBUG
-					printf("reboot via ext watchdog\n");
-#endif	
+					printf("triggered network restart\n");
+#endif
+					break;
+
+				case REBOOT_VIA_EXT_WD:
+					os_timer_disarm(&ext_watchdog_timer); // external watchdog will cause reset
+#ifdef DEBUG
+					printf("triggered reboot via external watchdog\n");
+#endif
+					break;
+
+				default:
+					// Unknown type, do nothing
 					break;
 			}
-			watchdog_list[i].last_reset = get_uptime();
+
+			// Reset last_reset so it doesn't trigger repeatedly
+			watchdog_list[i].last_reset = uptime;
 		}
 	}
 }
