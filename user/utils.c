@@ -70,13 +70,25 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 
 ICACHE_FLASH_ATTR
 unsigned int decimal_number_length(int n) {
-	int digits;
-	
-	digits = n < 0;	//count "minus"
-	do {
+	unsigned int digits = 0;
+	unsigned int un;
+
+	if (n == 0) {
+		return 1;  // "0" has length 1
+	}
+
+	if (n < 0) {
+		digits = 1;  // count the minus sign
+		un = (unsigned int)(- (long)n);  // handle INT_MIN safely
+	} else {
+		un = (unsigned int)n;
+	}
+
+	while (un > 0) {
+		un /= 10;
 		digits++;
-	} while (n /= 10);
-	
+	}
+
 	return digits;
 }
 
@@ -149,33 +161,27 @@ int query_string_unescape(char *str) {
 }
 
 ICACHE_FLASH_ATTR
-size_t spi_flash_size() {					// returns the flash chip's size, in BYTES
+size_t spi_flash_size() {  // returns the flash chip's size, in BYTES
 	uint32_t id = spi_flash_get_id();
 	uint8_t manufacturer_id = id & 0xff;
-//	uint8_t type_id = (id >> 8) & 0xff;		// not relevant for size calculation
-	uint8_t size_id = (id >> 16) & 0xff;	// lucky for us, WinBond ID's their chips as a form that lets us calculate the size
-	if (manufacturer_id == 0xef) {
-		return 1 << size_id;
+	// uint8_t type_id = (id >> 8) & 0xff;  // not relevant for size calculation
+	uint8_t size_id = (id >> 16) & 0xff;
+
+	// List of known manufacturers whose size_id can be used as 1 << size_id
+	switch (manufacturer_id) {
+		case 0xef:	// WinBond
+		case 0xe0:	// LG Semi (Goldstar)
+		case 0x1c:	// Mitsubishi
+		case 0x20:	// XMC - Wuhan Xinxin Semiconductor Manufacturing Corp
+		case 0x85:	// GTE
+		case 0xc8:	// Apple Computer
+			return (size_t)1 << size_id;
+
+		default:
+			// Unknown manufacturer ID
+			return 0;
 	}
-	else if (manufacturer_id == 0xe0) {		// LG Semi (Goldstar)
-		return 1 << size_id;
-	}
-	else if (manufacturer_id == 0x1c) {		// Mitsubishi (https://www.mikrocontroller.net/attachment/39268/jep106k.pdf)
-		return 1 << size_id;
-	}
-	else if (manufacturer_id == 0x20) {		// XMC - Wuhan Xinxin Semiconductor Manufacturing Corp
-		return 1 << size_id;
-	}
-	else if (manufacturer_id == 0x85) {		// GTE (https://www.mikrocontroller.net/attachment/39268/jep106k.pdf)
-		return 1 << size_id;
-	}
-	else if (manufacturer_id == 0xc8) {		// Apple Computer (https://www.mikrocontroller.net/attachment/39268/jep106k.pdf)
-		return 1 << size_id;
-	}
-	else {
-		// could not identify chip
-		return 0;
-	}
+
 }
 
 ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
