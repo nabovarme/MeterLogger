@@ -167,22 +167,46 @@ ICACHE_FLASH_ATTR bool add_watchdog(uint32_t id, watchdog_type_t type, uint32_t 
 }
 
 ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
-	if (watchdog_list_len > 0) {
+	uint32_t i;
+
+	if (watchdog_list_len == 0) {
 #ifdef DEBUG
-		printf("remove watchdog, id: %d\n", id);
-#endif
-		watchdog_list_len--;
-		watchdog_list[watchdog_list_len].id = 0;
-		watchdog_list[watchdog_list_len].type = NOT_ENABLED;
-		watchdog_list[watchdog_list_len].timeout = 0;
-		return true;
-	}
-	else {
-#ifdef DEBUG
-		printf("watchdog error, cant remove %d\n", id);
+		printf("watchdog error, no watchdogs to remove (id: %u)\n", id);
 #endif
 		return false;
 	}
+
+	// Find the entry with the given ID
+	for (i = 0; i < watchdog_list_len; i++) {
+		if (watchdog_list[i].id == id) {
+			break;
+		}
+	}
+
+	if (i == watchdog_list_len) {
+#ifdef DEBUG
+		printf("watchdog error, id not found: %u\n", id);
+#endif
+		return false; // No matching watchdog found
+	}
+
+#ifdef DEBUG
+	printf("remove watchdog, id: %u (index %u)\n", id, i);
+#endif
+
+	// Shift the rest of the list down
+	for (; i < watchdog_list_len - 1; i++) {
+		watchdog_list[i] = watchdog_list[i + 1];
+	}
+
+	// Clear the now-unused last slot
+	watchdog_list[watchdog_list_len - 1].id = 0;
+	watchdog_list[watchdog_list_len - 1].type = NOT_ENABLED;
+	watchdog_list[watchdog_list_len - 1].timeout = 0;
+	watchdog_list[watchdog_list_len - 1].last_reset = 0;
+
+	watchdog_list_len--;
+	return true;
 }
 
 ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
