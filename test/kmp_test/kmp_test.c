@@ -15,7 +15,7 @@
 
 int main(int argc, char *argv[]) {
     unsigned int i;
-    unsigned char c;
+    char c;
     ssize_t c_length;
     
     unsigned char serial_port_dev[1024];

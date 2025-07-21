@@ -40,8 +40,8 @@ void kmp_request_destroy();
 // fifo
 size_t kmp_fifo_in_use();
 
-bool kmp_fifo_put(unsigned char c);
+bool kmp_fifo_put(char c);
 
-bool kmp_fifo_get(unsigned char *c);
+bool kmp_fifo_get(char *c);
 
-bool kmp_fifo_snoop(unsigned char *c, unsigned int pos);
+bool kmp_fifo_snoop(char *c, unsigned int pos);

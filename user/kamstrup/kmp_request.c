@@ -22,7 +22,7 @@ meter_sent_data_cb kmp_meter_sent_data_cb = NULL;
 
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
-volatile unsigned char fifo_buffer[QUEUE_SIZE];
+volatile char fifo_buffer[QUEUE_SIZE];
 volatile size_t fifo_buffer_fill_count = 0;
 
 // allocate frame to send
@@ -54,13 +54,13 @@ uint8_t pseudo_data_debug_no_meter = 0;
 
 ICACHE_FLASH_ATTR
 static void kmp_received_task(os_event_t *events) {
-	unsigned char c;
+	char c;
 	unsigned int i;
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[256];
-	unsigned char topic[MQTT_TOPIC_L];
-	unsigned char message[KMP_FRAME_L];
+	char topic[MQTT_TOPIC_L];
+	char message[KMP_FRAME_L];
 	int message_l;
 		
 	// vars for aes encryption
@@ -68,8 +68,8 @@ static void kmp_received_task(os_event_t *events) {
 
     // allocate struct for response
     kmp_response_t response;
-    unsigned char kmp_unit_string[16];
-	unsigned char kmp_value_string[64];
+    char kmp_unit_string[16];
+	char kmp_value_string[64];
 
 	//ETS_UART_INTR_DISABLE();
 
@@ -485,7 +485,7 @@ size_t kmp_fifo_in_use() {
 	return fifo_buffer_fill_count;
 }
 
-bool kmp_fifo_put(unsigned char c) {
+bool kmp_fifo_put(char c) {
 	if (kmp_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
@@ -500,7 +500,7 @@ bool kmp_fifo_put(unsigned char c) {
 	}
 }
 
-bool kmp_fifo_get(unsigned char *c) {
+bool kmp_fifo_get(char *c) {
 	if (kmp_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
@@ -515,7 +515,7 @@ bool kmp_fifo_get(unsigned char *c) {
 	}
 }
 
-bool kmp_fifo_snoop(unsigned char *c, unsigned int pos) {
+bool kmp_fifo_snoop(char *c, unsigned int pos) {
 	if (kmp_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
 		return true;

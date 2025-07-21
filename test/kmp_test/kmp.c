@@ -417,7 +417,7 @@ double kmp_value_to_double(int32_t value, uint8_t si_ex) {
     return res;
 }
 
-void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string) {
+void kmp_unit_to_string(uint8_t unit, char *unit_string) {
     switch (unit) {
         case 0x01:
             strcpy(unit_string, "Wh");

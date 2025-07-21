@@ -65,13 +65,13 @@ void en61107_uart_send_inst_values();
 inline size_t en61107_fifo_in_use();
 
 //ICACHE_FLASH_ATTR
-inline bool en61107_fifo_put(unsigned char c);
+inline bool en61107_fifo_put(char c);
 
 ICACHE_FLASH_ATTR
-bool en61107_fifo_get(unsigned char *c);
+bool en61107_fifo_get(char *c);
 
 ICACHE_FLASH_ATTR
-bool en61107_fifo_snoop(unsigned char *c, unsigned int pos);
+bool en61107_fifo_snoop(char *c, unsigned int pos);
 
 ICACHE_FLASH_ATTR
 void en61107_request_destroy();

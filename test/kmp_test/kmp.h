@@ -29,6 +29,6 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
 
 double kmp_value_to_double(int32_t value, uint8_t si_ex);
-void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string);
+void kmp_unit_to_string(uint8_t unit, char *unit_string);
 void kmp_byte_stuff();
 void kmp_byte_unstuff();

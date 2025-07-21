@@ -41,7 +41,7 @@ ICACHE_FLASH_ATTR
 bool kmp_value_to_string(int32_t value, uint8_t si_ex, unsigned char *value_string);
 
 ICACHE_FLASH_ATTR
-void kmp_unit_to_string(uint8_t unit, unsigned char *unit_string);
+void kmp_unit_to_string(uint8_t unit, char *unit_string);
 
 ICACHE_FLASH_ATTR
 void kmp_byte_stuff();

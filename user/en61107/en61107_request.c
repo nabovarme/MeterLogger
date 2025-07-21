@@ -26,7 +26,7 @@ meter_sent_data_cb en61107_meter_sent_data_cb = NULL;
 
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
-volatile unsigned char fifo_buffer[QUEUE_SIZE];
+volatile char fifo_buffer[QUEUE_SIZE];
 volatile size_t fifo_buffer_fill_count = 0;
 
 // allocate frame to send
@@ -100,13 +100,13 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
-	unsigned char c;
+	char c;
 	unsigned int i;
 	uint64_t current_unix_time;
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
-	unsigned char topic[MQTT_TOPIC_L];
-	unsigned char message[EN61107_FRAME_L];
+	char topic[MQTT_TOPIC_L];
+	char message[EN61107_FRAME_L];
 	int message_l;
 
 	// vars for aes encryption
@@ -402,7 +402,7 @@ inline bool en61107_is_eod_char(uint8_t c) {
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
 #ifndef DEBUG_NO_METER
-	unsigned char c;
+	char c;
 	unsigned int i;
 
 	// clear message buffer
@@ -420,9 +420,9 @@ void en61107_request_send() {
 	}
 
 #else
-	unsigned char topic[128];
-	unsigned char cleartext[EN61107_FRAME_L];
-	unsigned char message[EN61107_FRAME_L];
+	char topic[128];
+	char cleartext[EN61107_FRAME_L];
+	char message[EN61107_FRAME_L];
 	int topic_l;
 	int message_l;
 	
@@ -614,7 +614,7 @@ inline size_t en61107_fifo_in_use() {
 }
 
 //ICACHE_FLASH_ATTR
-inline bool en61107_fifo_put(unsigned char c) {
+inline bool en61107_fifo_put(char c) {
 	if (en61107_fifo_in_use() != QUEUE_SIZE) {
 		fifo_buffer[fifo_head++ % QUEUE_SIZE] = c;
 		// wrap
@@ -630,7 +630,7 @@ inline bool en61107_fifo_put(unsigned char c) {
 }
 
 ICACHE_FLASH_ATTR
-bool en61107_fifo_get(unsigned char *c) {
+bool en61107_fifo_get(char *c) {
 	if (en61107_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
@@ -646,7 +646,7 @@ bool en61107_fifo_get(unsigned char *c) {
 }
 
 ICACHE_FLASH_ATTR
-bool en61107_fifo_snoop(unsigned char *c, unsigned int pos) {
+bool en61107_fifo_snoop(char *c, unsigned int pos) {
 	if (en61107_fifo_in_use() > (pos)) {
         *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
 		return true;
