@@ -11,6 +11,10 @@
 #include "crypto/aes.h"
 #include "watchdog.h"
 
+#ifdef DEBUG
+	#include "wifi.h"	// needed for debug_print_wifi_ip() and debug_print_wifi_config()
+#endif
+
 #define QUEUE_SIZE 256
 
 uint32_t kmp_serial = 0;
