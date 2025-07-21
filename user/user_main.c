@@ -893,7 +893,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 }
 
 ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *info) {
-	uint8_t cleartext[MQTT_MESSAGE_L];
+	char cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
@@ -1376,7 +1376,7 @@ ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;	
 	// vars for aes encryption
-	uint8_t cleartext[MQTT_MESSAGE_L];
+	char cleartext[MQTT_MESSAGE_L];
 
 #ifdef DEBUG
 	printf("config crc error when saving, possible flash memory error calculated_crc=0x%x&saved_crc=0x%x\n\r", calculated_crc, saved_crc);

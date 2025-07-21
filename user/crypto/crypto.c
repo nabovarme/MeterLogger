@@ -67,56 +67,85 @@ void init_aes_hmac_combined(uint8_t *key) {
 ICACHE_FLASH_ATTR
 size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	hmac_sha256_ctx_t hctx;
-	int return_l;
+	size_t i;
+	size_t padded_len;
+	size_t total_len;
+	uint8_t pad;
 
-	// encrypt
-	// get random iv in first 16 bytes of mqtt_message
+	// Generate random IV (after HMAC field)
 	os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
 
-	// calculate blocks needed for encrypted string
-	return_l = message_l;
-	if (return_l % 16) {
-		return_l = (return_l / 16) * 16 + 16;
+	// PKCS#7 padding
+	pad = 16 - (message_l % 16);
+	for (i = 0; i < pad; i++) {
+		message[message_l + i] = pad;
 	}
-	else {
-		return_l = (return_l / 16) * 16;
-	}
-	
-	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16, message, return_l, aes_key, dst + SHA256_DIGEST_LENGTH);	// first 32 bytes of mqtt_message contains hmac sha256, next 16 bytes contains IV
-	return_l += SHA256_DIGEST_LENGTH + 16;
-	
-	// hmac sha256
+	padded_len = message_l + pad;
+
+	// AES-CBC encrypt: ciphertext goes after HMAC + IV
+	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16,
+							  message,
+							  padded_len,
+							  aes_key,
+							  dst + SHA256_DIGEST_LENGTH);
+
+	total_len = SHA256_DIGEST_LENGTH + 16 + padded_len;
+
+	// HMAC-SHA256 over topic + IV + ciphertext
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
 	hmac_sha256_update(&hctx, topic, topic_l);
-	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, return_l - SHA256_DIGEST_LENGTH);
+	hmac_sha256_update(&hctx, dst + SHA256_DIGEST_LENGTH, total_len - SHA256_DIGEST_LENGTH);
 	hmac_sha256_final(&hctx, dst);
-	
-	return return_l;
+
+	return total_len;
 }
 
 ICACHE_FLASH_ATTR
 size_t decrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, uint8_t *message, size_t message_l) {
 	hmac_sha256_ctx_t hctx;
 	uint8_t calculated_hmac_sha256[SHA256_DIGEST_LENGTH];
-	
+	size_t encrypted_len;
+	uint8_t pad;
+	size_t i;
+
 	if (message_l < SHA256_DIGEST_LENGTH + 16) {
-		// message shorter than length of HMAC SHA256 checksum + IV. Not a valid message
+		// Too short to be valid (HMAC + IV missing)
 		return 0;
 	}
 
-	// hmac sha256
+	// Verify HMAC-SHA256
 	hmac_sha256_init(&hctx, hmac_sha256_key, sizeof(hmac_sha256_key));
 	hmac_sha256_update(&hctx, topic, topic_l);
 	hmac_sha256_update(&hctx, message + SHA256_DIGEST_LENGTH, message_l - SHA256_DIGEST_LENGTH);
 	hmac_sha256_final(&hctx, calculated_hmac_sha256);
 
-	if (memcmp(calculated_hmac_sha256, message, SHA256_DIGEST_LENGTH) == 0) {
-		// hmac sha256 matches
-		
-		AES128_CBC_decrypt_buffer(dst + 0, message + SHA256_DIGEST_LENGTH + 16, message_l, aes_key, message + SHA256_DIGEST_LENGTH);
-		return strlen(dst);
+	if (memcmp(calculated_hmac_sha256, message, SHA256_DIGEST_LENGTH) != 0) {
+		return 0;  // Authentication failed
 	}
-	else {
+
+	encrypted_len = message_l - (SHA256_DIGEST_LENGTH + 16);
+
+	AES128_CBC_decrypt_buffer(dst,
+							  message + SHA256_DIGEST_LENGTH + 16,
+							  encrypted_len,
+							  aes_key,
+							  message + SHA256_DIGEST_LENGTH);
+
+	// Validate and remove PKCS#7 padding
+	if (encrypted_len == 0) {
 		return 0;
 	}
+
+	pad = dst[encrypted_len - 1];
+	if (pad == 0 || pad > 16) {
+		return 0;  // Invalid padding
+	}
+
+	for (i = 0; i < pad; i++) {
+		if (dst[encrypted_len - 1 - i] != pad) {
+			return 0;  // Corrupted padding
+		}
+	}
+
+	return encrypted_len - pad;  // Actual plaintext length
 }
