@@ -82,18 +82,21 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 	}
 
 	INFO("DNS: found ip %d.%d.%d.%d\n",
-	     *((uint8 *) &ipaddr->addr),
-	     *((uint8 *) &ipaddr->addr + 1),
-	     *((uint8 *) &ipaddr->addr + 2),
-	     *((uint8 *) &ipaddr->addr + 3));
+		*((uint8 *) &ipaddr->addr),
+		*((uint8 *) &ipaddr->addr + 1),
+		*((uint8 *) &ipaddr->addr + 2),
+		*((uint8 *) &ipaddr->addr + 3));
 
-// 	if (client->ip.addr == 0 && ipaddr->addr != 0)
-	if (ipaddr->addr != IPADDR_ANY)
-	{
-		client->pCon->proto.tcp->remote_ip[0] = ipaddr->addr;
-		client->pCon->proto.tcp->remote_ip[1] = ipaddr->addr >> 8;
-		client->pCon->proto.tcp->remote_ip[2] = ipaddr->addr >> 16;
-		client->pCon->proto.tcp->remote_ip[3] = ipaddr->addr >> 24;
+	if (ipaddr->addr != IPADDR_ANY) {
+		if (client->pCon == NULL || client->pCon->proto.tcp == NULL) {
+			INFO("Error: proto.tcp is NULL in mqtt_dns_found\n");
+			return;
+		}
+		
+		client->pCon->proto.tcp->remote_ip[0] = (ipaddr->addr) & 0xff;
+		client->pCon->proto.tcp->remote_ip[1] = (ipaddr->addr >> 8) & 0xff;
+		client->pCon->proto.tcp->remote_ip[2] = (ipaddr->addr >> 16) & 0xff;
+		client->pCon->proto.tcp->remote_ip[3] = (ipaddr->addr >> 24) & 0xff;
 		if (client->security) {
 #ifdef MQTT_SSL_ENABLE
 			espconn_secure_connect(client->pCon);
