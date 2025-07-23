@@ -1,12 +1,17 @@
 #include <esp8266.h>
 #include "debug.h"
 #include "led.h"
+#include "led_data.h"
 
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
 
 static os_timer_t led_double_blink_timer;
 static os_timer_t led_sub_pattern_timer;
+
+#ifdef DEBUG
+static os_timer_t led_data_timer;
+#endif
 
 static volatile bool led_disabled = true;
 static volatile bool led_blinker_timer_running = false;
@@ -78,6 +83,10 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 	}
 }
 
+ICACHE_FLASH_ATTR void static led_data_timer_func(void *arg) {
+	led_send_string("Hello world");
+}
+
 ICACHE_FLASH_ATTR void led_init(void) {
 	//Set GPIO2 to output mode
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
@@ -86,6 +95,12 @@ ICACHE_FLASH_ATTR void led_init(void) {
 	gpio_output_set(BIT2, 0, BIT2, 0);
 	
 	led_disabled = false;
+
+#ifdef DEBUG
+	os_timer_disarm(&led_data_timer);
+	os_timer_setfn(&led_data_timer, (os_timer_func_t *)led_data_timer_func, NULL);
+	os_timer_arm(&led_data_timer, 20000, 1);
+#endif
 }
 
 ICACHE_FLASH_ATTR void led_on(void) {
