@@ -84,7 +84,7 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void static led_data_timer_func(void *arg) {
-	led_send_string("Hello world");
+	led_send_string("Hello");
 }
 
 ICACHE_FLASH_ATTR void led_init(void) {

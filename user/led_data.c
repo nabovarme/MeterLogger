@@ -5,17 +5,16 @@
 
 static os_timer_t send_timer;
 
-static uint32_t total_bits = 0;	// Total bits to send
-static uint32_t bit_index = 0;	// Current bit index
+static uint32_t total_bits = 0;  // Total Manchester *encoded* bits to send
+static uint32_t bit_index = 0;   // Current bit index
 
 #define PREAMBLE_LEN 8
-static const uint8_t preamble_bits[PREAMBLE_LEN] = {1,0,1,0,1,0,1,0}; // 8 ones
+static const uint8_t preamble_bits[PREAMBLE_LEN] = {1,0,1,0,1,0,1,0}; // 8 bits (still used before encoding)
 
-// Buffer to hold all bits of the whole string
-// We'll build a dynamic bit array of 7 bits per nibble (2 nibbles per char)
-static uint8_t bits_buffer[MAX_STRING_LEN * 8 * 7];  // max bits: chars * 2 nibbles * 7 bits
+// Each logical bit will expand into 2 Manchester bits
+static uint8_t bits_buffer[MAX_STRING_LEN * 8 * 7 * 2];  // double size for Manchester
 
-// Hamming(7,4) encode 4 bits into 7 bits
+// Hamming(7,4) encode 4 bits into 7 bits (unchanged)
 ICACHE_FLASH_ATTR
 uint8_t hamming74_encode(uint8_t nibble) {
 	uint8_t d1, d2, d3, d4;
@@ -36,8 +35,21 @@ uint8_t hamming74_encode(uint8_t nibble) {
 	return encoded;
 }
 
-// Prepare bit stream from string
-// Returns number of bits prepared, or 0 if too long
+// Convert a raw bit (0 or 1) into 2 Manchester bits
+ICACHE_FLASH_ATTR
+void manchester_encode_bit(uint8_t bit, uint8_t *out, uint32_t *pos) {
+	if (bit) {
+		// 1 -> LOW then HIGH
+		out[(*pos)++] = 0;
+		out[(*pos)++] = 1;
+	} else {
+		// 0 -> HIGH then LOW
+		out[(*pos)++] = 1;
+		out[(*pos)++] = 0;
+	}
+}
+
+// Prepare bit stream (now Manchester-encoded)
 ICACHE_FLASH_ATTR
 uint32_t prepare_bit_stream(const char *str) {
 	int bit;
@@ -51,12 +63,12 @@ uint32_t prepare_bit_stream(const char *str) {
 		return 0;  // too long
 	}
 
-	// First copy preamble bits into bits_buffer
+	// First encode the preamble into Manchester
 	for (i = 0; i < PREAMBLE_LEN; i++) {
-		bits_buffer[bit_pos++] = preamble_bits[i];
+		manchester_encode_bit(preamble_bits[i], bits_buffer, &bit_pos);
 	}
 
-	// Then encode and append the string bits
+	// Then Hamming-encode each nibble, and Manchester-encode each bit
 	for (i = 0; i < len; i++) {
 		high_nibble = (str[i] >> 4) & 0x0F;
 		low_nibble = str[i] & 0x0F;
@@ -65,21 +77,20 @@ uint32_t prepare_bit_stream(const char *str) {
 		encoded_low = hamming74_encode(low_nibble);
 
 		for (bit = 6; bit >= 0; bit--) {
-			bits_buffer[bit_pos++] = (encoded_high >> bit) & 1;
+			manchester_encode_bit((encoded_high >> bit) & 1, bits_buffer, &bit_pos);
 		}
 		for (bit = 6; bit >= 0; bit--) {
-			bits_buffer[bit_pos++] = (encoded_low >> bit) & 1;
+			manchester_encode_bit((encoded_low >> bit) & 1, bits_buffer, &bit_pos);
 		}
 	}
 
-	return bit_pos;
+	return bit_pos;  // now counts *Manchester* bits
 }
 
-// Timer callback: send one bit at a time
+// Timer callback: sends one Manchester half-bit per tick
 ICACHE_FLASH_ATTR
 void send_next_bit(void *arg) {
 	if (bit_index >= total_bits) {
-		// All bits sent, stop timer and turn LED off
 		os_timer_disarm(&send_timer);
 #ifdef DEBUG
 		os_printf("\n");
@@ -107,15 +118,15 @@ ICACHE_FLASH_ATTR
 int led_send_string(const char *str) {
 	total_bits = prepare_bit_stream(str);
 	if (total_bits == 0) {
-		return -1; // error or too long string
+		return -1;
 	}
 
 	bit_index = 0;
 
-	// Setup timer to fire every BIT_DURATION_MS milliseconds
 	os_timer_disarm(&send_timer);
 	os_timer_setfn(&send_timer, send_next_bit, NULL);
-	os_timer_arm(&send_timer, BIT_DURATION_MS, 1); // repeat = 1 (periodic)
+	os_timer_arm(&send_timer, BIT_DURATION_MS / 2, 1);  
+	// halve the period because each logical bit is now 2 ticks
 
 	return 0;
 }
