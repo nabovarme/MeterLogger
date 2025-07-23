@@ -8,8 +8,6 @@ static os_timer_t send_timer;
 static uint32_t total_bits = 0;  // Total Manchester *encoded* bits to send
 static uint32_t bit_index = 0;   // Current bit index
 
-static uint32_t last_timestamp = 0;  // For timing debug
-
 #define PREAMBLE_LEN 8
 static const uint8_t preamble_bits[PREAMBLE_LEN] = {1,0,1,0,1,0,1,0}; // 8 bits (still used before encoding)
 
@@ -32,8 +30,7 @@ uint8_t hamming74_encode(uint8_t nibble) {
 	p2 = d1 ^ d3 ^ d4;
 	p3 = d2 ^ d3 ^ d4;
 
-	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) |
-	          (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
+	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) | (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
 
 	return encoded;
 }
@@ -90,29 +87,29 @@ uint32_t prepare_bit_stream(const char *str) {
 	return bit_pos;  // now counts *Manchester* bits
 }
 
-// Timer callback: sends one Manchester half-bit per tick, prints timing
+// Timer callback: sends one Manchester half-bit per tick
 ICACHE_FLASH_ATTR
 void send_next_bit(void *arg) {
-	uint32_t now = system_get_time();  // microseconds since boot
-	uint32_t delta = (last_timestamp == 0) ? 0 : (now - last_timestamp);
-	last_timestamp = now;
-
 	if (bit_index >= total_bits) {
 		os_timer_disarm(&send_timer);
-		os_printf("\nTransmission done. Total bits: %d\n", total_bits);
+#ifdef DEBUG
+		os_printf("\n");
+#endif
 		led_off();
 		return;
 	}
 
-	// Print timing debug
-	os_printf("Bit %d: %d (dt=%uus)\n", bit_index, bits_buffer[bit_index], delta);
-
 	if (bits_buffer[bit_index]) {
+#ifdef DEBUG
+		os_printf("-");
+#endif
 		led_on();
 	} else {
+#ifdef DEBUG
+		os_printf("_");
+#endif
 		led_off();
 	}
-
 	bit_index++;
 }
 
@@ -125,13 +122,11 @@ int led_send_string(const char *str) {
 	}
 
 	bit_index = 0;
-	last_timestamp = 0;
 
 	os_timer_disarm(&send_timer);
 	os_timer_setfn(&send_timer, send_next_bit, NULL);
 	os_timer_arm(&send_timer, BIT_DURATION_MS / 2, 1);  
 	// halve the period because each logical bit is now 2 ticks
 
-	os_printf("Starting transmission: %d Manchester bits\n", total_bits);
 	return 0;
 }
