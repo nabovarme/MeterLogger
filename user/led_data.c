@@ -123,7 +123,7 @@ int led_send_string(const char *str) {
 
 	bit_index = 0;
 
-	hw_timer_stop();
+//	hw_timer_stop();
 	hw_timer_init(FRC1_SOURCE, 1);  // Use FRC1, auto-reload mode
 	hw_timer_set_func(send_next_bit);
 
