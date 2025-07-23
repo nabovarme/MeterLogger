@@ -13,6 +13,23 @@ static const uint8_t preamble_bits[PREAMBLE_LEN] = {1,0,1,0,1,0,1,0}; // 8 bits 
 // Each logical bit will expand into 2 Manchester bits
 static uint8_t bits_buffer[MAX_STRING_LEN * 8 * 7 * 2];  // double size for Manchester
 
+IRAM_ATTR static inline void gpio_led_on(void) {
+	// Drive low (active-low LED)
+	*((volatile uint32_t *)GPIO_OUT_W1TC_ADDRESS) = (1 << 2);
+	*((volatile uint32_t *)GPIO_ENABLE_ADDRESS) |= (1 << 2);
+}
+
+IRAM_ATTR static inline void gpio_led_off(void) {
+	// Drive high (turn LED off)
+	*((volatile uint32_t *)GPIO_OUT_W1TS_ADDRESS) = (1 << 2);
+	*((volatile uint32_t *)GPIO_ENABLE_ADDRESS) |= (1 << 2);
+}
+
+ICACHE_FLASH_ATTR
+void init_hw_timer(void) {
+	hw_timer_init(FRC1_SOURCE, 1);  // FRC1, edge mode
+}
+
 // Hamming(7,4) encode 4 bits into 7 bits (unchanged)
 ICACHE_FLASH_ATTR
 uint8_t hamming74_encode(uint8_t nibble) {
@@ -91,24 +108,23 @@ uint32_t prepare_bit_stream(const char *str) {
 IRAM_ATTR
 void send_next_bit(void) {
 	if (bit_index >= total_bits) {
-//		hw_timer_stop();
 #ifdef DEBUG
-		os_printf("\n");
+//		os_printf("\n");
 #endif
-		led_off();
+		gpio_led_off();
 		return;
 	}
 
 	if (bits_buffer[bit_index]) {
 #ifdef DEBUG
-		os_printf("-");
+//		os_printf("-");
 #endif
-		led_on();
+		gpio_led_on();
 	} else {
 #ifdef DEBUG
-		os_printf("_");
+//		os_printf("_");
 #endif
-		led_off();
+		gpio_led_off();
 	}
 	bit_index++;
 }
@@ -123,8 +139,7 @@ int led_send_string(const char *str) {
 
 	bit_index = 0;
 
-//	hw_timer_stop();
-	hw_timer_init(FRC1_SOURCE, 1);  // Use FRC1, auto-reload mode
+//	hw_timer_init(NMI_SOURCE, 0);  // Use FRC1, auto-reload mode
 	hw_timer_set_func(send_next_bit);
 
 	// Period in microseconds: BIT_DURATION_MS/2 per Manchester half-bit

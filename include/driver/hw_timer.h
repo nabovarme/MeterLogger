@@ -43,9 +43,9 @@ typedef enum {
 } frc1_timer_source_type;
 
 
-void  hw_timer_init(frc1_timer_source_type source_type, uint8_t req);
+void hw_timer_init(frc1_timer_source_type source_type, uint8_t req);
 
-void  hw_timer_set_func(void (* user_hw_timer_cb_set)(void)) ;
-void  hw_timer_arm(uint32_t val) ;
+void hw_timer_set_func(void (* user_hw_timer_cb_set)(void));
+void hw_timer_arm(uint32_t val) ;
 
 #endif

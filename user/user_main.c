@@ -15,6 +15,7 @@
 #include "unix_time.h"
 #include "cron/cron.h"
 #include "led.h"
+#include "led_data.h"
 #include "ac/ac_out.h"
 #include "utils.h"
 #include "user_main.h"
@@ -1249,6 +1250,9 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	uart_init(BIT_RATE_1200, BIT_RATE_1200);
 #endif
 #endif	// DEBUG_NO_METER
+
+	// first thing before wifi and stuff
+	init_hw_timer();
 
 	// clear mqtt_client
 	memset(&mqtt_client, 0, sizeof(MQTT_Client));

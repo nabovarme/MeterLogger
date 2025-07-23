@@ -38,7 +38,6 @@
 #define FRC1_ENABLE_TIMER  BIT7
 #define FRC1_AUTO_LOAD     BIT6
 
-
 /******************************************************************************
 * FunctionName : hw_timer_arm
 * Description  : set a trigger timer delay for this timer.
