@@ -2,8 +2,7 @@
 #include "debug.h"
 #include "led.h"
 #include "led_data.h"
-
-static os_timer_t send_timer;
+#include "driver/hw_timer.h"
 
 static uint32_t total_bits = 0;  // Total Manchester *encoded* bits to send
 static uint32_t bit_index = 0;   // Current bit index
@@ -30,7 +29,8 @@ uint8_t hamming74_encode(uint8_t nibble) {
 	p2 = d1 ^ d3 ^ d4;
 	p3 = d2 ^ d3 ^ d4;
 
-	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) | (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
+	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) |
+			  (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
 
 	return encoded;
 }
@@ -49,7 +49,7 @@ void manchester_encode_bit(uint8_t bit, uint8_t *out, uint32_t *pos) {
 	}
 }
 
-// Prepare bit stream (now Manchester-encoded)
+// Prepare bit stream (Manchester-encoded)
 ICACHE_FLASH_ATTR
 uint32_t prepare_bit_stream(const char *str) {
 	int bit;
@@ -63,12 +63,12 @@ uint32_t prepare_bit_stream(const char *str) {
 		return 0;  // too long
 	}
 
-	// First encode the preamble into Manchester
+	// Encode preamble into Manchester
 	for (i = 0; i < PREAMBLE_LEN; i++) {
 		manchester_encode_bit(preamble_bits[i], bits_buffer, &bit_pos);
 	}
 
-	// Then Hamming-encode each nibble, and Manchester-encode each bit
+	// Encode string (Hamming + Manchester)
 	for (i = 0; i < len; i++) {
 		high_nibble = (str[i] >> 4) & 0x0F;
 		low_nibble = str[i] & 0x0F;
@@ -84,14 +84,14 @@ uint32_t prepare_bit_stream(const char *str) {
 		}
 	}
 
-	return bit_pos;  // now counts *Manchester* bits
+	return bit_pos;  // Manchester bits count
 }
 
-// Timer callback: sends one Manchester half-bit per tick
-ICACHE_FLASH_ATTR
-void send_next_bit(void *arg) {
+// Hardware timer callback
+IRAM_ATTR
+void send_next_bit(void) {
 	if (bit_index >= total_bits) {
-		os_timer_disarm(&send_timer);
+//		hw_timer_stop();
 #ifdef DEBUG
 		os_printf("\n");
 #endif
@@ -113,7 +113,7 @@ void send_next_bit(void *arg) {
 	bit_index++;
 }
 
-// Start sending string asynchronously
+// Start sending string asynchronously using hw_timer
 ICACHE_FLASH_ATTR
 int led_send_string(const char *str) {
 	total_bits = prepare_bit_stream(str);
@@ -123,10 +123,12 @@ int led_send_string(const char *str) {
 
 	bit_index = 0;
 
-	os_timer_disarm(&send_timer);
-	os_timer_setfn(&send_timer, send_next_bit, NULL);
-	os_timer_arm(&send_timer, BIT_DURATION_MS / 2, 1);  
-	// halve the period because each logical bit is now 2 ticks
+	hw_timer_stop();
+	hw_timer_init(FRC1_SOURCE, 1);  // Use FRC1, auto-reload mode
+	hw_timer_set_func(send_next_bit);
+
+	// Period in microseconds: BIT_DURATION_MS/2 per Manchester half-bit
+	hw_timer_arm((BIT_DURATION_MS * 1000) / 2);
 
 	return 0;
 }

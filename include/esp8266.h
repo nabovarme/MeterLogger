@@ -1,6 +1,12 @@
 // Combined include file for esp8266
 
+#ifndef ESP_CONST_DATA
 #define ESP_CONST_DATA	__attribute__((aligned(4))) __attribute__((section(".irom.text")))
+#endif
+
+#ifndef IRAM_ATTR
+#define IRAM_ATTR __attribute__((section(".iram.text")))
+#endif
 
 #include <ctype.h>
 #include <stdio.h>
