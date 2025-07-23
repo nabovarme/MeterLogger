@@ -84,7 +84,7 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void static led_data_timer_func(void *arg) {
-	led_send_string("Hello");
+	led_send_string("H");
 }
 
 ICACHE_FLASH_ATTR void led_init(void) {
@@ -99,7 +99,7 @@ ICACHE_FLASH_ATTR void led_init(void) {
 #ifdef DEBUG
 	os_timer_disarm(&led_data_timer);
 	os_timer_setfn(&led_data_timer, (os_timer_func_t *)led_data_timer_func, NULL);
-	os_timer_arm(&led_data_timer, 20000, 1);
+	os_timer_arm(&led_data_timer, 10000, 1);
 #endif
 }
 

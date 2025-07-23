@@ -8,6 +8,7 @@ static os_timer_t send_timer;
 static uint32_t total_bits = 0;  // Total Manchester *encoded* bits to send
 static uint32_t bit_index = 0;   // Current bit index
 
+// Prepare bit stream (now Manchester-encoded)
 #define PREAMBLE_LEN 8
 static const uint8_t preamble_bits[PREAMBLE_LEN] = {1,0,1,0,1,0,1,0}; // 8 bits (still used before encoding)
 
@@ -49,10 +50,9 @@ void manchester_encode_bit(uint8_t bit, uint8_t *out, uint32_t *pos) {
 	}
 }
 
-// Prepare bit stream (now Manchester-encoded)
 ICACHE_FLASH_ATTR
 uint32_t prepare_bit_stream(const char *str) {
-	int bit;
+	int8_t bit;
 	uint32_t bit_pos = 0;
 	uint32_t i;
 	uint8_t encoded_high, encoded_low;
@@ -60,21 +60,21 @@ uint32_t prepare_bit_stream(const char *str) {
 
 	uint32_t len = strlen(str);
 	if (len > MAX_STRING_LEN) {
-		return 0;  // too long
+		return 0;
 	}
 
-	// First encode the preamble into Manchester
+	// --- Raw preamble (no encoding) ---
 	for (i = 0; i < PREAMBLE_LEN; i++) {
-		manchester_encode_bit(preamble_bits[i], bits_buffer, &bit_pos);
+		bits_buffer[bit_pos++] = preamble_bits[i];
 	}
 
-	// Then Hamming-encode each nibble, and Manchester-encode each bit
+	// --- Payload: Hamming + Manchester ---
 	for (i = 0; i < len; i++) {
 		high_nibble = (str[i] >> 4) & 0x0F;
-		low_nibble = str[i] & 0x0F;
+		low_nibble  = str[i] & 0x0F;
 
 		encoded_high = hamming74_encode(high_nibble);
-		encoded_low = hamming74_encode(low_nibble);
+		encoded_low  = hamming74_encode(low_nibble);
 
 		for (bit = 6; bit >= 0; bit--) {
 			manchester_encode_bit((encoded_high >> bit) & 1, bits_buffer, &bit_pos);
@@ -84,7 +84,8 @@ uint32_t prepare_bit_stream(const char *str) {
 		}
 	}
 
-	return bit_pos;  // now counts *Manchester* bits
+	return bit_pos;  // Total number of bits (preamble + Manchester half-bits)
+
 }
 
 // Timer callback: sends one Manchester half-bit per tick
