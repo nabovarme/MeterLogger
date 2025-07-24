@@ -22,16 +22,20 @@ uint8_t hamming74_encode(uint8_t nibble) {
 	uint8_t p1, p2, p3;
 	uint8_t encoded;
 
-	d1 = (nibble >> 0) & 1;
-	d2 = (nibble >> 1) & 1;
-	d3 = (nibble >> 2) & 1;
-	d4 = (nibble >> 3) & 1;
+	// Extract data bits (MSB first)
+	d1 = (nibble >> 3) & 1;
+	d2 = (nibble >> 2) & 1;
+	d3 = (nibble >> 1) & 1;
+	d4 = (nibble >> 0) & 1;
 
-	p1 = d1 ^ d2 ^ d4;
-	p2 = d1 ^ d3 ^ d4;
-	p3 = d2 ^ d3 ^ d4;
+	// Calculate parity bits (Hamming 7,4)
+	p1 = d1 ^ d2 ^ d4;  // Covers positions 1,3,5,7
+	p2 = d1 ^ d3 ^ d4;  // Covers positions 2,3,6,7
+	p3 = d2 ^ d3 ^ d4;  // Covers positions 4,5,6,7
 
-	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) | (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
+	// Pack as p1 p2 d1 p3 d2 d3 d4 (bit 6 = p1, bit 0 = d4)
+	encoded = (p1 << 6) | (p2 << 5) | (d1 << 4) |
+			  (p3 << 3) | (d2 << 2) | (d3 << 1) | (d4 << 0);
 
 	return encoded;
 }
@@ -63,10 +67,25 @@ uint32_t prepare_bit_stream(const char *str) {
 		return 0;
 	}
 
+#ifdef DEBUG
+	os_printf("Raw payload bits: ");
+	for (i = 0; i < len; i++) {
+		for (bit = 7; bit >= 0; bit--) {
+			os_printf("%d", (str[i] >> bit) & 1);
+		}
+		os_printf(" ");  // space between bytes
+	}
+	os_printf("\n");
+#endif
+
 	// --- Raw preamble (no encoding) ---
 	for (i = 0; i < PREAMBLE_LEN; i++) {
 		bits_buffer[bit_pos++] = preamble_bits[i];
 	}
+
+#ifdef DEBUG
+	os_printf("Hamming-encoded bits (before Manchester): ");
+#endif
 
 	// --- Payload: Hamming + Manchester ---
 	for (i = 0; i < len; i++) {
@@ -76,6 +95,19 @@ uint32_t prepare_bit_stream(const char *str) {
 		encoded_high = hamming74_encode(high_nibble);
 		encoded_low  = hamming74_encode(low_nibble);
 
+#ifdef DEBUG
+		// Print the 7-bit blocks before Manchester
+		for (bit = 6; bit >= 0; bit--) {
+			os_printf("%d", (encoded_high >> bit) & 1);
+		}
+		os_printf(" ");
+		for (bit = 6; bit >= 0; bit--) {
+			os_printf("%d", (encoded_low >> bit) & 1);
+		}
+		os_printf(" ");
+#endif
+
+		// Now Manchester encode these bits into bits_buffer
 		for (bit = 6; bit >= 0; bit--) {
 			manchester_encode_bit((encoded_high >> bit) & 1, bits_buffer, &bit_pos);
 		}
@@ -84,8 +116,11 @@ uint32_t prepare_bit_stream(const char *str) {
 		}
 	}
 
-	return bit_pos;  // Total number of bits (preamble + Manchester half-bits)
+#ifdef DEBUG
+	os_printf("\n");
+#endif
 
+	return bit_pos;  // Total Manchester bits (preamble + data)
 }
 
 // Timer callback: sends one Manchester half-bit per tick
@@ -131,3 +166,9 @@ int led_send_string(const char *str) {
 
 	return 0;
 }
+
+/*
+led_send_string("H") should send this: 101010100110100101101001010110101010
+									   -_-_-_-__--_-__-_--_-__-_-_--_-_-_-_
+
+*/
