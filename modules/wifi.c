@@ -704,7 +704,7 @@ void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 	wifi_scan_result_cb = cb;
 }
 
-void wifi_scan_result_cb_unregister(wifi_scan_result_event_cb_t cb) {
+void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
 }
 
