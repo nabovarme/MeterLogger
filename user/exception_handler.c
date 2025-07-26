@@ -6,7 +6,7 @@
 
 #define STACK_TRACE_BUFFER_N 128
 #define MAX_CALL_STACK_DEPTH 32
-#define STACK_START 0x3fff0000  // Adjust based on your stack RAM limits
+#define STACK_START 0x3fffc000  // Adjust based on your stack RAM limits
 #define STACK_END   0x3fffffb0
 
 struct XTensa_exception_frame_s saved_regs;
