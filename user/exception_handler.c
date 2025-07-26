@@ -212,7 +212,7 @@ void stack_trace_append(char *c) {
 		
 		// while enough data fill whole buffer
 		while (len > STACK_TRACE_BUFFER_N) {
-			c += STACK_TRACE_BUFFER_N * stack_trace_context.flash_index + (STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
+			c += STACK_TRACE_BUFFER_N;
 			memcpy(stack_trace_context.buffer, c, STACK_TRACE_BUFFER_N);
 			spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
 							(uint32_t *)stack_trace_context.buffer,
