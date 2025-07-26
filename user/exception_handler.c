@@ -57,7 +57,7 @@ static void capture_call_stack() {
 						 "  Stopped: invalid frame pointer 0x%08x\n", fp);
 			stack_trace_append(stack_trace_buffer);
 #ifdef DEBUG
-			printf("Stopped: invalid frame pointer 0x%08x\n", fp);
+			printf("  Stopped: invalid frame pointer 0x%08x\n", fp);
 #endif
 			break;
 		}
@@ -73,7 +73,7 @@ static void capture_call_stack() {
 
 		/* Print the return address */
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-					 "  #%02d: 0x%08x\n", depth, ret_addr);
+					 "Call stack frame #%02d: ret_addr=0x%08x\n", depth, ret_addr);
 		stack_trace_append(stack_trace_buffer);
 #ifdef DEBUG
 		printf("Call stack frame #%02d: ret_addr=0x%08x\n", depth, ret_addr);
@@ -90,7 +90,7 @@ static void capture_call_stack() {
 						 local1, local2, local3, local4);
 			stack_trace_append(stack_trace_buffer);
 #ifdef DEBUG
-			printf(" Locals: %08x %08x %08x %08x\n", local1, local2, local3, local4);
+			printf("	 locals: %08x %08x %08x %08x\n", local1, local2, local3, local4);
 #endif
 		}
 
@@ -133,6 +133,9 @@ static void print_stack(uint32_t start) {
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
 					 "Invalid stack pointer: 0x%08x\n", start);
 		stack_trace_append(stack_trace_buffer);
+#ifdef DEBUG
+		printf("Invalid stack pointer: 0x%08x\n", start);
+#endif
 		stack_trace_last();
 		return;
 	}
