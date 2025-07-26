@@ -338,13 +338,17 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	print_stack(getaregval(1));
 	capture_call_stack();
 
-	// Give serial output some time to flush
-	os_delay_us(2000000);
+	// Wait ~3 seconds so logs flush out (without WDT)
+//	os_delay_us(3000000);
+
+	// Force reboot cleanly (no watchdog needed)
+	system_restart();
 	ets_wdt_enable();
 
 	while (1) {
 		// wait for watchdog to bite
 	}
+	// never reached
 }
 
 ICACHE_FLASH_ATTR
