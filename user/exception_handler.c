@@ -3,6 +3,8 @@
 #include "exception_handler.h"
 #include "xtensa/corebits.h"
 #include "user_config.h"
+#include "user_interface.h"
+#include "watchdog.h"
 
 #define STACK_TRACE_BUFFER_N 128
 #define MAX_CALL_STACK_DEPTH 32
@@ -92,8 +94,8 @@ static void capture_call_stack() {
 	stack_trace_append(stack_trace_buffer);
 
 	while (depth < MAX_CALL_STACK_DEPTH) {
-		// Validate fp within DRAM region
-		if (fp < 0x3FFAE000 || fp >= stack_limit) {
+		// Make sure we can safely read 8 bytes (fp, ret_addr)
+		if (fp < 0x3FFAE000 || fp + 8 >= stack_limit) {
 			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
 						 "  Stopped: invalid frame pointer 0x%08x\n", fp);
 			stack_trace_append(stack_trace_buffer);
@@ -145,7 +147,7 @@ static void capture_call_stack() {
 	fp = getaregval(1);
 	depth = 0;
 	while (depth < MAX_CALL_STACK_DEPTH) {
-		if (fp < 0x3FFAE000 || fp >= stack_limit) break;
+		if (fp < 0x3FFAE000 || fp + 8 >= stack_limit) break;
 
 		prev_fp = *((uint32_t *)fp);
 		ret_addr = *((uint32_t *)(fp + 4));
@@ -199,7 +201,7 @@ static void print_stack(uint32_t start) {
 #endif
 
 	/* ESP8266 DRAM upper bound (0x40000000 is the start of MMIO) */
-	dram_end = 0x40000000;
+	dram_end = 0x3FFFFC00;
 
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
 	stack_trace_append(stack_trace_buffer);
@@ -318,8 +320,16 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	memcpy(&saved_regs, frame, 19 * 4);
 	saved_regs.a1 = (uint32_t)frame;
 
-	ets_wdt_disable();
+	wifi_station_disconnect();
+	wifi_set_opmode(NULL_MODE);  // disable both STA & AP
+	wifi_set_sleep_type(MODEM_SLEEP_T);
+	// Optionally disable RF completely:
+	system_phy_set_powerup_option(3);  // keep RF off after reset
 
+	stop_watchdog();
+	system_soft_wdt_stop();
+	ets_wdt_disable();
+	
 	for (i = 0; i * SPI_FLASH_SEC_SIZE < STACK_TRACE_N; i++) {
 		spi_flash_erase_sector(STACK_TRACE_SEC + i);
 	}
@@ -328,6 +338,8 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	print_stack(getaregval(1));
 	capture_call_stack();
 
+	// Give serial output some time to flush
+	os_delay_us(2000000);
 	ets_wdt_enable();
 
 	while (1) {
