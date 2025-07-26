@@ -6,8 +6,6 @@
 
 #define STACK_TRACE_BUFFER_N 128
 #define MAX_CALL_STACK_DEPTH 32
-#define STACK_START 0x3fffc000  // Adjust based on your stack RAM limits
-#define STACK_END   0x3fffffb0
 
 struct XTensa_exception_frame_s saved_regs;
 
@@ -39,75 +37,138 @@ static void stack_trace_last();
 
 ICACHE_FLASH_ATTR
 static void capture_call_stack() {
-	uint32_t sp = getaregval(1);
-	uint32_t depth = 0;
-	uint32_t pc;
-	
+	uint32_t fp;
+	uint32_t depth;
+	uint32_t prev_fp;
+	uint32_t ret_addr;
+	uint32_t local1, local2, local3, local4;
+
+	fp = getaregval(1);  /* current stack pointer (A1) */
+	depth = 0;
+
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nCall stack:\n");
 	stack_trace_append(stack_trace_buffer);
 
-	// Sanity check SP bounds
-	if (sp < STACK_START || sp >= STACK_END) {
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "Invalid SP: 0x%08x\n", sp);
+	/* Walk the frame chain */
+	while (depth < MAX_CALL_STACK_DEPTH) {
+		/* Frame pointer must be in valid ESP8266 DRAM */
+		if (fp < 0x3FFAE000 || fp >= 0x40000000) {
+			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+						 "  Stopped: invalid frame pointer 0x%08x\n", fp);
+			stack_trace_append(stack_trace_buffer);
+#ifdef DEBUG
+			printf("Stopped: invalid frame pointer 0x%08x\n", fp);
+#endif
+			break;
+		}
+
+		/* Read previous frame pointer and return address */
+		prev_fp = *((uint32_t *)fp);
+		ret_addr = *((uint32_t *)(fp + 4));
+
+		/* Stop if return address is invalid */
+		if (ret_addr == 0 || ret_addr == 0xFFFFFFFF) {
+			break;
+		}
+
+		/* Print the return address */
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+					 "  #%02d: 0x%08x\n", depth, ret_addr);
 		stack_trace_append(stack_trace_buffer);
-		return;
-	}
+#ifdef DEBUG
+		printf("Call stack frame #%02d: ret_addr=0x%08x\n", depth, ret_addr);
+#endif
 
-	while (depth < MAX_CALL_STACK_DEPTH && sp + 4 <= STACK_END) {
-		pc = *((uint32_t *)sp);
-		if (pc == 0 || pc == 0xFFFFFFFF) break; // end of call stack or invalid address
+		/* Dump a few locals if safe (within DRAM) */
+		if (fp + 20 < 0x40000000) {
+			local1 = *((uint32_t *)(fp + 8));
+			local2 = *((uint32_t *)(fp + 12));
+			local3 = *((uint32_t *)(fp + 16));
+			local4 = *((uint32_t *)(fp + 20));
+			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+						 "	 locals: %08x %08x %08x %08x\n",
+						 local1, local2, local3, local4);
+			stack_trace_append(stack_trace_buffer);
+#ifdef DEBUG
+			printf(" Locals: %08x %08x %08x %08x\n", local1, local2, local3, local4);
+#endif
+		}
 
-		// Print the PC value as hex
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "  #%02d: 0x%08x\n", depth, pc);
-		stack_trace_append(stack_trace_buffer);
+		/* Validate and advance to previous frame */
+		if (prev_fp <= fp || prev_fp >= 0x40000000) {
+			break;
+		}
 
+		fp = prev_fp;
 		depth++;
-		sp += 4;  // move to next saved PC on stack
-
-		// Optional: Add additional sanity checks on PC (e.g. within program code region)
 	}
+
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
+#ifdef DEBUG
+	printf("\n");
+#endif
+	
 }
 
 ICACHE_FLASH_ATTR
-static void print_stack(uint32_t start, uint32_t end) {
+static void print_stack(uint32_t start) {
 	uint32_t pos;
 	uint32_t *values;
-	bool looks_like_stack_frame;
+	uint32_t dram_end;
+	int looks_like_stack_frame;
+
 #ifdef DEBUG
 	printf("\nStack dump:\n");
 #endif
+
+	/* ESP8266 DRAM upper bound (0x40000000 is the start of MMIO) */
+	dram_end = 0x40000000;
+
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
 	stack_trace_append(stack_trace_buffer);
 
-	for (pos = start; pos < end; pos += 0x10) {
-		values = (uint32_t *)(pos);
+	/* Sanity check: if SP invalid, bail */
+	if (start < 0x3FFAE000 || start >= dram_end) {
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+					 "Invalid stack pointer: 0x%08x\n", start);
+		stack_trace_append(stack_trace_buffer);
+		stack_trace_last();
+		return;
+	}
+
+	/* Dump stack contents in 16-byte aligned blocks */
+	for (pos = start; pos < dram_end; pos += 0x10) {
+		values = (uint32_t *)pos;
+
+		/* Detect a potential stack frame (heuristic) */
 		looks_like_stack_frame = (values[2] == pos + 0x10);
 
 #ifdef DEBUG
 		printf("%08lx:  %08lx %08lx %08lx %08lx %c\n",
-			   (long unsigned int)pos,
-			   (long unsigned int)values[0],
-			   (long unsigned int)values[1],
-			   (long unsigned int)values[2],
-			   (long unsigned int)values[3],
-			   (looks_like_stack_frame) ? '<' : ' ');
+			(long unsigned int)pos,
+			(long unsigned int)values[0],
+			(long unsigned int)values[1],
+			(long unsigned int)values[2],
+			(long unsigned int)values[3],
+			looks_like_stack_frame ? '<' : ' ');
 #endif
 		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "%08lx:  %08lx %08lx %08lx %08lx %c\n",
-					 (long unsigned int)pos,
-					 (long unsigned int)values[0],
-					 (long unsigned int)values[1],
-					 (long unsigned int)values[2],
-					 (long unsigned int)values[3],
-					 (looks_like_stack_frame) ? '<' : ' ');
+			(long unsigned int)pos,
+			(long unsigned int)values[0],
+			(long unsigned int)values[1],
+			(long unsigned int)values[2],
+			(long unsigned int)values[3],
+			looks_like_stack_frame ? '<' : ' ');
 		stack_trace_append(stack_trace_buffer);
 	}
+
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
+	stack_trace_append(stack_trace_buffer);
+	
 #ifdef DEBUG
 	printf("\n");
 #endif
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
-	stack_trace_append(stack_trace_buffer);
 
 	stack_trace_last();
 }
@@ -168,7 +229,7 @@ static void print_reason() {
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
 
-	print_stack(getaregval(1), 0x3fffffb0);
+	print_stack(getaregval(1));
 
 	// NEW: capture call stack PCs to flash for easier call chain recovery
 	capture_call_stack();

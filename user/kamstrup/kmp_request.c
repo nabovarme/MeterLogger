@@ -106,6 +106,9 @@ static void kmp_received_task(os_event_t *events) {
 	else if (message[0] == 'r') {
 		force_reset_wifi();
 	}
+	else if (message[0] == 'R') {
+		c = 1/0;
+	}
 	else if (message[0] == 's') {
 		printf("scanner: %s\n\r", wifi_scan_is_running() ? "running" : "not running");
 	}
