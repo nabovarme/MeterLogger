@@ -83,17 +83,17 @@ static void capture_call_stack() {
 	uint32_t prev_fp;
 	uint32_t ret_addr;
 	uint32_t local1, local2, local3, local4;
+	uint32_t stack_limit = 0x40000000; // ESP8266 DRAM upper bound approx
 
-	fp = getaregval(1);  /* current stack pointer (A1) */
+	fp = getaregval(1);  /* current frame pointer (A1) */
 	depth = 0;
 
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nCall stack:\n");
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nCall stack trace:\n");
 	stack_trace_append(stack_trace_buffer);
 
-	/* Walk the frame chain */
 	while (depth < MAX_CALL_STACK_DEPTH) {
-		/* Frame pointer must be in valid ESP8266 DRAM */
-		if (fp < 0x3FFAE000 || fp >= 0x40000000) {
+		// Validate fp within DRAM region
+		if (fp < 0x3FFAE000 || fp >= stack_limit) {
 			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
 						 "  Stopped: invalid frame pointer 0x%08x\n", fp);
 			stack_trace_append(stack_trace_buffer);
@@ -103,40 +103,34 @@ static void capture_call_stack() {
 			break;
 		}
 
-		/* Read previous frame pointer and return address */
 		prev_fp = *((uint32_t *)fp);
 		ret_addr = *((uint32_t *)(fp + 4));
 
-		/* Stop if return address is invalid */
 		if (ret_addr == 0 || ret_addr == 0xFFFFFFFF) {
 			break;
 		}
 
-		/* Print the return address */
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-					 "Call stack frame #%02d: ret_addr=0x%08x\n", depth, ret_addr);
-		stack_trace_append(stack_trace_buffer);
-#ifdef DEBUG
-		printf("Call stack frame #%02d: ret_addr=0x%08x\n", depth, ret_addr);
-#endif
-
-		/* Dump a few locals if safe (within DRAM) */
-		if (fp + 20 < 0x40000000) {
+		// Read 4 locals if safe
+		if (fp + 20 < stack_limit) {
 			local1 = *((uint32_t *)(fp + 8));
 			local2 = *((uint32_t *)(fp + 12));
 			local3 = *((uint32_t *)(fp + 16));
 			local4 = *((uint32_t *)(fp + 20));
-			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-						 "	 locals: %08x %08x %08x %08x\n",
-						 local1, local2, local3, local4);
-			stack_trace_append(stack_trace_buffer);
-#ifdef DEBUG
-			printf("	 locals: %08x %08x %08x %08x\n", local1, local2, local3, local4);
-#endif
+		} else {
+			local1 = local2 = local3 = local4 = 0;
 		}
 
-		/* Validate and advance to previous frame */
-		if (prev_fp <= fp || prev_fp >= 0x40000000) {
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+					 " #%02d: fp=0x%08x ret=0x%08x locals: %08x %08x %08x %08x\n",
+					 depth, fp, ret_addr, local1, local2, local3, local4);
+		stack_trace_append(stack_trace_buffer);
+
+#ifdef DEBUG
+		printf(" #%02d: fp=0x%08x ret=0x%08x locals: %08x %08x %08x %08x\n",
+			   depth, fp, ret_addr, local1, local2, local3, local4);
+#endif
+
+		if (prev_fp <= fp || prev_fp >= stack_limit) {
 			break;
 		}
 
@@ -144,13 +138,53 @@ static void capture_call_stack() {
 		depth++;
 	}
 
+	// Print addresses for addr2line symbolication
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nAddresses for addr2line:\n");
+	stack_trace_append(stack_trace_buffer);
+
+	fp = getaregval(1);
+	depth = 0;
+	while (depth < MAX_CALL_STACK_DEPTH) {
+		if (fp < 0x3FFAE000 || fp >= stack_limit) break;
+
+		prev_fp = *((uint32_t *)fp);
+		ret_addr = *((uint32_t *)(fp + 4));
+
+		if (ret_addr == 0 || ret_addr == 0xFFFFFFFF) break;
+
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "0x%08x ", ret_addr);
+		stack_trace_append(stack_trace_buffer);
+
+		if (prev_fp <= fp || prev_fp >= stack_limit) break;
+
+		fp = prev_fp;
+		depth++;
+	}
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
 	stack_trace_last();
+	
+
 #ifdef DEBUG
+	printf("\nAddresses for addr2line:\n");
+	fp = getaregval(1);
+	depth = 0;
+	while (depth < MAX_CALL_STACK_DEPTH) {
+		if (fp < 0x3FFAE000 || fp >= stack_limit) break;
+
+		prev_fp = *((uint32_t *)fp);
+		ret_addr = *((uint32_t *)(fp + 4));
+		if (ret_addr == 0 || ret_addr == 0xFFFFFFFF) break;
+
+		printf("0x%08x ", ret_addr);
+
+		if (prev_fp <= fp || prev_fp >= stack_limit) break;
+
+		fp = prev_fp;
+		depth++;
+	}
 	printf("\n");
 #endif
-	
 }
 
 ICACHE_FLASH_ATTR
