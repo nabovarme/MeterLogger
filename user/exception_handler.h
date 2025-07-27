@@ -18,5 +18,3 @@ struct XTensa_exception_frame_s {
 };
 
 ICACHE_FLASH_ATTR void exception_handler_init();
-ICACHE_FLASH_ATTR void stack_trace_append(char *c);
-ICACHE_FLASH_ATTR void stack_trace_last();

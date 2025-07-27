@@ -70,9 +70,9 @@ static void kmp_received_task(os_event_t *events) {
 	// vars for aes encryption
 	uint8_t cleartext[KMP_FRAME_L];
 
-    // allocate struct for response
-    kmp_response_t response;
-    char kmp_unit_string[16];
+	// allocate struct for response
+	kmp_response_t response;
+	char kmp_unit_string[16];
 	char kmp_value_string[64];
 
 	//ETS_UART_INTR_DISABLE();
@@ -116,6 +116,10 @@ static void kmp_received_task(os_event_t *events) {
 		// print queue
 		debug_print_mqtt_queue(mqtt_client);
 	}
+	else if (message[0] == 'R') {
+		// force crash
+		*((volatile int *)0) = 0;
+	}
 #endif
 
 	// decode kmp frame
@@ -138,21 +142,21 @@ static void kmp_received_task(os_event_t *events) {
 		}
 		else {
 			// prepare for mqtt transmission if we got serial number from meter
-        	
+			
 			// format /sample/v1/serial/unix_time => val1=23&val2=val3&baz=blah
 			//topic_l = os_sprintf(topic, "/sample/v1/%lu/%lu", kmp_serial, current_unix_time);
-			// BUG here.                        returns 0 -^
+			// BUG here.						returns 0 -^
 			// this is a fix
 			memset(topic, 0, sizeof(topic));			// clear it
 			tfp_snprintf(current_unix_time_string, 64, "%llu", current_unix_time);
 			tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%s", kmp_serial, current_unix_time_string);
 
 			memset(message, 0, sizeof(message));			// clear it
-        	
+			
 			// heap size
 			tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
 			strcat(message, key_value);
-        	
+			
 #ifndef FLOW_METER
 			// heating meter specific
 			// flow temperature
@@ -164,7 +168,7 @@ static void kmp_received_task(os_event_t *events) {
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=NaN %s&", kmp_unit_string);
 			}
 			strcat(message, key_value);
-        	
+			
 			// return flow temperature
 			kmp_unit_to_string(response.kmp_response_register_list[4].unit, kmp_unit_string);
 			if (kmp_value_to_string(response.kmp_response_register_list[4].value, response.kmp_response_register_list[4].si_ex, kmp_value_string)) {
@@ -174,7 +178,7 @@ static void kmp_received_task(os_event_t *events) {
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=NaN %s&", kmp_unit_string);
 			}
 			strcat(message, key_value);
-        	
+			
 			// temperature difference
 			kmp_unit_to_string(response.kmp_response_register_list[5].unit, kmp_unit_string);
 			if (kmp_value_to_string(response.kmp_response_register_list[5].value, response.kmp_response_register_list[5].si_ex, kmp_value_string)) {
@@ -185,7 +189,7 @@ static void kmp_received_task(os_event_t *events) {
 			}
 			strcat(message, key_value);
 #endif	// FLOW_METER
-        	
+			
 			// flow
 			kmp_unit_to_string(response.kmp_response_register_list[6].unit, kmp_unit_string);
 			if (kmp_value_to_string(response.kmp_response_register_list[6].value, response.kmp_response_register_list[6].si_ex, kmp_value_string)) {
@@ -195,7 +199,7 @@ static void kmp_received_task(os_event_t *events) {
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=NaN %s&", kmp_unit_string);
 			}
 			strcat(message, key_value);
-        	
+			
 #ifndef FLOW_METER
 			// current power
 			kmp_unit_to_string(response.kmp_response_register_list[7].unit, kmp_unit_string);
@@ -207,7 +211,7 @@ static void kmp_received_task(os_event_t *events) {
 			}
 			strcat(message, key_value);
 #endif	// FLOW_METER
-        	
+			
 			// hours
 			kmp_unit_to_string(response.kmp_response_register_list[2].unit, kmp_unit_string);
 			if (kmp_value_to_string(response.kmp_response_register_list[2].value, response.kmp_response_register_list[2].si_ex, kmp_value_string)) {
@@ -217,7 +221,7 @@ static void kmp_received_task(os_event_t *events) {
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=NaN %s&", kmp_unit_string);
 			}
 			strcat(message, key_value);
-        	
+			
 			// volume
 			kmp_unit_to_string(response.kmp_response_register_list[1].unit, kmp_unit_string);
 			if (kmp_value_to_string(response.kmp_response_register_list[1].value, response.kmp_response_register_list[1].si_ex, kmp_value_string)) {
@@ -233,7 +237,7 @@ static void kmp_received_task(os_event_t *events) {
 			tfp_vsscanf(kmp_value_string, "%f", &v1_l);
 			v1_l = v1_l * 1000.0;
 #endif
-        	
+			
 #ifndef FLOW_METER
 			// power
 			kmp_unit_to_string(response.kmp_response_register_list[0].unit, kmp_unit_string);
@@ -253,7 +257,7 @@ static void kmp_received_task(os_event_t *events) {
 				e1_kwh = e1_kwh * 1000.0;
 			}
 #endif
-        	
+			
 			memset(cleartext, 0, sizeof(message));
 			os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
 			os_memset(message, 0, sizeof(message));			// ...and clear it
@@ -340,25 +344,25 @@ void static kmp_get_serial_timer_func() {
 	// get serial
 	// prepare frame
 	frame_length = kmp_get_serial(frame);
-	uart0_tx_buffer(frame, frame_length);     // send kmp request
+	uart0_tx_buffer(frame, frame_length);	 // send kmp request
 }
 
 ICACHE_FLASH_ATTR
 void static kmp_get_register_timer_func() {
-    // get registers
-    // prepare frame
-    register_list[0] = 0x3c;    // heat energy (E1)
-    register_list[1] = 0x44;    // volume register (V1)
-    register_list[2] = 0x3EC;   // operational hour counter (HR)
-    register_list[3] = 0x56;    // current flow temperature (T1)
-    register_list[4] = 0x57;    // current return flow temperature (T2)
-    register_list[5] = 0x59;    // current temperature difference (T1-T2)
-    register_list[6] = 0x4A;    // current flow in flow (FLOW1)
-    register_list[7] = 0x50;    // current power calculated on the basis of V1-T1-T2 (EFFEKT1)
-    frame_length = kmp_get_register(frame, register_list, 8);
+	// get registers
+	// prepare frame
+	register_list[0] = 0x3c;	// heat energy (E1)
+	register_list[1] = 0x44;	// volume register (V1)
+	register_list[2] = 0x3EC;	// operational hour counter (HR)
+	register_list[3] = 0x56;	// current flow temperature (T1)
+	register_list[4] = 0x57;	// current return flow temperature (T2)
+	register_list[5] = 0x59;	// current temperature difference (T1-T2)
+	register_list[6] = 0x4A;	// current flow in flow (FLOW1)
+	register_list[7] = 0x50;	// current power calculated on the basis of V1-T1-T2 (EFFEKT1)
+	frame_length = kmp_get_register(frame, register_list, 8);
 	
-    // send frame
-    uart0_tx_buffer(frame, frame_length);     // send kmp request
+	// send frame
+	uart0_tx_buffer(frame, frame_length);	 // send kmp request
 }
 
 ICACHE_FLASH_ATTR
@@ -412,18 +416,18 @@ void kmp_request_send() {
 		0x67, 0x6A, 0x6D, 0x70, 0x74, 0x77, 0x7A, 0x7D
 	};
 #endif
-    os_timer_disarm(&kmp_get_serial_timer);
-    os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
-    os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
+	os_timer_disarm(&kmp_get_serial_timer);
+	os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
+	os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
 	
-    os_timer_disarm(&kmp_get_register_timer);
-    os_timer_setfn(&kmp_get_register_timer, (os_timer_func_t *)kmp_get_register_timer_func, NULL);
-    os_timer_arm(&kmp_get_register_timer, 400, 0);		// after 0.4 seconds
+	os_timer_disarm(&kmp_get_register_timer);
+	os_timer_setfn(&kmp_get_register_timer, (os_timer_func_t *)kmp_get_register_timer_func, NULL);
+	os_timer_arm(&kmp_get_register_timer, 400, 0);		// after 0.4 seconds
 	
 	// start retransmission timeout timer
-    os_timer_disarm(&kmp_receive_timeout_timer);
-    os_timer_setfn(&kmp_receive_timeout_timer, (os_timer_func_t *)kmp_receive_timeout_timer_func, NULL);
-    os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
+	os_timer_disarm(&kmp_receive_timeout_timer);
+	os_timer_setfn(&kmp_receive_timeout_timer, (os_timer_func_t *)kmp_receive_timeout_timer_func, NULL);
+	os_timer_arm(&kmp_receive_timeout_timer, 2000, 0);		// after 2 seconds
 	
 	kmp_requests_sent++;
 #ifdef DEBUG_NO_METER
@@ -521,7 +525,7 @@ bool kmp_fifo_get(char *c) {
 
 bool kmp_fifo_snoop(char *c, unsigned int pos) {
 	if (kmp_fifo_in_use() > (pos)) {
-        *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
+		*c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
 		return true;
 	}
 	else {
