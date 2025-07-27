@@ -188,7 +188,6 @@ static void print_reason() {
 #endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
-	stack_trace_last();
 }
 
 ICACHE_FLASH_ATTR
