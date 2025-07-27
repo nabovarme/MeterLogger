@@ -5,6 +5,7 @@
 #include "wifi.h"
 #include "config.h"
 #include "led.h"
+#include "rtc_mem.h"
 #include "utils.h"
 #include <lwip/dns.h>
 
@@ -83,6 +84,7 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 #endif
 			switch (watchdog_list[i].type) {
 				case REBOOT:
+					save_rtc_data(1);
 					system_restart_defered();
 #ifdef DEBUG
 					printf("triggered system reboot\n");

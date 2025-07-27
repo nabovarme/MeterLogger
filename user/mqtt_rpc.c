@@ -10,6 +10,7 @@
 #include "unix_time.h"
 #include "cron/cron.h"
 #include "ac/ac_out.h"
+#include "rtc_mem.h"
 #include "utils.h"
 #include "version.h"
 #include "user_main.h"
@@ -627,7 +628,9 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 		
+	uint32_t watchdog_rebooted;
 	struct rst_info *rtc_info;
+	
 	rtc_info = system_get_rst_info();
 
 #ifdef EN61107
@@ -640,10 +643,20 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	if (rtc_info != NULL) {
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", 7, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+		}
+		else {
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+		}
 	}
 	else {
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", -1);
+		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", 7);
+		}
+		else {
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", -1);
+		}
 	}
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);

@@ -22,6 +22,7 @@
 #include "tinyprintf.h"
 #include "driver/ext_spi_flash.h"
 #include "watchdog.h"
+#include "rtc_mem.h"
 #include "icmp_ping.h"
 #include "version.h"
 
@@ -1316,15 +1317,23 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef DEBUG
+	uint32_t watchdog_rebooted;
+	
 	struct rst_info *rtc_info;
 	rtc_info = system_get_rst_info();
-	printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
+
+	if (load_rtc_data(&watchdog_rebooted)) {
+		printf("rst: %d\n", 7);
+	} else {
+		printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
+	}
 	if (rtc_info->reason == REASON_WDT_RST || rtc_info->reason == REASON_EXCEPTION_RST || rtc_info->reason == REASON_SOFT_WDT_RST) {
 		if (rtc_info->reason == REASON_EXCEPTION_RST) {
 			os_printf("Fatal exception (%d):\n", rtc_info->exccause);
 		}
 		os_printf("epc1=0x%08x, epc2=0x%08x, epc3=0x%08x, excvaddr=0x%08x, depc=0x%08x\n", rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);	//The address of the last crash is printed, which is used to debug garbled output.
 	}
+	
 #endif	// DEBUG
 
 #ifdef IMPULSE
