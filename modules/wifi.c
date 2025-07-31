@@ -2,7 +2,7 @@
  * wifi.c
  *
  *  Created on: Dec 30, 2014
- *      Author: Minh
+ *	  Author: Minh
  */
 #include <esp8266.h>
 #include <lwip/ip.h>
@@ -186,7 +186,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	}
 
 	// default allow everything else
-    return true;
+	return true;
 }
 
 // static functions
@@ -734,3 +734,30 @@ void ICACHE_FLASH_ATTR debug_print_wifi_config() {
 	printf("ssid: %s, pass: %s\n\r", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
 }
 #endif	// DEBUG
+
+void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
+#ifdef DEBUG
+	os_printf("cnx_csa_fn_wrapper\n");
+#endif
+
+	if (wifi_station_get_connect_status() != STATION_GOT_IP) {
+		__asm__ __volatile__("ret.n");
+	}
+
+	void *next_instr = (void *)0x40217842;
+	void *literal_a13 = (void *)0x40210000;
+
+	__asm__ __volatile__ (
+		"addi   a1, a1, -16\n"	// restore stack adjustment
+		"s32i.n a13, a1, 4\n"	// save original a13
+		"mov	a13, %0\n"		// restore a13 from literal
+		"s32i.n a12, a1, 8\n"
+		"s32i.n a14, a1, 0\n"
+		"s32i   a0, a1, 12\n"
+		"addmi  a12, a13, 0x200\n"
+		"mov	a2, %1\n"
+		"jx	 a2\n"
+		:
+		: "r"(literal_a13), "r"(next_instr)
+	);
+}

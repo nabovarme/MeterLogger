@@ -1,6 +1,7 @@
 // Combined include file for esp8266
 
 #define ESP_CONST_DATA	__attribute__((aligned(4))) __attribute__((section(".irom.text")))
+#define ICACHE_RAM_ATTR __attribute__((section(".text")))
 
 #include <ctype.h>
 #include <stdio.h>

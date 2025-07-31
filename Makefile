@@ -298,9 +298,20 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 
 patch:
-	$(vecho) "PATCH $(TARGET_OUT) (cnx_csa_fn(): 12c1f0d911d1f2e1 -> 0df0000000000000)"
-	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/12c1f0d911d1f2e1/0df0000000000000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
-	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
+	@WRAPPER_HEX=$$(xtensa-lx106-elf-nm $(TARGET_OUT) | grep cnx_csa_fn_wrapper | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]'); \
+	echo "Wrapper address HEX: $$WRAPPER_HEX"; \
+	WRAPPER_LE=$$(echo $$WRAPPER_HEX | perl -pe 's/(..)(..)(..)(..)/$$4$$3$$2$$1/'); \
+	echo "Wrapper address LE: $$WRAPPER_LE"; \
+	ORIG_BYTES=12c1f0d911d1f2e1c921e901026103c2dd0220e220; \
+	PATCH_PREFIX=f02000f02000f02000210000a00200; \
+	PATCH_BYTES=$${PATCH_PREFIX}$${WRAPPER_LE}f03d; \
+	echo "Patch bytes: $$PATCH_BYTES"; \
+	xxd -p $(TARGET_OUT) | tr -d '\n' | perl -pe "s/$$ORIG_BYTES/$$PATCH_BYTES/" | xxd -r -p > $(TARGET_OUT)-patched; \
+	mv $(TARGET_OUT)-patched $(TARGET_OUT); \
+	echo "Patch applied successfully."
+#	$(vecho) "PATCH $(TARGET_OUT) (cnx_csa_fn(): 12c1f0d911d1f2e1 -> 0df0000000000000)"
+#	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/12c1f0d911d1f2e1/0df0000000000000/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+#	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 	$(vecho) "PATCH $(TARGET_OUT) (add + to version)"
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
