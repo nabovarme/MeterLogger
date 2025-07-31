@@ -740,7 +740,7 @@ void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
 	os_printf("cnx_csa_fn_wrapper\n");
 #endif
 
-	if (wifi_station_get_connect_status() != STATION_GOT_IP) {
+	if (wifi_scan_runnning || (wifi_station_get_connect_status() != STATION_GOT_IP)) {
 		__asm__ __volatile__("ret.n");
 	}
 
