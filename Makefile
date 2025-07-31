@@ -298,7 +298,7 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 
 patch:
-	@WRAPPER_HEX=$$(xtensa-lx106-elf-nm $(TARGET_OUT) | grep cnx_csa_fn_wrapper | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]'); \
+	@WRAPPER_HEX=$$($(NM) $(TARGET_OUT) | grep cnx_csa_fn_wrapper | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]'); \
 	echo "Wrapper address HEX: $$WRAPPER_HEX"; \
 	WRAPPER_LE=$$(echo $$WRAPPER_HEX | perl -pe 's/(..)(..)(..)(..)/$$4$$3$$2$$1/'); \
 	echo "Wrapper address LE: $$WRAPPER_LE"; \
