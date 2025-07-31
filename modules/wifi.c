@@ -742,22 +742,60 @@ void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
 
 	if (wifi_station_get_connect_status() != STATION_GOT_IP) {
 		__asm__ __volatile__("ret.n");
+		return;  // exit immediately
 	}
 
-	void *next_instr = (void *)0x40217842;
-	void *literal_a13 = (void *)0x40210000;
+	void *next_instr = (void *)0x40217843;   // address to jump after prologue
+	uint32_t literal = 0x40210000;            // literal for a13
 
 	__asm__ __volatile__ (
-		"addi   a1, a1, -16\n"	// restore stack adjustment
-		"s32i.n a13, a1, 4\n"	// save original a13
-		"mov	a13, %0\n"		// restore a13 from literal
+		"addi   a1, a1, -16\n"
+		"s32i.n a13, a1, 4\n"
+		"mov    a13, %0\n"
 		"s32i.n a12, a1, 8\n"
 		"s32i.n a14, a1, 0\n"
-		"s32i   a0, a1, 12\n"
+		"s32i.n a0,  a1, 12\n"
 		"addmi  a12, a13, 0x200\n"
-		"mov	a2, %1\n"
-		"jx	 a2\n"
+		"mov    a14, a2\n"
+		"jx     %1\n"
 		:
-		: "r"(literal_a13), "r"(next_instr)
+		: "r"(literal), "r"(next_instr)
 	);
+}
+
+void ICACHE_RAM_ATTR patch_cnx_csa_fn(void) {
+	uint8_t *target;
+	uint8_t patch[13];
+	uint32_t *literal_slot;
+
+	target = (uint8_t *)0x40217830;
+
+	/* Patch instructions:
+	   l32r a2, literal  (6 bytes)
+	   jx   a2           (3 bytes)
+	   nop.n             (2 bytes) x 2 for alignment
+	*/
+	patch[0] = 0xf0;
+	patch[1] = 0x20;
+	patch[2] = 0x00;
+	patch[3] = 0x00; /* placeholder for literal address */
+	patch[4] = 0x00;
+	patch[5] = 0x00;
+	patch[6] = 0x00;
+	patch[7] = 0x21;
+	patch[8] = 0x00;
+	patch[9] = 0xf0;
+	patch[10] = 0x3d;
+	patch[11] = 0xf0;
+	patch[12] = 0x3d;
+
+	memcpy(target, patch, sizeof(patch));
+
+	/* Write the literal address (4 bytes) for l32r */
+	literal_slot = (uint32_t *)(target + 3);
+	*literal_slot = (uint32_t)cnx_csa_fn_wrapper;
+
+#ifdef DEBUG
+	os_printf("Patched cnx_csa_fn to jump to cnx_csa_fn_wrapper at 0x%08x\n", (unsigned int)cnx_csa_fn_wrapper);
+#endif
 }

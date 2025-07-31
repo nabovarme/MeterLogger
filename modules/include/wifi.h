@@ -45,5 +45,6 @@ void wifi_scan_result_cb_unregister();
 void ICACHE_FLASH_ATTR debug_print_wifi_ip();
 void ICACHE_FLASH_ATTR debug_print_wifi_config();
 #endif
+void ICACHE_FLASH_ATTR patch_cnx_csa_fn();
 
 #endif /* USER_WIFI_H_ */

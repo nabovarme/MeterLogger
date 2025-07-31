@@ -1179,6 +1179,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	size_t flash_size;
 	
 	system_update_cpu_freq(160);
+
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	flash_size = spi_flash_size();
 
@@ -1342,6 +1343,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 //	os_timer_arm(&spi_test_timer, 2000, 1);
 #endif	
 
+	patch_cnx_csa_fn();
+	
 	init_unix_time();
 	
 	init_icmp_ping();
