@@ -735,25 +735,39 @@ void ICACHE_FLASH_ATTR debug_print_wifi_config() {
 }
 #endif	// DEBUG
 
+// Replacement function for cnx_csa_fn(), inserted via patching.
+// It conditionally resumes execution of the original function,
+// replicating its first instruction (l32r a13, 0x40210000) before continuing.
 void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 #ifdef DEBUG
 	os_printf("cnx_csa_fn_wrapper\n");
 #endif
 
+	// Early exit: if Wi-Fi scan is running or no IP is obtained, skip original logic.
+	// This mimics a conditional "bail out" behavior.
 	if (wifi_scan_runnning || (wifi_station_get_connect_status() != STATION_GOT_IP)) {
 		__asm__ __volatile__("ret.n");
 	}
 
-	void *continue_addr = (void *)0x4021783c;
-	void *literal_a13 = (void *)0x40210000;
+	void *continue_addr = (void *)0x4021783c;   // Address to resume original cnx_csa_fn logic
+	void *literal_a13   = (void *)0x40210000;   // Value originally loaded via l32r into a13
 
 	__asm__ __volatile__ (
+		// Make room on the stack for saving registers (aligns with calling convention)
 		"addi   a1, a1, -16\n"
+
+		// Save callee-saved registers (as per Xtensa ABI)
 		"s32i.n a13, a1, 4\n"
-		"mov    a13, %0\n"
 		"s32i.n a12, a1, 8\n"
 		"s32i.n a14, a1, 0\n"
+
+		// Restore original value of a13 (literal value from the old l32r)
+		"mov    a13, %0\n"
+
+		// Set return address to resume execution at 0x4021783c
 		"mov    a0, %1\n"
+
+		// Return to original function flow (a0 holds resume address)
 		"jx     a0\n"
 		:
 		: "r"(literal_a13), "r"(continue_addr)
