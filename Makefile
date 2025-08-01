@@ -303,8 +303,8 @@ patch:
 	WRAPPER_LE=$$(echo $$WRAPPER_HEX | perl -pe 's/(..)(..)(..)(..)/$$4$$3$$2$$1/'); \
 	echo "Wrapper address LE: $$WRAPPER_LE"; \
 	ORIG_BYTES=12c1f0d911d1f2e1c921e901; \
-	PATCH_PREFIX=010000a00000; \
-	PATCH_BYTES=$${PATCH_PREFIX}$${WRAPPER_LE}0000; \
+	PATCH_PREFIX=010020a00000f03d; \
+	PATCH_BYTES=$${PATCH_PREFIX}$${WRAPPER_LE}; \
 	echo "Patch bytes: $$PATCH_BYTES"; \
 	xxd -p $(TARGET_OUT) | tr -d '\n' | perl -pe "s/$$ORIG_BYTES/$$PATCH_BYTES/" | xxd -r -p > $(TARGET_OUT)-patched; \
 	mv $(TARGET_OUT)-patched $(TARGET_OUT); \
