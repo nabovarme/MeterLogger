@@ -744,7 +744,7 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 		__asm__ __volatile__("ret.n");
 	}
 
-	void *next_instr = (void *)0x4021783c;
+	void *continue_addr = (void *)0x4021783c;
 	void *literal_a13 = (void *)0x40210000;
 
 	__asm__ __volatile__ (
@@ -756,6 +756,6 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 		"mov    a0, %1\n"
 		"jx     a0\n"
 		:
-		: "r"(literal_addr), "r"(continue_addr)
+		: "r"(literal_a13), "r"(continue_addr)
 	);
 }
