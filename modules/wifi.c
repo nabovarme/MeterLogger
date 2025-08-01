@@ -735,7 +735,7 @@ void ICACHE_FLASH_ATTR debug_print_wifi_config() {
 }
 #endif	// DEBUG
 
-void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
+void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 #ifdef DEBUG
 	os_printf("cnx_csa_fn_wrapper\n");
 #endif
@@ -748,16 +748,14 @@ void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
 	void *literal_a13 = (void *)0x40210000;
 
 	__asm__ __volatile__ (
-		"addi   a1, a1, -16\n"    // restore stack adjustment
-		"s32i.n a13, a1, 4\n"     // save original a13
-		"mov    a13, %0\n"        // restore a13 from literal pointer
+		"addi   a1, a1, -16\n"
+		"s32i.n a13, a1, 4\n"
+		"mov    a13, %0\n"
 		"s32i.n a12, a1, 8\n"
 		"s32i.n a14, a1, 0\n"
-		"s32i   a0, a1, 12\n"
-		"addmi  a12, a13, 0x200\n"
-		"mov    a2, %1\n"
-		"jx     a2\n"
+		"mov    a0, %1\n"
+		"jx     a0\n"
 		:
-		: "r"(literal_a13), "r"(next_instr)
+		: "r"(literal_addr), "r"(continue_addr)
 	);
 }
