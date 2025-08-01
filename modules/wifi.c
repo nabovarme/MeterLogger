@@ -744,19 +744,19 @@ void ICACHE_RAM_ATTR cnx_csa_fn_wrapper(void) {
 		__asm__ __volatile__("ret.n");
 	}
 
-	void *next_instr = (void *)0x40217842;
+	void *next_instr = (void *)0x4021783c;
 	void *literal_a13 = (void *)0x40210000;
 
 	__asm__ __volatile__ (
-		"addi   a1, a1, -16\n"	// restore stack adjustment
-		"s32i.n a13, a1, 4\n"	// save original a13
-		"mov	a13, %0\n"		// restore a13 from literal
+		"addi   a1, a1, -16\n"    // restore stack adjustment
+		"s32i.n a13, a1, 4\n"     // save original a13
+		"mov    a13, %0\n"        // restore a13 from literal pointer
 		"s32i.n a12, a1, 8\n"
 		"s32i.n a14, a1, 0\n"
 		"s32i   a0, a1, 12\n"
 		"addmi  a12, a13, 0x200\n"
-		"mov	a2, %1\n"
-		"jx	 a2\n"
+		"mov    a2, %1\n"
+		"jx     a2\n"
 		:
 		: "r"(literal_a13), "r"(next_instr)
 	);
