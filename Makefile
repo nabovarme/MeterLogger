@@ -299,6 +299,9 @@ $(FW_BASE):
 
 patch:
 	@./scripts/patch_cnx_fn.sh $(TARGET_OUT)
+	$(vecho) "PATCH $(TARGET_OUT) (add + to version)"
+	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
+	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
