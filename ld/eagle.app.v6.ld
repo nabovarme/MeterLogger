@@ -161,7 +161,7 @@ SECTIONS
     *libjson.a:(.literal.* .text.*)
     *liblwip.a:(.literal.* .text.*)
 
-    *(.cnx_csa_fn_wrapper.literal)
+    KEEP(*(.cnx_csa_fn_wrapper.literal))
 	
     *libnet80211.a:(.literal.* .text.*)
     *libsmartconfig.a:(.literal.* .text.*)
