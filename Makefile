@@ -235,7 +235,8 @@ LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
-LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
+#LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
+LD_SCRIPT	:= -T$(firstword $(wildcard ./ld/$(notdir $(LD_SCRIPT))) $(addprefix $(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT)))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
@@ -267,7 +268,8 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
+#all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
+all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2) copy_release
 #all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
 
 $(FW_FILE_1): $(TARGET_OUT)

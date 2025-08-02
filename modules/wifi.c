@@ -57,6 +57,10 @@ static ip_addr_t sta_network_mask;
 static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
+// Put the literal in the .rodata section to ensure it's accessible to l32r
+__attribute__((used, section(".patch.literal")))
+const void *cnx_csa_fn_wrapper_literal = (void *)cnx_csa_fn_wrapper;
+
 ICACHE_FLASH_ATTR err_t my_input_ap(struct pbuf *p, struct netif *inp) {
 	err_t err;
 	
@@ -780,4 +784,8 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 		:
 		: "r"(literal_a13), "r"(continue_addr)
 	);
+}
+
+void foo() {
+	printf("%u\n", cnx_csa_fn_wrapper_literal);
 }
