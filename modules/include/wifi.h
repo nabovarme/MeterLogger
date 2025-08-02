@@ -46,4 +46,5 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip();
 void ICACHE_FLASH_ATTR debug_print_wifi_config();
 #endif
 void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void);
+void ICACHE_FLASH_ATTR debug_print_patch();
 #endif /* USER_WIFI_H_ */
