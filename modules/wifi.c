@@ -753,8 +753,8 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 		__asm__ __volatile__("ret.n");
 	}
 
-	void *continue_addr = (void *)0x40217842;   // Address to resume original cnx_csa_fn logic
-	void *literal_a13   = (void *)0x40210000;   // Value originally loaded via l32r into a13
+	void *continue_addr = (void *)0x40217840;   // Address to resume original cnx_csa_fn logic
+	void *literal_a13   = (void *)0x40210004;   // Value originally loaded via l32r into a13
 
 	__asm__ __volatile__ (
 		// Make room on the stack for saving registers (aligns with calling convention)
@@ -771,12 +771,6 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 
 		// Save a14 register to stack (s32i.n a14, a1, 0)
 		"s32i.n a14, a1, 0\n"
-
-		// Save a0 register to stack (s32i a0, a1, 12)
-		"s32i   a0,  a1, 12\n"
-
-		// Add immediate value to a12 (addmi a12, a13, 0x200)
-		"addmi  a12, a13, 0x200\n"
 
 		// Jump to the original code flow after overwritten instructions
 		"mov    a0, %1\n"

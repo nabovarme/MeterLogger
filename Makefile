@@ -268,9 +268,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-#all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2) copy_release
-#all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"

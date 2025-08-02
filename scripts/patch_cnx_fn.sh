@@ -40,7 +40,7 @@ L32R="21${OFFSET_LE}"
 # Encode jx a2: 3 bytes fixed
 JX="a00200"
 
-PATCH_HEX="${L32R}${JX}"  # Total 6 bytes patch
+PATCH_HEX="${L32R}${JX}"  # Total 8 bytes patch
 
 # 12-byte match sequence from original code (hex string)
 ORIG_HEX="12c1f0d911d1f2e1c921"
