@@ -33,7 +33,7 @@ static os_timer_t wifi_get_rssi_timer;
 
 #ifdef DEBUG
 static os_timer_t debug_print_patch_timer;
-bool debug_print_cnx_csa_fn;
+volatile bool debug_print_cnx_csa_fn = false;
 #endif
 
 // static functions
