@@ -41,10 +41,10 @@ void ICACHE_FLASH_ATTR wifi_destroy();
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
+void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void);
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip();
 void ICACHE_FLASH_ATTR debug_print_wifi_config();
-#endif
-void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void);
 void ICACHE_FLASH_ATTR debug_print_patch();
+#endif
 #endif /* USER_WIFI_H_ */

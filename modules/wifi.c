@@ -31,6 +31,16 @@ static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
 
+#ifdef DEBUG
+static os_timer_t debug_print_patch_timer;
+bool debug_print_cnx_csa_fn;
+#endif
+
+// static functions
+static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
+static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
+static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
+
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
 
@@ -192,11 +202,6 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	// default allow everything else
 	return true;
 }
-
-// static functions
-static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
-static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
-static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
 void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t wifi_status;
@@ -712,39 +717,15 @@ void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
 }
 
-#ifdef DEBUG
-void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
-	struct netif *nif;
-	
-	for (nif = netif_list; nif != NULL; nif = nif->next) {
-		printf("nif %c%c%d (mac: %02x:%02x:%02x:%02x:%02x:%02x): " IPSTR "%s%s\n", 
-			nif->name[0], 
-			nif->name[1], 
-			nif->num, 
-			nif->hwaddr[0], 
-			nif->hwaddr[1], 
-			nif->hwaddr[2], 
-			nif->hwaddr[3], 
-			nif->hwaddr[4], 
-			nif->hwaddr[5], 
-			IP2STR(&nif->ip_addr.addr), 
-			nif->dhcp != NULL ? ", dhcp enabled" : "", 
-			nif->num == netif_default->num ? ", default" : ""
-		);
-	}
-}
-
-void ICACHE_FLASH_ATTR debug_print_wifi_config() {
-	printf("ssid: %s, pass: %s\n\r", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
-}
-#endif	// DEBUG
-
 // Replacement function for cnx_csa_fn(), inserted via patching.
 // It conditionally resumes execution of the original function,
 // replicating its first instruction (l32r a13, 0x40210000) before continuing.
 void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
+	void *continue_addr = (void *)0x40217840;   // Address to resume original cnx_csa_fn logic
+	void *literal_a13   = (void *)0x40210004;   // Value originally loaded via l32r into a13
+
 #ifdef DEBUG
-	os_printf("cnx_csa_fn_wrapper\n");
+	debug_print_cnx_csa_fn = true;
 #endif
 
 	// Early exit: if Wi-Fi scan is running or no IP is obtained, skip original logic.
@@ -752,9 +733,6 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 	if (wifi_scan_runnning || (wifi_station_get_connect_status() != STATION_GOT_IP)) {
 		__asm__ __volatile__("ret.n");
 	}
-
-	void *continue_addr = (void *)0x40217840;   // Address to resume original cnx_csa_fn logic
-	void *literal_a13   = (void *)0x40210004;   // Value originally loaded via l32r into a13
 
 	__asm__ __volatile__ (
 		// Make room on the stack for saving registers (aligns with calling convention)
@@ -780,8 +758,46 @@ void ICACHE_FLASH_ATTR cnx_csa_fn_wrapper(void) {
 	);
 }
 
+#ifdef DEBUG
+void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
+	struct netif *nif;
+	
+	for (nif = netif_list; nif != NULL; nif = nif->next) {
+		printf("nif %c%c%d (mac: %02x:%02x:%02x:%02x:%02x:%02x): " IPSTR "%s%s\n", 
+			nif->name[0], 
+			nif->name[1], 
+			nif->num, 
+			nif->hwaddr[0], 
+			nif->hwaddr[1], 
+			nif->hwaddr[2], 
+			nif->hwaddr[3], 
+			nif->hwaddr[4], 
+			nif->hwaddr[5], 
+			IP2STR(&nif->ip_addr.addr), 
+			nif->dhcp != NULL ? ", dhcp enabled" : "", 
+			nif->num == netif_default->num ? ", default" : ""
+		);
+	}
+}
+
+void ICACHE_FLASH_ATTR debug_print_wifi_config() {
+	printf("ssid: %s, pass: %s\n\r", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
+}
+
+static void ICACHE_FLASH_ATTR debug_print_patch_timer_func(void *arg) {
+	if (debug_print_cnx_csa_fn) {
+		os_printf("cnx_csa_fn_wrapper\n");
+		debug_print_cnx_csa_fn = false;
+	}
+}
+
 void ICACHE_FLASH_ATTR debug_print_patch() {
 	printf("Address of cnx_csa_fn_wrapper_literal: %p\n", (void *)&cnx_csa_fn_wrapper_literal);
 	printf("Value at cnx_csa_fn_wrapper_literal: %p\n", *(void * const *)&cnx_csa_fn_wrapper_literal);
 	printf("Actual cnx_csa_fn_wrapper address: %p\n", (void *)cnx_csa_fn_wrapper);
+
+	os_timer_disarm(&debug_print_patch_timer);
+	os_timer_setfn(&debug_print_patch_timer, (os_timer_func_t *)debug_print_patch_timer_func, NULL);
+	os_timer_arm(&debug_print_patch_timer, 1000, 1);
 }
+#endif	// DEBUG
