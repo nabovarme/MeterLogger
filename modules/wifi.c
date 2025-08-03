@@ -793,7 +793,7 @@ static void ICACHE_FLASH_ATTR debug_print_patch_timer_func(void *arg) {
 
 void ICACHE_FLASH_ATTR debug_print_patch() {
 	printf("Address of cnx_csa_fn_wrapper_literal: %p\n", (void *)&cnx_csa_fn_wrapper_literal);
-	printf("Value at cnx_csa_fn_wrapper_literal: %p\n", *(void * const *)&cnx_csa_fn_wrapper_literal);
+	printf("Value at cnx_csa_fn_wrapper_literal: %p\n", cnx_csa_fn_wrapper_literal);
 	printf("Actual cnx_csa_fn_wrapper address: %p\n", (void *)cnx_csa_fn_wrapper);
 
 	os_timer_disarm(&debug_print_patch_timer);
