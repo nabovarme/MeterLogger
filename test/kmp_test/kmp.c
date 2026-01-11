@@ -384,8 +384,13 @@ uint16_t kmp_crc16() {
 int kmp_pow(int a, int b) {
     int result = 1;
     while (b > 0) {
-        if (b & 1) result *= a;
+        if (b & 1) {
+            // multiply result by current base if the lowest bit is 1
+            result *= a;
+        }
+        // square the base for next bit
         a *= a;
+        // shift exponent to process next bit
         b >>= 1;
     }
     return result;
