@@ -382,10 +382,11 @@ uint16_t kmp_crc16() {
 }
 
 int kmp_pow(int a, int b) {
-    int i;
-    int result = a;
-    for (i = 1; i < b; i++) {
-        result *= a;
+    int result = 1;
+    while (b > 0) {
+        if (b & 1) result *= a;
+        a *= a;
+        b >>= 1;
     }
     return result;
 }
