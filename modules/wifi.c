@@ -564,12 +564,6 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 
 void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {
 	struct softap_config ap_conf;
-	uint8_t current_mode = wifi_get_opmode();
-
-	// temporarily disable AP if it's enabled
-	if (current_mode & SOFTAP_MODE) {
-		wifi_set_opmode_current(current_mode & (~SOFTAP_MODE));
-	}
 
 	wifi_softap_get_config(&ap_conf);
 
@@ -585,13 +579,6 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 	ap_conf.ssid_hidden = 0;
 
 	wifi_softap_set_config(&ap_conf);
-
-	// restore the original mode with AP enabled
-	if (!(current_mode & SOFTAP_MODE)) {
-		wifi_set_opmode_current(current_mode | SOFTAP_MODE);
-	} else {
-		wifi_set_opmode_current(current_mode);
-	}
 }
 
 void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
