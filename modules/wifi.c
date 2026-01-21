@@ -217,7 +217,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("connected to ssid %s\n", evt->event_info.connected.ssid);
 #endif
 			// set default network status
-			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
+				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
@@ -227,7 +228,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("disconnected from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
 			// set default network status
-			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
+				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
@@ -263,7 +265,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 			printf("got ip:" IPSTR ", netmask:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip), IP2STR(&evt->event_info.got_ip.mask));
 #endif
-			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
+				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
@@ -283,7 +286,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("dhcp timeout\n");
 #endif
 			// set default network status
-			if (strncmp((char *)&stationConf.ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0) {
+			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
+				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
@@ -391,14 +395,18 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		wifi_fallback_present = false;
 		
 		while (info != NULL) {
-			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, sys_cfg.sta_ssid, sizeof(sys_cfg.sta_ssid)) == 0)) {
+			if ((info != NULL) && (info->ssid != NULL) &&
+				(info->ssid_len == strlen(sys_cfg.sta_ssid)) &&
+				(strncmp(info->ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
 				wifi_present = true;
 				channel = info->channel;
 //#ifdef DEBUG
 //				printf("channel set to %d\n\r", channel);
 //#endif
 			}
-			if ((info != NULL) && (info->ssid != NULL) && (strncmp(info->ssid, STA_FALLBACK_SSID, sizeof(info->ssid)) == 0)) {
+			if ((info != NULL) && (info->ssid != NULL) &&
+				(info->ssid_len == strlen(STA_FALLBACK_SSID)) &&
+				(strncmp(info->ssid, STA_FALLBACK_SSID, strlen(STA_FALLBACK_SSID)) == 0)) {
 				wifi_fallback_present = true;
 			}
 //#ifdef DEBUG
