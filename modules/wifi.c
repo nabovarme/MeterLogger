@@ -217,8 +217,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("connected to ssid %s\n", evt->event_info.connected.ssid);
 #endif
 			// set default network status
-			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
-				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
+			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
@@ -228,8 +227,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("disconnected from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
 #endif
 			// set default network status
-			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
-				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
+			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
@@ -265,8 +263,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 			printf("got ip:" IPSTR ", netmask:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip), IP2STR(&evt->event_info.got_ip.mask));
 #endif
-			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
-				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
+			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
@@ -286,8 +283,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("dhcp timeout\n");
 #endif
 			// set default network status
-			if ((strlen(sys_cfg.sta_ssid) == stationConf.ssid_len) &&
-				(strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
+			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
 				
