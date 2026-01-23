@@ -217,20 +217,23 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			printf("connected to ssid %s\n", evt->event_info.connected.ssid);
 #endif
 			// set default network status
-			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
+			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
 			break;
+
 		case EVENT_STAMODE_DISCONNECTED:
 #ifdef DEBUG
-			printf("disconnected from ssid %s, reason %d\n", evt->event_info.disconnected.ssid, evt->event_info.disconnected.reason);
+			printf("disconnected from ssid %s, reason %d\n",
+				evt->event_info.disconnected.ssid,
+				evt->event_info.disconnected.reason);
 #endif
 			// set default network status
-			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
+			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
-				
+
 				if (!wifi_fallback_present) {
 					// only count disconnects if fallback network is not present
 					disconnect_count++;
@@ -251,19 +254,23 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 			}
 			break;
+
 		case EVENT_STAMODE_AUTHMODE_CHANGE:
 #ifdef DEBUG
 			printf("mode: %d -> %d\n",
-					evt->event_info.auth_change.old_mode,
-					evt->event_info.auth_change.new_mode);
+				evt->event_info.auth_change.old_mode,
+				evt->event_info.auth_change.new_mode);
 #endif
 			break;
-		case EVENT_STAMODE_GOT_IP:		
+
+		case EVENT_STAMODE_GOT_IP:
 			// set default network status
 #ifdef DEBUG
-			printf("got ip:" IPSTR ", netmask:" IPSTR "\n", IP2STR(&evt->event_info.got_ip.ip), IP2STR(&evt->event_info.got_ip.mask));
+			printf("got ip:" IPSTR ", netmask:" IPSTR "\n",
+				IP2STR(&evt->event_info.got_ip.ip),
+				IP2STR(&evt->event_info.got_ip.mask));
 #endif
-			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
+			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
 			}
@@ -278,15 +285,16 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_station_set_reconnect_policy(1);
 			wifi_cb(wifi_status);
 			break;
+
 		case EVENT_STAMODE_DHCP_TIMEOUT:
 #ifdef DEBUG
 			printf("dhcp timeout\n");
 #endif
 			// set default network status
-			if (strncmp((char *)stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0) {
+			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = false;
 				wifi_default_status = evt->event_info.disconnected.reason;
-				
+
 				disconnect_count++;
 #ifdef DEBUG
 				printf("disconnect_count: %u\n", disconnect_count);
@@ -300,20 +308,24 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				wifi_station_connect();
 			}
 			break;
-	case EVENT_SOFTAPMODE_STACONNECTED:
+
+		case EVENT_SOFTAPMODE_STACONNECTED:
 #ifdef DEBUG
 			sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_connected.mac));
-			printf("station: %s join, AID = %d\n", mac_str, evt->event_info.sta_connected.aid);
+			printf("station: %s join, AID = %d\n",
+				mac_str, evt->event_info.sta_connected.aid);
 #endif
 			patch_netif_ap(my_input_ap, my_output_ap, true);
 			break;
-	case EVENT_SOFTAPMODE_STADISCONNECTED:
+
+		case EVENT_SOFTAPMODE_STADISCONNECTED:
 #ifdef DEBUG
 			sprintf(mac_str, MACSTR, MAC2STR(evt->event_info.sta_disconnected.mac));
-			printf("station: %s disconnected, AID = %d\n", mac_str, evt->event_info.sta_disconnected.aid);
+			printf("station: %s disconnected, AID = %d\n",
+				mac_str, evt->event_info.sta_disconnected.aid);
 #endif
 			break;
-	
+
 		default:
 			break;
 	}
@@ -393,7 +405,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		while (info != NULL) {
 			if ((info != NULL) && (info->ssid != NULL) &&
 				(info->ssid_len == strlen(sys_cfg.sta_ssid)) &&
-				(strncmp(info->ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid)) == 0)) {
+				(memcmp(info->ssid, sys_cfg.sta_ssid, info->ssid_len) == 0)) {
 				wifi_present = true;
 				channel = info->channel;
 //#ifdef DEBUG
@@ -402,7 +414,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 			}
 			if ((info != NULL) && (info->ssid != NULL) &&
 				(info->ssid_len == strlen(STA_FALLBACK_SSID)) &&
-				(strncmp(info->ssid, STA_FALLBACK_SSID, strlen(STA_FALLBACK_SSID)) == 0)) {
+				(memcmp(info->ssid, STA_FALLBACK_SSID, info->ssid_len) == 0)) {
 				wifi_fallback_present = true;
 			}
 //#ifdef DEBUG
