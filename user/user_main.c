@@ -700,20 +700,22 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		return;
 	}
 	
-	// copy and null terminate
+	// copy topic and null terminate
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
-	if (topic_len < MQTT_TOPIC_L && topic_len > 0) {	// dont memcpy 0 bytes or if too large to fit
+	if (topic_len < MQTT_TOPIC_L && topic_len > 0) {	// don't memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_topic, topic, topic_len);
 		mqtt_topic[topic_len] = 0;
 	}
 
-	if (data_len < MQTT_MESSAGE_L && data_len > 0) {	// dont memcpy 0 bytes or if too large to fit
+	// copy message and null terminate
+	if (data_len < MQTT_MESSAGE_L && data_len > 0) {	// don't memcpy 0 bytes or if too large to fit
 		memcpy(mqtt_message, data, data_len);
 		mqtt_message[data_len] = 0;
 	}
 	
-	memset(cleartext, 0, MQTT_MESSAGE_L);	// make sure its null terminated
+	memset(cleartext, 0, MQTT_MESSAGE_L);	// ensure cleartext buffer is null terminated
 
+	// decrypt message and verify HMAC
 	if (decrypt_aes_hmac_combined(cleartext, mqtt_topic, topic_len, mqtt_message, data_len) == 0) {
 #ifdef DEBUG
 		printf("hmac error\n");
@@ -721,7 +723,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		return;
 	}
 	
-	// clear data
+	// clear encrypted message for security
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	
 	// parse mqtt topic for function call name
@@ -741,7 +743,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		return;
 	}
 	
-	// ..and clear for further use
+	// clear topic buffer for further use
 	memset(mqtt_topic, 0, sizeof(mqtt_topic));
 	
 	// mqtt rpc dispatcher goes here
@@ -770,7 +772,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_ssid(&mqtt_client);
 	}
 	else if (strncmp(function_name, "scan", FUNCTIONNAME_L) == 0) {
-		// found set_ssid
+		// found scan
 		mqtt_rpc_scan(&mqtt_client);
 	}
 	else if (strncmp(function_name, "set_ssid", FUNCTIONNAME_L) == 0) {
@@ -782,7 +784,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_set_pwd(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "set_ssid_pwd", FUNCTIONNAME_L) == 0) {
-		// found reconnect
+		// found set_ssid_pwd
 		mqtt_rpc_set_ssid_pwd(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
@@ -798,7 +800,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_network_quality(&mqtt_client);
 	}
 	else if (strncmp(function_name, "wifi_status", FUNCTIONNAME_L) == 0) {
-		// found uptime
+		// found wifi_status
 		mqtt_rpc_wifi_status(&mqtt_client);
 	}
 	else if (strncmp(function_name, "ap_status", FUNCTIONNAME_L) == 0) {
@@ -818,19 +820,19 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_mem(&mqtt_client);
 	}
 	else if (strncmp(function_name, "chip_id", FUNCTIONNAME_L) == 0) {
-		// found mem
+		// found chip_id
 		mqtt_rpc_chip_id(&mqtt_client);
 	}
 	else if (strncmp(function_name, "flash_id", FUNCTIONNAME_L) == 0) {
-		// found mem
+		// found flash_id
 		mqtt_rpc_flash_id(&mqtt_client);
 	}
 	else if (strncmp(function_name, "flash_size", FUNCTIONNAME_L) == 0) {
-		// found mem
+		// found flash_size
 		mqtt_rpc_flash_size(&mqtt_client);
 	}
 	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
-		// found aes
+		// found crypto
 		mqtt_rpc_crypto(&mqtt_client);
 	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
