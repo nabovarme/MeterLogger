@@ -546,6 +546,40 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 }
 
 ICACHE_FLASH_ATTR
+void mqtt_rpc_chip_id(MQTT_Client *client) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+	// Build MQTT topic with timestamp
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/chip_id/v2/%06X/%llu",
+		system_get_chip_id(),
+		get_unix_time());
+
+	// Clear buffers
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	// Store chip ID in cleartext
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "0x%06X", system_get_chip_id());
+
+	// Encrypt and get message length
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message,
+		mqtt_topic,
+		strlen(mqtt_topic),
+		cleartext,
+		strlen(cleartext) + 1);
+
+#ifdef DEBUG
+	os_printf("MQTT chip_id: %s\n", cleartext);
+#endif
+
+	// Publish to MQTT broker with QoS 2
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+}
+
+ICACHE_FLASH_ATTR
 void mqtt_rpc_flash_id(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];

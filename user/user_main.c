@@ -817,6 +817,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found mem
 		mqtt_rpc_mem(&mqtt_client);
 	}
+	else if (strncmp(function_name, "chip_id", FUNCTIONNAME_L) == 0) {
+		// found mem
+		mqtt_rpc_chip_id(&mqtt_client);
+	}
 	else if (strncmp(function_name, "flash_id", FUNCTIONNAME_L) == 0) {
 		// found mem
 		mqtt_rpc_flash_id(&mqtt_client);

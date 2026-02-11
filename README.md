@@ -182,6 +182,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/network_quality         |                                                                                                     |
 | /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
 | /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
+| /config/v2/9999999/[unix time]/chip_id                 | [chip ID of the device as 0xXXXXXX]                                                                 |
 | /config/v2/9999999/[unix time]/flash_id                |                                                                                                     |
 | /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
