@@ -1193,6 +1193,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("Software version: %s\n\r", VERSION);
 	printf("LWIP version: %s\n\r", LWIP_VERSION);
 	printf("Hardware model: %s\n\r", HW_MODEL);
+	printf("Chip ID: 0x%06x\n\r", system_get_chip_id());
 	printf("Flash id: 0x%x%s, size: %u kB\n\r", spi_flash_get_id(), flash_size ? "" : " (unknown manufacturer)", flash_size / 1024);
 
 #ifdef DEBUG
