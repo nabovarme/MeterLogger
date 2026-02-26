@@ -292,6 +292,47 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 }
 
 ICACHE_FLASH_ATTR
+void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	uint16_t calculated_crc;
+	uint16_t saved_crc;
+		
+	// change sta_pwd, save if different
+	if (strncmp(sys_cfg.ap_mesh_pwd, password, 64 - 1) != 0) {
+		memset(sys_cfg.ap_mesh_pwd, 0, sizeof(sys_cfg.ap_mesh_pwd));
+		strncpy(sys_cfg.ap_mesh_pwd, password, 64 - 1);
+		if (!cfg_save(&calculated_crc, &saved_crc)) {
+			mqtt_flash_error(calculated_crc, saved_crc);
+		}
+	}
+
+	// restart AP
+	wifi_set_opmode_current(STATION_MODE);
+
+	wifi_set_opmode_current(STATIONAP_MODE);
+	wifi_softap_config(mesh_ssid, sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
+	wifi_softap_ip_config();	
+
+	// send mqtt reply
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ap_mesh_pwd);
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+}
+
+ICACHE_FLASH_ATTR
 void mqtt_rpc_reconnect(MQTT_Client *client) {
 	// reconnect with new password
 	MQTT_Disconnect(client);

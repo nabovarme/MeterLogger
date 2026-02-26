@@ -787,6 +787,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found set_ssid_pwd
 		mqtt_rpc_set_ssid_pwd(&mqtt_client, cleartext);
 	}
+	else if (strncmp(function_name, "set_ap_mesh_pwd", FUNCTIONNAME_L) == 0) {
+		// found set_ap_mesh_pwd
+		mqtt_rpc_set_ap_mesh_pwd(&mqtt_client, cleartext);
+	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
 		// found reconnect
 		mqtt_rpc_reconnect(&mqtt_client);
