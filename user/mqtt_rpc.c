@@ -715,9 +715,9 @@ void mqtt_rpc_nat_table(MQTT_Client *client) {
 #endif
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_table/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_table/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
