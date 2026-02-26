@@ -701,6 +701,33 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 	system_restart_defered();
 }
 
+ICACHE_FLASH_ATTR
+void mqtt_rpc_nat_table(MQTT_Client *client) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+	u16_t napt_count = ip_napt_count()
+		
+#ifdef DEBUG
+	os_printf("Active NAT entries: %d\n", ip_napt_count());
+#endif
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/nat_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%u", napt_count);
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+}
+#endif
+
 #ifdef DEBUG_STACK_TRACE
 ICACHE_FLASH_ATTR
 void mqtt_rpc_stack_trace(MQTT_Client *client) {

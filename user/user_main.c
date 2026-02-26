@@ -839,6 +839,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found reset_reason
 		mqtt_rpc_reset_reason(&mqtt_client);
 	}
+	else if (strncmp(function_name, "nat_table", FUNCTIONNAME_L) == 0) {
+		// found nat_table
+		mqtt_rpc_nat_table();
+	}
 	else if (strncmp(function_name, "restart", FUNCTIONNAME_L) == 0) {
 		// found restart
 		// stop all timers started from user_main.c
