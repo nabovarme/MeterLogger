@@ -222,7 +222,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
 #endif
 
-	wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
+	wifi_softap_config(mesh_ssid, sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
 	wifi_softap_ip_config();
 
 	add_watchdog(MQTT_WATCHDOG_ID, NETWORK_RESTART, MQTT_WATCHDOG_TIMEOUT);

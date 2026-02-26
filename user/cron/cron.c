@@ -229,7 +229,7 @@ void static minute_timer_func(void *arg) {
 				// start AP
 				if (wifi_get_opmode() != STATIONAP_MODE) {
 					wifi_set_opmode_current(STATIONAP_MODE);
-					wifi_softap_config(mesh_ssid, AP_MESH_PASS, AP_MESH_TYPE);
+					wifi_softap_config(mesh_ssid, sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
 					wifi_softap_ip_config();
 	
 					// ...and save setting to flash if changed
