@@ -10,6 +10,7 @@
 BUILD_BASE	= build
 FW_BASE = firmware
 RELEASE_BASE = release
+MERGED_BIN = firmware.bin
 ESPTOOL = esptool.py
 BAUDRATE = 1500000
 DEBUG_SPEED = 1200
@@ -267,8 +268,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) copy_release
-#all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) merge_bin copy_release
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -304,6 +304,15 @@ patch:
 	$(vecho) "PATCH $(TARGET_OUT) (add + to version)"
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
+
+merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs copy_release | $(RELEASE_BASE)
+	$(vecho) "MERGING firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
+	$(Q) $(ESPTOOL) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
+		0xFE000 firmware/blank.bin \
+		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
+		0x00000 $(FW_FILE_1) \
+		0x10000 $(FW_FILE_2) \
+		0x60000 webpages.espfs
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
