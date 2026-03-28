@@ -1,12 +1,3 @@
-# Changelog
-# Changed the variables to include the header file directory
-# Added global var for the XTENSA tool root
-#
-# This make file still needs some work.
-#
-#
-# Output directors to store intermediate compiled files
-# relative to the project directory
 ESPTOOL_CHIP ?= esp8266
 
 BUILD_BASE	= build
@@ -270,7 +261,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) merge_bin copy_release
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) merge_bin
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -307,8 +298,8 @@ patch:
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
-merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs copy_release | $(RELEASE_BASE)
-	$(vecho) "MERGING firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
+merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
+	$(vecho) "Merging firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
 	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
 		0xFE000 firmware/blank.bin \
 		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
@@ -356,13 +347,6 @@ getstacktrace:
 objdump:
 	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
 	$(OBJDUMP) -f -s -d --source $(TARGET_OUT) > $(TARGET).S
-
-copy_release: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
-	$(vecho) "Copying firmware and support files to $(RELEASE_BASE)"
-	$(Q) cp $(FW_FILE_1) $(FW_FILE_2) webpages.espfs \
-		firmware/blank.bin \
-		firmware/esp_init_data_default_112th_byte_0x03.bin \
-		$(RELEASE_BASE)/
 
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
