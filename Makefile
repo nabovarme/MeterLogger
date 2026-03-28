@@ -299,13 +299,17 @@ patch:
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
 merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
-	$(vecho) "Merging firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
-	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
+	$(vecho) "Merging firmware into $(FW_BASE)/$(MERGED_BIN)"
+	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(FW_BASE)/$(MERGED_BIN) \
 		0xFE000 $(FW_BASE)/blank.bin \
 		0xFC000 $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin \
 		0x00000 $(FW_FILE_1) \
 		0x10000 $(FW_FILE_2) \
 		0x60000 webpages.espfs
+
+release: merge_bin | $(RELEASE_BASE)
+	$(Q) cp $(FW_BASE)/$(MERGED_BIN) $(RELEASE_BASE)/$(SERIAL).bin
+	$(vecho) "Copied to $(RELEASE_BASE)/$(SERIAL).bin"
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
