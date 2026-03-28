@@ -7,11 +7,13 @@
 #
 # Output directors to store intermediate compiled files
 # relative to the project directory
+ESPTOOL_CHIP ?= esp8266
+
 BUILD_BASE	= build
 FW_BASE = firmware
 RELEASE_BASE = release
 MERGED_BIN = firmware.bin
-ESPTOOL = esptool.py
+ESPTOOL = python3 -m esptool
 BAUDRATE = 1500000
 DEBUG_SPEED = 1200
 
@@ -307,7 +309,7 @@ patch:
 
 merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs copy_release | $(RELEASE_BASE)
 	$(vecho) "MERGING firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
-	$(Q) $(ESPTOOL) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
+	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
 		0xFE000 firmware/blank.bin \
 		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
 		0x00000 $(FW_FILE_1) \
