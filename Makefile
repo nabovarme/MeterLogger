@@ -301,8 +301,8 @@ patch:
 merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
 	$(vecho) "Merging firmware into $(RELEASE_BASE)/$(MERGED_BIN)"
 	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(RELEASE_BASE)/$(MERGED_BIN) \
-		0xFE000 firmware/blank.bin \
-		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
+		0xFE000 $(FW_BASE)/blank.bin \
+		0xFC000 $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin \
 		0x00000 $(FW_FILE_1) \
 		0x10000 $(FW_FILE_2) \
 		0x60000 webpages.espfs
