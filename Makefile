@@ -284,9 +284,6 @@ checkdirs: $(BUILD_DIR) $(FW_BASE)
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
-$(RELEASE_BASE):
-	$(Q) mkdir -p $@
-
 $(FW_BASE):
 	$(Q) mkdir -p $@
 
@@ -298,7 +295,7 @@ patch:
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
-merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
+merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 	$(vecho) "Merging firmware into $(FW_BASE)/$(MERGED_BIN)"
 	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(FW_BASE)/$(MERGED_BIN) \
 		0xFE000 $(FW_BASE)/blank.bin \
@@ -307,7 +304,8 @@ merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs | $(RELEASE_BASE)
 		0x10000 $(FW_FILE_2) \
 		0x60000 webpages.espfs
 
-release: merge_bin | $(RELEASE_BASE)
+release: merge_bin
+	$(Q) mkdir -p $@
 	$(Q) cp $(FW_BASE)/$(MERGED_BIN) $(RELEASE_BASE)/$(SERIAL).bin
 	$(vecho) "Copied to $(RELEASE_BASE)/$(SERIAL).bin"
 
