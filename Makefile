@@ -1,15 +1,10 @@
-# Changelog
-# Changed the variables to include the header file directory
-# Added global var for the XTENSA tool root
-#
-# This make file still needs some work.
-#
-#
-# Output directors to store intermediate compiled files
-# relative to the project directory
+ESPTOOL_CHIP ?= esp8266
+
 BUILD_BASE	= build
 FW_BASE = firmware
-ESPTOOL = esptool.py
+RELEASE_BASE = release
+MERGED_BIN = firmware.bin
+ESPTOOL = python3 -m esptool
 BAUDRATE = 1500000
 DEBUG_SPEED = 1200
 
@@ -30,7 +25,7 @@ FLAVOR ?= release
 
 
 #GIT_VERSION := $(shell git describe --exact-match 2> /dev/null || echo "`git symbolic-ref HEAD 2> /dev/null | cut -b 12-`-`git log --pretty=format:\"%h\" -1`")
-GIT_VERSION := $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
+GIT_VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
 CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
 CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
 
@@ -203,7 +198,7 @@ ifeq ($(LED_ON_AC), 1)
 endif
 
 ifeq ($(AC_TEST), 1)
-    CFLAGS += -DAC_TEST -DLED_ON_AC
+    CFLAGS += -DLED_ON_AC -DAC_TEST
 endif
 
 ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
@@ -266,8 +261,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2)
-#all: checkdirs $(TARGET_OUT) $(FW_FILE_1) $(FW_FILE_2)
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) merge_bin
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -290,7 +284,7 @@ checkdirs: $(BUILD_DIR) $(FW_BASE)
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
 
-firmware:
+$(FW_BASE):
 	$(Q) mkdir -p $@
 
 patch:
@@ -301,8 +295,22 @@ patch:
 	$(Q) xxd -e -p $(TARGET_OUT) | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p  > $(TARGET_OUT)-patched
 	$(Q) mv $(TARGET_OUT)-patched $(TARGET_OUT)
 
+merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
+	$(vecho) "Merging firmware into $(FW_BASE)/$(MERGED_BIN)"
+	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(FW_BASE)/$(MERGED_BIN) \
+		0xFE000 $(FW_BASE)/blank.bin \
+		0xFC000 $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin \
+		0x00000 $(FW_FILE_1) \
+		0x10000 $(FW_FILE_2) \
+		0x60000 webpages.espfs
+
+release: merge_bin
+	$(Q) mkdir -p $@
+	$(Q) cp $(FW_BASE)/$(MERGED_BIN) $(RELEASE_BASE)/$(SERIAL).bin
+	$(vecho) "Copied to $(RELEASE_BASE)/$(SERIAL).bin"
+
 flash: $(FW_FILE_1) $(FW_FILE_2)
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
@@ -312,19 +320,19 @@ mkespfsimage/mkespfsimage: mkespfsimage/
 
 htmlflash: webpages.espfs
 	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(ESPFS) webpages.espfs
 
 flashall: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0xFE000 $(SDK_BASE)/bin/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 $(SDK_BASE)/bin/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2) $(ESPFS) webpages.espfs
 
 flashblank:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
 
 wifisetup:
 	until nmcli d wifi connect "$(WIFI_SSID)" password "$(CUSTOM_AP_PASSWORD)"; do echo "retrying to connect to wifi"; done && sleep 2; firefox 'http://192.168.4.1/'
 
 flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
 
 size:
 	$(Q) $(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
@@ -341,7 +349,7 @@ getstacktrace:
 objdump:
 	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
 	$(OBJDUMP) -f -s -d --source $(TARGET_OUT) > $(TARGET).S
-	
+
 screen:
 	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
 minicom:
