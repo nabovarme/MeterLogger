@@ -259,7 +259,9 @@ $1/%.o: %.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean multi_bin release flash flashall flashblank htmlflash wifisetup size getstacktrace objdump screen minicom test rebuild
+.PHONY: all checkdirs clean multi_bin merge_bin release flash \
+	htmlflash flashall flashblank wifisetup flash107th_bit_0xff \
+	size getstacktrace objdump screen minicom test rebuild
 
 all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) multi_bin
 
@@ -307,10 +309,15 @@ merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 		0x10000 $(FW_FILE_2) \
 		0x60000 webpages.espfs
 
-release: merge_bin
-	$(Q) mkdir -p $@
-	$(Q) cp $(FW_BASE)/$(MERGED_BIN) $(RELEASE_BASE)/$(SERIAL).bin
-	$(vecho) "Copied to $(RELEASE_BASE)/$(SERIAL).bin"
+# Redefined the release rule to populate the target folder with all 5 discrete segments directly
+release: multi_bin
+	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
+	$(Q) cp $(FW_BASE)/0x00000.bin $(RELEASE_BASE)/$(SERIAL)/0x00000.bin
+	$(Q) cp $(FW_BASE)/0x10000.bin $(RELEASE_BASE)/$(SERIAL)/0x10000.bin
+	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
+	$(Q) cp $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
+	$(Q) cp $(FW_BASE)/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
+	$(vecho) "Multi-segment binaries copied out to $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
