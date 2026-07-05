@@ -311,13 +311,13 @@ merge_bin: $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
 
 # Redefined the release rule to populate the target folder with all 5 discrete segments directly
 release: multi_bin
-	$(Q) mkdir -p $(RELEASE_BASE)
-	$(Q) cp $(FW_BASE)/0x00000.bin $(RELEASE_BASE)/0x00000.bin
-	$(Q) cp $(FW_BASE)/0x10000.bin $(RELEASE_BASE)/0x10000.bin
-	$(Q) cp webpages.espfs $(RELEASE_BASE)/webpages.espfs
-	$(Q) cp $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/esp_init_data_default_112th_byte_0x03.bin
-	$(Q) cp $(FW_BASE)/blank.bin $(RELEASE_BASE)/blank.bin
-	$(vecho) "Multi-segment binaries copied out to $(RELEASE_BASE)/ successfully."
+	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
+	$(Q) cp $(FW_BASE)/0x00000.bin $(RELEASE_BASE)/$(SERIAL)/0x00000.bin
+	$(Q) cp $(FW_BASE)/0x10000.bin $(RELEASE_BASE)/$(SERIAL)/0x10000.bin
+	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
+	$(Q) cp $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
+	$(Q) cp $(FW_BASE)/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
+	$(vecho) "Multi-segment binaries copied out to $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(FW_1) $(FW_FILE_1) $(FW_2) $(FW_FILE_2)
