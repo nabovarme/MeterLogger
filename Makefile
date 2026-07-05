@@ -259,9 +259,12 @@ $1/%.o: %.c
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean
+.PHONY: all checkdirs clean multi_bin release flash flashall flashblank htmlflash wifisetup size getstacktrace objdump screen minicom test rebuild
 
-all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) merge_bin
+all: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) multi_bin
+
+multi_bin: checkdirs $(TARGET_OUT) patch $(FW_FILE_1) $(FW_FILE_2) webpages.espfs
+	$(vecho) "Multi-segment binary components compiled successfully."
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -340,10 +343,10 @@ size:
 
 getstacktrace:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
-	
+
 #stacktracedecode:
 #	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
-#	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
+#	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
 #	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
 
 objdump:
