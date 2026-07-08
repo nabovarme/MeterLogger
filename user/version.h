@@ -1,5 +1,5 @@
 #ifdef MC_66B
-#	define HW_MODEL_STRING "MC-B"
+#	define HW_MODEL_STRING "MC_B"
 #elif defined(EN61107)
 #	define HW_MODEL_STRING "MC"
 #elif defined(IMPULSE)
