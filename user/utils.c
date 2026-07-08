@@ -68,6 +68,44 @@ uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length) {
 	return crc16;
 }
 
+ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str) {
+	uint32_t result_int, result_frac;
+	uint32_t i;
+	uint32_t len;
+	
+	bool dec_separator;
+	
+	char result_int_str[32 + 1];
+	
+	uint32_t pos_int;
+	uint32_t pos_frac;
+	
+	len = strlen(str);
+	
+	result_frac = 0;
+	pos_int = 0;
+	pos_frac = 0;
+	dec_separator = false;
+	for (i = 0; i < len && pos_frac < 3; i++) {
+		if (str[i] == '.') {
+			dec_separator = 1;
+		}
+		else if (!dec_separator) {
+			result_int_str[pos_int++] = str[i];
+		}
+		else {
+			//result_frac_str[pos_frac++] = str[i];
+			result_frac += (str[i] - '0') * int_pow(10, 2 - pos_frac);
+			pos_frac++;
+		}
+	}
+	result_int_str[pos_int] = 0;	// null terminate
+	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
+	
+	result_int += result_frac;
+	tfp_snprintf(decimal_str, 11, "%u", result_int);
+}
+
 ICACHE_FLASH_ATTR
 unsigned int decimal_number_length(int n) {
 	unsigned int digits = 0;
