@@ -6,7 +6,24 @@ MeterLogger is part of the [**Nabovarme**](https://github.com/nabovarme) orgnaiz
 
 Check out the [WIKI](https://github.com/nabovarme/MeterLogger/wiki) for more details!
 
-## Build details
+## 🚀 Modern GUI-Based Flashing & Rebuilding
+
+You no longer need local compilers, toolchains, or command-line flash utilities on your host machine. Building and flashing are now fully virtualized via Docker and executed directly from your web browser.
+
+### How to Flash:
+1. Navigate to the **Firmware Flash Tool** tab on your MeterLoggerWeb dashboard
+2. Connect your ESP8266/MeterLogger board via USB.
+3. Select your desired firmware profile from the search bar (tied directly to your meter serial).
+4. Click **Flash Device**. Your browser will request access to the USB serial port via the **WebSerial API** and write the firmware directly at up to 1.5 Mbps.
+
+### How to Rebuild Custom Firmware:
+If you need custom parameters (e.g., turning an EN61107 meter into an Impulse meter or disabling Auto-Close):
+1. Expand the **Custom Firmware Build Settings** panel.
+2. Select your targets (e.g., Protocol, Valve overrides, debug flags).
+3. Click **Rebuild Firmware**.
+4. This dispatches an asynchronous build task to the Dockerized `firmware_builder` service on your host. Once compiled (usually < 30 seconds), the new image is indexed and immediately ready to be flashed in the selector above.
+
+## Build details (old procedure)
 
 To build and flash for KMP type meter (Multical 601):  
 ```  
