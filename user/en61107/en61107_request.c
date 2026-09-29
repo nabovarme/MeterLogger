@@ -170,7 +170,9 @@ static void en61107_received_task(os_event_t *events) {
 				message[i++] = c;
 			}
 			message_l = i;
-			message[message_l - 2] = 0;		// remove last two chars and null terminate
+			if (message_l >= 2) {
+				message[message_l - 2] = 0;	// remove last two chars and null terminate
+			}
 
 			if (parse_mc66cde_standard_data_1_frame(&response, message, message_l)) {
 				// if we can parse, send next request to meter
@@ -187,7 +189,9 @@ static void en61107_received_task(os_event_t *events) {
 				message[i++] = c;
 			}
 			message_l = i;
-			message[message_l - 2] = 0;		// remove last two chars and null terminate
+			if (message_l >= 2) {
+				message[message_l - 2] = 0;	// remove last two chars and null terminate
+			}
 
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
 				// tell user_main we got a serial

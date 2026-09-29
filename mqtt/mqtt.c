@@ -60,6 +60,9 @@ os_event_t mqtt_procTaskQueue[MQTT_TASK_QUEUE_SIZE];
 struct espconn mqtt_espconn;
 esp_tcp mqtt_esp_tcp;
 
+// Shared static buffer to prevent massive stack allocations
+static uint8_t sharedDataBuffer[MQTT_BUF_SIZE];
+
 #ifdef PROTOCOL_NAMEv311
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 #endif
@@ -423,6 +426,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				}
 				break;
 			case MQTT_MSG_TYPE_PINGRESP:
+				client->keepAliveTick = 0;
 				deliver_pingresp(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
 				break;
 			}
@@ -511,8 +515,15 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 				client->timeoutCb((uint32_t*) client);
 		}
 	}
-	if (client->sendTimeout > 0)
-		client->sendTimeout --;
+	
+	if (client->sendTimeout > 0) {
+		client->sendTimeout--;
+		if (client->sendTimeout == 0) {
+			INFO("MQTT: Send timeout! Forcing reconnect.\r\n");
+			client->connState = TCP_RECONNECT_DISCONNECTING;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		}
+	}
 }
 
 void ICACHE_FLASH_ATTR
@@ -614,7 +625,7 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 BOOL ICACHE_FLASH_ATTR
 MQTT_Publish(MQTT_Client *client, const char* topic, const char* data, int data_length, int qos, int retain)
 {
-	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
 	client->mqtt_state.outbound_message = mqtt_msg_publish(&client->mqtt_state.mqtt_connection,
 	                                      topic, data, data_length,
@@ -646,7 +657,7 @@ MQTT_Publish(MQTT_Client *client, const char* topic, const char* data, int data_
 BOOL ICACHE_FLASH_ATTR
 MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos)
 {
-	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
 
 	client->mqtt_state.outbound_message = mqtt_msg_subscribe(&client->mqtt_state.mqtt_connection,
@@ -673,7 +684,7 @@ MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos)
 BOOL ICACHE_FLASH_ATTR
 MQTT_UnSubscribe(MQTT_Client *client, char* topic)
 {
-	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
 	client->mqtt_state.outbound_message = mqtt_msg_unsubscribe(&client->mqtt_state.mqtt_connection,
 	                                      topic,
@@ -698,7 +709,7 @@ MQTT_UnSubscribe(MQTT_Client *client, char* topic)
 BOOL ICACHE_FLASH_ATTR
 MQTT_Ping(MQTT_Client *client)
 {
-	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
 	client->mqtt_state.outbound_message = mqtt_msg_pingreq(&client->mqtt_state.mqtt_connection);
 	if(client->mqtt_state.outbound_message->length == 0){
@@ -721,7 +732,7 @@ void ICACHE_FLASH_ATTR
 MQTT_Task(os_event_t *e)
 {
 	MQTT_Client* client = (MQTT_Client*)e->par;
-	uint8_t dataBuffer[MQTT_BUF_SIZE];
+	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
 
 #ifdef DEBUG
@@ -774,15 +785,12 @@ MQTT_Task(os_event_t *e)
 			client->mqtt_state.pending_msg_type = mqtt_get_type(dataBuffer);
 			client->mqtt_state.pending_msg_id = mqtt_get_id(dataBuffer, dataLen);
 
-
 			client->sendTimeout = MQTT_SEND_TIMOUT;
 			INFO("MQTT: Sending, type: %d, id: %04X\r\n", client->mqtt_state.pending_msg_type, client->mqtt_state.pending_msg_id);
-			client->keepAliveTick = 0;
 			if (client->security) {
 #ifdef MQTT_SSL_ENABLE
-				if (espconn_secure_send(client->pCon, dataBuffer, dataLen)) != 0) {
-					// error sending, put it back into the queue again
-					INFO("MQTT: espconn_secure_send() returned an error, re-queueing\r\n");
+				if (espconn_secure_send(client->pCon, dataBuffer, dataLen) != 0) {
+					INFO("MQTT: espconn_secure_send() error, re-queueing\r\n");
 					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
 						INFO("MQTT: Queue full\r\n");
 					}
@@ -793,8 +801,7 @@ MQTT_Task(os_event_t *e)
 			}
 			else {
 				if (espconn_send(client->pCon, dataBuffer, dataLen) != 0) {
-					// error sending, put it back into the queue again
-					INFO("MQTT: espconn_send() returned an error, re-queueing\r\n");
+					INFO("MQTT: espconn_send() error, re-queueing\r\n");
 					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
 						INFO("MQTT: Queue full\r\n");
 					}
@@ -999,6 +1006,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		{
 			espconn_connect(mqttClient->pCon);
 		}
+		mqttClient->connState = TCP_CONNECTING;
 	}
 	else {
 		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
