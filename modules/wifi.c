@@ -389,6 +389,8 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
+	bool switched_network = false;
+	static uint8_t fallback_miss_count = 0;
 	
 #ifdef DEBUG
 	printf ("\t-> %s(%x, %d)\n\r", __FUNCTION__, arg == NULL ? 0 : (unsigned int)arg, status);
@@ -397,10 +399,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	wifi_fallback_present = false;
 	
 	// check if fallback network is present
-//	if (arg != NULL) {
 	if ((arg != NULL) && (status == OK)) {
 		info = (struct bss_info *)arg;
-		wifi_fallback_present = false;
 		
 		while (info != NULL) {
 			if ((info != NULL) && (info->ssid != NULL) &&
@@ -408,9 +408,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				(memcmp(info->ssid, sys_cfg.sta_ssid, info->ssid_len) == 0)) {
 				wifi_present = true;
 				channel = info->channel;
-//#ifdef DEBUG
-//				printf("channel set to %d\n\r", channel);
-//#endif
 			}
 			if ((info != NULL) && (info->ssid != NULL) &&
 				(info->ssid_len == strlen(STA_FALLBACK_SSID)) &&
@@ -441,16 +438,27 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		}
 		wifi_scan_result_cb_unregister();	// done sending via mqtt
 		
-		// if fallback network appeared connect to it
-		if ((wifi_fallback_present) && (!wifi_fallback_last_present)) {
-			wifi_fallback();
-			led_pattern_a();
+		// Hysteresis and Scanner Back-off
+		if (wifi_fallback_present) {
+			fallback_miss_count = 0; // Reset miss counter when seen
+			if (!wifi_fallback_last_present) {
+				wifi_fallback();
+				led_pattern_a();
+				switched_network = true;
+				wifi_fallback_last_present = true;
+			}
+		} else if (wifi_fallback_last_present) {
+			fallback_miss_count++;
+			// Only abort back to default if we miss the AP 3 scans in a row (15-20 seconds)
+			if (fallback_miss_count >= 3) {
+				wifi_default();
+				led_stop_pattern();
+				switched_network = true;
+				wifi_fallback_last_present = false;
+				fallback_miss_count = 0;
+			}
 		}
-		// if fallback network disappeared connect to default network
-		else if ((!wifi_fallback_present) && (wifi_fallback_last_present)) {
-			wifi_default();
-			led_stop_pattern();
-		}
+		
 #ifdef DEBUG
 		uint8_t s;
 		s = wifi_station_get_connect_status();
@@ -458,7 +466,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		printf("wifi fallback present: %s\n", (wifi_fallback_present ? "yes" : "no"));
 		printf("wifi status: %s (%u)\n", (s == STATION_GOT_IP) ? "connected" : "not connected", s);
 #endif
-		wifi_fallback_last_present = wifi_fallback_present;
 	}
 	
 //	wifi_set_channel(channel);	// restore channel number
@@ -468,7 +475,13 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 //	led_stop_pattern();	// DEBUG
 
 	// start wifi scan timer again
-	wifi_start_scan(WIFI_SCAN_INTERVAL);
+	// If we just switched networks, give it 20 seconds to do DHCP/MQTT
+	// before interrupting the radio with another scan!
+	if (switched_network) {
+		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+	} else {
+		wifi_start_scan(WIFI_SCAN_INTERVAL);
+	}
 }
 
 void ICACHE_FLASH_ATTR wifi_default() {
