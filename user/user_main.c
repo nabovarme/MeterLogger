@@ -641,13 +641,16 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		char mqtt_message[MQTT_MESSAGE_L];
 		char cleartext[MQTT_MESSAGE_L];
 		int mqtt_message_l;
+		char current_unix_time_string[64];
+
+		tfp_snprintf(current_unix_time_string, 64, "%llu", get_unix_time());
 
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%s", en61107_get_received_serial(), current_unix_time_string);
 #elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%s", sys_cfg.impulse_meter_serial, current_unix_time_string);
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
 #endif
 
 		memset(mqtt_message, 0, sizeof(mqtt_message));
@@ -657,6 +660,10 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 					 wifi_test_ctx.test_result_status ? "ok" : "failed", 
 					 wifi_test_ctx.target_ssid, 
 					 wifi_test_ctx.tested_rssi);
+
+#ifdef DEBUG
+		os_printf("Wi-Fi test report: topic=%s payload=%s\n", mqtt_topic, cleartext);
+#endif
 
 		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);

@@ -1,9 +1,6 @@
 /*
  * wifi.c
- *
- *  Created on: Dec 30, 2014
- *      Author: Minh
- */
+*/
 #include <esp8266.h>
 #include <lwip/ip.h>
 #include <lwip/udp.h>
@@ -51,6 +48,7 @@ uint64_t last_uptime = 0;
 
 wifi_test_ctx_t wifi_test_ctx;
 static os_timer_t wifi_test_timeout_timer;
+static os_timer_t wifi_test_start_timer;
 
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
@@ -189,7 +187,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	}
 
 	// default allow everything else
-    return true;
+	return true;
 }
 
 // static functions
@@ -198,21 +196,41 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
 static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
-    INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
-    wifi_test_ctx.is_testing = false;
-    wifi_test_ctx.pending_report = true;
-    
-    struct station_config stationConf;
-    memset(&stationConf, 0, sizeof(struct station_config));
-    strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
-    strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
-    
-    wifi_station_disconnect();
-    wifi_station_set_config_current(&stationConf);
-    wifi_station_connect();
+	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
+	wifi_test_ctx.is_testing = false;
+	wifi_test_ctx.pending_report = true;
+	
+	struct station_config stationConf;
+	memset(&stationConf, 0, sizeof(struct station_config));
+	strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
+	strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
+	
+	my_auto_connect = false; // Prevent reconnect loops during transition
+	wifi_station_disconnect();
+	wifi_station_set_config_current(&stationConf);
+	my_auto_connect = true;  // Restore normal auto-connect
+	wifi_station_connect();
 
-    // Restart scanner with a long delay to allow the default AP to reconnect
-    wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+	// Restart scanner with a long delay to allow the default AP to reconnect
+	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+}
+
+static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
+	struct station_config test_conf;
+	
+	memset(&test_conf, 0, sizeof(struct station_config));
+	strncpy((char*)test_conf.ssid, wifi_test_ctx.target_ssid, WIFI_TEST_SSID_MAX_LEN);
+	strncpy((char*)test_conf.password, wifi_test_ctx.target_pwd, WIFI_TEST_PWD_MAX_LEN);
+
+	my_auto_connect = false; // Prevent reconnect loops during transition
+	wifi_station_disconnect();
+	wifi_station_set_config_current(&test_conf);
+	
+	os_timer_disarm(&wifi_test_timeout_timer);
+	os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
+	os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
+
+	wifi_station_connect();
 }
 
 void wifi_handle_event_cb(System_Event_t *evt) {
@@ -772,39 +790,32 @@ void wifi_scan_result_cb_unregister() {
 }
 
 bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
-    if (wifi_test_ctx.is_testing) return false;
+	if (wifi_test_ctx.is_testing) return false;
 
-    // Stop the background scanner from interfering with our test connection!
-    wifi_stop_scan();
+	// Stop the background scanner from interfering with our test connection!
+	wifi_stop_scan();
 
-    struct station_config current_conf, test_conf;
-    
-    memset(&current_conf, 0, sizeof(struct station_config));
-    wifi_station_get_config(&current_conf);
-    
-    strncpy(wifi_test_ctx.saved_ssid, (char*)current_conf.ssid, WIFI_TEST_SSID_MAX_LEN);
-    strncpy(wifi_test_ctx.saved_pwd, (char*)current_conf.password, WIFI_TEST_PWD_MAX_LEN);
-    
-    strncpy(wifi_test_ctx.target_ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
-    strncpy(wifi_test_ctx.target_pwd, pwd, WIFI_TEST_PWD_MAX_LEN);
-    
-    wifi_test_ctx.test_result_status = 0; // Default to fail
-    wifi_test_ctx.tested_rssi = 0;
-    wifi_test_ctx.is_testing = true;
+	struct station_config current_conf;
+	memset(&current_conf, 0, sizeof(struct station_config));
+	wifi_station_get_config(&current_conf);
+	
+	strncpy(wifi_test_ctx.saved_ssid, (char*)current_conf.ssid, WIFI_TEST_SSID_MAX_LEN);
+	strncpy(wifi_test_ctx.saved_pwd, (char*)current_conf.password, WIFI_TEST_PWD_MAX_LEN);
+	
+	strncpy(wifi_test_ctx.target_ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
+	strncpy(wifi_test_ctx.target_pwd, pwd, WIFI_TEST_PWD_MAX_LEN);
+	
+	wifi_test_ctx.test_result_status = 0; // Default to fail
+	wifi_test_ctx.tested_rssi = 0;
+	wifi_test_ctx.is_testing = true;
+	wifi_test_ctx.pending_report = false;
 
-    memset(&test_conf, 0, sizeof(struct station_config));
-    strncpy((char*)test_conf.ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
-    strncpy((char*)test_conf.password, pwd, WIFI_TEST_PWD_MAX_LEN);
+	// Arm a short delay timer to let MQTT send the QoS 2 PUBCOMP ACK!
+	os_timer_disarm(&wifi_test_start_timer);
+	os_timer_setfn(&wifi_test_start_timer, (os_timer_func_t *)wifi_test_start_timer_func, NULL);
+	os_timer_arm(&wifi_test_start_timer, 2000, 0); // 2 seconds delay
 
-    wifi_station_disconnect();
-    wifi_station_set_config_current(&test_conf);
-    
-    os_timer_disarm(&wifi_test_timeout_timer);
-    os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
-    os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
-
-    wifi_station_connect();
-    return true;
+	return true;
 }
 
 #ifdef DEBUG

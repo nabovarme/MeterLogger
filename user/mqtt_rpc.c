@@ -355,7 +355,12 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 
     if (strlen(ssid) == 0) return;
 
-    MQTT_Disconnect(client);
+#ifdef DEBUG
+    os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 2 seconds)\n", ssid);
+#endif
+
+    // DO NOT disconnect MQTT immediately. 
+    // Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 2 seconds.
     wifi_test_ssid_pwd(ssid, pwd);
 }
 
