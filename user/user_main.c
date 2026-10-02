@@ -612,8 +612,28 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	if (wifi_fallback_is_present()) {
 		led_pattern_b();
 	}
-	
+
+#ifdef EN61107
+	if (en61107_get_received_serial() == 0) {
+		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
+		os_timer_disarm(&mqtt_connected_defer_timer);
+		os_timer_setfn(&mqtt_connected_defer_timer, (os_timer_func_t *)mqtt_connected_defer_timer_func, NULL);
+		os_timer_arm(&mqtt_connected_defer_timer, 60000, 0);
+		return;
+	}
+#endif
+
+	// set mqtt_client kmp_request should use to return data
+#ifdef EN61107
+	en61107_set_mqtt_client(&mqtt_client);
+#elif defined IMPULSE
+	//kmp_set_mqtt_client(&mqtt_client);
+#else
+	kmp_set_mqtt_client(&mqtt_client);
+#endif
+
 	// Report Wi-Fi test probe results if we just finished one
+	// Moved AFTER the serial check so we don't consume the flag before the serial is ready!
 	if (wifi_test_ctx.pending_report) {
 		wifi_test_ctx.pending_report = false;
 
@@ -642,30 +662,11 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
 	}
 
-#ifdef EN61107
-	if (en61107_get_received_serial() == 0) {
-		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
-		os_timer_disarm(&mqtt_connected_defer_timer);
-		os_timer_setfn(&mqtt_connected_defer_timer, (os_timer_func_t *)mqtt_connected_defer_timer_func, NULL);
-		os_timer_arm(&mqtt_connected_defer_timer, 60000, 0);
-		return;
-	}
-#endif
-
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
 	mqtt_connected_first_mqtt_rpc_state = 0;
 	os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
 	os_timer_setfn(&mqtt_connected_first_mqtt_rpc_timer, (os_timer_func_t *)mqtt_connected_first_mqtt_rpc_timer_func, NULL);
 	os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 2000, 0);
-
-	// set mqtt_client kmp_request should use to return data
-#ifdef EN61107
-	en61107_set_mqtt_client(&mqtt_client);
-#elif defined IMPULSE
-	//kmp_set_mqtt_client(&mqtt_client);
-#else
-	kmp_set_mqtt_client(&mqtt_client);
-#endif
 	
 	// sample once outside this function...	
 	os_timer_disarm(&sample_timer_first);
