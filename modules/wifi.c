@@ -1,6 +1,6 @@
 /*
  * wifi.c
-*/
+ */
 #include <esp8266.h>
 #include <lwip/ip.h>
 #include <lwip/udp.h>
@@ -813,7 +813,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
 	// Arm a short delay timer to let MQTT send the QoS 2 PUBCOMP ACK!
 	os_timer_disarm(&wifi_test_start_timer);
 	os_timer_setfn(&wifi_test_start_timer, (os_timer_func_t *)wifi_test_start_timer_func, NULL);
-	os_timer_arm(&wifi_test_start_timer, 2000, 0); // 2 seconds delay
+	os_timer_arm(&wifi_test_start_timer, 5000, 0); // 5 seconds delay
 
 	return true;
 }

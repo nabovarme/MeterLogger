@@ -641,16 +641,13 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		char mqtt_message[MQTT_MESSAGE_L];
 		char cleartext[MQTT_MESSAGE_L];
 		int mqtt_message_l;
-		char current_unix_time_string[64];
-
-		tfp_snprintf(current_unix_time_string, 64, "%llu", get_unix_time());
 
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%s", en61107_get_received_serial(), current_unix_time_string);
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%s", sys_cfg.impulse_meter_serial, current_unix_time_string);
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 
 		memset(mqtt_message, 0, sizeof(mqtt_message));

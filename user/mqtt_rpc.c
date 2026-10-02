@@ -334,36 +334,48 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
-    char ssid[WIFI_TEST_SSID_MAX_LEN] = {0};
-    char pwd[WIFI_TEST_PWD_MAX_LEN] = {0};
-    char *str, *key, *val;
-    char *ctx1, *ctx2;
-    char params_copy[COMMAND_PARAMS_L];
-    
-    strncpy(params_copy, params, COMMAND_PARAMS_L);
-    str = strtok_r(params_copy, "&", &ctx1);
-    while (str != NULL) {
-        key = strtok_r(str, "=", &ctx2);
-        val = strtok_r(NULL, "=", &ctx2);
-        if (key && val) {
-            query_string_unescape(val);
-            if (strncmp(key, "ssid", WIFI_TEST_SSID_MAX_LEN) == 0) strncpy(ssid, val, WIFI_TEST_SSID_MAX_LEN - 1);
-            if (strncmp(key, "pwd", WIFI_TEST_PWD_MAX_LEN) == 0) strncpy(pwd, val, WIFI_TEST_PWD_MAX_LEN - 1);
-        }
-        str = strtok_r(NULL, "&", &ctx1);
-    }
+	static uint64_t last_test_trigger_time = 0;
+	uint64_t now = get_uptime();
+	
+	// Debounce: prevent QoS 2 duplicate re-delivery loops. 
+	// Must wait at least 45 seconds before starting another test.
+	if (now - last_test_trigger_time < 45) {
+#ifdef DEBUG
+		os_printf("MQTT RPC: Ignoring duplicate/rapid test_ssid_pwd command.\n");
+#endif
+		return;
+	}
+	last_test_trigger_time = now;
 
-    if (strlen(ssid) == 0) return;
+	char ssid[WIFI_TEST_SSID_MAX_LEN] = {0};
+	char pwd[WIFI_TEST_PWD_MAX_LEN] = {0};
+	char *str, *key, *val;
+	char *ctx1, *ctx2;
+	char params_copy[COMMAND_PARAMS_L];
+	
+	strncpy(params_copy, params, COMMAND_PARAMS_L);
+	str = strtok_r(params_copy, "&", &ctx1);
+	while (str != NULL) {
+		key = strtok_r(str, "=", &ctx2);
+		val = strtok_r(NULL, "=", &ctx2);
+		if (key && val) {
+			query_string_unescape(val);
+			if (strncmp(key, "ssid", WIFI_TEST_SSID_MAX_LEN) == 0) strncpy(ssid, val, WIFI_TEST_SSID_MAX_LEN - 1);
+			if (strncmp(key, "pwd", WIFI_TEST_PWD_MAX_LEN) == 0) strncpy(pwd, val, WIFI_TEST_PWD_MAX_LEN - 1);
+		}
+		str = strtok_r(NULL, "&", &ctx1);
+	}
+
+	if (strlen(ssid) == 0) return;
 
 #ifdef DEBUG
-    os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 2 seconds)\n", ssid);
+	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 5 seconds)\n", ssid);
 #endif
 
-    // DO NOT disconnect MQTT immediately. 
-    // Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 2 seconds.
-    wifi_test_ssid_pwd(ssid, pwd);
+	// DO NOT disconnect MQTT immediately. 
+	// Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 5 seconds.
+	wifi_test_ssid_pwd(ssid, pwd);
 }
-
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_reconnect(MQTT_Client *client) {
