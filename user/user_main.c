@@ -613,6 +613,35 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		led_pattern_b();
 	}
 	
+	// Report Wi-Fi test probe results if we just finished one
+	if (wifi_test_ctx.pending_report) {
+		wifi_test_ctx.pending_report = false;
+
+		char mqtt_topic[MQTT_TOPIC_L];
+		char mqtt_message[MQTT_MESSAGE_L];
+		char cleartext[MQTT_MESSAGE_L];
+		int mqtt_message_l;
+
+#ifdef EN61107
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+		memset(mqtt_message, 0, sizeof(mqtt_message));
+		memset(cleartext, 0, sizeof(cleartext));
+
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d", 
+					 wifi_test_ctx.test_result_status ? "ok" : "failed", 
+					 wifi_test_ctx.target_ssid, 
+					 wifi_test_ctx.tested_rssi);
+
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+	}
+
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
 		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
@@ -790,6 +819,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	else if (strncmp(function_name, "set_ap_mesh_pwd", FUNCTIONNAME_L) == 0) {
 		// found set_ap_mesh_pwd
 		mqtt_rpc_set_ap_mesh_pwd(&mqtt_client, cleartext);
+	}
+	else if (strncmp(function_name, "test_ssid_pwd", FUNCTIONNAME_L) == 0) {
+		// found test_ssid_pwd
+		mqtt_rpc_test_ssid_pwd(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "reconnect", FUNCTIONNAME_L) == 0) {
 		// found reconnect

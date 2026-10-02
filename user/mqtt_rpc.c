@@ -333,6 +333,34 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 }
 
 ICACHE_FLASH_ATTR
+void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
+    char ssid[WIFI_TEST_SSID_MAX_LEN] = {0};
+    char pwd[WIFI_TEST_PWD_MAX_LEN] = {0};
+    char *str, *key, *val;
+    char *ctx1, *ctx2;
+    char params_copy[COMMAND_PARAMS_L];
+    
+    strncpy(params_copy, params, COMMAND_PARAMS_L);
+    str = strtok_r(params_copy, "&", &ctx1);
+    while (str != NULL) {
+        key = strtok_r(str, "=", &ctx2);
+        val = strtok_r(NULL, "=", &ctx2);
+        if (key && val) {
+            query_string_unescape(val);
+            if (strncmp(key, "ssid", WIFI_TEST_SSID_MAX_LEN) == 0) strncpy(ssid, val, WIFI_TEST_SSID_MAX_LEN - 1);
+            if (strncmp(key, "pwd", WIFI_TEST_PWD_MAX_LEN) == 0) strncpy(pwd, val, WIFI_TEST_PWD_MAX_LEN - 1);
+        }
+        str = strtok_r(NULL, "&", &ctx1);
+    }
+
+    if (strlen(ssid) == 0) return;
+
+    MQTT_Disconnect(client);
+    wifi_test_ssid_pwd(ssid, pwd);
+}
+
+
+ICACHE_FLASH_ATTR
 void mqtt_rpc_reconnect(MQTT_Client *client) {
 	// reconnect with new password
 	MQTT_Disconnect(client);

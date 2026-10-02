@@ -15,10 +15,27 @@
 #define WIFI_SCAN_TIMEOUT 60000
 #define RSSI_CHECK_INTERVAL 10000
 
+#define WIFI_TEST_TIMEOUT_MS 15000
+#define WIFI_TEST_SSID_MAX_LEN 32
+#define WIFI_TEST_PWD_MAX_LEN 64
+
 extern uint32_t disconnect_count;
 
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
+
+typedef struct {
+    char target_ssid[WIFI_TEST_SSID_MAX_LEN];
+    char target_pwd[WIFI_TEST_PWD_MAX_LEN];
+    char saved_ssid[WIFI_TEST_SSID_MAX_LEN];
+    char saved_pwd[WIFI_TEST_PWD_MAX_LEN];
+    bool is_testing;
+    bool pending_report;
+    sint8_t tested_rssi;
+    uint8_t test_result_status; // 0 = fail, 1 = success
+} wifi_test_ctx_t;
+
+extern wifi_test_ctx_t wifi_test_ctx;
 
 bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p);
 
@@ -38,6 +55,7 @@ void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
 void ICACHE_FLASH_ATTR wifi_destroy();
+bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd);
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();

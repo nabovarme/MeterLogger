@@ -49,6 +49,9 @@ volatile bool my_auto_connect = true;
 uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
 
+wifi_test_ctx_t wifi_test_ctx = {0};
+static os_timer_t wifi_test_timeout_timer;
+
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 
@@ -194,6 +197,24 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
+static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
+    INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
+    wifi_test_ctx.is_testing = false;
+    wifi_test_ctx.pending_report = true;
+    
+    struct station_config stationConf;
+    memset(&stationConf, 0, sizeof(struct station_config));
+    strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
+    strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
+    
+    wifi_station_disconnect();
+    wifi_station_set_config_current(&stationConf);
+    wifi_station_connect();
+
+    // Restart scanner with a long delay to allow the default AP to reconnect
+    wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+}
+
 void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t wifi_status;
 //	static uint8_t wifi_event;
@@ -207,6 +228,18 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
+
+	if (wifi_test_ctx.is_testing) {
+		if (evt->event == EVENT_STAMODE_GOT_IP) {
+			os_timer_disarm(&wifi_test_timeout_timer);
+			wifi_test_ctx.tested_rssi = wifi_station_get_rssi();
+			wifi_test_ctx.test_result_status = 1; // Success
+			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
+			wifi_test_timeout_timer_func(NULL);
+		}
+		// Skip standard logic during test
+		return;
+	}
 
 #ifdef DEBUG
 //	printf("E%dW%dR%d\n", evt->event, wifi_status, evt->event_info.disconnected.reason);
@@ -736,6 +769,42 @@ void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 
 void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
+}
+
+bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
+    if (wifi_test_ctx.is_testing) return false;
+
+    // Stop the background scanner from interfering with our test connection!
+    wifi_stop_scan();
+
+    struct station_config current_conf, test_conf;
+    
+    memset(&current_conf, 0, sizeof(struct station_config));
+    wifi_station_get_config(&current_conf);
+    
+    strncpy(wifi_test_ctx.saved_ssid, (char*)current_conf.ssid, WIFI_TEST_SSID_MAX_LEN);
+    strncpy(wifi_test_ctx.saved_pwd, (char*)current_conf.password, WIFI_TEST_PWD_MAX_LEN);
+    
+    strncpy(wifi_test_ctx.target_ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
+    strncpy(wifi_test_ctx.target_pwd, pwd, WIFI_TEST_PWD_MAX_LEN);
+    
+    wifi_test_ctx.test_result_status = 0; // Default to fail
+    wifi_test_ctx.tested_rssi = 0;
+    wifi_test_ctx.is_testing = true;
+
+    memset(&test_conf, 0, sizeof(struct station_config));
+    strncpy((char*)test_conf.ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
+    strncpy((char*)test_conf.password, pwd, WIFI_TEST_PWD_MAX_LEN);
+
+    wifi_station_disconnect();
+    wifi_station_set_config_current(&test_conf);
+    
+    os_timer_disarm(&wifi_test_timeout_timer);
+    os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
+    os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
+
+    wifi_station_connect();
+    return true;
 }
 
 #ifdef DEBUG
