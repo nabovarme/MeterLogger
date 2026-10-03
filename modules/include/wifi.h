@@ -25,14 +25,17 @@ typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
 
 typedef struct {
-    char target_ssid[WIFI_TEST_SSID_MAX_LEN];
-    char target_pwd[WIFI_TEST_PWD_MAX_LEN];
-    char saved_ssid[WIFI_TEST_SSID_MAX_LEN];
-    char saved_pwd[WIFI_TEST_PWD_MAX_LEN];
-    bool is_testing;
-    bool pending_report;
-    sint8_t tested_rssi;
-    uint8_t test_result_status; // 0 = fail, 1 = success
+	char saved_ssid[32];
+	char saved_pwd[64];
+	char target_ssid[32];
+	char target_pwd[64];
+	bool is_testing;
+	bool pending_report;
+	uint8_t test_result_status;
+	sint8_t tested_rssi;
+	uint8_t fail_reason;
+	uint32_t attempt_time_ms;
+	uint32_t _start_time;
 } wifi_test_ctx_t;
 
 extern wifi_test_ctx_t wifi_test_ctx;

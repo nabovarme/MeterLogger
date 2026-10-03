@@ -226,7 +226,7 @@ hmac sha256 key
 | /set_ssid/v2/9999999/[unix time]                | [ssid of the wifi it is set to connect to]                                                           |
 | /set_pwd/v2/9999999/[unix time]                 | [password for the wifi it is set to connect to]                                                      |
 | /set_ssid_pwd/v2/9999999/[unix time]            | [combined ssid and password for the wifi it is set to connect to]                                    |
-| /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62] (or status=failed&ssid=the_ssid&rssi=0)                         |
+| /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62&reason=0&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=15&time_ms=15000) |
 | /set_ap_mesh_pwd/v2/9999999/[unix time]         | [password for the mesh-[serial] itself]                                                      |
 | /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |

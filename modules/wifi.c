@@ -200,6 +200,11 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 	wifi_test_ctx.is_testing = false;
 	wifi_test_ctx.pending_report = true;
 	
+	// If it timed out or failed, calculate the duration now
+	if (wifi_test_ctx.test_result_status == 0) {
+		wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
+	}
+	
 	struct station_config stationConf;
 	memset(&stationConf, 0, sizeof(struct station_config));
 	strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
@@ -230,6 +235,7 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 	os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
 	os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
 
+	wifi_test_ctx._start_time = system_get_time(); // Record exact start time
 	wifi_station_connect();
 }
 
@@ -252,8 +258,14 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			os_timer_disarm(&wifi_test_timeout_timer);
 			wifi_test_ctx.tested_rssi = wifi_station_get_rssi();
 			wifi_test_ctx.test_result_status = 1; // Success
+			wifi_test_ctx.fail_reason = 0; // 0 = No error
+			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
 			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
 			wifi_test_timeout_timer_func(NULL);
+		}
+		else if (evt->event == EVENT_STAMODE_DISCONNECTED) {
+			// Capture the specific reason the ESP8266 rejected the connection
+			wifi_test_ctx.fail_reason = evt->event_info.disconnected.reason;
 		}
 		// Skip standard logic during test
 		return;
@@ -498,7 +510,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				switched_network = true;
 				wifi_fallback_last_present = true;
 			}
-		} else if (wifi_fallback_last_present) {
+		}
+		else if (wifi_fallback_last_present) {
 			fallback_miss_count++;
 			// Only abort back to default if we miss the AP 3 scans in a row (15-20 seconds)
 			if (fallback_miss_count >= 3) {
@@ -530,7 +543,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	// before interrupting the radio with another scan!
 	if (switched_network) {
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
-	} else {
+	}
+	else {
 		wifi_start_scan(WIFI_SCAN_INTERVAL);
 	}
 }
@@ -807,6 +821,8 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
 	
 	wifi_test_ctx.test_result_status = 0; // Default to fail
 	wifi_test_ctx.tested_rssi = 0;
+	wifi_test_ctx.fail_reason = 255; // Default unknown/timeout
+	wifi_test_ctx.attempt_time_ms = 0;
 	wifi_test_ctx.is_testing = true;
 	wifi_test_ctx.pending_report = false;
 

@@ -625,10 +625,12 @@ ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d", 
-				 wifi_test_ctx.test_result_status ? "ok" : "failed", 
-				 wifi_test_ctx.target_ssid, 
-				 wifi_test_ctx.tested_rssi);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d&reason=%u&time_ms=%u", 
+		wifi_test_ctx.test_result_status ? "ok" : "failed", 
+		wifi_test_ctx.target_ssid, 
+		wifi_test_ctx.tested_rssi,
+		wifi_test_ctx.fail_reason,
+		wifi_test_ctx.attempt_time_ms);
 
 #ifdef DEBUG
 	os_printf("Wi-Fi test report: topic=%s payload=%s\n", mqtt_topic, cleartext);
@@ -1380,7 +1382,8 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 
 	if (load_rtc_data(&watchdog_rebooted)) {
 		printf("rst: %d\n", 7);
-	} else {
+	}
+	else {
 		printf("rst: %d\n", (rtc_info != NULL) ? rtc_info->reason : -1);
 	}
 	if (rtc_info->reason == REASON_WDT_RST || rtc_info->reason == REASON_EXCEPTION_RST || rtc_info->reason == REASON_SOFT_WDT_RST) {
