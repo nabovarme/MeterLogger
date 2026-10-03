@@ -210,8 +210,8 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		}
 	}
 	
-	if (get_fallback_ap_is_running()) {
-		// Rescue AP window is STILL active: restore Fallback AP and heartbeat
+	if (fallback_ap_is_running) {
+		// fallback AP window is STILL active: restore Fallback AP and heartbeat
 		INFO("Wi-Fi Test: Done. Restoring active Fallback AP state...\n");
 		wifi_set_opmode_current(STATIONAP_MODE);
 		wifi_softap_config((uint8_t*)STA_FALLBACK_SSID, (uint8_t*)STA_FALLBACK_PASS, AP_MESH_TYPE);
@@ -220,7 +220,7 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		led_stop_pattern();
 		led_pattern_d();
 	} else {
-		// Rescue AP timer expired during test (or wasn't active): restore default STA config and turn LED off
+		// Fallback AP timer expired during test: restore saved station config
 		INFO("Wi-Fi Test: Done. Restoring saved station config...\n");
 		struct station_config stationConf;
 		memset(&stationConf, 0, sizeof(struct station_config));
@@ -232,8 +232,13 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		wifi_station_set_config_current(&stationConf);
 		my_auto_connect = true;
 		wifi_station_connect();
+		
+		// Reset fallback tracking flags so scanner doesn't get stuck in hysteresis
+		wifi_present = false;
+		wifi_fallback_present = false;
+		wifi_fallback_last_present = false;
 
-		// Timer expired during test: turn off the LED pattern
+		// Turn off the LED pattern since fallback AP is done
 		led_stop_pattern();
 
 		// Resume background scanning
@@ -811,11 +816,6 @@ void ICACHE_FLASH_ATTR wifi_stop_scan() {
 
 bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
 	return wifi_scan_runnning;
-}
-
-void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {	// helper function to let watchdog reset the state of the wifi_fallback_*
-	wifi_fallback_present = false;
-	wifi_fallback_last_present = false;
 }
 
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {

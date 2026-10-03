@@ -30,7 +30,7 @@
 #endif	// DEBUG_STACK_TRACE
 
 static os_timer_t fallback_ap_timer;
-static bool fallback_ap_is_running = false;
+bool fallback_ap_is_running = false;
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
@@ -1158,8 +1158,3 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 #endif
-
-ICACHE_FLASH_ATTR
-bool get_fallback_ap_is_running(void) {
-	return fallback_ap_is_running;
-}
