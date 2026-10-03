@@ -23,6 +23,7 @@
 #include "tinyprintf.h"
 #include "unix_time.h"
 #include "icmp_ping.h"
+#include "mqtt_rpc.h"
 
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
