@@ -167,7 +167,28 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_scan(MQTT_Client *client) {
-	// reguster wifi scan callback to handle scan results when we do normal scanning in wifi.c
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+	// --- Send immediate acknowledgement reply before scanning ---
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext)); // Empty cleartext
+
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	// -----------------------------------------------------------
+
+	// register wifi scan callback to handle scan results when we do normal scanning in wifi.c
 	// wifi_scan_result_cb_unregister() is called from wifi.c when scan is done
 	wifi_scan_result_cb_register(mqtt_send_wifi_scan_results_cb);
 }

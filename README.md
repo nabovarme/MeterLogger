@@ -229,6 +229,7 @@ hmac sha256 key
 | /test_ssid_pwd/v2/9999999/[unix time]           | [ssid=name&pwd=secret&stay=seconds]                                                                  |
 | /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
 | /set_ap_mesh_pwd/v2/9999999/[unix time]         | [password for the mesh-[serial] itself]                                                      |
+| /scan/v2/9999999/[unix time]                    | [empty reply to acknowledge scan command]                                                            |
 | /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
 | /ap_status/v2/9999999/[unix time]               | [started or stopped]                                                                                 |
