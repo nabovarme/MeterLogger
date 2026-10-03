@@ -60,6 +60,7 @@ static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
 static os_timer_t mqtt_connected_defer_timer;
+static os_timer_t wifi_test_report_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 #elif defined IMPULSE
@@ -607,6 +608,36 @@ ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 }
 #endif
 
+ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	char cleartext[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d", 
+				 wifi_test_ctx.test_result_status ? "ok" : "failed", 
+				 wifi_test_ctx.target_ssid, 
+				 wifi_test_ctx.tested_rssi);
+
+#ifdef DEBUG
+	os_printf("Wi-Fi test report: topic=%s payload=%s\n", mqtt_topic, cleartext);
+#endif
+
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+}
+
 ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	// show led status when mqtt is connected via fallback wifi
 	if (wifi_fallback_is_present()) {
@@ -633,37 +664,13 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 #endif
 
 	// Report Wi-Fi test probe results if we just finished one
-	// Moved AFTER the serial check so we don't consume the flag before the serial is ready!
 	if (wifi_test_ctx.pending_report) {
 		wifi_test_ctx.pending_report = false;
-
-		char mqtt_topic[MQTT_TOPIC_L];
-		char mqtt_message[MQTT_MESSAGE_L];
-		char cleartext[MQTT_MESSAGE_L];
-		int mqtt_message_l;
-
-#ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
-#else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
-#endif
-
-		memset(mqtt_message, 0, sizeof(mqtt_message));
-		memset(cleartext, 0, sizeof(cleartext));
-
-		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d", 
-					 wifi_test_ctx.test_result_status ? "ok" : "failed", 
-					 wifi_test_ctx.target_ssid, 
-					 wifi_test_ctx.tested_rssi);
-
-#ifdef DEBUG
-		os_printf("Wi-Fi test report: topic=%s payload=%s\n", mqtt_topic, cleartext);
-#endif
-
-		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-		MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+		
+		// Defer the publish by 1.5 seconds so Mosquitto's session state is fully ready
+		os_timer_disarm(&wifi_test_report_timer);
+		os_timer_setfn(&wifi_test_report_timer, (os_timer_func_t *)wifi_test_report_timer_func, NULL);
+		os_timer_arm(&wifi_test_report_timer, 1500, 0);
 	}
 
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
