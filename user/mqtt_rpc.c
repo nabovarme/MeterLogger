@@ -30,6 +30,7 @@
 #endif	// DEBUG_STACK_TRACE
 
 static os_timer_t fallback_ap_timer;
+static bool fallback_ap_is_running = false;
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
@@ -607,6 +608,8 @@ static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
 #ifdef DEBUG
 	os_printf("MQTT RPC: Fallback AP timer expired. Restoring normal state...\n");
 #endif
+
+	fallback_ap_is_running = false;
 	
 	// Revert to the user's saved AP preference without touching flash memory
 	if (sys_cfg.ap_enabled) {
@@ -618,7 +621,9 @@ static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
 	}
 
 	led_stop_pattern();
-}
+
+	// Resume background scanning now that the rescue AP is closed
+	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);}
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ssid) {
@@ -670,10 +675,24 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
 
+	// If we are already broadcasting the fallback AP, just extend the timer!
+	// Skipping the wifi_softap_config prevents dropping already-connected meters.
+	if (fallback_ap_is_running) {
+		os_timer_disarm(&fallback_ap_timer);
+		os_timer_arm(&fallback_ap_timer, time_ms, 0);
+		return;
+	}
+
+	fallback_ap_is_running = true;
+
 	// Start the Rescue AP
 	wifi_set_opmode_current(STATIONAP_MODE);
 	wifi_softap_config((uint8_t*)STA_FALLBACK_SSID, (uint8_t*)STA_FALLBACK_PASS, AP_MESH_TYPE);
 	wifi_softap_ip_config();
+
+	// Stop the background scanner! Sweeping channels while hosting 
+	// active NAT clients causes radio instability and Fatal Exception 9.
+	wifi_stop_scan();
 
 	// Arm teardown timer
 	os_timer_disarm(&fallback_ap_timer);
