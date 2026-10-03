@@ -234,8 +234,7 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		
 		// Reset fallback tracking flags so scanner doesn't get stuck in hysteresis
 		wifi_present = false;
-		wifi_fallback_present = false;
-		wifi_fallback_last_present = false;
+		wifi_fallback_force_reset_state();
 
 		// Turn off the LED pattern since fallback AP is done
 		led_stop_pattern();
@@ -819,6 +818,12 @@ bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
 
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
 	return wifi_fallback_present;
+}
+
+void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {
+	// helper function to let watchdog reset the state of the wifi_fallback_*
+	wifi_fallback_present = false;
+	wifi_fallback_last_present = false;
 }
 
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {

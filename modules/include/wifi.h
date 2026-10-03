@@ -58,6 +58,7 @@ void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval);
 void ICACHE_FLASH_ATTR wifi_stop_scan();
 bool ICACHE_FLASH_ATTR wifi_scan_is_running();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
+void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
 void ICACHE_FLASH_ATTR wifi_destroy();
 bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms);
