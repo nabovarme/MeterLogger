@@ -625,9 +625,9 @@ ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d&reason=%u&time_ms=%u", 
-		wifi_test_ctx.test_result_status ? "ok" : "failed", 
-		wifi_test_ctx.target_ssid, 
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s&ssid=%s&rssi=%d&reason=%u&time_ms=%u",
+		wifi_test_ctx.test_result_status ? "ok" : "failed",
+		wifi_test_ctx.target_ssid,
 		wifi_test_ctx.tested_rssi,
 		wifi_test_ctx.fail_reason,
 		wifi_test_ctx.attempt_time_ms);
