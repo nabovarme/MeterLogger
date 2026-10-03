@@ -1,7 +1,7 @@
 #ifndef MQTT_RPC_H_
 #define MQTT_RPC_H_
 
-#include "mqtt.h"
+typedef struct MQTT_Client MQTT_Client;
 
 ICACHE_FLASH_ATTR void mqtt_rpc_ping(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_version(MQTT_Client *client);
