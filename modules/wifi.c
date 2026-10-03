@@ -197,12 +197,16 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
 static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
-	wifi_test_ctx.is_testing = false;
-	wifi_test_ctx.pending_report = true;
 	
-	// If it timed out or failed, calculate the duration now
-	if (wifi_test_ctx.test_result_status == 0) {
-		wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
+	// If is_testing is still true, it means we either timed out or failed immediately
+	if (wifi_test_ctx.is_testing) {
+		wifi_test_ctx.is_testing = false;
+		wifi_test_ctx.pending_report = true;
+		
+		// If it timed out or failed, calculate the duration now
+		if (wifi_test_ctx.test_result_status == 0) {
+			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
+		}
 	}
 	
 	struct station_config stationConf;
@@ -261,14 +265,31 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_test_ctx.fail_reason = 0; // 0 = No error
 			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
 			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
-			wifi_test_timeout_timer_func(NULL);
+			
+			if (wifi_test_ctx.stay_time_ms > 0) {
+				// We want to stay. Release the test lock so normal MQTT/DHCP resumes!
+				wifi_test_ctx.is_testing = false; 
+				wifi_test_ctx.pending_report = true; 
+				
+				// Set the timer to revert back after our stay is over
+				os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
+				os_timer_arm(&wifi_test_timeout_timer, wifi_test_ctx.stay_time_ms, 0);
+				
+				// Fallthrough to standard GOT_IP logic so it actually connects to MQTT!
+			} else {
+				// Immediate disconnect behavior
+				wifi_test_timeout_timer_func(NULL);
+				return;
+			}
 		}
 		else if (evt->event == EVENT_STAMODE_DISCONNECTED) {
 			// Capture the specific reason the ESP8266 rejected the connection
 			wifi_test_ctx.fail_reason = evt->event_info.disconnected.reason;
+			return; // Skip normal logic
 		}
-		// Skip standard logic during test
-		return;
+		else {
+			return; // Skip normal logic for other events during test
+		}
 	}
 
 #ifdef DEBUG
@@ -803,7 +824,7 @@ void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
 }
 
-bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
+bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms) {
 	if (wifi_test_ctx.is_testing) return false;
 
 	// Stop the background scanner from interfering with our test connection!
@@ -823,6 +844,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd) {
 	wifi_test_ctx.tested_rssi = 0;
 	wifi_test_ctx.fail_reason = 255; // Default unknown/timeout
 	wifi_test_ctx.attempt_time_ms = 0;
+	wifi_test_ctx.stay_time_ms = stay_time_ms;
 	wifi_test_ctx.is_testing = true;
 	wifi_test_ctx.pending_report = false;
 

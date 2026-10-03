@@ -349,6 +349,8 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 
 	char ssid[WIFI_TEST_SSID_MAX_LEN] = {0};
 	char pwd[WIFI_TEST_PWD_MAX_LEN] = {0};
+	char stay_str[WIFI_TEST_STAY_MAX_LEN] = {0};
+	uint32_t stay_ms = 0;
 	char *str, *key, *val;
 	char *ctx1, *ctx2;
 	char params_copy[COMMAND_PARAMS_L];
@@ -362,11 +364,13 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 			query_string_unescape(val);
 			if (strncmp(key, "ssid", WIFI_TEST_SSID_MAX_LEN) == 0) strncpy(ssid, val, WIFI_TEST_SSID_MAX_LEN - 1);
 			if (strncmp(key, "pwd", WIFI_TEST_PWD_MAX_LEN) == 0) strncpy(pwd, val, WIFI_TEST_PWD_MAX_LEN - 1);
+			if (strncmp(key, "stay", WIFI_TEST_STAY_MAX_LEN) == 0) strncpy(stay_str, val, WIFI_TEST_STAY_MAX_LEN - 1);
 		}
 		str = strtok_r(NULL, "&", &ctx1);
 	}
 
 	if (strlen(ssid) == 0) return;
+	if (strlen(stay_str) > 0) stay_ms = atoi(stay_str) * 1000;
 
 #ifdef DEBUG
 	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 5 seconds)\n", ssid);
@@ -374,7 +378,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 
 	// DO NOT disconnect MQTT immediately. 
 	// Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 5 seconds.
-	wifi_test_ssid_pwd(ssid, pwd);
+	wifi_test_ssid_pwd(ssid, pwd, stay_ms);
 }
 
 ICACHE_FLASH_ATTR

@@ -18,6 +18,7 @@
 #define WIFI_TEST_TIMEOUT_MS 15000
 #define WIFI_TEST_SSID_MAX_LEN 32
 #define WIFI_TEST_PWD_MAX_LEN 64
+#define WIFI_TEST_STAY_MAX_LEN 10
 
 extern uint32_t disconnect_count;
 
@@ -36,6 +37,7 @@ typedef struct {
 	uint8_t fail_reason;
 	uint32_t attempt_time_ms;
 	uint32_t _start_time;
+	uint32_t stay_time_ms;
 } wifi_test_ctx_t;
 
 extern wifi_test_ctx_t wifi_test_ctx;
@@ -58,7 +60,7 @@ void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
 bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
 void ICACHE_FLASH_ATTR wifi_destroy();
-bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd);
+bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms);
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();

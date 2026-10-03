@@ -191,7 +191,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                                                              |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                                                              |
-| /config/v2/9999999/[unix time]/test_ssid_pwd           | [ssid=name&pwd=secret]                                                                              |
+| /config/v2/9999999/[unix time]/test_ssid_pwd           | [ssid=name&pwd=secret&stay=seconds]                                                                 |
 | /config/v2/9999999/[unix time]/set_ap_mesh_pwd         | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
