@@ -458,7 +458,7 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	wifi_status = wifi_get_status();
-		*reason_str = wifi_get_reason_desc(wifi_status);
+		reason_str = wifi_get_reason_desc(wifi_status);
 		if (strcmp(reason_str, "unknown") == 0 || strcmp(reason_str, "none") == 0) {
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connected");
 		} else {
