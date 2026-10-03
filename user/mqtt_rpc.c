@@ -613,11 +613,11 @@ static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
 		wifi_set_opmode_current(STATIONAP_MODE);
 		wifi_softap_config((uint8_t*)mesh_ssid, (uint8_t*)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
 		wifi_softap_ip_config();
-		led_pattern_b(); // Standard pattern for AP mode
 	} else {
 		wifi_set_opmode_current(STATION_MODE);
-		led_pattern_a(); // Standard pattern for normal Station mode
 	}
+
+	led_stop_pattern();
 }
 
 ICACHE_FLASH_ATTR
@@ -681,6 +681,7 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	os_timer_arm(&fallback_ap_timer, time_ms, 0);
 
 	// Start the special requested LED pattern!
+	led_stop_pattern();
 	led_pattern_d();
 }
 
