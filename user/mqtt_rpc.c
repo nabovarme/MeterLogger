@@ -355,6 +355,12 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char *ctx1, *ctx2;
 	char params_copy[COMMAND_PARAMS_L];
 	
+	// Variables for the immediate acknowledgement reply
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	
 	strncpy(params_copy, params, COMMAND_PARAMS_L);
 	str = strtok_r(params_copy, "&", &ctx1);
 	while (str != NULL) {
@@ -375,6 +381,46 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 #ifdef DEBUG
 	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 5 seconds)\n", ssid);
 #endif
+
+	// --- Send immediate acknowledgement reply before testing ---
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ssid=");
+	strncpy(mqtt_message, ssid, MQTT_MESSAGE_L - 1);
+	// escape & and =
+	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
+		// error
+		return;
+	}
+	strcat(cleartext, mqtt_message);
+	strcat(cleartext, "&pwd=");
+
+	strncpy(mqtt_message, pwd, MQTT_MESSAGE_L - 1);
+	// escape & and =
+	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
+		// error
+		return;
+	}
+	strcat(cleartext, mqtt_message);
+	
+	// append the stay timer if provided
+	if (strlen(stay_str) > 0) {
+		strcat(cleartext, "&stay=");
+		strcat(cleartext, stay_str);
+	}
+	
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	// -----------------------------------------------------------
 
 	// DO NOT disconnect MQTT immediately. 
 	// Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 5 seconds.

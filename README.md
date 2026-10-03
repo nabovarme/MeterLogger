@@ -191,7 +191,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                                                              |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                                                              |
-| /config/v2/9999999/[unix time]/test_ssid_pwd           | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
+| /config/v2/9999999/[unix time]/test_ssid_pwd           | [ssid=name&pwd=secret&stay=seconds]                                                                 |
 | /config/v2/9999999/[unix time]/set_ap_mesh_pwd         | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
@@ -226,7 +226,8 @@ hmac sha256 key
 | /set_ssid/v2/9999999/[unix time]                | [ssid of the wifi it is set to connect to]                                                           |
 | /set_pwd/v2/9999999/[unix time]                 | [password for the wifi it is set to connect to]                                                      |
 | /set_ssid_pwd/v2/9999999/[unix time]            | [combined ssid and password for the wifi it is set to connect to]                                    |
-| /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62&reason=0&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=15&time_ms=15000) |
+| /test_ssid_pwd/v2/9999999/[unix time]           | [ssid=name&pwd=secret&stay=seconds]                                                                  |
+| /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
 | /set_ap_mesh_pwd/v2/9999999/[unix time]         | [password for the mesh-[serial] itself]                                                      |
 | /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
 | /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
