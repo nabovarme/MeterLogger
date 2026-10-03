@@ -15,6 +15,7 @@
 #include "version.h"
 #include "user_main.h"
 #include "icmp_ping.h"
+#include "led.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -27,6 +28,8 @@
 #ifdef DEBUG_STACK_TRACE
 #include "exception_handler.h"
 #endif	// DEBUG_STACK_TRACE
+
+static os_timer_t fallback_ap_timer;
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
@@ -334,7 +337,7 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 	wifi_set_opmode_current(STATION_MODE);
 
 	wifi_set_opmode_current(STATIONAP_MODE);
-	wifi_softap_config(mesh_ssid, sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
+	wifi_softap_config((uint8_t*)mesh_ssid, (uint8_t*)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
 	wifi_softap_ip_config();	
 
 	// send mqtt reply
@@ -566,7 +569,7 @@ void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
 	// start AP
 	if (wifi_get_opmode() != STATIONAP_MODE) {
 		wifi_set_opmode_current(STATIONAP_MODE);
-		wifi_softap_config(mesh_ssid, sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
+		wifi_softap_config((uint8_t*)mesh_ssid, (uint8_t*)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
 		wifi_softap_ip_config();
 	
 		// ...and save setting to flash if changed
@@ -594,6 +597,91 @@ void mqtt_rpc_stop_ap(MQTT_Client *client) {
 			}
 		}
 	}
+}
+
+// ==============================================================================
+// TIMER FOR TEMPORARY FALLBACK AP
+// ==============================================================================
+static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
+	char *mesh_ssid = (char *)arg;
+#ifdef DEBUG
+	os_printf("MQTT RPC: Fallback AP timer expired. Restoring normal state...\n");
+#endif
+	
+	// Revert to the user's saved AP preference without touching flash memory
+	if (sys_cfg.ap_enabled) {
+		wifi_set_opmode_current(STATIONAP_MODE);
+		wifi_softap_config((uint8_t*)mesh_ssid, (uint8_t*)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
+		wifi_softap_ip_config();
+		led_pattern_b(); // Standard pattern for AP mode
+	} else {
+		wifi_set_opmode_current(STATION_MODE);
+		led_pattern_a(); // Standard pattern for normal Station mode
+	}
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ssid) {
+	char time_str[16] = {0};
+	uint32_t time_ms = 0;
+	char *str, *key, *val;
+	char *ctx1, *ctx2;
+	char params_copy[COMMAND_PARAMS_L];
+	
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+	if (params != NULL && strlen(params) > 0) {
+		strncpy(params_copy, params, COMMAND_PARAMS_L);
+		str = strtok_r(params_copy, "&", &ctx1);
+		while (str != NULL) {
+			key = strtok_r(str, "=", &ctx2);
+			val = strtok_r(NULL, "=", &ctx2);
+			if (key && val) {
+				query_string_unescape(val);
+				if (strcmp(key, "time") == 0) strncpy(time_str, val, 15);
+			}
+			str = strtok_r(NULL, "&", &ctx1);
+		}
+	}
+
+	if (strlen(time_str) > 0) time_ms = atoi(time_str) * 1000;
+	if (time_ms == 0) return; // Abort if no valid time was provided
+
+#ifdef DEBUG
+	os_printf("MQTT RPC: Starting temporary Fallback AP for %s seconds\n", time_str);
+#endif
+
+	// Immediate acknowledgement reply
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "time=%s", time_str);
+	
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+
+	// Start the Rescue AP
+	wifi_set_opmode_current(STATIONAP_MODE);
+	wifi_softap_config((uint8_t*)STA_FALLBACK_SSID, (uint8_t*)STA_FALLBACK_PASS, AP_MESH_TYPE);
+	wifi_softap_ip_config();
+
+	// Arm teardown timer
+	os_timer_disarm(&fallback_ap_timer);
+	os_timer_setfn(&fallback_ap_timer, (os_timer_func_t *)fallback_ap_timer_func, mesh_ssid);
+	os_timer_arm(&fallback_ap_timer, time_ms, 0);
+
+	// Start the special requested LED pattern!
+	led_pattern_d();
 }
 
 ICACHE_FLASH_ATTR

@@ -196,6 +196,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
 | /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                                                                |
+| /config/v2/9999999/[unix time]/start_fallback_ap       | [time=seconds] temporarily broadcasts the fallback rescue network (no flash write)                  |
 | /config/v2/9999999/[unix time]/ap_status               |                                                                                                     |
 | /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
 | /config/v2/9999999/[unix time]/network_quality         |                                                                                                     |
@@ -209,36 +210,37 @@ hmac sha256 key
   
 **MQTT format for messages sent _from_ meter**  
 
-| Topic                                           | Message                                                                                              |
-| :---------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| /sample/v2/9999999/[unix time]                  | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
-| /cron/v2/9999999/[unix time]                    | 12                                                                                                   |
-| /ping/v2/9999999/[unix time]                    |                                                                                                      |
-| /version/v2/9999999/[unix time]                 | [sdk version]-[git version]                                                                          |
-| /status/v2/9999999/[unix time]                  | [open|close]                                                                                         |
-| /open_until/v2/9999999/[unix time]              | [kWh when meter should close]                                                                        |
-| /open_until_delta/v2/9999999/[unix time]        | [kWh when meter should close]                                                                        |
-| /uptime/v2/9999999/[unix time]                  | [uptime in seconds]                                                                                  |
-| /stack_trace/v2/9999999/[unix time]             |                                                                                                      |
-| /vdd/v2/9999999/[unix time]                     | [power supply voltage level]                                                                         |
-| /rssi/v2/9999999/[unix time]                    | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
-| /ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is connected to]                                                                |
-| /set_ssid/v2/9999999/[unix time]                | [ssid of the wifi it is set to connect to]                                                           |
-| /set_pwd/v2/9999999/[unix time]                 | [password for the wifi it is set to connect to]                                                      |
-| /set_ssid_pwd/v2/9999999/[unix time]            | [combined ssid and password for the wifi it is set to connect to]                                    |
-| /test_ssid_pwd/v2/9999999/[unix time]           | [ssid=name&pwd=secret&stay=seconds]                                                                  |
-| /test_ssid_pwd_result/v2/9999999/[unix time]    | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
-| /set_ap_mesh_pwd/v2/9999999/[unix time]         | [password for the mesh-[serial] itself]                                                      |
-| /scan/v2/9999999/[unix time]                    | [empty reply to acknowledge scan command]                                                            |
-| /scan_result/v2/9999999/[unix time]             | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
-| /wifi_status/v2/9999999/[unix time]             | [connected or disconnected]                                                                          |
-| /ap_status/v2/9999999/[unix time]               | [started or stopped]                                                                                 |
-| /network_quality/v2/9999999/[unix time]         | [ping_response_time=2.000 mS&ping_error_count=0&disconnect_count=0]                                  |
-| /save/v2/9999999/[unix time] (only pulse meter) | saved                                                                                                |
-| /mem/v2/9999999/[unix time]                     | heap=9672                                                                                            |
-| /flash_id/v2/9999999/[unix time]                | 0x164020                                                                                             |
-| /flash_size/v2/9999999/[unix time]              | 4096 kB                                                                                              |
-| /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
+| Topic                                            | Message                                                                                              |
+| :----------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| /sample/v2/9999999/[unix time]                   | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
+| /cron/v2/9999999/[unix time]                     | 12                                                                                                   |
+| /ping/v2/9999999/[unix time]                     |                                                                                                      |
+| /version/v2/9999999/[unix time]                  | [sdk version]-[git version]                                                                          |
+| /status/v2/9999999/[unix time]                   | [open|close]                                                                                         |
+| /open_until/v2/9999999/[unix time]               | [kWh when meter should close]                                                                        |
+| /open_until_delta/v2/9999999/[unix time]         | [kWh when meter should close]                                                                        |
+| /uptime/v2/9999999/[unix time]                   | [uptime in seconds]                                                                                  |
+| /stack_trace/v2/9999999/[unix time]              |                                                                                                      |
+| /vdd/v2/9999999/[unix time]                      | [power supply voltage level]                                                                         |
+| /rssi/v2/9999999/[unix time]                     | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
+| /ssid/v2/9999999/[unix time]                     | [ssid of the wifi it is connected to]                                                                |
+| /set_ssid/v2/9999999/[unix time]                 | [ssid of the wifi it is set to connect to]                                                           |
+| /set_pwd/v2/9999999/[unix time]                  | [password for the wifi it is set to connect to]                                                      |
+| /set_ssid_pwd/v2/9999999/[unix time]             | [combined ssid and password for the wifi it is set to connect to]                                    |
+| /test_ssid_pwd/v2/9999999/[unix time]            | [ssid=name&pwd=secret&stay=seconds]                                                                  |
+| /test_ssid_pwd_result/v2/9999999/[unix time]     | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
+| /set_ap_mesh_pwd/v2/9999999/[unix time]          | [password for the mesh-[serial] itself]                                                              |
+| /scan/v2/9999999/[unix time]                     | [empty reply to acknowledge scan command]                                                            |
+| /scan_result/v2/9999999/[unix time]              | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
+| /start_fallback_ap/v2/9999999/[unix time]        | [time=seconds] immediate parameter echo                                                              |
+| /wifi_status/v2/9999999/[unix time]              | [connected or disconnected]                                                                          |
+| /ap_status/v2/9999999/[unix time]                | [started or stopped]                                                                                 |
+| /network_quality/v2/9999999/[unix time]          | [ping_response_time=2.000 mS&ping_error_count=0&disconnect_count=0]                                  |
+| /save/v2/9999999/[unix time] (only pulse meter)  | saved                                                                                                |
+| /mem/v2/9999999/[unix time]                      | heap=9672                                                                                            |
+| /flash_id/v2/9999999/[unix time]                 | 0x164020                                                                                             |
+| /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
+| /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
 
 **Note on Wi-Fi Test Reason Codes:**
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
