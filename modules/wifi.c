@@ -856,6 +856,42 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 	return true;
 }
 
+const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason) {
+	switch (reason) {
+		case 0: return "none"; // Used when test is successful
+		case REASON_UNSPECIFIED: return "unspecified";
+		case REASON_AUTH_EXPIRE: return "auth_expire";
+		case REASON_AUTH_LEAVE: return "auth_leave";
+		case REASON_ASSOC_EXPIRE: return "assoc_expire";
+		case REASON_ASSOC_TOOMANY: return "assoc_toomany";
+		case REASON_NOT_AUTHED: return "not_authed";
+		case REASON_NOT_ASSOCED: return "not_assoced";
+		case REASON_ASSOC_LEAVE: return "assoc_leave";
+		case REASON_ASSOC_NOT_AUTHED: return "assoc_not_authed";
+		case REASON_DISASSOC_PWRCAP_BAD: return "disassoc_pwrcap_bad";
+		case REASON_DISASSOC_SUPCHAN_BAD: return "disassoc_supchan_bad";
+		case REASON_IE_INVALID: return "ie_invalid";
+		case REASON_MIC_FAILURE: return "mic_failure";
+		case REASON_4WAY_HANDSHAKE_TIMEOUT: return "4way_handshake_timeout";
+		case REASON_GROUP_KEY_UPDATE_TIMEOUT: return "group_key_update_timeout";
+		case REASON_IE_IN_4WAY_DIFFERS: return "ie_in_4way_differs";
+		case REASON_GROUP_CIPHER_INVALID: return "group_cipher_invalid";
+		case REASON_PAIRWISE_CIPHER_INVALID: return "pairwise_cipher_invalid";
+		case REASON_AKMP_INVALID: return "akmp_invalid";
+		case REASON_UNSUPP_RSN_IE_VERSION: return "unsupp_rsn_ie_version";
+		case REASON_INVALID_RSN_IE_CAP: return "invalid_rsn_ie_cap";
+		case REASON_802_1X_AUTH_FAILED: return "802_1x_auth_failed";
+		case REASON_CIPHER_SUITE_REJECTED: return "cipher_suite_rejected";
+		case REASON_BEACON_TIMEOUT: return "beacon_timeout";
+		case REASON_NO_AP_FOUND: return "no_ap_found";
+		case REASON_AUTH_FAIL: return "auth_fail";
+		case REASON_ASSOC_FAIL: return "assoc_fail";
+		case REASON_HANDSHAKE_TIMEOUT: return "handshake_timeout";
+		case 255: return "timeout"; // Our custom timeout code
+		default: return "unknown";
+	}
+}
+
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 	struct netif *nif;

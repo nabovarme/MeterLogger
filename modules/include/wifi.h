@@ -64,6 +64,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
+const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason);
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip();
 void ICACHE_FLASH_ATTR debug_print_wifi_config();

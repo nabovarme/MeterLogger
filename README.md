@@ -191,7 +191,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                                                              |
 | /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                                                              |
-| /config/v2/9999999/[unix time]/test_ssid_pwd           | [ssid=name&pwd=secret&stay=seconds]                                                                 |
+| /config/v2/9999999/[unix time]/test_ssid_pwd           | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
 | /config/v2/9999999/[unix time]/set_ap_mesh_pwd         | [pwd]                                                                                               |
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
@@ -238,5 +238,11 @@ hmac sha256 key
 | /flash_size/v2/9999999/[unix time]              | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]            |                                                                                                      |
 
-
+**Note on Wi-Fi Test Reason Codes:**
+The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
+* **none**: Success (No error)
+* **4way_handshake_timeout**: Wrong Password 
+* **no_ap_found**: Network Not Found / Out of Range
+* **auth_expire**: AP Rejected Authentication 
+* **timeout**: Custom code for internal timeout (Test took longer than 15 seconds)
 
