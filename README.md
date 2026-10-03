@@ -196,7 +196,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
 | /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
 | /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                                                                |
-| /config/v2/9999999/[unix time]/start_fallback_ap       | [time=seconds] temporarily broadcasts the fallback rescue network (no flash write)                  |
+| /config/v2/9999999/[unix time]/start_fallback_ap       | [seconds] temporarily broadcasts the fallback rescue network (no flash write)                       |
 | /config/v2/9999999/[unix time]/ap_status               |                                                                                                     |
 | /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
 | /config/v2/9999999/[unix time]/network_quality         |                                                                                                     |
@@ -232,7 +232,7 @@ hmac sha256 key
 | /set_ap_mesh_pwd/v2/9999999/[unix time]          | [password for the mesh-[serial] itself]                                                              |
 | /scan/v2/9999999/[unix time]                     | [empty reply to acknowledge scan command]                                                            |
 | /scan_result/v2/9999999/[unix time]              | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
-| /start_fallback_ap/v2/9999999/[unix time]        | [time=seconds] immediate parameter echo                                                              |
+| /start_fallback_ap/v2/9999999/[unix time]        | [seconds] immediate parameter echo                                                                   |
 | /wifi_status/v2/9999999/[unix time]              | [connected or disconnected]                                                                          |
 | /ap_status/v2/9999999/[unix time]                | [started or stopped]                                                                                 |
 | /network_quality/v2/9999999/[unix time]          | [ping_response_time=2.000 mS&ping_error_count=0&disconnect_count=0]                                  |

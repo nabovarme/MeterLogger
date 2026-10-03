@@ -640,36 +640,19 @@ static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ssid) {
-	char time_str[16] = {0};
 	uint32_t time_ms = 0;
-	char *str, *key, *val;
-	char *ctx1, *ctx2;
-	char params_copy[COMMAND_PARAMS_L];
 	
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
-	if (params != NULL && strlen(params) > 0) {
-		strncpy(params_copy, params, COMMAND_PARAMS_L);
-		str = strtok_r(params_copy, "&", &ctx1);
-		while (str != NULL) {
-			key = strtok_r(str, "=", &ctx2);
-			val = strtok_r(NULL, "=", &ctx2);
-			if (key && val) {
-				query_string_unescape(val);
-				if (strcmp(key, "time") == 0) strncpy(time_str, val, 15);
-			}
-			str = strtok_r(NULL, "&", &ctx1);
-		}
-	}
+	if (params != NULL && strlen(params) > 0) time_ms = atoi(params) * 1000;
 
-	if (strlen(time_str) > 0) time_ms = atoi(time_str) * 1000;
 	if (time_ms == 0) return; // Abort if no valid time was provided
 
 #ifdef DEBUG
-	os_printf("MQTT RPC: Starting temporary Fallback AP for %s seconds\n", time_str);
+	os_printf("MQTT RPC: Starting temporary Fallback AP for %u seconds\n", time_ms / 1000);
 #endif
 
 	// Immediate acknowledgement reply
@@ -683,7 +666,7 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "time=%s", time_str);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", params);
 	
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
