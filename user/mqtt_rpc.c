@@ -389,8 +389,6 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
-
-	if (fallback_ap_is_running) return; // Prevent state-machine collision
 	
 	strncpy(params_copy, params, COMMAND_PARAMS_L);
 	str = strtok_r(params_copy, "&", &ctx1);
@@ -1160,3 +1158,8 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 #endif
+
+ICACHE_FLASH_ATTR
+bool get_fallback_ap_is_running(void) {
+	return fallback_ap_is_running;
+}

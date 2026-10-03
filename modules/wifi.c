@@ -23,6 +23,7 @@
 #include "tinyprintf.h"
 #include "unix_time.h"
 #include "icmp_ping.h"
+#include "mqtt_rpc.h"
 
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
@@ -209,19 +210,35 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		}
 	}
 	
-	struct station_config stationConf;
-	memset(&stationConf, 0, sizeof(struct station_config));
-	strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
-	strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
-	
-	my_auto_connect = false; // Prevent reconnect loops during transition
-	wifi_station_disconnect();
-	wifi_station_set_config_current(&stationConf);
-	my_auto_connect = true;  // Restore normal auto-connect
-	wifi_station_connect();
+	if (get_fallback_ap_is_running()) {
+		// Rescue AP window is STILL active: restore Fallback AP and heartbeat
+		INFO("Wi-Fi Test: Done. Restoring active Fallback AP state...\n");
+		wifi_set_opmode_current(STATIONAP_MODE);
+		wifi_softap_config((uint8_t*)STA_FALLBACK_SSID, (uint8_t*)STA_FALLBACK_PASS, AP_MESH_TYPE);
+		wifi_softap_ip_config();
+		
+		led_stop_pattern();
+		led_pattern_d();
+	} else {
+		// Rescue AP timer expired during test (or wasn't active): restore default STA config and turn LED off
+		INFO("Wi-Fi Test: Done. Restoring saved station config...\n");
+		struct station_config stationConf;
+		memset(&stationConf, 0, sizeof(struct station_config));
+		strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
+		strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
+		
+		my_auto_connect = false;
+		wifi_station_disconnect();
+		wifi_station_set_config_current(&stationConf);
+		my_auto_connect = true;
+		wifi_station_connect();
 
-	// Restart scanner with a long delay to allow the default AP to reconnect
-	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+		// Timer expired during test: turn off the LED pattern
+		led_stop_pattern();
+
+		// Resume background scanning
+		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+	}
 }
 
 static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
