@@ -176,6 +176,8 @@ void mqtt_rpc_scan(MQTT_Client *client) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
+	if (fallback_ap_is_running) return; // Prevent Fatal Exception 9
+
 	// --- Send immediate acknowledgement reply before scanning ---
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
@@ -324,6 +326,8 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (fallback_ap_is_running) return; // Prevent overwriting rescue AP config
 		
 	// change sta_pwd, save if different
 	if (strncmp(sys_cfg.ap_mesh_pwd, password, 64 - 1) != 0) {
@@ -385,6 +389,8 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+
+	if (fallback_ap_is_running) return; // Prevent state-machine collision
 	
 	strncpy(params_copy, params, COMMAND_PARAMS_L);
 	str = strtok_r(params_copy, "&", &ctx1);
@@ -567,6 +573,9 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (fallback_ap_is_running) return; // Prevent overwriting rescue AP
+
 	// start AP
 	if (wifi_get_opmode() != STATIONAP_MODE) {
 		wifi_set_opmode_current(STATIONAP_MODE);
@@ -587,6 +596,9 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_stop_ap(MQTT_Client *client) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (fallback_ap_is_running) return; // Prevent tearing down rescue AP
+
 	// stop AP
 	if (wifi_get_opmode() != STATION_MODE) {
 		wifi_set_opmode_current(STATION_MODE);
@@ -623,7 +635,8 @@ static void ICACHE_FLASH_ATTR fallback_ap_timer_func(void *arg) {
 	led_stop_pattern();
 
 	// Resume background scanning now that the rescue AP is closed
-	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);}
+	wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
+}
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ssid) {
