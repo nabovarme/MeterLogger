@@ -243,6 +243,7 @@ hmac sha256 key
 | /flash_id/v2/9999999/[unix time]                 | 0x164020                                                                                             |
 | /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
+| /restart/v2/9999999/[unix time]                  |                                                                                                      |
 
 **Note on Wi-Fi Test Reason Codes:**
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
