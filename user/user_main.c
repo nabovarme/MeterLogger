@@ -679,10 +679,11 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	if (wifi_test_ctx.pending_report) {
 		wifi_test_ctx.pending_report = false;
 		
-		// Defer the publish by 1.5 seconds so Mosquitto's session state is fully ready
+		// Defer the publish by 3.5 seconds to dodge the QoS 2 queue collision 
+		// caused by sample_timer_first (1.1s) and the RPC boot burst (2.0s)
 		os_timer_disarm(&wifi_test_report_timer);
 		os_timer_setfn(&wifi_test_report_timer, (os_timer_func_t *)wifi_test_report_timer_func, NULL);
-		os_timer_arm(&wifi_test_report_timer, 1500, 0);
+		os_timer_arm(&wifi_test_report_timer, 3500, 0);
 	}
 
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time

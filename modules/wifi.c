@@ -47,7 +47,6 @@ uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
 
 wifi_test_ctx_t wifi_test_ctx;
-static bool ignore_disconnect_event = false;
 static os_timer_t wifi_test_timeout_timer;
 static os_timer_t wifi_test_start_timer;
 
@@ -254,13 +253,6 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 
 	my_auto_connect = false; // Prevent reconnect loops during transition
 	
-	// Mark that we expect an intentional disconnect event from tearing down the current network
-	if (wifi_station_get_connect_status() != STATION_IDLE) {
-		ignore_disconnect_event = true;
-	} else {
-		ignore_disconnect_event = false;
-	}
-	
 	wifi_station_disconnect();
 	wifi_station_set_config_current(&test_conf);
 	
@@ -289,7 +281,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 
 	if (wifi_test_ctx.is_testing) {
 		if (evt->event == EVENT_STAMODE_GOT_IP) {
-			ignore_disconnect_event = false;
 			os_timer_disarm(&wifi_test_timeout_timer);
 			wifi_test_ctx.tested_rssi = wifi_station_get_rssi();
 			wifi_test_ctx.test_result_status = 1; // Success
@@ -312,10 +303,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// Fallthrough to standard GOT_IP logic so MQTT connects & sends report!
 		}
 		else if (evt->event == EVENT_STAMODE_DISCONNECTED) {
-			if (ignore_disconnect_event) {
-				// Consume the intentional disconnect from the OLD network and let it fall 
-				// through to the normal logic below so MQTT_Disconnect() is called cleanly!
-				ignore_disconnect_event = false;
+			// REASON_ASSOC_LEAVE (8) is generated intentionally when we call wifi_station_disconnect()
+			// to tear down the old network. We ignore it so the test can proceed.
+			if (evt->event_info.disconnected.reason == REASON_ASSOC_LEAVE) {
+				// Fall through to let MQTT_Disconnect() run cleanly!
 			} else {
 				// This is a REAL test failure on the new network.
 				// Capture specific fail reason
