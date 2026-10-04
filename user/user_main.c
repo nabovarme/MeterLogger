@@ -134,8 +134,14 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-#ifndef IMPULSE
 		case 5:
+			// send fallback network status
+			mqtt_rpc_fallback_status(&mqtt_client);
+			mqtt_connected_first_mqtt_rpc_state++;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
+			break;
+#ifndef IMPULSE
+		case 6:
 			// send mqtt status
 			mqtt_rpc_status(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
@@ -880,6 +886,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	else if (strncmp(function_name, "start_fallback_ap", FUNCTIONNAME_L) == 0) {
 		// found start_fallback_ap
 		mqtt_rpc_start_fallback_ap(&mqtt_client, cleartext, mesh_ssid);
+	}
+	else if (strncmp(function_name, "fallback_status", FUNCTIONNAME_L) == 0) {
+		// found fallback_status
+		mqtt_rpc_fallback_status(&mqtt_client);
 	}
 	else if (strncmp(function_name, "mem", FUNCTIONNAME_L) == 0) {
 		// found mem

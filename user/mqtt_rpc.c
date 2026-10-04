@@ -153,7 +153,6 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
-	struct station_config stationConf; // Added to hold live Wi-Fi config
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
@@ -165,9 +164,8 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
-	// Read the currently active Wi-Fi configuration from RAM instead of sys_cfg
-	wifi_station_get_config(&stationConf);
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", stationConf.ssid);
+	// Always report the configured target SSID, not the fallback one
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
 	
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen((char*)cleartext) + 1);
@@ -701,6 +699,37 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	// Start the special requested LED pattern!
 	led_stop_pattern();
 	led_pattern_d();
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_fallback_status(MQTT_Client *client) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	struct station_config stationConf;
+		
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	// Check if the currently active Wi-Fi configuration is NOT the target SSID
+	wifi_station_get_config(&stationConf);
+	if (strncmp((char*)stationConf.ssid, sys_cfg.sta_ssid, 32) != 0) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "active");
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "inactive");
+	}
+
+	// encrypt and send
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
 ICACHE_FLASH_ATTR
