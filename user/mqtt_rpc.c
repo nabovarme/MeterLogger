@@ -32,6 +32,22 @@
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
 
+static os_timer_t mqtt_restart_ack_timer;
+
+ICACHE_FLASH_ATTR void static mqtt_restart_ack_timer_func(void *arg) {
+	MQTT_Client *client = (MQTT_Client *)arg;
+
+	MQTT_DeleteClient(client);
+#ifndef IMPULSE
+#ifdef EN61107
+	en61107_request_destroy();
+#else
+	kmp_request_destroy();
+#endif
+#endif	// IMPULSE
+	system_restart_defered();
+}
+
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -930,6 +946,11 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+
+	// Delay the actual teardown and restart by 2 seconds to let the QoS 2 ACK transmit
+	os_timer_disarm(&mqtt_restart_ack_timer);
+	os_timer_setfn(&mqtt_restart_ack_timer, (os_timer_func_t *)mqtt_restart_ack_timer_func, client);
+	os_timer_arm(&mqtt_restart_ack_timer, 2000, 0);
 }
 
 #ifdef DEBUG_STACK_TRACE
