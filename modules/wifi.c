@@ -270,6 +270,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t mac_str[20];
 #endif
 	struct station_config stationConf;
+	uint32_t hold_ms;
 
 	wifi_status = wifi_station_get_connect_status();
 //	wifi_event = evt->event;
@@ -292,7 +293,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
 
 			// Always allow a minimal 5-second window for MQTT to send the result report
-			uint32_t hold_ms = (wifi_test_ctx.stay_time_ms > 5000) ? wifi_test_ctx.stay_time_ms : 5000;
+			hold_ms = (wifi_test_ctx.stay_time_ms > 5000) ? wifi_test_ctx.stay_time_ms : 5000;
 		
 			os_timer_disarm(&wifi_test_timeout_timer);
 			os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
