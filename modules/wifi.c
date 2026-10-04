@@ -282,33 +282,41 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			os_timer_disarm(&wifi_test_timeout_timer);
 			wifi_test_ctx.tested_rssi = wifi_station_get_rssi();
 			wifi_test_ctx.test_result_status = 1; // Success
-			wifi_test_ctx.fail_reason = 0; // 0 = No error
+			wifi_test_ctx.fail_reason = 0;
 			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
+		
+			// Mark testing complete and flag pending report
+			wifi_test_ctx.is_testing = false;
+			wifi_test_ctx.pending_report = true;
+		
 			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
-			
-			if (wifi_test_ctx.stay_time_ms > 0) {
-				// We want to stay. Release the test lock so normal MQTT/DHCP resumes!
-				wifi_test_ctx.is_testing = false; 
-				wifi_test_ctx.pending_report = true; 
-				
-				// Set the timer to revert back after our stay is over
-				os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
-				os_timer_arm(&wifi_test_timeout_timer, wifi_test_ctx.stay_time_ms, 0);
-				
-				// Fallthrough to standard GOT_IP logic so it actually connects to MQTT!
-			} else {
-				// Immediate disconnect behavior
-				wifi_test_timeout_timer_func(NULL);
-				return;
-			}
+
+			// Always allow a minimal 5-second window for MQTT to send the result report
+			uint32_t hold_ms = (wifi_test_ctx.stay_time_ms > 5000) ? wifi_test_ctx.stay_time_ms : 5000;
+		
+			os_timer_disarm(&wifi_test_timeout_timer);
+			os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
+			os_timer_arm(&wifi_test_timeout_timer, hold_ms, 0);
+		
+			// Fallthrough to standard GOT_IP logic so MQTT connects & sends report!
 		}
 		else if (evt->event == EVENT_STAMODE_DISCONNECTED) {
-			// Capture the specific reason the ESP8266 rejected the connection
+			// Capture specific fail reason
 			wifi_test_ctx.fail_reason = evt->event_info.disconnected.reason;
-			return; // Skip normal logic
+			wifi_test_ctx.test_result_status = 0; // Fail
+			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
+		
+			// Mark testing finished and flag pending report so RPC loop reports failure!
+			wifi_test_ctx.is_testing = false;
+			wifi_test_ctx.pending_report = true;
+		
+			// Disarm timeout timer and trigger revert sequence immediately
+			os_timer_disarm(&wifi_test_timeout_timer);
+			wifi_test_timeout_timer_func(NULL);
+			return;
 		}
 		else {
-			return; // Skip normal logic for other events during test
+			return; // Skip normal logic for intermediate events
 		}
 	}
 
