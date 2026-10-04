@@ -54,6 +54,7 @@ uint32_t last_uptime;
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqtt_client;
+static void ICACHE_FLASH_ATTR mqtt_fallback_retry_cb(void);
 static os_timer_t sample_timer_first;
 static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
@@ -226,6 +227,7 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 	MQTT_OnData(&mqtt_client, mqtt_data_cb);
 	MQTT_OnTimeout(&mqtt_client, mqtt_timeout_cb);
 
+	wifi_set_fallback_retry_cb(mqtt_fallback_retry_cb);
 	wifi_connect(wifi_changed_cb);
 #ifdef EN61107
 	tfp_snprintf(mesh_ssid, AP_SSID_LENGTH, AP_MESH_SSID, meter_serial_temp);
@@ -605,6 +607,10 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 }
 #endif	// IMPULSE
 
+ICACHE_FLASH_ATTR static void mqtt_fallback_retry_cb(void) {
+	MQTT_Connect(&mqtt_client);
+}
+
 ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	if (status == STATION_GOT_IP) {
 		MQTT_Connect(&mqtt_client);
@@ -657,9 +663,13 @@ ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
-	// show led status when mqtt is connected via fallback wifi
-	if (wifi_fallback_is_present()) {
+	// Mark MQTT as established when the active station network is the fallback network.
+	if (wifi_fallback_active) {
+		wifi_fallback_mqtt_connected = true;
 		led_pattern_b();
+	}
+	else {
+		wifi_fallback_mqtt_connected = false;
 	}
 
 #ifdef EN61107
@@ -713,6 +723,9 @@ ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 #ifdef DEBUG
 	printf("mqtt_disconnected_cb\n");
 #endif
+	if (wifi_fallback_active) {
+		wifi_fallback_mqtt_connected = false;
+	}
 	MQTT_Connect(&mqtt_client);
 //	wifi_default();
 }

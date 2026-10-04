@@ -30,11 +30,14 @@ static os_timer_t wifi_get_rssi_timer;
 
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
+static WifiFallbackRetryCallback wifi_fallback_retry_cb = NULL;
 
 uint8_t channel = 0;
 bool wifi_present = false;
 volatile bool wifi_fallback_present = false;
 bool wifi_fallback_last_present = false;
+volatile bool wifi_fallback_active = false;
+volatile bool wifi_fallback_mqtt_connected = false;
 volatile bool wifi_scan_runnning = false;
 //volatile bool wifi_reconnect = false;
 volatile sint8_t rssi = 31;	// set rssi to fail state at init time
@@ -191,6 +194,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 }
 
 // static functions
+static bool ICACHE_FLASH_ATTR wifi_is_connected_to_fallback(void);
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
@@ -391,7 +395,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_GOT_IP:
-			// set default network status
+			// set default/fallback network status
 #ifdef DEBUG
 			printf("got ip:" IPSTR ", netmask:" IPSTR "\n",
 				IP2STR(&evt->event_info.got_ip.ip),
@@ -400,6 +404,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = true;
 				wifi_default_status = evt->event_info.disconnected.reason;
+				wifi_fallback_active = false;
+				wifi_fallback_mqtt_connected = false;
+			}
+			else if (memcmp(stationConf.ssid, STA_FALLBACK_SSID, strlen(STA_FALLBACK_SSID) + 1) == 0) {
+				wifi_fallback_active = true;
 			}
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
@@ -456,6 +465,16 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 		default:
 			break;
 	}
+}
+
+static bool ICACHE_FLASH_ATTR wifi_is_connected_to_fallback(void) {
+	struct station_config stationConf;
+
+	memset(&stationConf, 0, sizeof(struct station_config));
+	wifi_station_get_config(&stationConf);
+
+	return (memcmp(stationConf.ssid, STA_FALLBACK_SSID, strlen(STA_FALLBACK_SSID) + 1) == 0) &&
+		(wifi_station_get_connect_status() == STATION_GOT_IP);
 }
 
 static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
@@ -569,10 +588,32 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		if (wifi_fallback_present) {
 			fallback_miss_count = 0; // Reset miss counter when seen
 			if (!wifi_fallback_last_present) {
+				// First detection of fallback AP: switch to it and let the
+				// normal GOT_IP callback establish the MQTT connection.
 				wifi_fallback();
 				led_pattern_a();
 				switched_network = true;
 				wifi_fallback_last_present = true;
+			}
+			else if (!wifi_fallback_mqtt_connected) {
+				// Fallback AP is still visible, but MQTT has not successfully
+				// connected. Retry the current layer instead of waiting for
+				// the network watchdog.
+				if (wifi_is_connected_to_fallback()) {
+#ifdef DEBUG
+					printf("fallback present but MQTT not connected - retrying MQTT\n");
+#endif
+					if (wifi_fallback_retry_cb) {
+						wifi_fallback_retry_cb();
+					}
+				}
+				else {
+#ifdef DEBUG
+					printf("fallback present but WiFi not connected - retrying fallback WiFi\n");
+#endif
+					wifi_fallback();
+				}
+				switched_network = true;
 			}
 		}
 		else if (wifi_fallback_last_present) {
@@ -616,6 +657,9 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 void ICACHE_FLASH_ATTR wifi_default() {
 	struct station_config stationConf;
 
+	wifi_fallback_active = false;
+	wifi_fallback_mqtt_connected = false;
+
 	// go back to saved network
 #ifdef DEBUG
 	printf("DEFAULT_SSID\r\n");
@@ -647,6 +691,9 @@ void ICACHE_FLASH_ATTR wifi_default() {
 
 void ICACHE_FLASH_ATTR wifi_fallback() {
 	struct station_config stationConf;
+
+	wifi_fallback_active = true;
+	wifi_fallback_mqtt_connected = false;
 
 	// try fallback network
 #ifdef DEBUG
@@ -847,6 +894,8 @@ void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {
 	// helper function to let watchdog reset the state of the wifi_fallback_*
 	wifi_fallback_present = false;
 	wifi_fallback_last_present = false;
+	wifi_fallback_active = false;
+	wifi_fallback_mqtt_connected = false;
 }
 
 void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
@@ -866,6 +915,10 @@ void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 
 void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
+}
+
+void ICACHE_FLASH_ATTR wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb) {
+	wifi_fallback_retry_cb = cb;
 }
 
 bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms) {

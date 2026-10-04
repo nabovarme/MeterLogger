@@ -22,6 +22,10 @@
 
 extern uint32_t disconnect_count;
 extern bool fallback_ap_is_running;
+extern volatile bool wifi_fallback_active;
+extern volatile bool wifi_fallback_mqtt_connected;
+
+typedef void (*WifiFallbackRetryCallback)(void);
 
 typedef void (*WifiCallback)(uint8_t);
 typedef void (*wifi_scan_result_event_cb_t)(const struct bss_info *info);
@@ -65,6 +69,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
 void wifi_scan_result_cb_unregister();
+void ICACHE_FLASH_ATTR wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb);
 const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason);
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip();
