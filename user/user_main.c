@@ -60,7 +60,9 @@ static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
+#ifdef EN61107
 static os_timer_t mqtt_connected_defer_timer;
+#endif
 static os_timer_t wifi_test_report_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
