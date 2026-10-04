@@ -735,9 +735,9 @@ void mqtt_rpc_fallback_status(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-	// Check if the currently active Wi-Fi configuration is NOT the target SSID
+	// Check if the currently active Wi-Fi configuration is the fallback network
 	wifi_station_get_config(&stationConf);
-	if (strncmp((char*)stationConf.ssid, sys_cfg.sta_ssid, 32) != 0) {
+	if (strncmp((char*)stationConf.ssid, STA_FALLBACK_SSID, sizeof(stationConf.ssid)) == 0) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "active");
 	} else {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "inactive");
