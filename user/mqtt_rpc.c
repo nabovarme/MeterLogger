@@ -153,6 +153,7 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	struct station_config stationConf; // Added to hold live Wi-Fi config
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
@@ -163,9 +164,13 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
+	
+	// Read the currently active Wi-Fi configuration from RAM instead of sys_cfg
+	wifi_station_get_config(&stationConf);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", stationConf.ssid);
+	
 	// encrypt and send
-	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen((char*)cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 

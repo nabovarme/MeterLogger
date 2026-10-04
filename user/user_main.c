@@ -128,8 +128,14 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-#ifndef IMPULSE
 		case 4:
+			// send currently connected ssid
+			mqtt_rpc_ssid(&mqtt_client);
+			mqtt_connected_first_mqtt_rpc_state++;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
+			break;
+#ifndef IMPULSE
+		case 5:
 			// send mqtt status
 			mqtt_rpc_status(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
