@@ -606,6 +606,10 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 		os_printf("queue size(%ld/%ld)\n", mqtt_client.msgQueue.rb.fill_cnt, mqtt_client.msgQueue.rb.size);
 #endif
 	}
+	else if (status == STATION_IDLE) {
+		// Force drop the stale MQTT TCP socket so it reconnects instantly on the new network
+		MQTT_Disconnect(&mqtt_client);
+	}
 }
 
 #ifdef EN61107

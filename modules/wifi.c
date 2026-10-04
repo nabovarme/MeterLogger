@@ -357,6 +357,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				printf("autoconnect not enabled!\n\r");
 #endif
 			}
+
+			// Notify the main app that the network dropped so it can clear stale sockets
+			if (wifi_cb) {
+				wifi_cb(STATION_IDLE);
+			}
+
 			break;
 
 		case EVENT_STAMODE_AUTHMODE_CHANGE:
