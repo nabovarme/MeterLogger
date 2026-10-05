@@ -759,15 +759,17 @@ MQTT_Task(os_event_t *e)
 	case MQTT_DELETING:
 	case TCP_DISCONNECTING:
 	case TCP_RECONNECT_DISCONNECTING:
-		if (client->security) {
+		if (client->pCon != NULL) {
+			if (client->security) {
 #ifdef MQTT_SSL_ENABLE
-			espconn_secure_disconnect(client->pCon);
+				espconn_secure_disconnect(client->pCon);
 #else
-			INFO("TCP: Do not support SSL\r\n");
+				INFO("TCP: Do not support SSL\r\n");
 #endif
-		}
-		else {
-			espconn_abort(client->pCon);
+			}
+			else {
+				espconn_abort(client->pCon);
+			}
 		}
 		break;
 	case TCP_DISCONNECTED:
