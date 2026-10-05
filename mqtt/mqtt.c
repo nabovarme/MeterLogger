@@ -608,10 +608,6 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 
 	client->connState = TCP_RECONNECT_REQ;
 
-	if (client->disconnectedCb) {
-		client->disconnectedCb((uint32_t*)client);
-	}
-
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 
 }
@@ -768,7 +764,7 @@ MQTT_Task(os_event_t *e)
 #endif
 			}
 			else {
-				espconn_abort(client->pCon);
+				espconn_disconnect(client->pCon);
 			}
 		}
 		break;
@@ -796,7 +792,8 @@ MQTT_Task(os_event_t *e)
 			if (client->security) {
 #ifdef MQTT_SSL_ENABLE
 				if (espconn_secure_send(client->pCon, dataBuffer, dataLen) != 0) {
-					INFO("MQTT: espconn_secure_send() error, re-queueing\r\n");
+					// error sending, put it back into the queue again
+					INFO("MQTT: espconn_secure_send() returned an error, re-queueing\r\n");
 					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
 						INFO("MQTT: Queue full\r\n");
 					}
@@ -807,7 +804,8 @@ MQTT_Task(os_event_t *e)
 			}
 			else {
 				if (espconn_send(client->pCon, dataBuffer, dataLen) != 0) {
-					INFO("MQTT: espconn_send() error, re-queueing\r\n");
+					// error sending, put it back into the queue again
+					INFO("MQTT: espconn_send() returned an error, re-queueing\r\n");
 					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
 						INFO("MQTT: Queue full\r\n");
 					}
