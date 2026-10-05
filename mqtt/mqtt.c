@@ -763,7 +763,7 @@ MQTT_Task(os_event_t *e)
 #endif
 		}
 		else {
-			espconn_disconnect(client->pCon);
+			espconn_abort(client->pCon);
 		}
 		break;
 	case TCP_DISCONNECTED:
