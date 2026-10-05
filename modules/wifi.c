@@ -508,23 +508,39 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
 }
 
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
+	uint8_t status;
 //	struct scan_config config;
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
 #endif
 	
+	// scan for fallback network
 	if (!wifi_scan_runnning) {
-		// scan for fallback network
+		// Do not scan if the radio is actively trying to connect
+		status = wifi_station_get_connect_status();
+		if (status == STATION_CONNECTING || status == STATION_WRONG_PASSWORD || status == STATION_NO_AP_FOUND || status == STATION_CONNECT_FAIL) {
+#ifdef DEBUG
+			printf("Radio busy reconnecting. Deferring scan.\n");
+#endif
+			// Let the timer fire again later; don't interrupt the reconnect
+			wifi_start_scan(WIFI_SCAN_INTERVAL);
+			return;
+		}
+
+		// Safe to scan
 		wifi_scan_runnning = true;
 //		channel = wifi_get_channel();	// save channel nummber
+
 #ifdef DEBUG
 		printf("RSSI: %d\n", wifi_get_rssi());		// DEBUG: should not be here at all
 #endif
+
 		// start wifi scan timeout timer
 		// hack to avoid wifi_station_scan() sometimes doesnt calling the callback
 		os_timer_disarm(&wifi_scan_timeout_timer);
 		os_timer_setfn(&wifi_scan_timeout_timer, (os_timer_func_t *)wifi_scan_timeout_timer_func, NULL);
 		os_timer_arm(&wifi_scan_timeout_timer, WIFI_SCAN_TIMEOUT, 0);
+
 		if (wifi_station_scan(NULL, wifi_scan_done_cb) == false) {
 			// something went wrong, restart scanner
 #ifdef DEBUG
