@@ -796,8 +796,8 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 
 	memset(ap_conf.ssid, 0, sizeof(ap_conf.ssid));
 	memset(ap_conf.password, 0, sizeof(ap_conf.password));
-	tfp_snprintf(ap_conf.ssid, 32, ssid);
-	tfp_snprintf(ap_conf.password, 64, pass);
+	tfp_snprintf(ap_conf.ssid, 32, "%s", ssid);
+	tfp_snprintf(ap_conf.password, 64, "%s", pass);
 	ap_conf.authmode = authmode;
 	ap_conf.ssid_len = strlen((char*)ap_conf.ssid);
 	ap_conf.beacon_interval = 100;
