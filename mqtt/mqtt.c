@@ -608,6 +608,10 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 
 	client->connState = TCP_RECONNECT_REQ;
 
+	if (client->disconnectedCb) {
+		client->disconnectedCb((uint32_t*)client);
+	}
+
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 
 }
