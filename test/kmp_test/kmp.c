@@ -268,11 +268,12 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 
 #pragma mark - KMP Decoder
 
-int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
+int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t *response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
     unsigned int kmp_register_idx;
+    unsigned int register_count;
 
     kmp_frame = frame;
     kmp_frame_length = frame_length;
@@ -329,7 +330,13 @@ int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_respo
         else if (kmp_frame[KMP_CID_IDX] == 0x10) {
             // kmp_get_register
             if (kmp_data_length > 2) {
-                for (i = 0; i < ((kmp_data_length - 2) / 9); i++) {	 // 9 bytes per register. BUG here if length != 4?
+                register_count = (kmp_data_length - 2) / 9;
+
+                if (register_count > 8) {
+                	register_count = 8;
+                }
+
+                for (i = 0; i < register_count; i++) {
                     kmp_register_idx = 9 * i + KMP_DATA_IDX;
                     
                     // rid

@@ -34,7 +34,7 @@ ICACHE_FLASH_ATTR
 unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length);
 
 ICACHE_FLASH_ATTR
-int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
+int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t *response);
 
 
 ICACHE_FLASH_ATTR

@@ -26,7 +26,7 @@ unsigned int kmp_get_serial(unsigned char *frame);
 unsigned int kmp_set_clock(unsigned char *frame, uint64_t unix_time);
 unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uint16_t register_list_length);
 
-int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response);
+int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t *response);
 
 double kmp_value_to_double(int32_t value, uint8_t si_ex);
 void kmp_unit_to_string(uint8_t unit, char *unit_string);

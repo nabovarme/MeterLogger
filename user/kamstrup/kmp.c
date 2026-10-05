@@ -236,7 +236,7 @@ unsigned int kmp_get_register(unsigned char *frame, uint16_t *register_list, uin
 #pragma mark - KMP Decoder
 
 ICACHE_FLASH_ATTR
-int kmp_decode_frame(unsigned char *frame, unsigned char frame_length, kmp_response_t *response) {
+int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t *response) {
     uint16_t kmp_frame_crc16;
     uint16_t crc16;
     unsigned int i;
