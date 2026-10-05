@@ -63,6 +63,10 @@ esp_tcp mqtt_esp_tcp;
 // Shared static buffer to prevent massive stack allocations
 static uint8_t sharedDataBuffer[MQTT_BUF_SIZE];
 
+// Number of valid bytes currently buffered from the TCP stream.
+// TCP callbacks do not necessarily align with MQTT packet boundaries.
+static uint16_t mqtt_in_buffer_used = 0;
+
 #ifdef PROTOCOL_NAMEv311
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 #endif
@@ -188,6 +192,9 @@ mqtt_send_keepalive(MQTT_Client *client) {
 void ICACHE_FLASH_ATTR
 mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 {
+	// Drop any partial MQTT packet from the old TCP connection.
+	mqtt_in_buffer_used = 0;
+
 	if (mqttClient->pCon != NULL) {
 		INFO("TCP: Free memory\r\n");
 		// Force abort connections
@@ -298,6 +305,31 @@ mqtt_client_delete(MQTT_Client *mqttClient)
   * @param  len: the lenght of received data
   * @retval None
   */
+LOCAL int ICACHE_FLASH_ATTR
+mqtt_get_packet_length(uint8_t *buffer, uint16_t length)
+{
+	uint32_t remaining_length = 0;
+	uint32_t multiplier = 1;
+	uint16_t i;
+
+	if (length < 2)
+		return 0; // incomplete fixed header
+
+	for (i = 1; i <= 4; i++) {
+		if (i >= length)
+			return 0; // incomplete Remaining Length field
+
+		remaining_length += (buffer[i] & 0x7f) * multiplier;
+
+		if ((buffer[i] & 0x80) == 0)
+			return (int)(i + 1 + remaining_length);
+
+		multiplier *= 128;
+	}
+
+	return -1; // malformed Remaining Length (more than four bytes)
+}
+
 void ICACHE_FLASH_ATTR
 mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 {
@@ -305,20 +337,54 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 	uint8_t msg_qos;
 	uint16_t msg_id;
 	uint8_t msg_conn_ret;
+	int packet_length;
+	uint16_t used_before_processing;
 
 	struct espconn *pCon = (struct espconn*)arg;
 	MQTT_Client *client = (MQTT_Client *)pCon->reverse;
 	if (client == NULL) return; // aborted connection
 
-//READPACKET:
 	INFO("TCP: data received %d bytes\r\n", len);
-	// INFO("STATE: %d\r\n", client->connState);
-	if (len < MQTT_BUF_SIZE && len > 0) {
-		memcpy(client->mqtt_state.in_buffer, pdata, len);
-		
+
+	if (len == 0)
+		return;
+
+	if ((uint32_t)mqtt_in_buffer_used + len > MQTT_BUF_SIZE) {
+		INFO("MQTT: Receive buffer full\r\n");
+		mqtt_in_buffer_used = 0;
+		if (client->pCon)
+			espconn_disconnect(client->pCon);
+		return;
+	}
+
+	memcpy(client->mqtt_state.in_buffer + mqtt_in_buffer_used, pdata, len);
+	mqtt_in_buffer_used += len;
+
+	while (mqtt_in_buffer_used > 0) {
+		packet_length = mqtt_get_packet_length(client->mqtt_state.in_buffer, mqtt_in_buffer_used);
+
+		if (packet_length == 0)
+			break; // incomplete packet, wait for another TCP callback
+
+		if (packet_length < 0 || packet_length > MQTT_BUF_SIZE) {
+			INFO("MQTT: Invalid/too large packet length: %d\r\n", packet_length);
+			mqtt_in_buffer_used = 0;
+			if (client->pCon)
+				espconn_disconnect(client->pCon);
+			return;
+		}
+
+		if ((uint16_t)packet_length > mqtt_in_buffer_used)
+			break; // incomplete packet, wait for another TCP callback
+
+		// Process exactly one complete MQTT packet.
+		pdata = (char*)client->mqtt_state.in_buffer;
+		len = (unsigned short)packet_length;
+		used_before_processing = mqtt_in_buffer_used;
+
 		msg_type = mqtt_get_type(client->mqtt_state.in_buffer);
 		msg_qos = mqtt_get_qos(client->mqtt_state.in_buffer);
-		msg_id = mqtt_get_id(client->mqtt_state.in_buffer, client->mqtt_state.in_buffer_length);
+		msg_id = mqtt_get_id(client->mqtt_state.in_buffer, len);
 		switch (client->connState) {
 		case MQTT_CONNECT_SENDING:
 			if (msg_type == MQTT_MSG_TYPE_CONNACK) {
@@ -430,33 +496,24 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				deliver_pingresp(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
 				break;
 			}
-			// NOTE: this is done down here and not in the switch case above
-			// because the PSOCK_READBUF_LEN() won't work inside a switch
-			// statement due to the way protothreads resume.
-			if (msg_type == MQTT_MSG_TYPE_PUBLISH)
-			{
-				len = client->mqtt_state.message_length_read;
-				
-				if (client->mqtt_state.message_length < client->mqtt_state.message_length_read)
-				{
-					INFO("Get another published message - ignoring\r\n");
-					
-					len -= client->mqtt_state.message_length;
-					pdata += client->mqtt_state.message_length;
-					
-					// save rest of data to buffer so it can be processed via task function
-					//client->mqtt_state.in_buffer_length = len;
-					//memcpy(client->mqtt_state.in_buffer, pdata, len);
-					
-					//client->connState = MQTT_PUBLISH_RECV;
-					//Not Implement yet
-					//goto READPACKET;
-				}
-			}
 			break;
 		}
-	} else {
-		INFO("ERROR: Message too long\r\n");
+
+		// A callback may have torn down/recreated the MQTT client. In that case
+		// mqtt_tcpclient_delete() has already cleared the buffered stream.
+		if (mqtt_in_buffer_used != used_before_processing ||
+			client->mqtt_state.in_buffer == NULL) {
+			mqtt_in_buffer_used = 0;
+			break;
+		}
+
+		// Remove the MQTT packet just processed. Any following packet remains buffered.
+		mqtt_in_buffer_used -= (uint16_t)packet_length;
+		if (mqtt_in_buffer_used > 0) {
+			memmove(client->mqtt_state.in_buffer,
+					client->mqtt_state.in_buffer + packet_length,
+					mqtt_in_buffer_used);
+		}
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 }
@@ -914,6 +971,7 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 
 	mqttClient->mqtt_state.in_buffer = (uint8_t *)os_zalloc(MQTT_BUF_SIZE);
 	mqttClient->mqtt_state.in_buffer_length = MQTT_BUF_SIZE;
+	mqtt_in_buffer_used = 0;
 	mqttClient->mqtt_state.out_buffer =  (uint8_t *)os_zalloc(MQTT_BUF_SIZE);
 	mqttClient->mqtt_state.out_buffer_length = MQTT_BUF_SIZE;
 	mqttClient->mqtt_state.connect_info = &mqttClient->connect_info;
@@ -961,6 +1019,8 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		// disconnection callback is invoked.
 		mqtt_tcpclient_delete(mqttClient);
 	}
+
+	mqtt_in_buffer_used = 0;
 	
 	memset(&mqtt_espconn, 0, sizeof(mqtt_espconn));
 	mqttClient->pCon = &mqtt_espconn;

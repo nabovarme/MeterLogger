@@ -204,7 +204,7 @@ const char* ICACHE_FLASH_ATTR mqtt_get_publish_data(uint8_t* buffer, uint16_t* l
   topiclen = buffer[i++] << 8;
   topiclen |= buffer[i++];
 
-  if (i + topiclen >= blength)
+  if (i + topiclen > blength)
     return NULL;
 
   i += topiclen;
