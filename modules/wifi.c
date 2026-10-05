@@ -199,6 +199,31 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
 static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
 
+static void ICACHE_FLASH_ATTR wifi_test_restore_saved_station(void) {
+	struct station_config stationConf;
+
+	memset(&stationConf, 0, sizeof(struct station_config));
+
+	strncpy((char*)stationConf.ssid,
+			wifi_test_ctx.saved_ssid,
+			WIFI_TEST_SSID_MAX_LEN - 1);
+
+	strncpy((char*)stationConf.password,
+			wifi_test_ctx.saved_pwd,
+			WIFI_TEST_PWD_MAX_LEN - 1);
+
+	stationConf.ssid[WIFI_TEST_SSID_MAX_LEN - 1] = '\0';
+	stationConf.password[WIFI_TEST_PWD_MAX_LEN - 1] = '\0';
+
+	my_auto_connect = false;
+
+	wifi_station_disconnect();
+	wifi_station_set_config_current(&stationConf);
+
+	my_auto_connect = true;
+	wifi_station_connect();
+}
+
 static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
 	
@@ -213,37 +238,34 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 		}
 	}
 	
+	// Always restore the station connection that was active before the test.
+	INFO("Wi-Fi Test: Restoring saved station config...\n");
+	wifi_test_restore_saved_station();
+
 	if (fallback_ap_is_running) {
-		// fallback AP window is STILL active: restore Fallback AP and heartbeat
-		INFO("Wi-Fi Test: Done. Restoring active Fallback AP state...\n");
+		// The temporary fallback AP is still running.
+		// Restore only the AP side here; keep the scanner stopped.
+		INFO("Wi-Fi Test: Fallback AP still active.\n");
+
 		wifi_set_opmode_current(STATIONAP_MODE);
-		wifi_softap_config((uint8_t*)STA_FALLBACK_SSID, (uint8_t*)STA_FALLBACK_PASS, AP_MESH_TYPE);
+		wifi_softap_config((uint8_t*)STA_FALLBACK_SSID,
+		                   (uint8_t*)STA_FALLBACK_PASS,
+		                   AP_MESH_TYPE);
 		wifi_softap_ip_config();
-		
+
 		led_stop_pattern();
 		led_pattern_d();
-	} else {
-		// Fallback AP timer expired during test: restore saved station config
-		INFO("Wi-Fi Test: Done. Restoring saved station config...\n");
-		struct station_config stationConf;
-		memset(&stationConf, 0, sizeof(struct station_config));
-		strncpy((char*)stationConf.ssid, wifi_test_ctx.saved_ssid, WIFI_TEST_SSID_MAX_LEN);
-		strncpy((char*)stationConf.password, wifi_test_ctx.saved_pwd, WIFI_TEST_PWD_MAX_LEN);
-		
-		my_auto_connect = false;
-		wifi_station_disconnect();
-		wifi_station_set_config_current(&stationConf);
-		my_auto_connect = true;
-		wifi_station_connect();
-		
-		// Reset fallback tracking flags so scanner doesn't get stuck in hysteresis
+	}
+	else {
+		// Temporary fallback AP has expired.
+		INFO("Wi-Fi Test: Fallback AP finished.\n");
+
 		wifi_present = false;
 		wifi_fallback_force_reset_state();
 
-		// Turn off the LED pattern since fallback AP is done
 		led_stop_pattern();
 
-		// Resume background scanning
+		// Resume background scanning.
 		wifi_start_scan(WIFI_SCAN_INTERVAL_LONG);
 	}
 }
