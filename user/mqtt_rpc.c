@@ -941,19 +941,43 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 }
 
 ICACHE_FLASH_ATTR
-void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *base_url) {
+void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
+	char base_url[128] = {0};
+	char *str, *key, *val, *ctx1, *ctx2;
+	char params_copy[MQTT_MESSAGE_L];
+
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	
 	uint8_t target_rom = 0;
 	bool success = false;
 
-	// Start the OTA process via the clean ota.c API
-	if (base_url && strlen(base_url) > 0) {
+	// 1. Parse input parameters (e.g., "url=http://api.domain.com/release/123/latest/")
+	strncpy(params_copy, params, MQTT_MESSAGE_L);
+	str = strtok_r(params_copy, "&", &ctx1);
+	while (str != NULL) {
+		key = strtok_r(str, "=", &ctx2);
+		val = strtok_r(NULL, "=", &ctx2);
+		if (key && val && strncmp(key, "url", 3) == 0) {
+			query_string_unescape(val);
+			strncpy(base_url, val, sizeof(base_url) - 1);
+		}
+		str = strtok_r(NULL, "&", &ctx1);
+	}
+
+	// Fallback: If it doesn't contain "url=", assume the whole string is the URL
+	if (strlen(base_url) == 0 && strncmp(params, "http", 4) == 0) {
+		strncpy(base_url, params, sizeof(base_url) - 1);
+	}
+
+	// 2. Start the OTA download
+	if (strlen(base_url) > 0) {
 		success = start_ota_upgrade(base_url, &target_rom);
 	}
 
+	// 3. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -971,9 +995,8 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *base_url) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_no_url");
 	}
 
-	// Encrypt and send ACK
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
-	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
 }
 
 #ifdef DEBUG_STACK_TRACE

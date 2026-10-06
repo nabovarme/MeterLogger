@@ -935,11 +935,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_restart(&mqtt_client);
 	}
 	else if (strncmp(function_name, "ota_upgrade", FUNCTIONNAME_L) == 0) {
-		// found ota_upgrade
-		// cleartext contains the base URL (e.g., "http://api.domain.com/release/12345/latest/")
+		// pass the full decrypted payload text string to be parsed
 		mqtt_rpc_ota_upgrade(&mqtt_client, cleartext);
 	}
-	#ifdef DEBUG_STACK_TRACE
+#ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace
 		mqtt_rpc_stack_trace(&mqtt_client);
