@@ -50,7 +50,7 @@ uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
 
 wifi_test_ctx_t wifi_test_ctx;
-os_timer_t wifi_test_timeout_timer;
+static os_timer_t wifi_test_timeout_timer;
 static os_timer_t wifi_test_start_timer;
 
 static netif_input_fn orig_input_ap;
@@ -960,15 +960,39 @@ void ICACHE_FLASH_ATTR wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb) 
 }
 
 bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms) {
-	if (wifi_test_ctx.is_testing) return false;
+	struct station_config current_conf;
+	memset(&current_conf, 0, sizeof(struct station_config));
+	wifi_station_get_config(&current_conf);
+
+	// If already testing or connected to this target SSID, update stay duration directly
+	if ((wifi_test_ctx.is_testing || wifi_get_status() == STATION_GOT_IP) &&
+		strncmp((char*)current_conf.ssid, ssid, WIFI_TEST_SSID_MAX_LEN) == 0) {
+		
+#ifdef DEBUG
+		INFO("Wi-Fi Test: Already connected/testing SSID '%s'. Updating stay duration to %u ms.\n", ssid, stay_time_ms);
+#endif
+		wifi_test_ctx.stay_time_ms = stay_time_ms;
+
+		// Disarm the active timeout timer
+		os_timer_disarm(&wifi_test_timeout_timer);
+		// If connected, re-arm with the updated stay duration (minimu 5s)
+
+		if (wifi_get_status() == STATION_GOT_IP) {
+			uint32_t hold_ms = (stay_time_ms > 5000) ? stay_time_ms : 5000;
+			os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
+			os_timer_arm(&wifi_test_timeout_timer, hold_ms, 0);
+		}
+		
+		return true;
+	}
+
+	if (wifi_test_ctx.is_testing) {
+		return false;
+	}
 
 	// Stop the background scanner from interfering with our test connection!
 	wifi_stop_scan();
 
-	struct station_config current_conf;
-	memset(&current_conf, 0, sizeof(struct station_config));
-	wifi_station_get_config(&current_conf);
-	
 	strncpy(wifi_test_ctx.saved_ssid, (char*)current_conf.ssid, WIFI_TEST_SSID_MAX_LEN);
 	strncpy(wifi_test_ctx.saved_pwd, (char*)current_conf.password, WIFI_TEST_PWD_MAX_LEN);
 	

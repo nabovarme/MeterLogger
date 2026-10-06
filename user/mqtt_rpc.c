@@ -389,7 +389,6 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char *str, *key, *val;
 	char *ctx1, *ctx2;
 	char params_copy[COMMAND_PARAMS_L];
-	struct station_config stationConf;
 	
 	// Variables for the immediate acknowledgement reply
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -416,7 +415,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	if (strlen(stay_str) > 0) stay_ms = atoi(stay_str) * 1000;
 
 #ifdef DEBUG
-	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s (in 5 seconds)\n", ssid);
+	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s\n", ssid);
 #endif
 
 	// --- Send immediate acknowledgement reply before testing ---
@@ -454,30 +453,11 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 		strcat(cleartext, stay_str);
 	}
 	
-// Encrypt and send MQTT acknowledgement
+	// Encrypt and send MQTT acknowledgement
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 
-	// Check if already connected to this test SSID
-	wifi_station_get_config(&stationConf);
-	if (strncmp((char*)stationConf.ssid, ssid, sizeof(stationConf.ssid)) == 0 && wifi_get_status() == STATION_GOT_IP) {
-#ifdef DEBUG
-		os_printf("MQTT RPC: Already connected to test SSID '%s'. Updating stay timer to %u ms.\n", ssid, stay_ms);
-#endif
-		os_timer_disarm(&wifi_test_timeout_timer);
-		if (stay_ms > 0) {
-			os_timer_arm(&wifi_test_timeout_timer, stay_ms, 0);
-		} else {
-			// Immediately trigger revert sequence if stay time is 0
-			wifi_test_timeout_timer_func(NULL);
-		}
-		return;
-	}
-
-#ifdef DEBUG
-	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s\n", ssid);
-#endif
-
+	// Simply call wifi_test_ssid_pwd - idempotency and stay timer extensions are handled inside wifi.c
 	wifi_test_ssid_pwd(ssid, pwd, stay_ms);
 }
 
