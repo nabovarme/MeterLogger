@@ -316,8 +316,10 @@ merge_bin: ota_bins webpages.espfs
 		0x7E000 webpages.espfs
 
 # Redefined the release rule to populate the target folder with all discrete segments directly
+# Redefined the release rule to populate the target folder with all discrete segments directly
 release: ota_bins webpages.espfs
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
+	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/rboot.bin
 	$(Q) cp $(USER1_BIN) $(RELEASE_BASE)/$(SERIAL)/user1.bin
 	$(Q) cp $(USER2_BIN) $(RELEASE_BASE)/$(SERIAL)/user2.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
