@@ -16,6 +16,7 @@
 #include "user_main.h"
 #include "icmp_ping.h"
 #include "led.h"
+#include "ota.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
@@ -937,6 +938,42 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 	os_timer_disarm(&mqtt_restart_ack_timer);
 	os_timer_setfn(&mqtt_restart_ack_timer, (os_timer_func_t *)mqtt_restart_ack_timer_func, client);
 	os_timer_arm(&mqtt_restart_ack_timer, 2000, 0);
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *base_url) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	uint8_t target_rom = 0;
+	bool success = false;
+
+	// Start the OTA process via the clean ota.c API
+	if (base_url && strlen(base_url) > 0) {
+		success = start_ota_upgrade(base_url, &target_rom);
+	}
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+	if (success) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=started&target_rom=%d", target_rom + 1);
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_no_url");
+	}
+
+	// Encrypt and send ACK
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
 #ifdef DEBUG_STACK_TRACE
