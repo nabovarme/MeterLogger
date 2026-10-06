@@ -309,7 +309,7 @@ $(FW_BASE):
 merge_bin: ota_bins webpages.espfs
 	$(vecho) "Merging firmware into $(FW_BASE)/$(MERGED_BIN)"
 	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(FW_BASE)/$(MERGED_BIN) \
-		0xFE000 $(SDK_BASE)/bin/blank.bin \
+		0xFE000 $(FW_BASE)/blank.bin \
 		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
 		0x00000 rboot/rboot.bin \
 		0x02000 $(USER1_BIN) \
@@ -323,8 +323,8 @@ release: ota_bins webpages.espfs
 	$(Q) cp $(USER1_BIN) $(RELEASE_BASE)/$(SERIAL)/user1.bin
 	$(Q) cp $(USER2_BIN) $(RELEASE_BASE)/$(SERIAL)/user2.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
-	$(Q) cp $(SDK_BASE)/bin/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
-	$(Q) cp $(SDK_BASE)/bin/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
+	$(Q) cp $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
+	$(Q) cp $(FW_BASE)/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
 	$(vecho) "rboot release binaries populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
 flash: $(USER1_BIN)
@@ -341,7 +341,7 @@ htmlflash: webpages.espfs
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(ESPFS) webpages.espfs
 
 flashall: ota_bins webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 $(SDK_BASE)/bin/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin 0x00000 rboot/rboot.bin 0x02000 $(USER1_BIN) $(ESPFS) webpages.espfs
+	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 $(FW_BASE)/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin 0x00000 rboot/rboot.bin 0x02000 $(USER1_BIN) $(ESPFS) webpages.espfs
 
 flashblank:
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
