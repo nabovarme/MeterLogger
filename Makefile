@@ -106,7 +106,16 @@ GIT_LWIP_VERSION := $(shell cd $(SDK_BASE)/../esp-open-lwip ; git rev-parse --ab
 
 # which modules (subdirectories) of the project to include in compiling
 MODULES			= driver mqtt modules user user/crypto rboot
-EXTRA_INCDIR	= . include rboot $(SDK_BASE)/../include $(SDK_BASE)/../lx106-hal/include $(HOME)/esp8266/esp-open-sdk/sdk/include $(SDK_BASE)/../esp-open-lwip/include include lib/heatshrink user/crypto user/kamstrup user/61107
+EXTRA_INCDIR	= . \
+				include \
+				rboot \
+				lib/heatshrink \
+				user/crypto \
+				user/kamstrup \
+				user/61107 \
+				$(SDK_BASE)/../include \
+				$(SDK_BASE)/../lx106-hal/include \
+				$(SDK_BASE)/../esp-open-lwip/include
 
 # libraries used in this project, mainly provided by the SDK
 LIBS			= main net80211 wpa pp phy hal ssl lwip_open gcc c
