@@ -33,36 +33,62 @@ static int ota_port = 80;
 // Verifies the native ESP8266 firmware XOR checksum directly from flash memory
 ICACHE_FLASH_ATTR
 static bool verify_esp_image(uint32_t addr) {
-	uint32_t header[2]; // 8 bytes
-	if (spi_flash_read(addr, header, 8) != 0) return false;
+	uint32_t header[2];
+	uint8_t magic;
+	uint8_t segments;
+	uint32_t offset;
+	uint8_t checksum;
+	int i, j;
+	uint32_t seg_header[2];
+	uint32_t seg_size;
+	uint32_t left;
+	uint32_t buf[16];
+	uint32_t to_read;
+	uint32_t read_len;
+	uint8_t *byte_buf;
+	uint32_t padded_offset;
+	uint32_t last_word;
+	uint8_t file_checksum;
+
+	if (spi_flash_read(addr, header, 8) != 0) {
+		return false;
+	}
 	
-	uint8_t magic = header[0] & 0xFF;
-	if (magic != 0xE9 && magic != 0xEA) return false;
+	magic = header[0] & 0xFF;
+	if (magic != 0xE9 && magic != 0xEA) {
+		return false;
+	}
+
+	segments = (header[0] >> 8) & 0xFF;
+	if (segments == 0 || segments > 16) {
+		return false; // Sanity check limits
+	}
 	
-	uint8_t segments = (header[0] >> 8) & 0xFF;
-	if (segments == 0 || segments > 16) return false; // Sanity check limits
+	offset = 8;
+	checksum = 0xEF; // ESP8266 checksum seed
 	
-	uint32_t offset = 8;
-	uint8_t checksum = 0xEF; // ESP8266 checksum seed
-	
-	for (int i = 0; i < segments; i++) {
-		uint32_t seg_header[2];
-		if (spi_flash_read(addr + offset, seg_header, 8) != 0) return false;
+	for (i = 0; i < segments; i++) {
+		if (spi_flash_read(addr + offset, seg_header, 8) != 0) {
+			return false;
+		}
 		
-		uint32_t seg_size = seg_header[1];
-		if (seg_size > 0x100000) return false; // Sanity check: >1MB segment
+		seg_size = seg_header[1];
+		if (seg_size > 0x100000) {
+			return false; // Sanity check: >1MB segment
+		}
 		offset += 8;
 		
-		uint32_t left = seg_size;
-		uint32_t buf[16]; // 64 bytes
+		left = seg_size;
 		while (left > 0) {
-			uint32_t to_read = (left > 64) ? 64 : left;
+			to_read = (left > 64) ? 64 : left;
 			// spi_flash_read requires lengths to be multiples of 4
-			uint32_t read_len = (to_read + 3) & ~3; 
-			if (spi_flash_read(addr + offset, buf, read_len) != 0) return false;
+			read_len = (to_read + 3) & ~3; 
+			if (spi_flash_read(addr + offset, buf, read_len) != 0) {
+				return false;
+			}
 			
-			uint8_t *byte_buf = (uint8_t *)buf;
-			for (int j = 0; j < to_read; j++) {
+			byte_buf = (uint8_t *)buf;
+			for (j = 0; j < to_read; j++) {
 				checksum ^= byte_buf[j];
 			}
 			
@@ -73,11 +99,12 @@ static bool verify_esp_image(uint32_t addr) {
 	
 	// Firmware files are padded with nulls up to a 16-byte boundary.
 	// The final checksum byte is located at the very end of that padded block.
-	uint32_t padded_offset = offset + 16 - (offset % 16);
-	uint32_t last_word;
-	if (spi_flash_read(addr + padded_offset - 4, &last_word, 4) != 0) return false;
+	padded_offset = offset + 16 - (offset % 16);
+	if (spi_flash_read(addr + padded_offset - 4, &last_word, 4) != 0) {
+		return false;
+	}
 	
-	uint8_t file_checksum = (last_word >> 24) & 0xFF;
+	file_checksum = (last_word >> 24) & 0xFF;
 	
 #ifdef DEBUG
 	os_printf("OTA Checksum verify: calculated=0x%02X, file=0x%02X\n", checksum, file_checksum);
@@ -94,6 +121,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint8_t magic_byte;
 	rboot_config conf;
 	uint32_t target_addr;
+	char *cl;
 
 	pdata = pusrdata;
 	len = length;
@@ -109,7 +137,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		}
 
 		// Extract Content-Length for size validation
-		char *cl = (char *)os_strstr(pdata, "Content-Length: ");
+		cl = (char *)os_strstr(pdata, "Content-Length: ");
 		if (!cl) cl = (char *)os_strstr(pdata, "content-length: ");
 		if (cl) ota_content_length = atoi(cl + 16);
 
@@ -271,7 +299,7 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 	ota_content_length = 0;
 	ota_received_bytes = 0;
 
-	// Format full URL by appending the target binary name (e.g. user2.bin)
+	// Format full URL by appending the target binary name (e.g. user2.ota.bin)
 	tfp_snprintf(ota_url, sizeof(ota_url), "%suser%d.ota.bin", url, ota_target_rom + 1);
 
 	// 1. Parse the URL into Host, Port, and Path
