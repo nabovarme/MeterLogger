@@ -208,7 +208,9 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
 | /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
-  
+| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&key=new_32_char_hex_key] (key parameter is optional)               |
+| /config/v2/9999999/[unix time]/set_key                 | [key=new_32_char_hex_key]                                                                           |
+
 **MQTT format for messages sent _from_ meter**  
 
 | Topic                                            | Message                                                                                              |
@@ -244,6 +246,8 @@ hmac sha256 key
 | /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
 | /restart/v2/9999999/[unix time]                  |                                                                                                      |
+| /ota_upgrade/v2/9999999/[unix time]              | [status=started&target_rom=2 (or status=error_no_url)]                                               |
+| /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
 
 **Note on Wi-Fi Test Reason Codes:**
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
