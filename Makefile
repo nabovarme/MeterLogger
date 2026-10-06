@@ -29,7 +29,10 @@ USER1_BIN = $(FW_BASE)/user1.bin
 USER2_BIN = $(FW_BASE)/user2.bin
 
 # EspFS sector placed between Slot 0 (500KB) and Slot 1 (500KB)
-ESPFS	= 0x7E000
+ESPFS	= 0x7C000
+
+# Append -DESPFS_POS to CFLAGS:
+CFLAGS += -DESPFS_POS=$(ESPFS)
 
 FLAVOR ?= release
 
