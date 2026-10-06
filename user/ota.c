@@ -17,6 +17,7 @@ static ip_addr_t ota_ip;
 static rboot_write_status ota_status;
 static uint8_t ota_target_rom;
 static bool headers_parsed = false;
+static bool is_valid_binary = false;
 
 static char ota_host[64];
 static char ota_path[128];
@@ -28,6 +29,15 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint16_t len = length;
 
 	if (!headers_parsed) {
+		// Check for 200 OK status code first
+		if (os_strstr(pdata, "HTTP/1.1 200 OK") == NULL && os_strstr(pdata, "HTTP/1.0 200 OK") == NULL) {
+#ifdef DEBUG
+			os_printf("OTA Error: Non-200 HTTP response received!\n");
+#endif
+			espconn_disconnect(&ota_conn);
+			return;
+		}
+
 		// Find the end of the HTTP headers
 		char *body = (char *)os_strstr(pdata, "\r\n\r\n");
 		if (body) {
@@ -35,21 +45,44 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			body += 4; // Skip past the \r\n\r\n
 			len -= (body - pdata);
 			pdata = body;
-
-			// Look up the exact flash memory address for the target rom slot
-			rboot_config conf = rboot_get_config();
-			uint32_t target_addr = conf.roms[ota_target_rom];
-			
-			// Initialize the rboot flash writing engine
-			ota_status = rboot_write_init(target_addr);
 		} else {
 			// Still waiting for the end of headers
 			return;
 		}
 	}
 
+	// We are in the body. If we haven't validated the binary yet, do it now.
+	if (headers_parsed && !is_valid_binary && len > 0) {
+		uint8_t magic_byte = (uint8_t)pdata[0];
+		
+		// 0xE9 is the standard ESP8266 image magic byte; 0xEA is the v2 header
+		if (magic_byte != 0xE9 && magic_byte != 0xEA) {
+#ifdef DEBUG
+			os_printf("OTA Error: Invalid magic byte (0x%02X). Expected 0xE9!\n", magic_byte);
+			if (magic_byte == '<') { // 0x3C
+				os_printf("OTA Error: Received HTML instead of firmware binary.\n");
+			}
+#endif
+			espconn_disconnect(&ota_conn);
+			return;
+		}
+
+		// Valid binary detected! Safe to initialize flash erasure.
+		is_valid_binary = true;
+
+		// Look up the exact flash memory address for the target rom slot
+		rboot_config conf = rboot_get_config();
+		uint32_t target_addr = conf.roms[ota_target_rom];
+		
+		// Initialize the rboot flash writing engine
+		ota_status = rboot_write_init(target_addr);
+#ifdef DEBUG
+		os_printf("OTA: Validation Passed! Flashing target slot %d at 0x%08X\n", ota_target_rom, target_addr);
+#endif
+	}
+
 	// Write incoming payload chunks directly to flash memory
-	if (len > 0) {
+	if (is_valid_binary && len > 0) {
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
 			os_printf("OTA: Flash write failed. Disconnecting.\n");
@@ -61,14 +94,18 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 ICACHE_FLASH_ATTR 
 static void ota_tcp_discon_cb(void *arg) {
-	// When the HTTP/1.0 server closes the connection, the file is fully downloaded
-	if (headers_parsed) {
+	// Only finalize and reboot if the file was a valid binary
+	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
 		rboot_set_current_rom(ota_target_rom);
 #ifdef DEBUG
 		os_printf("OTA: Download complete. Rebooting to rom %d...\n", ota_target_rom);
 #endif
 		system_restart_defered();
+	} else {
+#ifdef DEBUG
+		os_printf("OTA: Disconnected before valid download completed.\n");
+#endif
 	}
 }
 
@@ -156,6 +193,7 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 
 	// 2. Setup the TCP connection
 	headers_parsed = false;
+	is_valid_binary = false;
 	memset(&ota_conn, 0, sizeof(ota_conn));
 	memset(&ota_tcp, 0, sizeof(ota_tcp));
 	ota_conn.type = ESPCONN_TCP;
