@@ -32,6 +32,7 @@
 
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
+bool ota_in_progress = false;
 
 static os_timer_t mqtt_restart_ack_timer;
 
@@ -955,7 +956,31 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	uint8_t target_rom = 0;
 	bool success = false;
 
-	// 1. Parse input parameters (e.g., "url=http://api.domain.com/user2.bin&key=ef500c9268cf749016d26d6cbfaaf7bf")
+	// 1. Check if an OTA upgrade is already running
+	if (ota_in_progress) {
+#ifdef DEBUG
+		os_printf("OTA: Upgrade already in progress. Ignoring request.\r\n");
+#endif
+#ifdef EN61107
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+		memset(mqtt_message, 0, sizeof(mqtt_message));
+		memset(cleartext, 0, sizeof(cleartext));
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_busy");
+
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+		return;
+	}
+
+	// Lock the OTA function until reboot
+	ota_in_progress = true;
+
+	// 2. Parse input parameters (e.g., "url=http://api.domain.com/user2.bin&key=ef500c9268cf749016d26d6cbfaaf7bf")
 	strncpy(params_copy, params, MQTT_MESSAGE_L);
 	str = strtok_r(params_copy, "&", &ctx1);
 	while (str != NULL) {
@@ -978,7 +1003,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		strncpy(base_url, params, sizeof(base_url) - 1);
 	}
 
-	// 2. Save the new master key to flash before updating
+	// 3. Save the new master key to flash before updating
 	if (strlen(new_key) >= 32) {
 		if (cfg_save_key(new_key)) {
 #ifdef DEBUG
@@ -991,12 +1016,17 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 #endif
 	}
 
-	// 3. Start the OTA download
+	// 4. Start the OTA download
 	if (strlen(base_url) > 0) {
 		success = start_ota_upgrade(base_url, &target_rom);
 	}
 
-	// 4. Send Encrypted MQTT Acknowledgment
+	// If initialization completely failed, release the lock so they can try again without rebooting
+	if (!success) {
+		ota_in_progress = false;
+	}
+
+	// 5. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
