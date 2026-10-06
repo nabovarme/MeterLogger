@@ -10,6 +10,10 @@
 #include <lwip/tcp_impl.h>
 #include <lwip/dns.h>
 #include <espconn.h>
+#include "spi_flash.h"
+
+// Bring in the lock from mqtt_rpc.c so we can unlock on failure
+extern bool ota_in_progress;
 
 static struct espconn ota_conn;
 static esp_tcp ota_tcp;
@@ -19,9 +23,68 @@ static uint8_t ota_target_rom;
 static bool headers_parsed = false;
 static bool is_valid_binary = false;
 
+static uint32_t ota_content_length = 0;
+static uint32_t ota_received_bytes = 0;
+
 static char ota_host[64];
 static char ota_path[128];
 static int ota_port = 80;
+
+// Verifies the native ESP8266 firmware XOR checksum directly from flash memory
+ICACHE_FLASH_ATTR
+static bool verify_esp_image(uint32_t addr) {
+	uint32_t header[2]; // 8 bytes
+	if (spi_flash_read(addr, header, 8) != 0) return false;
+	
+	uint8_t magic = header[0] & 0xFF;
+	if (magic != 0xE9 && magic != 0xEA) return false;
+	
+	uint8_t segments = (header[0] >> 8) & 0xFF;
+	if (segments == 0 || segments > 16) return false; // Sanity check limits
+	
+	uint32_t offset = 8;
+	uint8_t checksum = 0xEF; // ESP8266 checksum seed
+	
+	for (int i = 0; i < segments; i++) {
+		uint32_t seg_header[2];
+		if (spi_flash_read(addr + offset, seg_header, 8) != 0) return false;
+		
+		uint32_t seg_size = seg_header[1];
+		if (seg_size > 0x100000) return false; // Sanity check: >1MB segment
+		offset += 8;
+		
+		uint32_t left = seg_size;
+		uint32_t buf[16]; // 64 bytes
+		while (left > 0) {
+			uint32_t to_read = (left > 64) ? 64 : left;
+			// spi_flash_read requires lengths to be multiples of 4
+			uint32_t read_len = (to_read + 3) & ~3; 
+			if (spi_flash_read(addr + offset, buf, read_len) != 0) return false;
+			
+			uint8_t *byte_buf = (uint8_t *)buf;
+			for (int j = 0; j < to_read; j++) {
+				checksum ^= byte_buf[j];
+			}
+			
+			offset += to_read;
+			left -= to_read;
+		}
+	}
+	
+	// Firmware files are padded with nulls up to a 16-byte boundary.
+	// The final checksum byte is located at the very end of that padded block.
+	uint32_t padded_offset = offset + 16 - (offset % 16);
+	uint32_t last_word;
+	if (spi_flash_read(addr + padded_offset - 4, &last_word, 4) != 0) return false;
+	
+	uint8_t file_checksum = (last_word >> 24) & 0xFF;
+	
+#ifdef DEBUG
+	os_printf("OTA Checksum verify: calculated=0x%02X, file=0x%02X\n", checksum, file_checksum);
+#endif
+	
+	return (checksum == file_checksum);
+}
 
 ICACHE_FLASH_ATTR 
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
@@ -44,6 +107,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			espconn_disconnect(&ota_conn);
 			return;
 		}
+
+		// Extract Content-Length for size validation
+		char *cl = (char *)os_strstr(pdata, "Content-Length: ");
+		if (!cl) cl = (char *)os_strstr(pdata, "content-length: ");
+		if (cl) ota_content_length = atoi(cl + 16);
 
 		// Find the end of the HTTP headers
 		body = (char *)os_strstr(pdata, "\r\n\r\n");
@@ -95,8 +163,18 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			os_printf("OTA: Flash write failed. Disconnecting.\n");
 #endif
 			espconn_disconnect(&ota_conn);
+		} else {
+			ota_received_bytes += len;
 		}
 	}
+}
+
+ICACHE_FLASH_ATTR 
+static void ota_tcp_recon_cb(void *arg, sint8 err) {
+#ifdef DEBUG
+	os_printf("OTA: TCP network error (%d). Aborting.\n", err);
+#endif
+	ota_in_progress = false; // Release lock on abnormal network drop
 }
 
 ICACHE_FLASH_ATTR 
@@ -104,15 +182,35 @@ static void ota_tcp_discon_cb(void *arg) {
 	// Only finalize and reboot if the file was a valid binary
 	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
+		
+		// 1. Verify Content-Length if it was provided by the HTTP server
+		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
+#ifdef DEBUG
+			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
+#endif
+			ota_in_progress = false; // Release the lock
+			return;
+		}
+		
+		// 2. Verify Native ESP8266 Firmware Checksum
+		if (!verify_esp_image(rboot_get_config().roms[ota_target_rom])) {
+#ifdef DEBUG
+			os_printf("OTA Error: Firmware checksum verification failed!\n");
+#endif
+			ota_in_progress = false; // Release the lock
+			return;
+		}
+
 		rboot_set_current_rom(ota_target_rom);
 #ifdef DEBUG
-		os_printf("OTA: Download complete. Rebooting to rom %d...\n", ota_target_rom);
+		os_printf("OTA: Download and checksum complete. Rebooting to rom %d...\n", ota_target_rom);
 #endif
 		system_restart_defered();
 	} else {
 #ifdef DEBUG
 		os_printf("OTA: Disconnected before valid download completed.\n");
 #endif
+		ota_in_progress = false; // Release the lock on failure
 	}
 }
 
@@ -138,6 +236,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 #ifdef DEBUG
 		os_printf("OTA: DNS resolution failed.\n");
 #endif
+		ota_in_progress = false; // Release lock on failure
 		return;
 	}
 
@@ -148,6 +247,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	espconn_regist_connectcb(&ota_conn, ota_tcp_connect_cb);
 	espconn_regist_recvcb(&ota_conn, ota_tcp_recv_cb);
 	espconn_regist_disconcb(&ota_conn, ota_tcp_discon_cb);
+	espconn_regist_reconcb(&ota_conn, ota_tcp_recon_cb);
 
 	espconn_connect(&ota_conn);
 }
@@ -167,9 +267,12 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 	if (out_target_rom) {
 		*out_target_rom = ota_target_rom;
 	}
+	
+	ota_content_length = 0;
+	ota_received_bytes = 0;
 
 	// Format full URL by appending the target binary name (e.g. user2.bin)
-	tfp_snprintf(ota_url, sizeof(ota_url), "%suser%d.bin", url, ota_target_rom + 1);
+	tfp_snprintf(ota_url, sizeof(ota_url), "%suser%d.ota.bin", url, ota_target_rom + 1);
 
 	// 1. Parse the URL into Host, Port, and Path
 	p = ota_url;

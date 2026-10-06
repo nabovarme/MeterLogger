@@ -1037,6 +1037,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=started&target_rom=%d", target_rom + 1);
 	} else {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_no_url");
+		ota_in_progress = false;
 	}
 
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
