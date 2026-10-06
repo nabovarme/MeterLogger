@@ -251,7 +251,9 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	uint8_t ap_ssid[64];
 	uint8_t ap_password[64];
+#ifdef OTA_FW
 	size_t i;
+#endif
 
 	led_pattern_c();	// indicate config mode mode with led
 	// make sure the device is in AP and STA combined mode; otherwise we cant scan
