@@ -382,19 +382,6 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 
 ICACHE_FLASH_ATTR
 void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
-	static uint64_t last_test_trigger_time = 0;
-	uint64_t now = get_uptime();
-	
-	// Debounce: prevent QoS 2 duplicate re-delivery loops. 
-	// Must wait at least 45 seconds before starting another test.
-	if (now - last_test_trigger_time < 45) {
-#ifdef DEBUG
-		os_printf("MQTT RPC: Ignoring duplicate/rapid test_ssid_pwd command.\n");
-#endif
-		return;
-	}
-	last_test_trigger_time = now;
-
 	char ssid[WIFI_TEST_SSID_MAX_LEN] = {0};
 	char pwd[WIFI_TEST_PWD_MAX_LEN] = {0};
 	char stay_str[WIFI_TEST_STAY_MAX_LEN] = {0};
@@ -402,6 +389,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char *str, *key, *val;
 	char *ctx1, *ctx2;
 	char params_copy[COMMAND_PARAMS_L];
+	struct station_config stationConf;
 	
 	// Variables for the immediate acknowledgement reply
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -409,6 +397,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	
+	// Parse input parameters
 	strncpy(params_copy, params, COMMAND_PARAMS_L);
 	str = strtok_r(params_copy, "&", &ctx1);
 	while (str != NULL) {
@@ -468,10 +457,21 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
-	// -----------------------------------------------------------
 
-	// DO NOT disconnect MQTT immediately. 
-	// Let the QoS 2 PUBCOMP acknowledge transmit, then wifi_test_ssid_pwd will sever the connection gracefully after 5 seconds.
+	// Check if already connected to this test SSID
+	wifi_station_get_config(&stationConf);
+	if (strncmp((char*)stationConf.ssid, ssid, sizeof(stationConf.ssid)) == 0 && wifi_get_status() == STATION_GOT_IP) {
+#ifdef DEBUG
+		os_printf("MQTT RPC: Already connected to test SSID '%s'. Updating stay timer to %u ms.\n", ssid, stay_ms);
+#endif
+		wifi_test_update_stay_timer(stay_ms);
+		return;
+	}
+
+#ifdef DEBUG
+	os_printf("MQTT RPC: Triggering Wi-Fi test for SSID: %s\n", ssid);
+#endif
+
 	wifi_test_ssid_pwd(ssid, pwd, stay_ms);
 }
 
