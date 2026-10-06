@@ -251,20 +251,30 @@ ICACHE_FLASH_ATTR void static sample_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 	uint8_t ap_ssid[64];
 	uint8_t ap_password[64];
+	size_t i;
 
 	led_pattern_c();	// indicate config mode mode with led
 	// make sure the device is in AP and STA combined mode; otherwise we cant scan
 	wifi_set_opmode_current(STATIONAP_MODE);
 #ifdef EN61107
-	tfp_snprintf(ap_ssid, 32, AP_SSID, en61107_get_received_serial());
+	tfp_snprintf((char *)ap_ssid, 32, AP_SSID, en61107_get_received_serial());
 #elif defined IMPULSE
-	tfp_snprintf(ap_ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
+	tfp_snprintf((char *)ap_ssid, 32, AP_SSID, sys_cfg.impulse_meter_serial);
 #else
-	tfp_snprintf(ap_ssid, 32, AP_SSID, kmp_get_received_serial());
+	tfp_snprintf((char *)ap_ssid, 32, AP_SSID, kmp_get_received_serial());
 #endif
-	tfp_snprintf(ap_password, 64, AP_PASSWORD);
 
-	wifi_softap_config(ap_ssid, ap_password, AP_TYPE);	// start AP with default configuration
+#ifdef OTA_FW
+	// Dynamically format the AP password from the first 8 raw bytes of sys_cfg.key
+	for (i = 0; i < 8; i++) {
+		tfp_snprintf((char *)&ap_password[i * 2], 3, "%02x", sys_cfg.key[i]);
+	}
+	ap_password[16] = '\0';
+#else
+	tfp_snprintf((char *)ap_password, 64, AP_PASSWORD);
+#endif
+
+	wifi_softap_config((char *)ap_ssid, (char *)ap_password, AP_TYPE);	// start AP with default configuration
 	captdnsInit();										// start captive dns server
 	httpd_user_init();									// start web server
 }
@@ -937,6 +947,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	else if (strncmp(function_name, "ota_upgrade", FUNCTIONNAME_L) == 0) {
 		// pass the full decrypted payload text string to be parsed
 		mqtt_rpc_ota_upgrade(&mqtt_client, cleartext);
+	}
+	else if (strncmp(function_name, "set_key", FUNCTIONNAME_L) == 0) {
+		// handle standalone master key injection
+		mqtt_rpc_set_key(&mqtt_client, cleartext);
 	}
 #ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {

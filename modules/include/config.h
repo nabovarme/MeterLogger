@@ -39,7 +39,9 @@
 #define METER_SERIAL_LEN			10
 #endif
 
+#ifndef OTA_FW
 static const char key[] = KEY;
+#endif
 
 typedef struct{
 	uint32_t cfg_holder;
@@ -59,7 +61,8 @@ typedef struct{
 	uint8_t mqtt_pass[32];
 	uint32_t mqtt_keepalive;
 	uint8_t security;
-	uint8_t key[16];
+	uint8_t key[16];           // Master key (16 bytes raw binary)
+
 #ifndef IMPULSE
 	uint8_t ac_thermo_state;	// thermo actuator state
 	uint32_t offline_close_at;	// close thermo actuator at kwh set via mqtt open_at_delta function
@@ -77,14 +80,15 @@ typedef struct{
 } syscfg_t;
 
 typedef struct {
-    uint8 flag;
-    uint8 pad[3];
+	uint8 flag;
+	uint8 pad[3];
 } SAVE_FLAG;
 
 bool ICACHE_FLASH_ATTR cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc);
 void ICACHE_FLASH_ATTR cfg_load();
 void ICACHE_FLASH_ATTR cfg_save_defered();
 bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_crc, uint16_t *saved_crc);
+bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str);
 ICACHE_FLASH_ATTR void config_save_timer_func(void *arg);
 
 extern syscfg_t sys_cfg;

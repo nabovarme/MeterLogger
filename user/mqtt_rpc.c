@@ -943,7 +943,8 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char base_url[128] = {0};
-	char *str, *key, *val, *ctx1, *ctx2;
+	char new_key[64] = {0};
+	char *str, *param_key, *param_val, *ctx1, *ctx2;
 	char params_copy[MQTT_MESSAGE_L];
 
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -954,15 +955,20 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	uint8_t target_rom = 0;
 	bool success = false;
 
-	// 1. Parse input parameters (e.g., "url=http://api.domain.com/release/123/latest/")
+	// 1. Parse input parameters (e.g., "url=http://api.domain.com/user2.bin&key=ef500c9268cf749016d26d6cbfaaf7bf")
 	strncpy(params_copy, params, MQTT_MESSAGE_L);
 	str = strtok_r(params_copy, "&", &ctx1);
 	while (str != NULL) {
-		key = strtok_r(str, "=", &ctx2);
-		val = strtok_r(NULL, "=", &ctx2);
-		if (key && val && strncmp(key, "url", 3) == 0) {
-			query_string_unescape(val);
-			strncpy(base_url, val, sizeof(base_url) - 1);
+		param_key = strtok_r(str, "=", &ctx2);
+		param_val = strtok_r(NULL, "=", &ctx2);
+		if (param_key && param_val) {
+			if (strncmp(param_key, "url", 3) == 0) {
+				query_string_unescape(param_val);
+				strncpy(base_url, param_val, sizeof(base_url) - 1);
+			} else if (strncmp(param_key, "key", 3) == 0) {
+				query_string_unescape(param_val);
+				strncpy(new_key, param_val, sizeof(new_key) - 1);
+			}
 		}
 		str = strtok_r(NULL, "&", &ctx1);
 	}
@@ -972,12 +978,25 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		strncpy(base_url, params, sizeof(base_url) - 1);
 	}
 
-	// 2. Start the OTA download
+	// 2. Save the new master key to flash before updating
+	if (strlen(new_key) >= 32) {
+		if (cfg_save_key(new_key)) {
+#ifdef DEBUG
+			os_printf("OTA: Provisioned new master key to flash.\r\n");
+#endif
+		}
+	} else if (strlen(new_key) > 0) {
+#ifdef DEBUG
+		os_printf("OTA: Provided key is too short (%d). Skipping key save.\r\n", strlen(new_key));
+#endif
+	}
+
+	// 3. Start the OTA download
 	if (strlen(base_url) > 0) {
 		success = start_ota_upgrade(base_url, &target_rom);
 	}
 
-	// 3. Send Encrypted MQTT Acknowledgment
+	// 4. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -993,6 +1012,62 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=started&target_rom=%d", target_rom + 1);
 	} else {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_no_url");
+	}
+
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
+	char new_key[64] = {0};
+	char *str, *param_key, *param_val, *ctx1, *ctx2;
+	char params_copy[MQTT_MESSAGE_L];
+
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	bool success = false;
+
+	// Parse input parameters (e.g., "key=ef500c9268cf749016d26d6cbfaaf7bf")
+	strncpy(params_copy, params, MQTT_MESSAGE_L);
+	str = strtok_r(params_copy, "&", &ctx1);
+	while (str != NULL) {
+		param_key = strtok_r(str, "=", &ctx2);
+		param_val = strtok_r(NULL, "=", &ctx2);
+		if (param_key && param_val && strncmp(param_key, "key", 3) == 0) {
+			query_string_unescape(param_val);
+			strncpy(new_key, param_val, sizeof(new_key) - 1);
+		}
+		str = strtok_r(NULL, "&", &ctx1);
+	}
+
+	// Fallback: If it doesn't contain "key=", assume the whole string is the key
+	if (strlen(new_key) == 0 && strlen(params) >= 32) {
+		strncpy(new_key, params, sizeof(new_key) - 1);
+	}
+
+	// Save to flash
+	if (strlen(new_key) >= 32) {
+		success = cfg_save_key(new_key);
+	}
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+	if (success) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=ok");
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_invalid_key");
 	}
 
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);

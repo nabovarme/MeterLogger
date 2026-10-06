@@ -24,6 +24,34 @@ SAVE_FLAG saveFlag;
 static os_timer_t config_save_timer;
 char config_save_timer_running;
 
+// Convert 32-char hex string back to 16 bytes raw binary
+static bool ICACHE_FLASH_ATTR hex2bytes(const char *hex_str, uint8_t *byte_arr, size_t len) {
+	size_t i;
+	char byte_hex[3];
+
+	byte_hex[2] = '\0';
+	if (!hex_str || os_strlen(hex_str) < len * 2) {
+		return false;
+	}
+
+	for (i = 0; i < len; i++) {
+		byte_hex[0] = hex_str[i * 2];
+		byte_hex[1] = hex_str[i * 2 + 1];
+		byte_arr[i] = (uint8_t)strtol(byte_hex, NULL, 16);
+	}
+	return true;
+}
+
+// Available to ALL builds so the Serial build can parse and save the key before OTA
+bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str) {
+	if (key_hex_str && os_strlen(key_hex_str) >= 32) {
+		if (hex2bytes(key_hex_str, sys_cfg.key, 16)) {
+			return cfg_save(NULL, NULL);
+		}
+	}
+	return false;
+}
+
 bool ICACHE_FLASH_ATTR
 cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
 #if !defined(IMPULSE_DEV_BOARD) && (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
@@ -108,20 +136,23 @@ cfg_load() {
 		// if first time config load default conf
 		os_memset(&sys_cfg, 0x00, sizeof(syscfg_t));
 
-		tfp_snprintf(sys_cfg.sta_ssid, 64, "%s", STA_SSID);
-		tfp_snprintf(sys_cfg.sta_pwd, 64, "%s", STA_PASS);
+		tfp_snprintf((char *)sys_cfg.sta_ssid, 64, "%s", STA_SSID);
+		tfp_snprintf((char *)sys_cfg.sta_pwd, 64, "%s", STA_PASS);
 		sys_cfg.sta_type = STA_TYPE;
-		tfp_snprintf(sys_cfg.ap_mesh_pwd, 64, "%s", AP_MESH_PASS);
+		tfp_snprintf((char *)sys_cfg.ap_mesh_pwd, 64, "%s", AP_MESH_PASS);
 		sys_cfg.ap_enabled = true;
-		tfp_snprintf(sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
-		tfp_snprintf(sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
+		tfp_snprintf((char *)sys_cfg.device_id, 16, MQTT_CLIENT_ID, system_get_chip_id());
+		tfp_snprintf((char *)sys_cfg.mqtt_host, 64, "%s", MQTT_HOST);
 		sys_cfg.mqtt_port = MQTT_PORT;
-		tfp_snprintf(sys_cfg.mqtt_user, 32, "%s", MQTT_USER);
-		tfp_snprintf(sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
+		tfp_snprintf((char *)sys_cfg.mqtt_user, 32, "%s", MQTT_USER);
+		tfp_snprintf((char *)sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
 		
-		memcpy(sys_cfg.key, key, sizeof(key));
+#ifndef OTA_FW
+		// Initialize the hardcoded key ONLY on standard Serial firmware
+		os_memcpy(sys_cfg.key, key, sizeof(key));
+#endif
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifdef IMPULSE
@@ -137,7 +168,6 @@ cfg_load() {
 		memset(&sys_cfg.cron_jobs, 0, sizeof(cron_job_t));
 #endif	// NO_CRON
 #endif	// IMPULSE
-
 		INFO(" default configuration\r\n");
 
 		cfg_save(NULL, NULL);
@@ -162,7 +192,6 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 	char *query_string_key, *query_string_value;
 	char query_string_key_value[MQTT_MESSAGE_L];
 	char *context_query_string, *context_key_value;
-
 	char ssid_pwd_copy[COMMAND_PARAMS_L];
 
 	strncpy(ssid_pwd_copy, ssid_pwd, COMMAND_PARAMS_L);	// make a copy since strtok_r() changes it
@@ -180,9 +209,9 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 #ifdef DEBUG
 			printf("key: %s value: %s\n", query_string_key, query_string_value);
 #endif	// DEBUG
-			if (strncmp(sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
+			if (strncmp((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
 				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-				strncpy(sys_cfg.sta_ssid, query_string_value, 32 - 1);
+				strncpy((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1);
 			}
 		}
 		else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
@@ -192,9 +221,9 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 #ifdef DEBUG
 				printf("key: %s value: %s\n", query_string_key, "null");
 #endif	// DEBUG
-				if (strncmp(sys_cfg.sta_pwd, "", 1) != 0) {
+				if (strncmp((char *)sys_cfg.sta_pwd, "", 1) != 0) {
 					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy(sys_cfg.sta_pwd, "", 1);
+					strncpy((char *)sys_cfg.sta_pwd, "", 1);
 				}
 			}
 			else {
@@ -203,9 +232,9 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 #ifdef DEBUG
 				printf("key: %s value: %s\n", query_string_key, query_string_value);
 #endif	// DEBUG
-				if (strncmp(sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
+				if (strncmp((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
 					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy(sys_cfg.sta_pwd, query_string_value, 64 - 1);
+					strncpy((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1);
 				}
 			}
 		}

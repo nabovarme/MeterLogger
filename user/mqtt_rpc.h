@@ -29,7 +29,8 @@ ICACHE_FLASH_ATTR void mqtt_rpc_flash_size(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_crypto(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_reset_reason(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_restart(MQTT_Client *client);
-ICACHE_FLASH_ATTR void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *base_url);
+ICACHE_FLASH_ATTR void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params);
+ICACHE_FLASH_ATTR void mqtt_rpc_set_key(MQTT_Client *client, char *params);
 #ifdef DEBUG_STACK_TRACE
 ICACHE_FLASH_ATTR void mqtt_rpc_stack_trace(MQTT_Client *client);
 #endif	// DEBUG_STACK_TRACE
