@@ -25,8 +25,15 @@ static int ota_port = 80;
 
 ICACHE_FLASH_ATTR 
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
-	char *pdata = pusrdata;
-	uint16_t len = length;
+	char *pdata;
+	uint16_t len;
+	char *body;
+	uint8_t magic_byte;
+	rboot_config conf;
+	uint32_t target_addr;
+
+	pdata = pusrdata;
+	len = length;
 
 	if (!headers_parsed) {
 		// Check for 200 OK status code first
@@ -39,7 +46,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		}
 
 		// Find the end of the HTTP headers
-		char *body = (char *)os_strstr(pdata, "\r\n\r\n");
+		body = (char *)os_strstr(pdata, "\r\n\r\n");
 		if (body) {
 			headers_parsed = true;
 			body += 4; // Skip past the \r\n\r\n
@@ -53,7 +60,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 	// We are in the body. If we haven't validated the binary yet, do it now.
 	if (headers_parsed && !is_valid_binary && len > 0) {
-		uint8_t magic_byte = (uint8_t)pdata[0];
+		magic_byte = (uint8_t)pdata[0];
 		
 		// 0xE9 is the standard ESP8266 image magic byte; 0xEA is the v2 header
 		if (magic_byte != 0xE9 && magic_byte != 0xEA) {
@@ -71,8 +78,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		is_valid_binary = true;
 
 		// Look up the exact flash memory address for the target rom slot
-		rboot_config conf = rboot_get_config();
-		uint32_t target_addr = conf.roms[ota_target_rom];
+		conf = rboot_get_config();
+		target_addr = conf.roms[ota_target_rom];
 		
 		// Initialize the rboot flash writing engine
 		ota_status = rboot_write_init(target_addr);
@@ -151,8 +158,10 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 	const char *slash;
 	const char *colon;
 	char ota_url[256];
+	uint8_t current_rom;
+	err_t err;
 
-	uint8_t current_rom = rboot_get_current_rom();
+	current_rom = rboot_get_current_rom();
 	ota_target_rom = (current_rom == 0) ? 1 : 0;
 	
 	if (out_target_rom) {
@@ -201,7 +210,7 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 	ota_conn.proto.tcp = &ota_tcp;
 
 	// 3. Resolve DNS (or connect immediately if it's an IP)
-	err_t err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
+	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
 	if (err == ERR_OK) {
 		ota_dns_found_cb(ota_host, &ota_ip, &ota_conn);
 	}
