@@ -104,6 +104,10 @@ EspFsFile ICACHE_FLASH_ATTR *espFsOpen(char *fileName) {
 	char namebuf[256];
 	EspFsHeader h;
 	EspFsFile *r;
+// --- DEBUG PRINTING START ---
+	os_printf("[EspFS Debug] ESPFS_POS defined as: 0x%08X\n", (unsigned int)ESPFS_POS);
+	os_printf("[EspFS Debug] Computed flash mapping pointer (p): 0x%08X\n", (unsigned int)p);
+	// --- DEBUG PRINTING END ---
 	//Strip first initial slash
 	//We should not strip any next slashes otherwise there is potential security risk when mapped authentication handler will not invoke (ex. ///security.html)
  	if(fileName[0]=='/') fileName++;
