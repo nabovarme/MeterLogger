@@ -1021,11 +1021,6 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		success = start_ota_upgrade(base_url, &target_rom);
 	}
 
-	// If initialization completely failed, release the lock so they can try again without rebooting
-	if (!success) {
-		ota_in_progress = false;
-	}
-
 	// 5. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
