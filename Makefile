@@ -1,7 +1,16 @@
 ESPTOOL_CHIP ?= esp8266
 
-BUILD_BASE	= build
-FW_BASE = firmware
+# Define OTA flag (defaults to 0 / Factory Build)
+OTA ?= 0
+
+ifeq ($(OTA), 1)
+	BUILD_BASE = build_ota
+	FW_BASE = firmware_ota
+else
+	BUILD_BASE = build
+	FW_BASE = firmware
+endif
+
 RELEASE_BASE = release
 MERGED_BIN = firmware.bin
 ESPTOOL = python3 -m esptool
@@ -23,7 +32,6 @@ USER2_BIN = $(FW_BASE)/user2.bin
 ESPFS	= 0x7E000
 
 FLAVOR ?= release
-
 
 #GIT_VERSION := $(shell git describe --exact-match 2> /dev/null || echo "`git symbolic-ref HEAD 2> /dev/null | cut -b 12-`-`git log --pretty=format:\"%h\" -1`")
 GIT_VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
@@ -140,6 +148,10 @@ ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG
     CFLAGS += -DDEBUG -DPRINTF_DEBUG
 	DEBUG_SPEED = 115200
+endif
+
+ifeq ($(OTA), 1)
+    CFLAGS += -DOTA_FW
 endif
 
 ifdef SERIAL
@@ -269,9 +281,9 @@ endef
 
 .PHONY: all checkdirs clean ota_bins merge_bin release flash \
 	htmlflash flashall flashblank wifisetup flash107th_bit_0xff \
-	size getstacktrace objdump screen minicom test rebuild
+	size getstacktrace objdump screen minicom test rebuild ota
 
-all: checkdirs ota_bins webpages.espfs
+all: release
 
 ota_bins: $(USER1_BIN) $(USER2_BIN)
 	$(vecho) "rboot OTA Slot 0 (user1.bin) and Slot 1 (user2.bin) compiled successfully."
@@ -325,17 +337,29 @@ merge_bin: ota_bins webpages.espfs
 		0x02000 $(USER1_BIN) \
 		0x7E000 webpages.espfs
 
-# Redefined the release rule to populate the target folder with all discrete segments directly
-# Redefined the release rule to populate the target folder with all discrete segments directly
-release: ota_bins webpages.espfs
+# Redefined the release rule to orchestrate both Factory and OTA builds sequentially
+# Change this:
+release:
+	$(vecho) "--- 1/3: Building Factory Firmware (with embedded keys) ---"
+	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
+	$(vecho) "--- 2/3: Building OTA Firmware (generic / no keys) ---"
+	$(Q) $(MAKE) ota_bins OTA=1
+	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/rboot.bin
-	$(Q) cp $(USER1_BIN) $(RELEASE_BASE)/$(SERIAL)/user1.bin
-	$(Q) cp $(USER2_BIN) $(RELEASE_BASE)/$(SERIAL)/user2.bin
+	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.bin
+	$(Q) cp firmware/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.bin
+	$(Q) cp firmware_ota/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin
+	$(Q) cp firmware_ota/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
-	$(Q) cp $(FW_BASE)/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
-	$(Q) cp $(FW_BASE)/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
-	$(vecho) "rboot release binaries populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
+	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
+	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
+	$(vecho) "Release populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
+
+# New dedicated OTA target
+ota:
+	$(vecho) "Building clean OTA firmware without factory keys..."
+	$(Q) $(MAKE) all OTA=1
 
 flash: $(USER1_BIN)
 	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x02000 $(USER1_BIN)
@@ -389,15 +413,12 @@ test: flash
 rebuild: clean all
 
 clean:
-	$(Q) rm -f $(APP_AR)
-	$(Q) rm -f $(TARGET_OUT_SLOT0) $(TARGET_OUT_SLOT1)
-	$(Q) rm -rf $(BUILD_DIR)
-	$(Q) rm -rf $(BUILD_BASE)
-	$(Q) rm -f $(USER1_BIN)
-	$(Q) rm -f $(USER2_BIN)
 	$(Q) rm -f app_app.size
 	$(Q) rm -f $(TARGET).S
-#	$(Q) rm -rf $(FW_BASE)
+	$(Q) rm -rf build build_ota
+	$(Q) rm -f firmware/user*.bin firmware_ota/user*.bin
+	$(Q) rm -f $(TARGET_OUT_SLOT0)$(TARGET_OUT_SLOT1)
+	$(Q) rm -f $(APP_AR)
 
 foo:
 #	echo $(CFLAGS)
