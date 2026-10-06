@@ -50,7 +50,7 @@ uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
 
 wifi_test_ctx_t wifi_test_ctx;
-static os_timer_t wifi_test_timeout_timer;
+os_timer_t wifi_test_timeout_timer;
 static os_timer_t wifi_test_start_timer;
 
 static netif_input_fn orig_input_ap;

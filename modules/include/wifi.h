@@ -24,6 +24,7 @@ extern uint32_t disconnect_count;
 extern bool fallback_ap_is_running;
 extern volatile bool wifi_fallback_active;
 extern volatile bool wifi_fallback_mqtt_connected;
+extern os_timer_t wifi_test_timeout_timer;
 
 typedef void (*WifiFallbackRetryCallback)(void);
 

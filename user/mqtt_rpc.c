@@ -454,7 +454,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 		strcat(cleartext, stay_str);
 	}
 	
-	// encrypt and send
+// Encrypt and send MQTT acknowledgement
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 
@@ -464,7 +464,13 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 #ifdef DEBUG
 		os_printf("MQTT RPC: Already connected to test SSID '%s'. Updating stay timer to %u ms.\n", ssid, stay_ms);
 #endif
-		wifi_test_update_stay_timer(stay_ms);
+		os_timer_disarm(&wifi_test_timeout_timer);
+		if (stay_ms > 0) {
+			os_timer_arm(&wifi_test_timeout_timer, stay_ms, 0);
+		} else {
+			// Immediately trigger revert sequence if stay time is 0
+			wifi_test_timeout_timer_func(NULL);
+		}
 		return;
 	}
 
