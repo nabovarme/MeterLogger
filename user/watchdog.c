@@ -69,7 +69,7 @@ ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 	uint32_t i;
-	uint32_t uptime = get_uptime();
+	uint64_t uptime = get_uptime();
 
 	for (i = 0; i < WATCHDOG_MAX; i++) {
 		// Skip disabled entries
@@ -213,7 +213,7 @@ ICACHE_FLASH_ATTR bool remove_watchdog(uint32_t id) {
 
 ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 	uint32_t i;
-	uint32_t uptime;
+	uint64_t uptime;
 	
 	uptime = get_uptime();
 #ifdef DEBUG

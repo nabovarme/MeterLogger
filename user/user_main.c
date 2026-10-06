@@ -50,7 +50,7 @@ volatile uint32_t last_impulse_meter_count;
 uint32_t impulse_falling_edge_time;
 uint32_t impulse_rising_edge_time;
 
-uint32_t last_uptime;
+uint64_t last_uptime;
 #endif // ENDIF IMPULSE
 
 MQTT_Client mqtt_client;
@@ -280,8 +280,8 @@ ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 	// for saving operating time
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
-	uint32_t uptime;
-	uint32_t uptime_diff;
+	uint64_t uptime;
+	uint64_t uptime_diff;
 #endif
 
 #ifdef EN61107
