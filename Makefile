@@ -249,10 +249,10 @@ vpath %.S $(SRC_DIR)
 vpath %.c $(SRC_DIR)
 
 define compile-objects
-$1/%.o: %.S
+$1/%.o: %.S | checkdirs
 	$(vecho) "ASM $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -D__ASSEMBLER__ -c $$< -o $$@
-$1/%.o: %.c
+$1/%.o: %.c | checkdirs
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endef
