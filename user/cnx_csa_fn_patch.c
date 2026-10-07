@@ -2,6 +2,11 @@
 #include "osapi.h"
 #include "c_types.h"
 
+// Fallback macro definition if ICACHE_RAM_ATTR is not defined in SDK headers
+#ifndef ICACHE_RAM_ATTR
+#define ICACHE_RAM_ATTR __attribute__((section(".iram1.text")))
+#endif
+
 static void dump_hex(const void *ptr, size_t len) {
 	const uint8_t *b = (const uint8_t *)ptr;
 	size_t i;
