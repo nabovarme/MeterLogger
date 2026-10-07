@@ -10,7 +10,7 @@
 typedef void (*meter_is_ready_cb)(void);
 typedef void (*meter_sent_data_cb)(void);
 
-os_event_t    en61107_received_task_queue[en61107_received_task_queue_length];
+extern os_event_t en61107_received_task_queue[en61107_received_task_queue_length];
 
 ICACHE_FLASH_ATTR
 void en61107_request_init();

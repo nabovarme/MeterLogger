@@ -14,6 +14,8 @@
 
 #define QUEUE_SIZE 256
 
+os_event_t en61107_received_task_queue[en61107_received_task_queue_length];
+
 uint32_t en61107_serial = 0;
 bool en61107_serial_set = false;
 int8_t en61107_request_num;
