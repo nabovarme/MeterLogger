@@ -252,9 +252,8 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum");
 			}
-			//DEBUG XXX TESTING IMPORTANT TO REMOVE
-//			ota_in_progress = false; // Release the lock
-//			return;
+			ota_in_progress = false; // Release the lock
+			return;
 		}
 
 		rboot_set_current_rom(ota_target_rom);
