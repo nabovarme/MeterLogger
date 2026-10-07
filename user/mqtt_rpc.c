@@ -1002,11 +1002,6 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		str = strtok_r(NULL, "&", &ctx1);
 	}
 
-	// Fallback: If it doesn't contain "url=", assume the whole string is the URL
-	if (strlen(base_url) == 0 && strncmp(params, "http", 4) == 0) {
-		strncpy(base_url, params, sizeof(base_url) - 1);
-	}
-
 	// Default to standard endpoint if no URL was provided
 	if (strlen(base_url) == 0) {
 		strncpy(base_url, "http://meterlogger.net/api/ota_firmware", sizeof(base_url) - 1);

@@ -341,6 +341,10 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	strncpy(ota_url, url, sizeof(ota_url) - 1);
 	ota_url[sizeof(ota_url) - 1] = '\0';
 
+#ifdef DEBUG
+	os_printf("OTA: Request URL: %s\n", ota_url);
+#endif
+
 	// 1. Parse host, port, and full path (including query string)
 	p = ota_url;
 	if (strncmp(p, "http://", 7) == 0) {
@@ -371,6 +375,11 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 		}
 		ota_port = 80;
 	}
+
+#ifdef DEBUG
+	os_printf("OTA: Parsed Host: %s | Port: %d | Path: %s\n", ota_host, ota_port, ota_path);
+	os_printf("OTA: HTTP GET Request:\nGET %s HTTP/1.0\r\nHost: %s\r\n\n", ota_path, ota_host);
+#endif
 
 	// 2. Setup the TCP connection
 	headers_parsed = false;
