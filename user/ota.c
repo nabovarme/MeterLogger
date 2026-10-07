@@ -33,6 +33,13 @@ static char ota_host[64];
 static char ota_path[128];
 static int ota_port = 80;
 
+static os_timer_t ota_reboot_timer;
+
+ICACHE_FLASH_ATTR
+static void ota_reboot_timer_cb(void *arg) {
+	system_restart_defered();
+}
+
 ICACHE_FLASH_ATTR
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char *pdata;
@@ -177,8 +184,11 @@ static void ota_tcp_discon_cb(void *arg) {
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 		
-		// Keep the native reboot call strictly where it was
-		system_restart_defered();
+		// Delay reboot by 3 seconds to allow the MQTT stack to flush its queue 
+		// over the network before the Wi-Fi radio shuts down.
+		os_timer_disarm(&ota_reboot_timer);
+		os_timer_setfn(&ota_reboot_timer, (os_timer_func_t *)ota_reboot_timer_cb, NULL);
+		os_timer_arm(&ota_reboot_timer, 3000, 0);
 	}
 	else {
 #ifdef DEBUG
