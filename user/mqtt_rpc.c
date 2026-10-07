@@ -949,10 +949,12 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char final_url[256] = {0};
 	char serial_str[32] = {0};
 	char params_copy[MQTT_MESSAGE_L];
+
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	
 	char *str, *param_key, *param_val, *ctx1, *ctx2, *separator;
 	uint8_t target_rom = 0;
 	bool success = false;
@@ -984,22 +986,37 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Pre-calculate target ROM
 	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
 
-	// 2. Parse input parameters (e.g., "url=http://api.domain.com/firmware&key=ef500c9268cf749016d26d6cbfaaf7bf")
+	// 2. Parse input parameters (e.g. "http://meterlogger.net/api/ota_firmware&key=..." or "url=http://...&key=...")
 	strncpy(params_copy, params, MQTT_MESSAGE_L);
-	str = strtok_r(params_copy, "&", &ctx1);
-	while (str != NULL) {
-		param_key = strtok_r(str, "=", &ctx2);
-		param_val = strtok_r(NULL, "=", &ctx2);
-		if (param_key && param_val) {
-			if (strncmp(param_key, "url", 3) == 0) {
-				query_string_unescape(param_val);
-				strncpy(base_url, param_val, sizeof(base_url) - 1);
-			} else if (strncmp(param_key, "key", 3) == 0) {
-				query_string_unescape(param_val);
-				strncpy(new_key, param_val, sizeof(new_key) - 1);
-			}
+
+	if (strncmp(params_copy, "http://", 7) == 0 || strncmp(params_copy, "https://", 8) == 0) {
+		// Truncate at &key= if directly attached to a raw HTTP string
+		char *key_param = strstr(params_copy, "&key=");
+		if (key_param) {
+			*key_param = '\0';
+			char *next_param = strchr(key_param + 5, '&');
+			if (next_param) *next_param = '\0';
+			strncpy(new_key, key_param + 5, sizeof(new_key) - 1);
 		}
-		str = strtok_r(NULL, "&", &ctx1);
+
+		strncpy(base_url, params_copy, sizeof(base_url) - 1);
+	} else {
+		// Key-value pair parsing
+		str = strtok_r(params_copy, "&", &ctx1);
+		while (str != NULL) {
+			param_key = strtok_r(str, "=", &ctx2);
+			param_val = strtok_r(NULL, "=", &ctx2);
+			if (param_key && param_val) {
+				if (strncmp(param_key, "url", 3) == 0) {
+					query_string_unescape(param_val);
+					strncpy(base_url, param_val, sizeof(base_url) - 1);
+				} else if (strncmp(param_key, "key", 3) == 0) {
+					query_string_unescape(param_val);
+					strncpy(new_key, param_val, sizeof(new_key) - 1);
+				}
+			}
+			str = strtok_r(NULL, "&", &ctx1);
+		}
 	}
 
 	// Default to standard endpoint if no URL was provided
