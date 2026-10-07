@@ -31,6 +31,8 @@
 #include "exception_handler.h"
 #endif	// DEBUG_STACK_TRACE
 
+#define MQTT_RESTART_DELAY_MS 2000
+
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
 bool ota_in_progress = false;
@@ -939,7 +941,7 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 	// Delay the actual teardown and restart by 2 seconds to let the QoS 2 ACK transmit
 	os_timer_disarm(&mqtt_restart_ack_timer);
 	os_timer_setfn(&mqtt_restart_ack_timer, (os_timer_func_t *)mqtt_restart_ack_timer_func, client);
-	os_timer_arm(&mqtt_restart_ack_timer, 2000, 0);
+	os_timer_arm(&mqtt_restart_ack_timer, MQTT_RESTART_DELAY_MS, 0);
 }
 
 ICACHE_FLASH_ATTR

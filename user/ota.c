@@ -14,7 +14,10 @@
 #include "mqtt.h"
 #include "mqtt_rpc.h"
 
-#define OTA_REBOOT_DELAY_MS 6000
+#define OTA_REBOOT_DELAY_MS	6000
+#define ESP_IMAGE_MAGIC_V1	0xE9
+#define ESP_IMAGE_MAGIC_V2	0xEA
+#define OTA_DEFAULT_PORT	80
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -33,7 +36,7 @@ static uint32_t ota_received_bytes = 0;
 
 static char ota_host[64];
 static char ota_path[128];
-static int ota_port = 80;
+static int ota_port = OTA_DEFAULT_PORT;
 
 static os_timer_t ota_reboot_timer;
 
@@ -96,9 +99,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		magic_byte = (uint8_t)pdata[0];
 		
 		// 0xE9 is the standard ESP8266 image magic byte; 0xEA is the v2 header
-		if (magic_byte != 0xE9 && magic_byte != 0xEA) {
+		if (magic_byte != ESP_IMAGE_MAGIC_V1 && magic_byte != ESP_IMAGE_MAGIC_V2) {
 #ifdef DEBUG
-			os_printf("OTA Error: Invalid magic byte (0x%02X). Expected 0xE9 or 0xEA!\n", magic_byte);
+			os_printf("OTA Error: Invalid magic byte (0x%02X). Expected 0x%02X or 0x%02X!\n", 
+			          magic_byte, ESP_IMAGE_MAGIC_V1, ESP_IMAGE_MAGIC_V2);
 			if (magic_byte == '<') { // 0x3C
 				os_printf("OTA Error: Received HTML instead of firmware binary.\n");
 			}
