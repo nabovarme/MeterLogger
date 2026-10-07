@@ -955,7 +955,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	
-	char *key_param, *separator;
+	char *str, *param_key, *param_val, *ctx1, *ctx2, *separator;
 	uint8_t target_rom = 0;
 	bool success = false;
 
@@ -986,27 +986,32 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Pre-calculate target ROM slot (0 -> 1, 1 -> 0)
 	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
 
-	// 2. Parse input parameters (e.g., "http://foo.bar/api/ota_firmware&key=43851457d98e5bb41708d05a7ce73d3f")
+	// 2. Parse key-value parameters (url=..., key=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
-	// Extract optional &key= parameter if present
-	key_param = strstr(params_copy, "&key=");
-	if (key_param != NULL) {
-		strncpy(new_key, key_param + 5, sizeof(new_key) - 1);
-		new_key[sizeof(new_key) - 1] = '\0';
-		*key_param = '\0'; // Truncate at '&' to isolate base_url
+	str = strtok_r(params_copy, "&", &ctx1);
+	while (str != NULL) {
+		param_key = strtok_r(str, "=", &ctx2);
+		param_val = strtok_r(NULL, "=", &ctx2);
+		if (param_key && param_val) {
+			if (strncmp(param_key, "url", 3) == 0) {
+				query_string_unescape(param_val);
+				strncpy(base_url, param_val, sizeof(base_url) - 1);
+			} else if (strncmp(param_key, "key", 3) == 0) {
+				query_string_unescape(param_val);
+				strncpy(new_key, param_val, sizeof(new_key) - 1);
+			}
+		}
+		str = strtok_r(NULL, "&", &ctx1);
 	}
 
-	strncpy(base_url, params_copy, sizeof(base_url) - 1);
-	base_url[sizeof(base_url) - 1] = '\0';
-
-	// Default to standard endpoint if no URL was provided
+	// Default to standard endpoint if url parameter was omitted
 	if (strlen(base_url) == 0) {
 		strncpy(base_url, "http://meterlogger.net/api/ota_firmware", sizeof(base_url) - 1);
 	}
 
-	// Extract meter's hardware serial number
+	// Always get the meter's actual serial number
 #ifdef EN61107
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", en61107_get_received_serial());
 #elif defined IMPULSE
