@@ -14,6 +14,7 @@
 #include "mqtt.h"
 #include "mqtt_rpc.h"
 
+// Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
 static MQTT_Client *ota_mqtt_client = NULL;
 
@@ -79,7 +80,7 @@ static bool verify_esp_image(uint32_t addr) {
 
 	segments = header[1];
 	if (segments == 0 || segments > 16) {
-		return false;
+		return false; // Sanity check limits
 	}
 	
 	offset = 8;
@@ -114,14 +115,14 @@ static bool verify_esp_image(uint32_t addr) {
 		}
 	}
 	
-	// Your EXACT mathematically correct padding logic restored!
+	// padding logic for V2 images!
 	padded_offset = offset + 16 - (offset % 16);
 	
 	if (!safe_flash_read(addr + padded_offset - 4, last_word, 4)) {
 		return false;
 	}
 	
-	// The exact final byte in the 4-byte block
+	// The exact final byte in the padded 16-byte block (before the IROM segment starts)
 	file_checksum = last_word[3];
 	
 #ifdef DEBUG
@@ -187,7 +188,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		// 0xE9 is the standard ESP8266 image magic byte; 0xEA is the v2 header
 		if (magic_byte != 0xE9 && magic_byte != 0xEA) {
 #ifdef DEBUG
-			os_printf("OTA Error: Invalid magic byte (0x%02X). Expected 0xE9!\n", magic_byte);
+			os_printf("OTA Error: Invalid magic byte (0x%02X). Expected 0xE9 or 0xEA!\n", magic_byte);
 			if (magic_byte == '<') { // 0x3C
 				os_printf("OTA Error: Received HTML instead of firmware binary.\n");
 			}
@@ -238,7 +239,7 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	if (ota_mqtt_client) {
 		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
 	}
-	ota_in_progress = false;
+	ota_in_progress = false; // Release lock on abnormal network drop
 }
 
 ICACHE_FLASH_ATTR
@@ -249,7 +250,7 @@ static void ota_tcp_discon_cb(void *arg) {
 	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
 		
-		// 1. Verify Content-Length
+		// 1. Verify Content-Length if it was provided by the HTTP server
 		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
@@ -257,7 +258,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
 			}
-			ota_in_progress = false;
+			ota_in_progress = false; // Release the lock
 			return;
 		}
 		
@@ -269,7 +270,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum");
 			}
-			ota_in_progress = false;
+			ota_in_progress = false; // Release the lock
 			return;
 		}
 
@@ -288,7 +289,7 @@ static void ota_tcp_discon_cb(void *arg) {
 #ifdef DEBUG
 		os_printf("OTA: Disconnected before valid download completed.\n");
 #endif
-		ota_in_progress = false;
+		ota_in_progress = false; // Release the lock on failure
 	}
 }
 
@@ -317,7 +318,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 		if (ota_mqtt_client) {
 			mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
 		}
-		ota_in_progress = false;
+		ota_in_progress = false; // Release lock on failure
 		return;
 	}
 
@@ -354,6 +355,7 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	ota_content_length = 0;
 	ota_received_bytes = 0;
 
+	// Use exact full URL constructed by mqtt_rpc.c
 	strncpy(ota_url, url, sizeof(ota_url) - 1);
 	ota_url[sizeof(ota_url) - 1] = '\0';
 
