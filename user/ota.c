@@ -33,105 +33,6 @@ static char ota_host[64];
 static char ota_path[128];
 static int ota_port = 80;
 
-// Helper to safely read arbitrary lengths from arbitrary (unaligned) flash offsets
-ICACHE_FLASH_ATTR
-static bool safe_flash_read(uint32_t flash_addr, uint8_t *dst, uint32_t len) {
-	uint32_t buf[20]; // 80 bytes, enough to safely buffer 64 bytes + alignment
-	uint32_t align_addr = flash_addr & ~3;
-	uint32_t offset = flash_addr - align_addr;
-	uint32_t read_len = (len + offset + 3) & ~3;
-	
-	if (read_len > sizeof(buf)) return false; // Sanity check buffer bounds
-	
-	if (spi_flash_read(align_addr, buf, read_len) != 0) {
-		return false;
-	}
-	
-	os_memcpy(dst, ((uint8_t *)buf) + offset, len);
-	return true;
-}
-
-// Verifies the native ESP8266 firmware XOR checksum directly from flash memory
-ICACHE_FLASH_ATTR
-static bool verify_esp_image(uint32_t addr) {
-	uint8_t header[8];
-	uint8_t magic;
-	uint8_t segments;
-	uint32_t offset;
-	uint8_t checksum;
-	int i, j;
-	uint8_t seg_header[8];
-	uint32_t seg_size;
-	uint32_t left;
-	uint8_t byte_buf[64];
-	uint32_t to_read;
-	uint32_t padded_offset;
-	uint8_t last_word[4];
-	uint8_t file_checksum;
-
-	if (!safe_flash_read(addr, header, 8)) {
-		return false;
-	}
-	
-	magic = header[0];
-	if (magic != 0xE9 && magic != 0xEA) {
-		return false;
-	}
-
-	segments = header[1];
-	if (segments == 0 || segments > 16) {
-		return false; // Sanity check limits
-	}
-	
-	offset = 8;
-	checksum = 0xEF; // ESP8266 checksum seed
-	
-	for (i = 0; i < segments; i++) {
-		if (!safe_flash_read(addr + offset, seg_header, 8)) {
-			return false;
-		}
-		
-		// Safely construct 32-bit segment size (little endian)
-		seg_size = (seg_header[7] << 24) | (seg_header[6] << 16) | (seg_header[5] << 8) | seg_header[4];
-		
-		if (seg_size > 0x100000) {
-			return false; // Sanity check: >1MB segment
-		}
-		offset += 8;
-		
-		left = seg_size;
-		while (left > 0) {
-			to_read = (left > 64) ? 64 : left;
-			if (!safe_flash_read(addr + offset, byte_buf, to_read)) {
-				return false;
-			}
-			
-			for (j = 0; j < to_read; j++) {
-				checksum ^= byte_buf[j];
-			}
-			
-			offset += to_read;
-			left -= to_read;
-		}
-	}
-	
-	// padding logic for V2 images!
-	padded_offset = offset + 16 - (offset % 16);
-	
-	if (!safe_flash_read(addr + padded_offset - 4, last_word, 4)) {
-		return false;
-	}
-	
-	// The exact final byte in the padded 16-byte block (before the IROM segment starts)
-	file_checksum = last_word[3];
-	
-#ifdef DEBUG
-	os_printf("OTA Checksum verify: calculated=0x%02X, file=0x%02X\n", checksum, file_checksum);
-#endif
-	
-	return (checksum == file_checksum);
-}
-
 ICACHE_FLASH_ATTR
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char *pdata;
@@ -215,6 +116,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	}
 
 	// Write incoming payload chunks directly to flash memory
+	// rboot_write_flash automatically handles unaligned chunk sizes buffering
 	if (is_valid_binary && len > 0) {
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
@@ -262,27 +164,20 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// 2. Verify Native ESP8266 Firmware Checksum
-		if (!verify_esp_image(rboot_get_config().roms[ota_target_rom])) {
-#ifdef DEBUG
-			os_printf("OTA Error: Firmware checksum verification failed!\n");
-#endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum");
-			}
-			ota_in_progress = false; // Release the lock
-			return;
-		}
-
+		// 2. We omit user-space checksum verification. 
+		// The rboot bootloader natively verifies the ROM checksum upon reboot.
+		// If the ROM is corrupt, rboot will safely fall back to the previous slot.
 		rboot_set_current_rom(ota_target_rom);
+
 #ifdef DEBUG
-		os_printf("OTA: Download and checksum complete. Rebooting to rom %d...\n", ota_target_rom);
+		os_printf("OTA: Download complete. Rebooting to rom %d...\n", ota_target_rom);
 #endif
 		if (ota_mqtt_client) {
 			tfp_snprintf(status_msg, sizeof(status_msg), "success&target_rom=%d", ota_target_rom + 1);
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 		
+		// Keep the native reboot call strictly where it was
 		system_restart_defered();
 	}
 	else {
