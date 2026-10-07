@@ -1,6 +1,8 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#define SYSTEM_RESTART_DELAY_MS 16000
+
 ICACHE_FLASH_ATTR uint16_t ccit_crc16(uint16_t crc16, uint8_t *data_p, unsigned int length);
 ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str);
 ICACHE_FLASH_ATTR unsigned int decimal_number_length(int n);

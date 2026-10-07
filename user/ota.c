@@ -13,6 +13,7 @@
 #include "spi_flash.h"
 #include "mqtt.h"
 #include "mqtt_rpc.h"
+#include "utils.h"
 
 #define OTA_REBOOT_DELAY_MS	6000
 #define ESP_IMAGE_MAGIC_V1	0xE9
@@ -187,6 +188,10 @@ static void ota_tcp_discon_cb(void *arg) {
 #endif
 		if (ota_mqtt_client) {
 			tfp_snprintf(status_msg, sizeof(status_msg), "success&target_rom=%d", ota_target_rom + 1);
+			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
+			
+			// Send a follow-up message with the exact countdown dynamically calculated
+			tfp_snprintf(status_msg, sizeof(status_msg), "restarting_in_%ds", (OTA_REBOOT_DELAY_MS + SYSTEM_RESTART_DELAY_MS) / 1000);
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 		
