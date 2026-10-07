@@ -1,12 +1,26 @@
+# System & Editor Files
 ._*
 .DS_Store
-build/*
-build/*/*
-user/*.o
-tools/*
-firmware/0x00000.bin
-firmware/0x10000.bin
-firmware/stack_trace.dump
 xcshareddata
-app.map
-app.S
+
+# Compiler Output Directories
+build/
+build_ota/
+firmware/
+firmware_ota/
+release/
+
+# Intermediate & Binary Build Artifacts
+*.o
+*.a
+*.out
+*.map
+*.S
+*.size
+
+# Executables & Tools
+tools/*
+mkespfsimage/mkespfsimage
+
+# Debug & Flash Dumps
+firmware/stack_trace.dump
