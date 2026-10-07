@@ -14,7 +14,6 @@
 #include "mqtt.h"
 #include "mqtt_rpc.h"
 
-// Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
 static MQTT_Client *ota_mqtt_client = NULL;
 
@@ -33,49 +32,67 @@ static char ota_host[64];
 static char ota_path[128];
 static int ota_port = 80;
 
+// Helper to safely read arbitrary lengths from arbitrary (unaligned) flash offsets
+ICACHE_FLASH_ATTR
+static bool safe_flash_read(uint32_t flash_addr, uint8_t *dst, uint32_t len) {
+	uint32_t buf[20]; // 80 bytes, enough to safely buffer 64 bytes + alignment
+	uint32_t align_addr = flash_addr & ~3;
+	uint32_t offset = flash_addr - align_addr;
+	uint32_t read_len = (len + offset + 3) & ~3;
+	
+	if (read_len > sizeof(buf)) return false; // Sanity check buffer bounds
+	
+	if (spi_flash_read(align_addr, buf, read_len) != 0) {
+		return false;
+	}
+	
+	os_memcpy(dst, ((uint8_t *)buf) + offset, len);
+	return true;
+}
+
 // Verifies the native ESP8266 firmware XOR checksum directly from flash memory
 ICACHE_FLASH_ATTR
 static bool verify_esp_image(uint32_t addr) {
-	uint32_t header[2];
+	uint8_t header[8];
 	uint8_t magic;
 	uint8_t segments;
 	uint32_t offset;
 	uint8_t checksum;
 	int i, j;
-	uint32_t seg_header[2];
+	uint8_t seg_header[8];
 	uint32_t seg_size;
 	uint32_t left;
-	uint32_t buf[16];
+	uint8_t byte_buf[64];
 	uint32_t to_read;
-	uint32_t read_len;
-	uint8_t *byte_buf;
 	uint32_t padded_offset;
-	uint32_t last_word;
+	uint8_t last_word[4];
 	uint8_t file_checksum;
 
-	if (spi_flash_read(addr, header, 8) != 0) {
+	if (!safe_flash_read(addr, header, 8)) {
 		return false;
 	}
 	
-	magic = header[0] & 0xFF;
+	magic = header[0];
 	if (magic != 0xE9 && magic != 0xEA) {
 		return false;
 	}
 
-	segments = (header[0] >> 8) & 0xFF;
+	segments = header[1];
 	if (segments == 0 || segments > 16) {
-		return false; // Sanity check limits
+		return false;
 	}
 	
 	offset = 8;
 	checksum = 0xEF; // ESP8266 checksum seed
 	
 	for (i = 0; i < segments; i++) {
-		if (spi_flash_read(addr + offset, seg_header, 8) != 0) {
+		if (!safe_flash_read(addr + offset, seg_header, 8)) {
 			return false;
 		}
 		
-		seg_size = seg_header[1];
+		// Safely construct 32-bit segment size (little endian)
+		seg_size = (seg_header[7] << 24) | (seg_header[6] << 16) | (seg_header[5] << 8) | seg_header[4];
+		
 		if (seg_size > 0x100000) {
 			return false; // Sanity check: >1MB segment
 		}
@@ -84,13 +101,10 @@ static bool verify_esp_image(uint32_t addr) {
 		left = seg_size;
 		while (left > 0) {
 			to_read = (left > 64) ? 64 : left;
-			// spi_flash_read requires lengths to be multiples of 4
-			read_len = (to_read + 3) & ~3;
-			if (spi_flash_read(addr + offset, buf, read_len) != 0) {
+			if (!safe_flash_read(addr + offset, byte_buf, to_read)) {
 				return false;
 			}
 			
-			byte_buf = (uint8_t *)buf;
 			for (j = 0; j < to_read; j++) {
 				checksum ^= byte_buf[j];
 			}
@@ -100,14 +114,15 @@ static bool verify_esp_image(uint32_t addr) {
 		}
 	}
 	
-	// Firmware files are padded with nulls up to a 16-byte boundary.
-	// The final checksum byte is located at the very end of that padded block.
+	// Your EXACT mathematically correct padding logic restored!
 	padded_offset = offset + 16 - (offset % 16);
-	if (spi_flash_read(addr + padded_offset - 4, &last_word, 4) != 0) {
+	
+	if (!safe_flash_read(addr + padded_offset - 4, last_word, 4)) {
 		return false;
 	}
 	
-	file_checksum = (last_word >> 24) & 0xFF;
+	// The exact final byte in the 4-byte block
+	file_checksum = last_word[3];
 	
 #ifdef DEBUG
 	os_printf("OTA Checksum verify: calculated=0x%02X, file=0x%02X\n", checksum, file_checksum);
@@ -130,41 +145,42 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	len = length;
 
 	if (!headers_parsed) {
-		// Check for 200 OK status code first
-		if (os_strstr(pdata, "HTTP/1.1 200 OK") == NULL && os_strstr(pdata, "HTTP/1.0 200 OK") == NULL) {
-#ifdef DEBUG
-			os_printf("OTA Error: Non-200 HTTP response received!\n");
-#endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
-			}
-			espconn_disconnect(&ota_conn);
-			return;
-		}
-
-		// Extract Content-Length for size validation
-		cl = (char *)os_strstr(pdata, "Content-Length: ");
-		if (!cl) {
-			cl = (char *)os_strstr(pdata, "content-length: ");
-		}
-		if (cl) {
-			ota_content_length = atoi(cl + 16);
-		}
-
-		// Find the end of the HTTP headers
+		// Wait to check for 200 OK until the entire header is downloaded
 		body = (char *)os_strstr(pdata, "\r\n\r\n");
 		if (body) {
+			// Validate HTTP status now that the whole header is here
+			if (os_strstr(pdata, "200 OK") == NULL && os_strstr(pdata, "200") == NULL) {
+#ifdef DEBUG
+				os_printf("OTA Error: Non-200 HTTP response received!\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
+				}
+				espconn_disconnect(&ota_conn);
+				return;
+			}
+
+			// Extract Content-Length for size validation
+			cl = (char *)os_strstr(pdata, "Content-Length: ");
+			if (!cl) {
+				cl = (char *)os_strstr(pdata, "content-length: ");
+			}
+			if (cl) {
+				ota_content_length = atoi(cl + 16);
+			}
+
 			headers_parsed = true;
 			body += 4; // Skip past the \r\n\r\n
 			len -= (body - pdata);
 			pdata = body;
-		} else {
+		}
+		else {
 			// Still waiting for the end of headers
 			return;
 		}
 	}
 
-	// We are in the body. If we haven't validated the binary yet, do it now.
+	// Validate magic byte on the very first binary chunk
 	if (headers_parsed && !is_valid_binary && len > 0) {
 		magic_byte = (uint8_t)pdata[0];
 		
@@ -207,7 +223,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 			}
 			espconn_disconnect(&ota_conn);
-		} else {
+		}
+		else {
 			ota_received_bytes += len;
 		}
 	}
@@ -221,18 +238,18 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	if (ota_mqtt_client) {
 		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
 	}
-	ota_in_progress = false; // Release lock on abnormal network drop
+	ota_in_progress = false;
 }
 
 ICACHE_FLASH_ATTR
 static void ota_tcp_discon_cb(void *arg) {
-	char status_msg[32]; // C89 compliant declaration at the top
+	char status_msg[32];
 
 	// Only finalize and reboot if the file was a valid binary
 	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
 		
-		// 1. Verify Content-Length if it was provided by the HTTP server
+		// 1. Verify Content-Length
 		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
@@ -240,7 +257,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
 			}
-			ota_in_progress = false; // Release the lock
+			ota_in_progress = false;
 			return;
 		}
 		
@@ -252,7 +269,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum");
 			}
-			ota_in_progress = false; // Release the lock
+			ota_in_progress = false;
 			return;
 		}
 
@@ -265,13 +282,13 @@ static void ota_tcp_discon_cb(void *arg) {
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 		
-		// Keep the native reboot call strictly where it was
 		system_restart_defered();
-	} else {
+	}
+	else {
 #ifdef DEBUG
 		os_printf("OTA: Disconnected before valid download completed.\n");
 #endif
-		ota_in_progress = false; // Release the lock on failure
+		ota_in_progress = false;
 	}
 }
 
@@ -300,7 +317,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 		if (ota_mqtt_client) {
 			mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
 		}
-		ota_in_progress = false; // Release lock on failure
+		ota_in_progress = false;
 		return;
 	}
 
@@ -337,7 +354,6 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	ota_content_length = 0;
 	ota_received_bytes = 0;
 
-	// Use exact full URL constructed by mqtt_rpc.c
 	strncpy(ota_url, url, sizeof(ota_url) - 1);
 	ota_url[sizeof(ota_url) - 1] = '\0';
 
@@ -357,7 +373,8 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	// Extract path
 	if (slash) {
 		strncpy(ota_path, slash, sizeof(ota_path) - 1);
-	} else {
+	}
+	else {
 		strcpy(ota_path, "/");
 	}
 
@@ -366,11 +383,13 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 		strncpy(ota_host, p, colon - p);
 		ota_host[colon - p] = '\0';
 		ota_port = atoi(colon + 1);
-	} else {
+	}
+	else {
 		if (slash) {
 			strncpy(ota_host, p, slash - p);
 			ota_host[slash - p] = '\0';
-		} else {
+		}
+		else {
 			strncpy(ota_host, p, sizeof(ota_host) - 1);
 		}
 		ota_port = 80;
