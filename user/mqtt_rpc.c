@@ -17,6 +17,7 @@
 #include "icmp_ping.h"
 #include "led.h"
 #include "ota.h"
+#include "rboot-api.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
