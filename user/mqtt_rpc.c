@@ -955,7 +955,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	
-	char *str, *param_key, *param_val, *ctx1, *ctx2, *separator;
+	char *key_param, *separator;
 	uint8_t target_rom = 0;
 	bool success = false;
 
@@ -983,48 +983,30 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Lock the OTA function until reboot
 	ota_in_progress = true;
 
-	// Pre-calculate target ROM
+	// Pre-calculate target ROM slot (0 -> 1, 1 -> 0)
 	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
 
-	// 2. Parse input parameters (e.g. "http://meterlogger.net/api/ota_firmware&key=..." or "url=http://...&key=...")
-	strncpy(params_copy, params, MQTT_MESSAGE_L);
+	// 2. Parse input parameters (e.g., "http://foo.bar/api/ota_firmware&key=43851457d98e5bb41708d05a7ce73d3f")
+	strncpy(params_copy, params, sizeof(params_copy) - 1);
+	params_copy[sizeof(params_copy) - 1] = '\0';
 
-	if (strncmp(params_copy, "http://", 7) == 0 || strncmp(params_copy, "https://", 8) == 0) {
-		// Truncate at &key= if directly attached to a raw HTTP string
-		char *key_param = strstr(params_copy, "&key=");
-		if (key_param) {
-			*key_param = '\0';
-			char *next_param = strchr(key_param + 5, '&');
-			if (next_param) *next_param = '\0';
-			strncpy(new_key, key_param + 5, sizeof(new_key) - 1);
-		}
-
-		strncpy(base_url, params_copy, sizeof(base_url) - 1);
-	} else {
-		// Key-value pair parsing
-		str = strtok_r(params_copy, "&", &ctx1);
-		while (str != NULL) {
-			param_key = strtok_r(str, "=", &ctx2);
-			param_val = strtok_r(NULL, "=", &ctx2);
-			if (param_key && param_val) {
-				if (strncmp(param_key, "url", 3) == 0) {
-					query_string_unescape(param_val);
-					strncpy(base_url, param_val, sizeof(base_url) - 1);
-				} else if (strncmp(param_key, "key", 3) == 0) {
-					query_string_unescape(param_val);
-					strncpy(new_key, param_val, sizeof(new_key) - 1);
-				}
-			}
-			str = strtok_r(NULL, "&", &ctx1);
-		}
+	// Extract optional &key= parameter if present
+	key_param = strstr(params_copy, "&key=");
+	if (key_param != NULL) {
+		strncpy(new_key, key_param + 5, sizeof(new_key) - 1);
+		new_key[sizeof(new_key) - 1] = '\0';
+		*key_param = '\0'; // Truncate at '&' to isolate base_url
 	}
+
+	strncpy(base_url, params_copy, sizeof(base_url) - 1);
+	base_url[sizeof(base_url) - 1] = '\0';
 
 	// Default to standard endpoint if no URL was provided
 	if (strlen(base_url) == 0) {
 		strncpy(base_url, "http://meterlogger.net/api/ota_firmware", sizeof(base_url) - 1);
 	}
 
-	// Extract the device serial number
+	// Extract meter's hardware serial number
 #ifdef EN61107
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", en61107_get_received_serial());
 #elif defined IMPULSE
@@ -1033,11 +1015,11 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", kmp_get_received_serial());
 #endif
 
-	// Safely append query parameters
+	// Safely append query parameters (? vs &)
 	separator = (strchr(base_url, '?') == NULL) ? "?" : "&";
 	tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
 
-	// 3. Save the new master key to flash before updating if provided
+	// 3. Save new master key to flash if provided
 	if (strlen(new_key) >= 32) {
 		if (cfg_save_key(new_key)) {
 #ifdef DEBUG
@@ -1050,7 +1032,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 #endif
 	}
 
-	// 4. Start the OTA download with the dynamically constructed URL
+	// 4. Start the OTA download with the constructed URL
 	if (strlen(final_url) > 0) {
 		success = start_ota_upgrade(client, final_url, &target_rom);
 	}
