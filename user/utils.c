@@ -1,7 +1,7 @@
 #include <esp8266.h>
 #include <string.h>
 
-//#include "mqtt.h"
+#include "mqtt.h"
 #include "config.h"
 #include "user_config.h"
 #include "debug.h"
@@ -194,6 +194,7 @@ int query_string_unescape(char *str) {
 	for (p = str; (p = strstr(p, "%3d")); ++p) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "=", 1);
+	}
 	
 	// and uppercase "%3D" with "=";
 	len = strlen(str);
@@ -201,6 +202,7 @@ int query_string_unescape(char *str) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "=", 1);
 	}
+
 	return strlen(str);
 }
 
