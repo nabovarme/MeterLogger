@@ -945,7 +945,6 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char base_url[128] = {0};
-	char new_key[64] = {0};
 	char final_url[256] = {0};
 	char serial_str[32] = {0};
 	char params_copy[MQTT_MESSAGE_L];
@@ -986,7 +985,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Pre-calculate target ROM slot (0 -> 1, 1 -> 0)
 	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
 
-	// 2. Parse key-value parameters (url=..., key=...)
+	// 2. Parse key-value parameters (url=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
@@ -998,9 +997,6 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 			if (strncmp(param_key, "url", 3) == 0) {
 				query_string_unescape(param_val);
 				strncpy(base_url, param_val, sizeof(base_url) - 1);
-			} else if (strncmp(param_key, "key", 3) == 0) {
-				query_string_unescape(param_val);
-				strncpy(new_key, param_val, sizeof(new_key) - 1);
 			}
 		}
 		str = strtok_r(NULL, "&", &ctx1);
@@ -1024,25 +1020,12 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	separator = (strchr(base_url, '?') == NULL) ? "?" : "&";
 	tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
 
-	// 3. Save new master key to flash if provided
-	if (strlen(new_key) >= 32) {
-		if (cfg_save_key(new_key)) {
-#ifdef DEBUG
-			os_printf("OTA: Provisioned new master key to flash.\r\n");
-#endif
-		}
-	} else if (strlen(new_key) > 0) {
-#ifdef DEBUG
-		os_printf("OTA: Provided key is too short (%d). Skipping key save.\r\n", strlen(new_key));
-#endif
-	}
-
-	// 4. Start the OTA download with the constructed URL
+	// 3. Start the OTA download with the constructed URL
 	if (strlen(final_url) > 0) {
 		success = start_ota_upgrade(client, final_url, &target_rom);
 	}
 
-	// 5. Send Encrypted MQTT Acknowledgment
+	// 4. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
