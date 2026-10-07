@@ -14,6 +14,8 @@
 #include "mqtt.h"
 #include "mqtt_rpc.h"
 
+#define OTA_REBOOT_DELAY_MS 6000
+
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
 static MQTT_Client *ota_mqtt_client = NULL;
@@ -188,7 +190,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		// over the network before the Wi-Fi radio shuts down.
 		os_timer_disarm(&ota_reboot_timer);
 		os_timer_setfn(&ota_reboot_timer, (os_timer_func_t *)ota_reboot_timer_cb, NULL);
-		os_timer_arm(&ota_reboot_timer, 3000, 0);
+		os_timer_arm(&ota_reboot_timer, OTA_REBOOT_DELAY_MS, 0);
 	}
 	else {
 #ifdef DEBUG
