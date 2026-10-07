@@ -71,6 +71,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
 				}
+				ota_in_progress = false;
 				espconn_disconnect(&ota_conn);
 				return;
 			}
@@ -111,6 +112,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_magic");
 			}
+			ota_in_progress = false;
 			espconn_disconnect(&ota_conn);
 			return;
 		}
@@ -139,6 +141,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 			}
+			is_valid_binary = false;
+			ota_in_progress = false;
 			espconn_disconnect(&ota_conn);
 		}
 		else {
@@ -174,7 +178,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
 			}
-			ota_in_progress = false; // Release the lock
+			ota_in_progress = false; // Release the lock on failure
 			return;
 		}
 		
@@ -205,6 +209,9 @@ static void ota_tcp_discon_cb(void *arg) {
 #ifdef DEBUG
 		os_printf("OTA: Disconnected before valid download completed.\n");
 #endif
+		if (ota_mqtt_client) {
+			mqtt_rpc_ota_status(ota_mqtt_client, "error_disconnected");
+		}
 		ota_in_progress = false; // Release the lock on failure
 	}
 }
