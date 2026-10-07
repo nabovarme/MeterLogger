@@ -17,6 +17,8 @@ release/
 *.map
 *.S
 *.size
+webpages.espfs
+app.map
 
 # Executables & Tools
 tools/*
