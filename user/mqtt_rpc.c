@@ -945,14 +945,14 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char base_url[128] = {0};
 	char new_key[64] = {0};
-	char *str, *param_key, *param_val, *ctx1, *ctx2;
+	char final_url[256] = {0};
+	char serial_str[32] = {0};
 	char params_copy[MQTT_MESSAGE_L];
-
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
-	
+	char *str, *param_key, *param_val, *ctx1, *ctx2, *separator;
 	uint8_t target_rom = 0;
 	bool success = false;
 
@@ -980,7 +980,10 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Lock the OTA function until reboot
 	ota_in_progress = true;
 
-	// 2. Parse input parameters (e.g., "url=http://api.domain.com/user2.bin&key=ef500c9268cf749016d26d6cbfaaf7bf")
+	// Pre-calculate target ROM
+	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
+
+	// 2. Parse input parameters (e.g., "url=http://api.domain.com/firmware&key=ef500c9268cf749016d26d6cbfaaf7bf")
 	strncpy(params_copy, params, MQTT_MESSAGE_L);
 	str = strtok_r(params_copy, "&", &ctx1);
 	while (str != NULL) {
@@ -1003,7 +1006,25 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		strncpy(base_url, params, sizeof(base_url) - 1);
 	}
 
-	// 3. Save the new master key to flash before updating
+	// Default to standard endpoint if no URL was provided
+	if (strlen(base_url) == 0) {
+		strncpy(base_url, "http://meterlogger.net/api/ota_firmware", sizeof(base_url) - 1);
+	}
+
+	// Extract the device serial number
+#ifdef EN61107
+	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", en61107_get_received_serial());
+#elif defined IMPULSE
+	tfp_snprintf(serial_str, sizeof(serial_str), "%s", sys_cfg.impulse_meter_serial);
+#else
+	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", kmp_get_received_serial());
+#endif
+
+	// Safely append query parameters
+	separator = (strchr(base_url, '?') == NULL) ? "?" : "&";
+	tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
+
+	// 3. Save the new master key to flash before updating if provided
 	if (strlen(new_key) >= 32) {
 		if (cfg_save_key(new_key)) {
 #ifdef DEBUG
@@ -1016,9 +1037,9 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 #endif
 	}
 
-	// 4. Start the OTA download
-	if (strlen(base_url) > 0) {
-		success = start_ota_upgrade(client, base_url, &target_rom);
+	// 4. Start the OTA download with the dynamically constructed URL
+	if (strlen(final_url) > 0) {
+		success = start_ota_upgrade(client, final_url, &target_rom);
 	}
 
 	// 5. Send Encrypted MQTT Acknowledgment

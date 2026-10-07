@@ -85,7 +85,7 @@ static bool verify_esp_image(uint32_t addr) {
 		while (left > 0) {
 			to_read = (left > 64) ? 64 : left;
 			// spi_flash_read requires lengths to be multiples of 4
-			read_len = (to_read + 3) & ~3; 
+			read_len = (to_read + 3) & ~3;
 			if (spi_flash_read(addr + offset, buf, read_len) != 0) {
 				return false;
 			}
@@ -116,7 +116,7 @@ static bool verify_esp_image(uint32_t addr) {
 	return (checksum == file_checksum);
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char *pdata;
 	uint16_t len;
@@ -213,7 +213,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	}
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 static void ota_tcp_recon_cb(void *arg, sint8 err) {
 #ifdef DEBUG
 	os_printf("OTA: TCP network error (%d). Aborting.\n", err);
@@ -224,7 +224,7 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	ota_in_progress = false; // Release lock on abnormal network drop
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 static void ota_tcp_discon_cb(void *arg) {
 	char status_msg[32]; // C89 compliant declaration at the top
 
@@ -275,11 +275,11 @@ static void ota_tcp_discon_cb(void *arg) {
 	}
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 static void ota_tcp_connect_cb(void *arg) {
 	char request[512];
 	
-	// Format the HTTP GET request. Using HTTP/1.0 ensures the server 
+	// Format the HTTP GET request. Using HTTP/1.0 ensures the server
 	// closes the connection automatically when the file finishes downloading.
 	tfp_snprintf(request, sizeof(request),
 		"GET %s HTTP/1.0\r\n"
@@ -291,7 +291,7 @@ static void ota_tcp_connect_cb(void *arg) {
 	espconn_send(&ota_conn, (uint8_t *)request, strlen(request));
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	if (ipaddr == NULL) {
 #ifdef DEBUG
@@ -316,7 +316,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	espconn_connect(&ota_conn);
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target_rom) {
 	const char *p;
 	const char *slash;
@@ -337,10 +337,11 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	ota_content_length = 0;
 	ota_received_bytes = 0;
 
-	// Format full URL by appending the target binary name (e.g. user2.ota.bin)
-	tfp_snprintf(ota_url, sizeof(ota_url), "%suser%d.ota.bin", url, ota_target_rom + 1);
+	// Use exact full URL constructed by mqtt_rpc.c
+	strncpy(ota_url, url, sizeof(ota_url) - 1);
+	ota_url[sizeof(ota_url) - 1] = '\0';
 
-	// 1. Parse the URL into Host, Port, and Path
+	// 1. Parse host, port, and full path (including query string)
 	p = ota_url;
 	if (strncmp(p, "http://", 7) == 0) {
 		p += 7;
