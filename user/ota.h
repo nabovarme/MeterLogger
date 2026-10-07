@@ -4,8 +4,10 @@
 #include <esp8266.h>
 #include <stdbool.h>
 
+#include "mqtt.h"
+
 // Starts the OTA HTTP download. 
 // Returns true if successfully initiated.
-ICACHE_FLASH_ATTR bool start_ota_upgrade(const char *url, uint8_t *out_target_rom);
+ICACHE_FLASH_ATTR bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target_rom);
 
 #endif /* USER_OTA_H_ */

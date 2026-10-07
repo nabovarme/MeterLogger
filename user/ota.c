@@ -11,9 +11,12 @@
 #include <lwip/dns.h>
 #include <espconn.h>
 #include "spi_flash.h"
+#include "mqtt.h"
+#include "mqtt_rpc.h"
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
+static MQTT_Client *ota_mqtt_client = NULL;
 
 static struct espconn ota_conn;
 static esp_tcp ota_tcp;
@@ -132,14 +135,21 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Non-200 HTTP response received!\n");
 #endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
+			}
 			espconn_disconnect(&ota_conn);
 			return;
 		}
 
 		// Extract Content-Length for size validation
 		cl = (char *)os_strstr(pdata, "Content-Length: ");
-		if (!cl) cl = (char *)os_strstr(pdata, "content-length: ");
-		if (cl) ota_content_length = atoi(cl + 16);
+		if (!cl) {
+			cl = (char *)os_strstr(pdata, "content-length: ");
+		}
+		if (cl) {
+			ota_content_length = atoi(cl + 16);
+		}
 
 		// Find the end of the HTTP headers
 		body = (char *)os_strstr(pdata, "\r\n\r\n");
@@ -166,6 +176,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 				os_printf("OTA Error: Received HTML instead of firmware binary.\n");
 			}
 #endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_magic");
+			}
 			espconn_disconnect(&ota_conn);
 			return;
 		}
@@ -190,6 +203,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 #ifdef DEBUG
 			os_printf("OTA: Flash write failed. Disconnecting.\n");
 #endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
+			}
 			espconn_disconnect(&ota_conn);
 		} else {
 			ota_received_bytes += len;
@@ -202,11 +218,16 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 #ifdef DEBUG
 	os_printf("OTA: TCP network error (%d). Aborting.\n", err);
 #endif
+	if (ota_mqtt_client) {
+		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
+	}
 	ota_in_progress = false; // Release lock on abnormal network drop
 }
 
 ICACHE_FLASH_ATTR 
 static void ota_tcp_discon_cb(void *arg) {
+	char status_msg[32]; // C89 compliant declaration at the top
+
 	// Only finalize and reboot if the file was a valid binary
 	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
@@ -216,6 +237,9 @@ static void ota_tcp_discon_cb(void *arg) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
 #endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
+			}
 			ota_in_progress = false; // Release the lock
 			return;
 		}
@@ -225,6 +249,9 @@ static void ota_tcp_discon_cb(void *arg) {
 #ifdef DEBUG
 			os_printf("OTA Error: Firmware checksum verification failed!\n");
 #endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum");
+			}
 			ota_in_progress = false; // Release the lock
 			return;
 		}
@@ -233,6 +260,12 @@ static void ota_tcp_discon_cb(void *arg) {
 #ifdef DEBUG
 		os_printf("OTA: Download and checksum complete. Rebooting to rom %d...\n", ota_target_rom);
 #endif
+		if (ota_mqtt_client) {
+			tfp_snprintf(status_msg, sizeof(status_msg), "success&target_rom=%d", ota_target_rom + 1);
+			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
+		}
+		
+		// Keep the native reboot call strictly where it was
 		system_restart_defered();
 	} else {
 #ifdef DEBUG
@@ -264,6 +297,9 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 #ifdef DEBUG
 		os_printf("OTA: DNS resolution failed.\n");
 #endif
+		if (ota_mqtt_client) {
+			mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
+		}
 		ota_in_progress = false; // Release lock on failure
 		return;
 	}
@@ -281,13 +317,15 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 }
 
 ICACHE_FLASH_ATTR 
-bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
+bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target_rom) {
 	const char *p;
 	const char *slash;
 	const char *colon;
 	char ota_url[256];
 	uint8_t current_rom;
 	err_t err;
+
+	ota_mqtt_client = client;
 
 	current_rom = rboot_get_current_rom();
 	ota_target_rom = (current_rom == 0) ? 1 : 0;
@@ -304,7 +342,9 @@ bool start_ota_upgrade(const char *url, uint8_t *out_target_rom) {
 
 	// 1. Parse the URL into Host, Port, and Path
 	p = ota_url;
-	if (strncmp(p, "http://", 7) == 0) p += 7;
+	if (strncmp(p, "http://", 7) == 0) {
+		p += 7;
+	}
 
 	slash = strchr(p, '/');
 	colon = strchr(p, ':');

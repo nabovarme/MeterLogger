@@ -1018,7 +1018,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	// 4. Start the OTA download
 	if (strlen(base_url) > 0) {
-		success = start_ota_upgrade(base_url, &target_rom);
+		success = start_ota_upgrade(client, base_url, &target_rom);
 	}
 
 	// 5. Send Encrypted MQTT Acknowledgment
@@ -1039,6 +1039,29 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_no_url");
 		ota_in_progress = false;
 	}
+
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+}
+
+ICACHE_FLASH_ATTR
+void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=%s", status);
 
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
