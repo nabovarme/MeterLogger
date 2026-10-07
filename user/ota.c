@@ -55,11 +55,17 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	rboot_config conf;
 	uint32_t target_addr;
 	char *cl;
+	static uint8_t last_reported_progress = 0;
+	uint8_t current_progress = 0;
+	char progress_msg[32];
 
 	pdata = pusrdata;
 	len = length;
 
 	if (!headers_parsed) {
+		// Reset progress tracker for a new download session
+		last_reported_progress = 0;
+
 		// Wait to check for 200 OK until the entire header is downloaded
 		body = (char *)os_strstr(pdata, "\r\n\r\n");
 		if (body) {
@@ -147,6 +153,19 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		}
 		else {
 			ota_received_bytes += len;
+
+			// Send periodic MQTT progress reports every 10%
+			if (ota_content_length > 0) {
+				current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
+
+				if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
+					last_reported_progress = (current_progress / 10) * 10;
+					if (ota_mqtt_client) {
+						tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
+						mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
+					}
+				}
+			}
 		}
 	}
 }
