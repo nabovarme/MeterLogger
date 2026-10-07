@@ -7,6 +7,7 @@
 #define ICACHE_RAM_ATTR __attribute__((section(".iram1.text")))
 #endif
 
+#ifdef DEBUG
 static void dump_hex(const void *ptr, size_t len) {
 	const uint8_t *b = (const uint8_t *)ptr;
 	size_t i;
@@ -16,10 +17,14 @@ static void dump_hex(const void *ptr, size_t len) {
 	}
 	os_printf("\n");
 }
+#endif
 
 void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
+#ifdef DEBUG
 	os_printf("cnx_csa_fn called with arg: %p\n", arg);
 	if (arg != NULL) {
 		dump_hex(arg, 32);
 	}
+#endif
+	return;
 }
