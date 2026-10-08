@@ -46,6 +46,7 @@ volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false;
 volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
+volatile bool radio_busy_connecting = false;
 
 uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
@@ -64,7 +65,7 @@ static ip_addr_t dns_ip;
 
 ICACHE_FLASH_ATTR err_t my_input_ap(struct pbuf *p, struct netif *inp) {
 	err_t err;
-	
+
 	if (acl_check_packet(p)) {
 		err = orig_input_ap(p, inp);
 	}
@@ -88,7 +89,7 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 
 	ap_ip = ap_network_addr;
 	ip4_addr4(&ap_ip) = 1;
-	
+
 	for (nif = netif_list; nif != NULL && nif->ip_addr.addr != ap_ip.addr; nif = nif->next) {
 		// skip
 	}
@@ -121,7 +122,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 #pragma GCC diagnostic pop
 	uint16_t dest_port = 0;
 	uint8_t *packet;
-	
+
 	if (p->len < sizeof(struct eth_hdr)) {
 		return false;
 	}
@@ -137,7 +138,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	if (ntohs(mac_h->type) != ETHTYPE_IP) {
 		return false;
 	}
-   
+
 	if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)) {
 		return false;
 	}
@@ -174,17 +175,17 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	if ((ip_h->dest.addr == IPADDR_BROADCAST) && (dest_port == 67)) {
 		return true;
 	}
-	
+
 	// allow dns requests to nameserver on uplink network
 	if ((ip_h->dest.addr == dns_ip.addr) && (dest_port == 53)) {
 		return true;
 	}
-	
+
 	// deny connections to hosts on uplink network
 	if ((ip_h->dest.addr & sta_network_mask.addr) == sta_network_addr.addr) {
 #ifdef DEBUG
-		printf("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n", 
-			IP2STR(&ip_h->src), IP2STR(&ip_h->dest), 
+		printf("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n",
+			IP2STR(&ip_h->src), IP2STR(&ip_h->dest),
 			proto == IP_PROTO_TCP ? "TCP" : proto == IP_PROTO_UDP ? "UDP" : "IP4", src_port, dest_port);
 #endif
 		return false;
@@ -222,23 +223,25 @@ static void ICACHE_FLASH_ATTR wifi_test_restore_saved_station(void) {
 	wifi_station_set_config_current(&stationConf);
 
 	my_auto_connect = true;
+	radio_busy_connecting = true;
+
 	wifi_station_connect();
 }
 
 static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
-	
+
 	// If is_testing is still true, it means we either timed out or failed immediately
 	if (wifi_test_ctx.is_testing) {
 		wifi_test_ctx.is_testing = false;
 		wifi_test_ctx.pending_report = true;
-		
+
 		// If it timed out or failed, calculate the duration now
 		if (wifi_test_ctx.test_result_status == 0) {
 			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
 		}
 	}
-	
+
 	// Always restore the station connection that was active before the test.
 	INFO("Wi-Fi Test: Restoring saved station config...\n");
 	wifi_test_restore_saved_station();
@@ -273,26 +276,38 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 	struct station_config test_conf;
-	
+
 	memset(&test_conf, 0, sizeof(struct station_config));
 	strncpy((char*)test_conf.ssid, wifi_test_ctx.target_ssid, WIFI_TEST_SSID_MAX_LEN);
 	strncpy((char*)test_conf.password, wifi_test_ctx.target_pwd, WIFI_TEST_PWD_MAX_LEN);
 
 	my_auto_connect = false; // Prevent reconnect loops during transition
-	
+
 	wifi_station_disconnect();
 	wifi_station_set_config_current(&test_conf);
-	
+
 	os_timer_disarm(&wifi_test_timeout_timer);
 	os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
 	os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
 
 	wifi_test_ctx._start_time = system_get_time(); // Record exact start time
+	radio_busy_connecting = true;
 	wifi_station_connect();
 }
 
 static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
 	if (my_auto_connect) {
+		// Do not assassinate an active scan! Wait 1 second instead.
+		if (wifi_scan_is_running()) {
+#ifdef DEBUG
+			printf("Scan active. Deferring reconnect.\n");
+#endif
+			os_timer_disarm(&delayed_reconnect_timer);
+			os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
+			os_timer_arm(&delayed_reconnect_timer, WIFI_SCAN_DEFER_DELAY_MS, 0);
+			return;
+		}
+		radio_busy_connecting = true;
 		wifi_station_connect();
 	}
 }
@@ -319,20 +334,20 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_test_ctx.test_result_status = 1; // Success
 			wifi_test_ctx.fail_reason = 0;
 			wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
-		
+
 			// Mark testing complete and flag pending report
 			wifi_test_ctx.is_testing = false;
 			wifi_test_ctx.pending_report = true;
-		
+
 			INFO("Wi-Fi Test: Connected successfully! RSSI: %d\n", wifi_test_ctx.tested_rssi);
 
 			// Always allow a minimal 5-second window for MQTT to send the result report
 			hold_ms = (wifi_test_ctx.stay_time_ms > 5000) ? wifi_test_ctx.stay_time_ms : 5000;
-		
+
 			os_timer_disarm(&wifi_test_timeout_timer);
 			os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
 			os_timer_arm(&wifi_test_timeout_timer, hold_ms, 0);
-		
+
 			// Fallthrough to standard GOT_IP logic so MQTT connects & sends report!
 		}
 		else if (evt->event == EVENT_STAMODE_DISCONNECTED) {
@@ -346,11 +361,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				wifi_test_ctx.fail_reason = evt->event_info.disconnected.reason;
 				wifi_test_ctx.test_result_status = 0; // Fail
 				wifi_test_ctx.attempt_time_ms = (system_get_time() - wifi_test_ctx._start_time) / 1000;
-		
+
 				// Mark testing finished and flag pending report so RPC loop reports failure!
 				wifi_test_ctx.is_testing = false;
 				wifi_test_ctx.pending_report = true;
-		
+
 				// Disarm timeout timer and trigger revert sequence immediately
 				os_timer_disarm(&wifi_test_timeout_timer);
 				wifi_test_timeout_timer_func(NULL);
@@ -378,6 +393,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_DISCONNECTED:
+			radio_busy_connecting = false;
 #ifdef DEBUG
 			printf("disconnected from ssid %s, reason %d\n",
 				evt->event_info.disconnected.ssid,
@@ -400,9 +416,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 				printf("reconnecting on disconnect (delayed)\n");
 #endif
+				wifi_station_disconnect();	// Clear the stuck connecting state
 				os_timer_disarm(&delayed_reconnect_timer);
 				os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
-				os_timer_arm(&delayed_reconnect_timer, 2000, 0); // 2 second delay gives scanner time to run
+				os_timer_arm(&delayed_reconnect_timer, WIFI_RECONNECT_DELAY_MS, 0);
 			}
 			else {
 #ifdef DEBUG
@@ -426,6 +443,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_GOT_IP:
+			radio_busy_connecting = false;
 			// set default/fallback network status
 #ifdef DEBUG
 			printf("got ip:" IPSTR ", netmask:" IPSTR "\n",
@@ -449,11 +467,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			wifi_softap_ip_config();
 
 			wifi_station_set_auto_connect(0);	// disale auto connect, we handle reconnect with this event handler
-			wifi_station_set_reconnect_policy(1);
+			wifi_station_set_reconnect_policy(0);
 			wifi_cb(wifi_status);
 			break;
 
 		case EVENT_STAMODE_DHCP_TIMEOUT:
+			radio_busy_connecting = false;
 #ifdef DEBUG
 			printf("dhcp timeout\n");
 #endif
@@ -524,17 +543,16 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
 #endif
-	
+
 	// scan for fallback network
 	if (!wifi_scan_runnning) {
 		// Do not scan if the radio is actively trying to connect
-		status = wifi_station_get_connect_status();
-		if (status == STATION_CONNECTING) {
+		if (radio_busy_connecting) {
 #ifdef DEBUG
 			printf("Radio busy reconnecting. Deferring scan.\n");
 #endif
-			// Let the timer fire again later; don't interrupt the reconnect
-			wifi_start_scan(WIFI_SCAN_INTERVAL);
+			// Break harmonic resonance by deferring for 1s instead of 5s
+			wifi_start_scan(WIFI_SCAN_DEFER_DELAY_MS);
 			return;
 		}
 
@@ -586,17 +604,17 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	bool switched_network = false;
 	static uint8_t fallback_miss_count = 0;
-	
+
 #ifdef DEBUG
 	printf ("\t-> %s(%x, %d)\n\r", __FUNCTION__, arg == NULL ? 0 : (unsigned int)arg, status);
 #endif
 	wifi_present = false;
 	wifi_fallback_present = false;
-	
+
 	// check if fallback network is present
 	if ((arg != NULL) && (status == OK)) {
 		info = (struct bss_info *)arg;
-		
+
 		while (info != NULL) {
 			if ((info != NULL) && (info->ssid != NULL) &&
 				(info->ssid_len == strlen(sys_cfg.sta_ssid)) &&
@@ -610,29 +628,29 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				wifi_fallback_present = true;
 			}
 //#ifdef DEBUG
-//			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel, 
+//			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel,
 //				info->ssid,
-//				info->bssid[0], 
-//				info->bssid[1], 
-//				info->bssid[2], 
-//				info->bssid[3], 
-//				info->bssid[4], 
+//				info->bssid[0],
+//				info->bssid[1],
+//				info->bssid[2],
+//				info->bssid[3],
+//				info->bssid[4],
 //				info->bssid[5],
 //				info->rssi,
 //				info->freq_offset,
 //				info->freqcal_val
 //			);
 //#endif
-			
+
 			// handle sending scan results via mqtt
 			if (wifi_scan_result_cb) {
 				wifi_scan_result_cb(info);
 			}
-			
+
 			info = info->next.stqe_next;
 		}
 		wifi_scan_result_cb_unregister();	// done sending via mqtt
-		
+
 		// Hysteresis and Scanner Back-off
 		if (wifi_fallback_present) {
 			fallback_miss_count = 0; // Reset miss counter when seen
@@ -676,7 +694,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				fallback_miss_count = 0;
 			}
 		}
-		
+
 #ifdef DEBUG
 		uint8_t s;
 		s = wifi_station_get_connect_status();
@@ -685,7 +703,7 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		printf("wifi status: %s (%u)\n", (s == STATION_GOT_IP) ? "connected" : "not connected", s);
 #endif
 	}
-	
+
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_scan_runnning = false;
 //	printf("scan done\n");
@@ -723,15 +741,16 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	}
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
-	
+
 	tfp_snprintf(stationConf.ssid, 32, "%s", sys_cfg.sta_ssid);
 	tfp_snprintf(stationConf.password, 64, "%s", sys_cfg.sta_pwd);
-	
+
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();	// reconnect
-	
+
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
@@ -758,13 +777,14 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	}
 	memset(&stationConf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&stationConf);
-	
+
 	tfp_snprintf(stationConf.ssid, 32, "%s", STA_FALLBACK_SSID);
 	tfp_snprintf(stationConf.password, 64, "%s", STA_FALLBACK_PASS);
-	
+
 	wifi_station_set_config_current(&stationConf);
 
 	my_auto_connect = true;		// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 	wifi_station_connect();	// reconnect
 }
 
@@ -788,6 +808,10 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	tfp_snprintf(stationConf.ssid, 32, "%s", sys_cfg.sta_ssid);
 	tfp_snprintf(stationConf.password, 64, "%s", sys_cfg.sta_pwd);
 
+	// Shut down all aggressive SDK internal reconnect loops on boot
+	wifi_station_set_auto_connect(0);
+	wifi_station_set_reconnect_policy(0);
+
 	wifi_station_set_config(&stationConf);	// save to flash so it will reconnect at boot
 	wifi_station_set_config_current(&stationConf);
 
@@ -796,6 +820,7 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	my_auto_connect = true;	// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();
@@ -807,7 +832,7 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 		wifi_station_dhcpc_set_maxtry(255);
 		wifi_station_dhcpc_start();
 	}
-	
+
 	// start wifi rssi timer
 	os_timer_disarm(&wifi_get_rssi_timer);
 	os_timer_setfn(&wifi_get_rssi_timer, (os_timer_func_t *)wifi_get_rssi_timer_func, NULL);
@@ -847,7 +872,7 @@ void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
 	if (nif == NULL) {
 		return;
 	}
-	// if is not 1, set it to 1. 
+	// if is not 1, set it to 1.
 	// kind of a hack, but the Espressif-internals expect it like this (hardcoded 1).
 	nif->num = 1;
 
@@ -914,7 +939,7 @@ void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
 		icmp_ping_mqtt_host();
 		last_uptime = uptime;
 	}
-	
+
 	// start wifi scan timer
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_setfn(&wifi_scan_timer, (os_timer_func_t *)wifi_scan_timer_func, NULL);
@@ -978,7 +1003,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 	// If already testing or connected to this target SSID, update stay duration directly
 	if ((wifi_test_ctx.is_testing || wifi_get_status() == STATION_GOT_IP) &&
 		strncmp((char*)current_conf.ssid, ssid, WIFI_TEST_SSID_MAX_LEN) == 0) {
-		
+
 #ifdef DEBUG
 		INFO("Wi-Fi Test: Already connected/testing SSID '%s'. Updating stay duration to %u ms.\n", ssid, stay_time_ms);
 #endif
@@ -993,7 +1018,7 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 			os_timer_setfn(&wifi_test_timeout_timer, (os_timer_func_t *)wifi_test_timeout_timer_func, NULL);
 			os_timer_arm(&wifi_test_timeout_timer, hold_ms, 0);
 		}
-		
+
 		return true;
 	}
 
@@ -1006,10 +1031,10 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 
 	strncpy(wifi_test_ctx.saved_ssid, (char*)current_conf.ssid, WIFI_TEST_SSID_MAX_LEN);
 	strncpy(wifi_test_ctx.saved_pwd, (char*)current_conf.password, WIFI_TEST_PWD_MAX_LEN);
-	
+
 	strncpy(wifi_test_ctx.target_ssid, ssid, WIFI_TEST_SSID_MAX_LEN);
 	strncpy(wifi_test_ctx.target_pwd, pwd, WIFI_TEST_PWD_MAX_LEN);
-	
+
 	wifi_test_ctx.test_result_status = 0; // Default to fail
 	wifi_test_ctx.tested_rssi = 0;
 	wifi_test_ctx.fail_reason = 255; // Default unknown/timeout
@@ -1065,20 +1090,20 @@ const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason) {
 #ifdef DEBUG
 void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 	struct netif *nif;
-	
+
 	for (nif = netif_list; nif != NULL; nif = nif->next) {
-		printf("nif %c%c%d (mac: %02x:%02x:%02x:%02x:%02x:%02x): " IPSTR "%s%s\n", 
-			nif->name[0], 
-			nif->name[1], 
-			nif->num, 
-			nif->hwaddr[0], 
-			nif->hwaddr[1], 
-			nif->hwaddr[2], 
-			nif->hwaddr[3], 
-			nif->hwaddr[4], 
-			nif->hwaddr[5], 
-			IP2STR(&nif->ip_addr.addr), 
-			nif->dhcp != NULL ? ", dhcp enabled" : "", 
+		printf("nif %c%c%d (mac: %02x:%02x:%02x:%02x:%02x:%02x): " IPSTR "%s%s\n",
+			nif->name[0],
+			nif->name[1],
+			nif->num,
+			nif->hwaddr[0],
+			nif->hwaddr[1],
+			nif->hwaddr[2],
+			nif->hwaddr[3],
+			nif->hwaddr[4],
+			nif->hwaddr[5],
+			IP2STR(&nif->ip_addr.addr),
+			nif->dhcp != NULL ? ", dhcp enabled" : "",
 			nif->num == netif_default->num ? ", default" : ""
 		);
 	}
