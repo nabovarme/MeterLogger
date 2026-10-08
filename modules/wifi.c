@@ -518,7 +518,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 	if (!wifi_scan_runnning) {
 		// Do not scan if the radio is actively trying to connect
 		status = wifi_station_get_connect_status();
-		if (status == STATION_CONNECTING || status == STATION_WRONG_PASSWORD || status == STATION_NO_AP_FOUND || status == STATION_CONNECT_FAIL) {
+		if (status == STATION_CONNECTING) {
 #ifdef DEBUG
 			printf("Radio busy reconnecting. Deferring scan.\n");
 #endif
