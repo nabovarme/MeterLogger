@@ -1,0 +1,156 @@
+digraph G {
+    // Global graph settings
+    fontname="Helvetica,Arial,sans-serif";
+    rankdir=TB;
+    nodesep=0.5;
+    ranksep=0.5;
+    splines=polyline;
+    
+    // Default node and edge styles
+    node [fontname="Helvetica,Arial,sans-serif", shape=box, style="filled,rounded", color=gray30, margin="0.2,0.1"];
+    edge [fontname="Helvetica,Arial,sans-serif", color=gray50, fontsize=10];
+
+    // Colors used in the graph
+    // Light Green: Success / Connected / Found
+    // Light Pink: Disconnected / Failed
+    // Light Blue: Scanner Activity
+    // Gold: Protection Logic Triggered (Anti-Assassination)
+    // Light Gray: Standard Logic / State change
+
+    // --------------------------------------------------
+    // TIME AXIS (The Spine)
+    // --------------------------------------------------
+    subgraph cluster_time {
+        style=invis;
+        node [shape=plaintext, fontcolor="#1f77b4", fontsize=12, fontweight=bold, fillcolor=none];
+        
+        Time_0   [label="T=0.0s"];
+        Time_1   [label="T+1.0s"];
+        Time_1_5 [label="T+1.5s"];
+        Time_3   [label="T+3.0s"];
+        Time_5   [label="T+5.0s"];
+        Time_5_i [label=""]; // Invisible anchor for instant events
+        Time_6   [label="T+6.0s"];
+        Time_6_5 [label="T+6.5s"];
+        Time_7   [label="T+7.0s"];
+        Time_10  [label="T+10.0s"];
+        Time_15  [label="T+15.0s"];
+        Time_15_i [label=""]; // Invisible anchor for instant events
+
+        // weight=1000 forces this line to be perfectly straight
+        Time_0 -> Time_1 -> Time_1_5 -> Time_3 -> Time_5 -> Time_5_i -> Time_6 -> Time_6_5 -> Time_7 -> Time_10 -> Time_15 -> Time_15_i [color="#1f77b4", penwidth=4, dir=none, weight=1000];
+    }
+
+    // --------------------------------------------------
+    // SCENARIO 1: The Happy Path
+    // --------------------------------------------------
+    subgraph cluster_s1 {
+        label="Scenario 1: The Happy Path\n(Default Network Present)";
+        fontsize=14;
+        fontcolor=black;
+        style="filled,dashed,rounded"; 
+        fillcolor="#eaf6ea"; // Light green background
+        color=gray50;
+
+        S1_0 [label="T=0.0s [BOOT]\nwifi_connect()\nradio_busy_connecting = TRUE", fillcolor=lightgray];
+        S1_1 [label="T+1.5s [EVENT]\nEVENT_STAMODE_GOT_IP\nradio_busy_connecting = FALSE", fillcolor=lightgreen];
+        S1_2 [label="T+5.0s [SCAN]\nTimer fires, radio is idle\nwifi_scan_running = TRUE\nStarts hardware sweep", fillcolor=lightblue];
+        S1_3 [label="T+7.0s [SCAN DONE]\nDefault AP seen. No action.\nwifi_scan_running = FALSE", fillcolor=lightblue];
+        S1_4 [label="Loop repeats normally", shape=plaintext, style=""];
+
+        S1_0 -> S1_1 [label=" Connects"];
+        S1_1 -> S1_2 [label=" 3.5s later"];
+        S1_2 -> S1_3 [label=" ~2.0s later"];
+        S1_3 -> S1_4 [style=dotted];
+    }
+
+    // --------------------------------------------------
+    // SCENARIO 2: The Search (Anti-Assassination)
+    // --------------------------------------------------
+    subgraph cluster_s2 {
+        label="Scenario 2: The Search\n(No Networks Present)";
+        fontsize=14;
+        fontcolor=black;
+        style="filled,dashed,rounded"; 
+        fillcolor="#f4f4f4"; // Light gray background
+        color=gray50;
+
+        S2_0 [label="T=0.0s [LOOP]\nConnecting...\nradio_busy_connecting = TRUE", fillcolor=lightgray];
+        S2_1 [label="T+3.0s [EVENT]\nDISCONNECTED\nradio_busy_connecting = FALSE\nArm 3s Reconnect Timer", fillcolor=lightpink];
+        S2_2 [label="T+5.0s [SCAN]\nTimer fires, radio is idle\nwifi_scan_running = TRUE\nStarts hardware sweep", fillcolor=lightblue];
+        S2_3 [label="T+6.0s [LOGIC]\nReconnect Timer Wakes Up\nSees wifi_scan_running == TRUE\nDefers 1s (Anti-Assassination)", fillcolor=gold];
+        S2_4 [label="T+6.5s [SCAN DONE]\nNothing found\nwifi_scan_running = FALSE", fillcolor=lightblue];
+        S2_5 [label="T+7.0s [LOGIC]\nDeferred Reconnect Timer Wakes\nradio_busy_connecting = TRUE\nConnecting...", fillcolor=lightgray];
+
+        S2_0 -> S2_1 [label=" Fails"];
+        S2_1 -> S2_2 [label=" 2.0s later"];
+        S2_2 -> S2_3 [label=" 1.0s later\n(Collision!)"];
+        S2_3 -> S2_4 [label=" 0.5s later"];
+        S2_4 -> S2_5 [label=" 0.5s later"];
+    }
+
+    // --------------------------------------------------
+    // SCENARIO 3: The Rescue (Fallback Appears)
+    // --------------------------------------------------
+    subgraph cluster_s3 {
+        label="Scenario 3: The Rescue\n(Fallback Network Appears)";
+        fontsize=14;
+        fontcolor=black;
+        style="filled,dashed,rounded"; 
+        fillcolor="#e0f7fa"; // Light cyan background
+        color=gray50;
+
+        S3_0 [label="T=0.0s [EVENT]\nDISCONNECTED\nradio_busy_connecting = FALSE", fillcolor=lightpink];
+        S3_1 [label="T+1.0s [SCAN]\nTimer fires, radio is idle\nStarts hardware sweep", fillcolor=lightblue];
+        S3_2 [label="T+3.0s [SCAN DONE]\nFallback AP Found!\nCall wifi_fallback()\nradio_busy_connecting = TRUE", fillcolor=lightgreen];
+        S3_3 [label="T+5.0s [EVENT]\nEVENT_STAMODE_GOT_IP\nradio_busy_connecting = FALSE", fillcolor=lightgreen];
+        S3_4 [label="T+5.0s [LOGIC]\nNetwork switched.\nDelay next scan for 20s\n(Let MQTT/DHCP settle)", fillcolor=lightgray];
+
+        S3_0 -> S3_1 [label=" 1.0s later"];
+        S3_1 -> S3_2 [label=" ~2.0s later"];
+        S3_2 -> S3_3 [label=" 2.0s later"];
+        S3_3 -> S3_4 [label=" Instantly"];
+    }
+
+    // --------------------------------------------------
+    // SCENARIO 4: The Revert (Fallback Disappears)
+    // --------------------------------------------------
+    subgraph cluster_s4 {
+        label="Scenario 4: The Revert\n(Fallback Network Disappears)";
+        fontsize=14;
+        fontcolor=black;
+        style="filled,dashed,rounded"; 
+        fillcolor="#fffde7"; // Light yellow background
+        color=gray50;
+
+        S4_0 [label="T=0.0s [STATE]\nSafely connected to Fallback AP", fillcolor=lightgreen];
+        S4_1 [label="T+5.0s [SCAN DONE]\nFallback AP NOT seen\nfallback_miss_count = 1", fillcolor=lightgoldenrodyellow];
+        S4_2 [label="T+10.0s [SCAN DONE]\nFallback AP NOT seen\nfallback_miss_count = 2", fillcolor=lightgoldenrodyellow];
+        S4_3 [label="T+15.0s [SCAN DONE]\nFallback AP NOT seen\nfallback_miss_count = 3", fillcolor=lightpink];
+        S4_4 [label="T+15.0s [LOGIC]\nHysteresis limit reached!\nCall wifi_default()\nradio_busy_connecting = TRUE", fillcolor=lightgray];
+
+        S4_0 -> S4_1 [label=" 5.0s later"];
+        S4_1 -> S4_2 [label=" 5.0s later"];
+        S4_2 -> S4_3 [label=" 5.0s later"];
+        S4_3 -> S4_4 [label=" Instantly"];
+    }
+
+    // ==========================================
+    // HORIZONTAL ALIGNMENT (Locking to Time Axis)
+    // ==========================================
+    { rank=same; Time_0; S1_0; S2_0; S3_0; S4_0; }
+    { rank=same; Time_1; S3_1; }
+    { rank=same; Time_1_5; S1_1; }
+    { rank=same; Time_3; S2_1; S3_2; }
+    { rank=same; Time_5; S1_2; S2_2; S3_3; S4_1; }
+    { rank=same; Time_5_i; S3_4; }
+    { rank=same; Time_6; S2_3; }
+    { rank=same; Time_6_5; S2_4; }
+    { rank=same; Time_7; S1_3; S2_5; }
+    { rank=same; Time_10; S1_4; S4_2; }
+    { rank=same; Time_15; S4_3; }
+    { rank=same; Time_15_i; S4_4; }
+
+    // Invisible edges to enforce cluster ordering from left to right
+    Time_0 -> S1_0 -> S2_0 -> S3_0 -> S4_0 [style=invis];
+}
