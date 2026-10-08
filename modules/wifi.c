@@ -538,7 +538,6 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
 }
 
 static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
-	uint8_t status;
 //	struct scan_config config;
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
