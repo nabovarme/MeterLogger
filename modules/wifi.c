@@ -27,6 +27,7 @@
 static os_timer_t wifi_scan_timer;
 static os_timer_t wifi_scan_timeout_timer;
 static os_timer_t wifi_get_rssi_timer;
+static os_timer_t delayed_reconnect_timer;
 
 WifiCallback wifi_cb = NULL;
 wifi_scan_result_event_cb_t wifi_scan_result_cb = NULL;
@@ -290,6 +291,12 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 	wifi_station_connect();
 }
 
+static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
+	if (my_auto_connect) {
+		wifi_station_connect();
+	}
+}
+
 void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t wifi_status;
 //	static uint8_t wifi_event;
@@ -391,9 +398,11 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
-				printf("reconnecting on disconnect\n");
+				printf("reconnecting on disconnect (delayed)\n");
 #endif
-				wifi_station_connect();	// reconnect on disconnect
+				os_timer_disarm(&delayed_reconnect_timer);
+				os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
+				os_timer_arm(&delayed_reconnect_timer, 2000, 0); // 2 second delay gives scanner time to run
 			}
 			else {
 #ifdef DEBUG
@@ -460,10 +469,12 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			}
 			if (my_auto_connect) {
 #ifdef DEBUG
-				printf("reconnecting on dhcp timeout\n");
+				printf("reconnecting on dhcp timeout (delayed)\n");
 #endif
 				wifi_station_disconnect();
-				wifi_station_connect();
+				os_timer_disarm(&delayed_reconnect_timer);
+				os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
+				os_timer_arm(&delayed_reconnect_timer, WIFI_RECONNECT_DELAY_MS, 0);
 			}
 			break;
 
