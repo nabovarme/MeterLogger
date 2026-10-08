@@ -1,10 +1,15 @@
 ESPTOOL_CHIP ?= esp8266
 
-BUILD_BASE = build
-FW_BASE = firmware
+# Define OTA flag (defaults to 0 / Factory Build)
+OTA ?= 0
 
-# Always define OTA_FW so rBoot compatibility is maintained for all builds
-CFLAGS += -DOTA_FW
+ifeq ($(OTA), 1)
+	BUILD_BASE = build_ota
+	FW_BASE = firmware_ota
+else
+	BUILD_BASE = build
+	FW_BASE = firmware
+endif
 
 RELEASE_BASE = release
 ESPTOOL = python3 -m esptool
@@ -86,6 +91,11 @@ endif
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG
     CFLAGS += -DDEBUG -DPRINTF_DEBUG
+endif
+
+# Only link OTA_FW if this is an OTA build loop
+ifeq ($(OTA), 1)
+    CFLAGS += -DOTA_FW
 endif
 
 ifdef SERIAL
@@ -261,13 +271,17 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 
 release:
-	$(vecho) "--- 1/2: Building Firmware ---"
-	$(Q) $(MAKE) ota_bins webpages.espfs
-	$(vecho) "--- 2/2: Packaging Release for $(SERIAL) ---"
+	$(vecho) "--- 1/3: Building Factory Firmware (with embedded keys) ---"
+	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
+	$(vecho) "--- 2/3: Building OTA Firmware (generic / no keys) ---"
+	$(Q) $(MAKE) ota_bins OTA=1
+	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/rboot.bin
 	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.bin
 	$(Q) cp firmware/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.bin
+	$(Q) cp firmware_ota/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin
+	$(Q) cp firmware_ota/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
@@ -293,8 +307,8 @@ rebuild: clean all
 clean:
 	$(Q) rm -f app_app.size
 	$(Q) rm -f $(TARGET).S
-	$(Q) rm -rf build
-	$(Q) rm -f firmware/user*.bin
+	$(Q) rm -rf build build_ota
+	$(Q) rm -f firmware/user*.bin firmware_ota/user*.bin
 	$(Q) rm -f $(TARGET_OUT_SLOT0) $(TARGET_OUT_SLOT1)
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f webpages.espfs
