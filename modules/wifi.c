@@ -410,9 +410,10 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #ifdef DEBUG
 				printf("reconnecting on disconnect (delayed)\n");
 #endif
+				wifi_station_disconnect();	// Clear the stuck connecting state
 				os_timer_disarm(&delayed_reconnect_timer);
 				os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
-				os_timer_arm(&delayed_reconnect_timer, WIFI_RECONNECT_DELAY_MS, 0); // 2 second delay gives scanner time to run
+				os_timer_arm(&delayed_reconnect_timer, WIFI_RECONNECT_DELAY_MS, 0);
 			}
 			else {
 #ifdef DEBUG
