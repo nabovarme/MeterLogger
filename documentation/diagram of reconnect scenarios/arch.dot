@@ -1,0 +1,100 @@
+digraph G {
+    // Global graph settings
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif", shape=box, style=filled, fillcolor=white, color=black, margin="0.2,0.1"]
+    edge [fontname="Helvetica,Arial,sans-serif", color=gray30, fontsize=10]
+    rankdir=TB;
+    compound=true;
+    nodesep=0.5;
+    ranksep=0.7;
+
+    subgraph cluster_main {
+        label="Main Connection / Event Loop";
+        fontsize=14;
+        fontcolor=black;
+        style=dashed;
+        color=blue;
+        bgcolor=mintcream;
+
+        // Nodes
+        Init [shape=oval, fillcolor=lightblue, label="Boot / Init"];
+        DisableSDK [label="Disable SDK Reconnect Policies"];
+        SetBusy1 [label="radio_busy_connecting = TRUE"];
+        WifiConnect [label="wifi_station_connect()", fillcolor=lightyellow];
+        
+        SDKEvent [shape=diamond, fillcolor=orange, label="SDK Event Triggered"];
+        
+        GotIP [label="GOT_IP", fillcolor=lightgreen];
+        SetIdle1 [label="radio_busy_connecting = FALSE"];
+        
+        Disconnected [label="DISCONNECTED", fillcolor=lightpink];
+        SetIdle2 [label="radio_busy_connecting = FALSE"];
+        ClearState [label="wifi_station_disconnect()\n(Clears SDK stuck state)"];
+        ArmTimer [label="Arm Reconnect Timer\n(Wait 3000 ms)"];
+        
+        RecTimerFires [shape=oval, fillcolor=lightblue, label="Reconnect Timer Fires"];
+        CheckScan [shape=diamond, fillcolor=orange, label="wifi_scan_is_running?"];
+        DeferRec [label="Defer Timer\nWait 1000 ms\n(Anti-Assassination)", fillcolor=lightcyan];
+        
+        SetBusy2 [label="radio_busy_connecting = TRUE"];
+
+        // Edges
+        Init -> DisableSDK;
+        DisableSDK -> SetBusy1;
+        SetBusy1 -> WifiConnect;
+        SetBusy2 -> WifiConnect;
+        
+        WifiConnect -> SDKEvent [style=dashed, label=" Async"];
+        
+        SDKEvent -> GotIP [label="SUCCESS", color=darkgreen, fontcolor=darkgreen, penwidth=2];
+        GotIP -> SetIdle1;
+        
+        SDKEvent -> Disconnected [label="FAILED", color=red, fontcolor=red, penwidth=2];
+        Disconnected -> SetIdle2;
+        SetIdle2 -> ClearState;
+        ClearState -> ArmTimer;
+        ArmTimer -> RecTimerFires;
+        
+        RecTimerFires -> CheckScan;
+        CheckScan -> DeferRec [label=" YES (Scan active!)", color=red, fontcolor=red];
+        DeferRec -> RecTimerFires [label=" Loop", style=dotted, constraint=false];
+        
+        CheckScan -> SetBusy2 [label=" NO (Air is clear)", color=darkgreen, fontcolor=darkgreen];
+    }
+
+    subgraph cluster_scanner {
+        label="Background Scanner Logic";
+        fontsize=14;
+        fontcolor=black;
+        style=dashed;
+        color=purple;
+        bgcolor=snow;
+
+        // Nodes
+        ScanTimerFires [shape=oval, fillcolor=lightblue, label="Scan Timer Fires (5s)"];
+        CheckBusy [shape=diamond, fillcolor=orange, label="radio_busy_connecting?"];
+        DeferScan [label="Defer Timer\nWait 1000 ms\n(Anti-Resonance)", fillcolor=lightcyan];
+        
+        StartScan [label="wifi_scan_runnning = TRUE\nStart Hardware Scan"];
+        ScanDone [label="wifi_scan_done_cb\n(Hardware Scan: 1.5 - 3.0s)", fillcolor=lightyellow];
+        
+        CheckFallback [shape=diamond, fillcolor=orange, label="Fallback AP Found?"];
+        ScanNext [label="wifi_scan_runnning = FALSE\nArm next 5s scan timer"];
+        WifiFallback [label="wifi_fallback()", fillcolor=lightgreen];
+
+        // Edges
+        ScanTimerFires -> CheckBusy;
+        CheckBusy -> DeferScan [label=" YES (Busy!)", color=red, fontcolor=red];
+        DeferScan -> ScanTimerFires [label=" Loop", style=dotted, constraint=false];
+        
+        CheckBusy -> StartScan [label=" NO (Idle)", color=darkgreen, fontcolor=darkgreen];
+        StartScan -> ScanDone [style=dashed, label=" Async"];
+        ScanDone -> CheckFallback;
+        
+        CheckFallback -> ScanNext [label=" NO"];
+        CheckFallback -> WifiFallback [label=" YES", color=darkgreen, fontcolor=darkgreen, penwidth=2];
+    }
+
+    // Cross-cluster interactions
+    WifiFallback -> SetBusy1 [label=" Jumps to connection logic", style=dashed, color=blue, penwidth=2];
+}
