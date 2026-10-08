@@ -1,7 +1,17 @@
 ESPTOOL_CHIP ?= esp8266
 
-BUILD_BASE = build
-FW_BASE = firmware
+# Define OTA flag (defaults to 0 / Factory Build)
+OTA ?= 0
+
+ifeq ($(OTA), 1)
+	BUILD_BASE = build_ota
+	FW_BASE = firmware_ota
+	CFLAGS += -DOTA_FW
+else
+	BUILD_BASE = build
+	FW_BASE = firmware
+endif
+
 RELEASE_BASE = release
 ESPTOOL = python3 -m esptool
 
@@ -64,10 +74,7 @@ EXTRA_INCDIR	= . \
 LIBS			= main net80211 wpa pp phy hal ssl lwip_open gcc c
 
 # compiler flags using during compilation of source files
-CFLAGS			= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
-
-# Link OTA_FW by default
-CFLAGS += -DOTA_FW
+CFLAGS			+= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
 # linker flags used to generate the main object file
 LDFLAGS = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections -Lld -L$(SDK_BASE)/ld
@@ -260,13 +267,17 @@ $(FW_BASE):
 	$(Q) mkdir -p $@
 
 release:
-	$(vecho) "--- 1/2: Building Firmware ---"
-	$(Q) $(MAKE) ota_bins webpages.espfs
-	$(vecho) "--- 2/2: Packaging Release for $(SERIAL) ---"
+	$(vecho) "--- 1/3: Building Factory Firmware (with embedded keys) ---"
+	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
+	$(vecho) "--- 2/3: Building OTA Firmware (generic / no keys) ---"
+	$(Q) $(MAKE) ota_bins OTA=1
+	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/rboot.bin
 	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.bin
 	$(Q) cp firmware/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.bin
+	$(Q) cp firmware_ota/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin
+	$(Q) cp firmware_ota/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
@@ -292,8 +303,8 @@ rebuild: clean all
 clean:
 	$(Q) rm -f app_app.size
 	$(Q) rm -f $(TARGET).S
-	$(Q) rm -rf build
-	$(Q) rm -f firmware/user*.bin
+	$(Q) rm -rf build build_ota
+	$(Q) rm -f firmware/user*.bin firmware_ota/user*.bin
 	$(Q) rm -f $(TARGET_OUT_SLOT0) $(TARGET_OUT_SLOT1)
 	$(Q) rm -f $(APP_AR)
 	$(Q) rm -f webpages.espfs
