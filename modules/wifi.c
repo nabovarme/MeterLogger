@@ -798,6 +798,10 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 	tfp_snprintf(stationConf.ssid, 32, "%s", sys_cfg.sta_ssid);
 	tfp_snprintf(stationConf.password, 64, "%s", sys_cfg.sta_pwd);
 
+	// Shut down all aggressive SDK internal reconnect loops on boot
+	wifi_station_set_auto_connect(0);
+	wifi_station_set_reconnect_policy(0);
+
 	wifi_station_set_config(&stationConf);	// save to flash so it will reconnect at boot
 	wifi_station_set_config_current(&stationConf);
 
