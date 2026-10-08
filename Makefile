@@ -1,21 +1,9 @@
 ESPTOOL_CHIP ?= esp8266
 
-# Define OTA flag (defaults to 0 / Factory Build)
-OTA ?= 0
-
-ifeq ($(OTA), 1)
-	BUILD_BASE = build_ota
-	FW_BASE = firmware_ota
-else
-	BUILD_BASE = build
-	FW_BASE = firmware
-endif
-
+BUILD_BASE = build
+FW_BASE = firmware
 RELEASE_BASE = release
-MERGED_BIN = firmware.bin
 ESPTOOL = python3 -m esptool
-BAUDRATE = 1500000
-DEBUG_SPEED = 1200
 
 # name for the target project
 TARGET		= app
@@ -36,81 +24,25 @@ CFLAGS += -DESPFS_POS=$(ESPFS)
 
 FLAVOR ?= release
 
-#GIT_VERSION := $(shell git describe --exact-match 2> /dev/null || echo "`git symbolic-ref HEAD 2> /dev/null | cut -b 12-`-`git log --pretty=format:\"%h\" -1`")
 GIT_VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
 CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
 CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
 
 #############################################################
-# Select compile
+# Linux Build Environment Configuration
 #
-ifeq ($(OS),Windows_NT)
-# WIN32
-# We are under windows.
-	ifeq ($(XTENSA_CORE),lx106)
-		# It is xcc
-		AR = xt-ar
-		CC = xt-xcc
-		LD = xt-xcc
-		NM = xt-nm
-		CPP = xt-cpp
-		OBJCOPY = xt-objcopy
-		#MAKE = xt-make
-		CCFLAGS += -Os --rename-section .text=.irom0.text --rename-section .literal=.irom0.literal
-	else 
-		# It is gcc, may be cygwin
-		# Can we use -fdata-sections?
-		CCFLAGS += -Os -ffunction-sections -fno-jump-tables
-		AR = xtensa-lx106-elf-ar
-		CC = xtensa-lx106-elf-gcc
-		LD = xtensa-lx106-elf-gcc
-		NM = xtensa-lx106-elf-nm
-		CPP = xtensa-lx106-elf-cpp
-		OBJCOPY = xtensa-lx106-elf-objcopy
-	endif
-	ESPPORT 	?= com1
-	SDK_BASE	?= c:/Espressif/ESP8266_SDK
-    ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-# ->AMD64
-    endif
-    ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-# ->IA32
-    endif
-else
-# We are under other system, may be Linux. Assume using gcc.
-	# Can we use -fdata-sections?
-	ESPPORT ?= /dev/ttyUSB0
-	SDK_BASE	?= $(HOME)/esp8266/esp-open-sdk/sdk
+SDK_BASE ?= $(HOME)/esp8266/esp-open-sdk/sdk
 
-	CCFLAGS += -Os -ffunction-sections -fdata-sections -fno-jump-tables
-	AR = xtensa-lx106-elf-ar
-	AS = xtensa-lx106-elf-as
-	CC = xtensa-lx106-elf-gcc
-	LD = xtensa-lx106-elf-gcc
-	NM = xtensa-lx106-elf-nm
-	CPP = xtensa-lx106-elf-cpp
-	OBJCOPY = xtensa-lx106-elf-objcopy
-	OBJDUMP = xtensa-lx106-elf-objdump
-	SIZE = xtensa-lx106-elf-size
-    UNAME_S := $(shell uname -s)
-
-    ifeq ($(UNAME_S),Linux)
-# LINUX
-    endif
-    ifeq ($(UNAME_S),Darwin)
-# OSX
-    endif
-    UNAME_P := $(shell uname -p)
-    ifeq ($(UNAME_P),x86_64)
-# ->AMD64
-    endif
-    ifneq ($(filter %86,$(UNAME_P)),)
-# ->IA32
-    endif
-    ifneq ($(filter arm%,$(UNAME_P)),)
-# ->ARM
-    endif
-endif
+CCFLAGS += -Os -ffunction-sections -fdata-sections -fno-jump-tables
+AR = xtensa-lx106-elf-ar
+AS = xtensa-lx106-elf-as
+CC = xtensa-lx106-elf-gcc
+LD = xtensa-lx106-elf-gcc
+NM = xtensa-lx106-elf-nm
+CPP = xtensa-lx106-elf-cpp
+OBJCOPY = xtensa-lx106-elf-objcopy
+OBJDUMP = xtensa-lx106-elf-objdump
+SIZE = xtensa-lx106-elf-size
 #############################################################
 
 GIT_LWIP_VERSION := $(shell cd $(SDK_BASE)/../esp-open-lwip ; git rev-parse --abbrev-ref HEAD)-$(shell cd $(SDK_BASE)/../esp-open-lwip ; git rev-list HEAD --count)-$(shell cd $(SDK_BASE)/../esp-open-lwip ; git describe --abbrev=4 --dirty --always)
@@ -134,6 +66,9 @@ LIBS			= main net80211 wpa pp phy hal ssl lwip_open gcc c
 # compiler flags using during compilation of source files
 CFLAGS			= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
+# Link OTA_FW by default
+CFLAGS += -DOTA_FW
+
 # linker flags used to generate the main object file
 LDFLAGS = -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections -Lld -L$(SDK_BASE)/ld
 
@@ -150,11 +85,6 @@ endif
 ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG
     CFLAGS += -DDEBUG -DPRINTF_DEBUG
-	DEBUG_SPEED = 115200
-endif
-
-ifeq ($(OTA), 1)
-    CFLAGS += -DOTA_FW
 endif
 
 ifdef SERIAL
@@ -282,9 +212,7 @@ $1/%.o: %.c | checkdirs
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean ota_bins merge_bin release flash \
-	htmlflash flashall flashblank wifisetup flash107th_bit_0xff \
-	size getstacktrace objdump screen minicom test rebuild ota
+.PHONY: all checkdirs clean ota_bins release size objdump rebuild
 
 all: release
 
@@ -331,102 +259,46 @@ $(BUILD_DIR):
 $(FW_BASE):
 	$(Q) mkdir -p $@
 
-merge_bin: ota_bins webpages.espfs
-	$(vecho) "Merging firmware into $(FW_BASE)/$(MERGED_BIN)"
-	$(Q) $(ESPTOOL) --chip $(ESPTOOL_CHIP) merge_bin -o $(FW_BASE)/$(MERGED_BIN) \
-		0xFE000 $(FW_BASE)/blank.bin \
-		0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin \
-		0x00000 rboot/rboot.bin \
-		0x02000 $(USER1_BIN) \
-		0x7E000 webpages.espfs
-
-# Redefined the release rule to orchestrate both Factory and OTA builds sequentially
-# Change this:
 release:
-	$(vecho) "--- 1/3: Building Factory Firmware (with embedded keys) ---"
-	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
-	$(vecho) "--- 2/3: Building OTA Firmware (generic / no keys) ---"
-	$(Q) $(MAKE) ota_bins OTA=1
-	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) ---"
+	$(vecho) "--- 1/2: Building Firmware ---"
+	$(Q) $(MAKE) ota_bins webpages.espfs
+	$(vecho) "--- 2/2: Packaging Release for $(SERIAL) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/rboot.bin
 	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.bin
 	$(Q) cp firmware/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.bin
-	$(Q) cp firmware_ota/user1.bin $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin
-	$(Q) cp firmware_ota/user2.bin $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
 	$(vecho) "Release populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
-# New dedicated OTA target
-ota:
-	$(vecho) "Building clean OTA firmware without factory keys..."
-	$(Q) $(MAKE) all OTA=1
-
-flash: $(USER1_BIN)
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x02000 $(USER1_BIN)
-
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
+	$(Q) if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
 
 mkespfsimage/mkespfsimage: mkespfsimage/
 	$(Q) make -C mkespfsimage
-
-htmlflash: webpages.espfs
-	if [ $$(stat -c '%s' webpages.espfs) -gt $$(( 0x2E000 )) ]; then echo "webpages.espfs too big!"; false; fi
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout $(ESPFS) webpages.espfs
-
-flashall: ota_bins webpages.espfs
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 $(FW_BASE)/blank.bin 0xFC000 firmware/esp_init_data_default_112th_byte_0x03.bin 0x00000 rboot/rboot.bin 0x02000 $(USER1_BIN) $(ESPFS) webpages.espfs
-
-flashblank:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0x0 firmware/blank512k.bin 0x80000 firmware/blank512k.bin
-
-wifisetup:
-	until nmcli d wifi connect "$(WIFI_SSID)" password "$(CUSTOM_AP_PASSWORD)"; do echo "retrying to connect to wifi"; done && sleep 2; firefox 'http://192.168.4.1/'
-
-flash107th_bit_0xff:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) write_flash --flash_size 1MB --flash_mode dout 0xFE000 firmware/esp_init_data_default_107th_byte_0xff.bin
 
 size:
 	$(Q) $(SIZE) -A -t -d $(APP_AR) | tee $(BUILD_BASE)/../app_app.size
 	$(Q) $(SIZE) -B -t -d $(APP_AR) | tee -a $(BUILD_BASE)/../app_app.size
 
-getstacktrace:
-	$(ESPTOOL) -p $(ESPPORT) -b $(BAUDRATE) read_flash 0x80000 0x4000 firmware/stack_trace.dump
-
-#stacktracedecode:
-#	test -s $(TARGET_OUT) || echo "Need to make all first" && exit
-#	test -s firmware/stack_trace.dump || echo "Need to make getstacktrace first" && exit
-#	java -jar /meterlogger/EspStackTraceDecoder.jar /meterlogger/esp-open-sdk/xtensa-lx106-elf/bin/xtensa-lx106-elf-addr2line build/app.out firmware/stack_trace.dump
-
 objdump:
 	test -s $(TARGET_OUT_SLOT0) || echo "Need to make all first" && exit
 	$(OBJDUMP) -f -s -d --source $(TARGET_OUT_SLOT0) > $(TARGET).S
-
-screen:
-	screen /dev/ttyUSB0 $(DEBUG_SPEED),cstopb
-minicom:
-	minicom -D /dev/ttyUSB0 -b 300 -7
-
-test: flash
-	screen $(ESPPORT) 115200
 
 rebuild: clean all
 
 clean:
 	$(Q) rm -f app_app.size
 	$(Q) rm -f $(TARGET).S
-	$(Q) rm -rf build build_ota
-	$(Q) rm -f firmware/user*.bin firmware_ota/user*.bin
-	$(Q) rm -f $(TARGET_OUT_SLOT0)$(TARGET_OUT_SLOT1)
+	$(Q) rm -rf build
+	$(Q) rm -f firmware/user*.bin
+	$(Q) rm -f $(TARGET_OUT_SLOT0) $(TARGET_OUT_SLOT1)
 	$(Q) rm -f $(APP_AR)
+	$(Q) rm -f webpages.espfs
 
 foo:
-#	echo $(CFLAGS)
-#	@echo $(CUSTOM_KEY)
-#	@echo $(CUSTOM_AP_PASSWORD)
 	@echo $(GIT_LWIP_VERSION)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))
