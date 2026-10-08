@@ -46,6 +46,7 @@ volatile bool get_rssi_running = false;
 volatile bool wifi_default_ok = false;
 volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
+volatile bool radio_busy_connecting = false;
 
 uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
@@ -222,6 +223,8 @@ static void ICACHE_FLASH_ATTR wifi_test_restore_saved_station(void) {
 	wifi_station_set_config_current(&stationConf);
 
 	my_auto_connect = true;
+	radio_busy_connecting = true;
+
 	wifi_station_connect();
 }
 
@@ -288,6 +291,7 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 	os_timer_arm(&wifi_test_timeout_timer, WIFI_TEST_TIMEOUT_MS, 0);
 
 	wifi_test_ctx._start_time = system_get_time(); // Record exact start time
+	radio_busy_connecting = true;
 	wifi_station_connect();
 }
 
@@ -303,6 +307,7 @@ static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
 			os_timer_arm(&delayed_reconnect_timer, WIFI_SCAN_DEFER_DELAY_MS, 0);
 			return;
 		}
+		radio_busy_connecting = true;
 		wifi_station_connect();
 	}
 }
@@ -388,6 +393,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_DISCONNECTED:
+			radio_busy_connecting = false;
 #ifdef DEBUG
 			printf("disconnected from ssid %s, reason %d\n",
 				evt->event_info.disconnected.ssid,
@@ -437,6 +443,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_GOT_IP:
+			radio_busy_connecting = false;
 			// set default/fallback network status
 #ifdef DEBUG
 			printf("got ip:" IPSTR ", netmask:" IPSTR "\n",
@@ -465,6 +472,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			break;
 
 		case EVENT_STAMODE_DHCP_TIMEOUT:
+			radio_busy_connecting = false;
 #ifdef DEBUG
 			printf("dhcp timeout\n");
 #endif
@@ -539,8 +547,7 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 	// scan for fallback network
 	if (!wifi_scan_runnning) {
 		// Do not scan if the radio is actively trying to connect
-		status = wifi_station_get_connect_status();
-		if (status == STATION_CONNECTING) {
+		if (radio_busy_connecting) {
 #ifdef DEBUG
 			printf("Radio busy reconnecting. Deferring scan.\n");
 #endif
@@ -740,6 +747,7 @@ void ICACHE_FLASH_ATTR wifi_default() {
 
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();	// reconnect
 
@@ -776,6 +784,7 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_set_config_current(&stationConf);
 
 	my_auto_connect = true;		// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 	wifi_station_connect();	// reconnect
 }
 
@@ -811,6 +820,7 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	my_auto_connect = true;	// handle_event_cb() based auto connect
+	radio_busy_connecting = true;
 
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();
