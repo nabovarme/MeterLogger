@@ -293,6 +293,16 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 
 static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
 	if (my_auto_connect) {
+		// Do not assassinate an active scan! Wait 1 second instead.
+		if (wifi_scan_is_running()) {
+#ifdef DEBUG
+			printf("Scan active. Deferring reconnect.\n");
+#endif
+			os_timer_disarm(&delayed_reconnect_timer);
+			os_timer_setfn(&delayed_reconnect_timer, (os_timer_func_t *)delayed_reconnect_timer_func, NULL);
+			os_timer_arm(&delayed_reconnect_timer, WIFI_SCAN_DEFER_DELAY_MS, 0);
+			return;
+		}
 		wifi_station_connect();
 	}
 }
@@ -533,8 +543,8 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 #ifdef DEBUG
 			printf("Radio busy reconnecting. Deferring scan.\n");
 #endif
-			// Let the timer fire again later; don't interrupt the reconnect
-			wifi_start_scan(WIFI_SCAN_INTERVAL);
+			// Break harmonic resonance by deferring for 1s instead of 5s
+			wifi_start_scan(WIFI_SCAN_DEFER_DELAY_MS);
 			return;
 		}
 
