@@ -1,6 +1,7 @@
 #include "ets_sys.h"
 #include "osapi.h"
 #include "c_types.h"
+#include "user_interface.h"
 #include <stdbool.h>
 
 // Fallback macro definition if ICACHE_RAM_ATTR is not defined in SDK headers
@@ -14,31 +15,35 @@ bool cnx_csa_new_call_flag = false;
 
 // Reference to the original system_get_sdk_version function provided by SDK
 extern const char * __real_system_get_sdk_version(void);
-
-//#ifdef DEBUG
-//static void dump_hex(const void *ptr, size_t len) {
-//	const uint8_t *b = (const uint8_t *)ptr;
-//	size_t i;
-//	for (i = 0; i < len; i++) {
-//		os_printf("%02x ", b[i]);
-//		if ((i + 1) % 16 == 0) os_printf("\n");
-//	}
-//	os_printf("\n");
-//}
-//#endif
+extern void __real_cnx_csa_fn(void *arg);
 
 void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
-	// Increment counter and flag for MQTT broadcast
+	// Increment counter and flag for MQTT/system logging
 	cnx_csa_call_count++;
 	cnx_csa_new_call_flag = true;
 
-//#ifdef DEBUG
-//	os_printf("cnx_csa_fn intercepted! (Total calls: %u) arg: %p\n", cnx_csa_call_count, arg);
-//	if (arg != NULL) {
-//		dump_hex(arg, 32);
-//	}
-//#endif
-	return;
+	// Check if station interface is enabled
+	uint8 mode = wifi_get_opmode();
+	if (mode != STATION_MODE && mode != STATIONAP_MODE) {
+		// Station disabled; ignore CSA frame
+		return;
+	}
+
+	// Validate current connection status
+	// If the station is scanning or disconnected, ignore incoming CSA commands
+	enum station_status status = wifi_station_get_connect_status();
+	if (status != STATION_GOT_IP && status != STATION_CONNECTED) {
+		#ifdef DEBUG
+		os_printf("cnx_csa_fn: Blocked unassociated/scanning CSA switch (status: %d)\n", status);
+		#endif
+		return;
+	}
+
+	// Option A: If you want to block ALL CSA execution permanently (100% immune to rogue CSAs):
+	// return;
+
+	// Option B: Allow valid CSA execution if station is currently associated to an AP
+	__real_cnx_csa_fn(arg);
 }
 
 ICACHE_FLASH_ATTR
