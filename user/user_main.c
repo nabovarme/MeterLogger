@@ -34,6 +34,10 @@
 #include "kmp_request.h"
 #endif
 
+// Link tracking variables from cnx_csa_fn_patch.c
+extern uint32_t cnx_csa_call_count;
+extern bool cnx_csa_new_call_flag;
+
 bool fast_boot;
 
 #ifdef IMPULSE
@@ -64,6 +68,7 @@ static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
 static os_timer_t mqtt_connected_defer_timer;
 #endif
 static os_timer_t wifi_test_report_timer;
+static os_timer_t csa_report_timer;
 #ifdef EN61107
 static os_timer_t en61107_request_send_timer;
 #elif defined IMPULSE
@@ -644,6 +649,35 @@ ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 }
 #endif
 
+ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
+	if (cnx_csa_new_call_flag) {
+		cnx_csa_new_call_flag = false; // Reset flag
+
+		if (mqtt_client.pCon != NULL) {
+			char mqtt_topic[MQTT_TOPIC_L];
+			char mqtt_message[MQTT_MESSAGE_L];
+			char cleartext[MQTT_MESSAGE_L];
+			int mqtt_message_l;
+
+			memset(mqtt_message, 0, sizeof(mqtt_message));
+			memset(cleartext, 0, sizeof(cleartext));
+
+#ifdef EN61107
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cnx_csa_fn_called/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cnx_csa_fn_called/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cnx_csa_fn_called/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "count=%u", cnx_csa_call_count);
+
+			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+		}
+	}
+}
+
 ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
@@ -716,6 +750,11 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		os_timer_arm(&wifi_test_report_timer, 3500, 0);
 	}
 
+	// Check for CSA drops periodically while MQTT is connected
+	os_timer_disarm(&csa_report_timer);
+	os_timer_setfn(&csa_report_timer, (os_timer_func_t *)csa_report_timer_func, NULL);
+	os_timer_arm(&csa_report_timer, 5000, 1);       // check every 5 seconds
+
 	// send initial mqtt rpc commands defered, so mqtt_tcpclient_recv() will not block for too long time
 	mqtt_connected_first_mqtt_rpc_state = 0;
 	os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
@@ -740,6 +779,9 @@ ICACHE_FLASH_ATTR void mqtt_disconnected_cb(uint32_t *args) {
 	if (wifi_fallback_active) {
 		wifi_fallback_mqtt_connected = false;
 	}
+	// Stop the fast polling timer when MQTT connection drops
+	os_timer_disarm(&csa_report_timer);
+
 	MQTT_Connect(&mqtt_client);
 //	wifi_default();
 }
@@ -1099,7 +1141,7 @@ ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *inf
 		else {
 			strncpy(ssid_escaped + j, info->ssid + i, 1);
 			j++;
-	    }
+		}
 	}
 
 #ifdef DEBUG
@@ -1349,7 +1391,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(AC_TEST)\n\r");
 #endif
 
-#if !(defined(DEBUG_NO_METER) || defined(IMPULSE_DEV_BOARD))
+#if !(defined(DEBUG) || defined(DEBUG_NO_METER) || defined(IMPULSE_DEV_BOARD))
 #ifdef EN61107
 	uart_init(BIT_RATE_300, BIT_RATE_300);
 #else
