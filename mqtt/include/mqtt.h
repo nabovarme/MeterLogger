@@ -110,6 +110,14 @@ typedef struct  {
 	uint32_t reconnectTick;
 	uint32_t connectTick;
 	uint32_t sendTimeout;
+
+	/* Separate timeout/state for automatic keepalive PINGREQ/PINGRESP. */
+	uint32_t pingrespTimeout;
+	uint8_t is_waiting_for_pingresp;
+
+	/* One-shot marker for the sent callback of a queued PUBLISH packet. */
+	uint8_t publish_send_callback_pending;
+
 	tConnState connState;
 	QUEUE msgQueue;
 	void* user_data;

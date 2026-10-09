@@ -165,34 +165,59 @@ deliver_pingresp(MQTT_Client* client, uint8_t* message, int length)
 
 void ICACHE_FLASH_ATTR
 mqtt_send_keepalive(MQTT_Client *client) {
+	err_t result = ESPCONN_OK;
+
+	/*
+	 * Automatic keepalive tracking is separate from queued message ACK state.
+	 * Since PINGRESP has no packet ID, do not permit two outstanding PINGREQs.
+	 */
+	if (client->is_waiting_for_pingresp ||
+	    client->mqtt_state.is_waiting_for_ack ||
+	    client->sendTimeout > 0) {
+		client->connState = MQTT_DATA;
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		return;
+	}
+
 	INFO("\r\nMQTT: Send keepalive packet to %s:%d!\r\n", client->host, client->port);
 	client->mqtt_state.outbound_message = mqtt_msg_pingreq(&client->mqtt_state.mqtt_connection);
-	client->mqtt_state.pending_msg_type = MQTT_MSG_TYPE_PINGREQ;
-	client->mqtt_state.pending_msg_id = mqtt_get_id(client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
+	if (client->mqtt_state.outbound_message == NULL ||
+	    client->mqtt_state.outbound_message->length == 0) {
+		INFO("MQTT: Failed to build keepalive PINGREQ\r\n");
+		client->mqtt_state.outbound_message = NULL;
+		client->connState = TCP_RECONNECT_DISCONNECTING;
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		return;
+	}
 
-
-	client->sendTimeout = MQTT_SEND_TIMOUT;
-	client->mqtt_state.is_waiting_for_ack = 0; // ensure we don't pop queue on PINGRESP
-	INFO("MQTT: Sending, type: %d, id: %04X\r\n", client->mqtt_state.pending_msg_type, client->mqtt_state.pending_msg_id);
-	err_t result = ESPCONN_OK;
+	INFO("MQTT: Sending automatic PINGREQ\r\n");
 	if (client->security) {
 #ifdef MQTT_SSL_ENABLE
-		result = espconn_secure_send(client->pCon, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
+		result = espconn_secure_send(client->pCon,
+			client->mqtt_state.outbound_message->data,
+			client->mqtt_state.outbound_message->length);
 #else
 		INFO("TCP: Do not support SSL\r\n");
+		result = -1;
 #endif
 	}
 	else {
-		result = espconn_send(client->pCon, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
+		result = espconn_send(client->pCon,
+			client->mqtt_state.outbound_message->data,
+			client->mqtt_state.outbound_message->length);
 	}
 
 	client->mqtt_state.outbound_message = NULL;
-	if(ESPCONN_OK == result) {
+	if (ESPCONN_OK == result) {
 		client->keepAliveTick = 0;
+		client->is_waiting_for_pingresp = 1;
+		client->pingrespTimeout = MQTT_SEND_TIMOUT;
 		client->connState = MQTT_DATA;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 	}
 	else {
+		client->is_waiting_for_pingresp = 0;
+		client->pingrespTimeout = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 	}
@@ -212,6 +237,9 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 	mqttClient->mqtt_state.pending_msg_id = 0;
 	mqttClient->mqtt_state.pending_msg_type = 0;
 	mqttClient->sendTimeout = 0;
+	mqttClient->is_waiting_for_pingresp = 0;
+	mqttClient->pingrespTimeout = 0;
+	mqttClient->publish_send_callback_pending = 0;
 
 	if (mqttClient->pCon != NULL) {
 		INFO("TCP: Free memory\r\n");
@@ -243,6 +271,9 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 
 	mqttClient->mqtt_state.is_waiting_for_ack = 0;
 	mqttClient->sendTimeout = 0;
+	mqttClient->is_waiting_for_pingresp = 0;
+	mqttClient->pingrespTimeout = 0;
+	mqttClient->publish_send_callback_pending = 0;
 
 	if (mqttClient->host != NULL) {
 		os_free(mqttClient->host);
@@ -277,8 +308,14 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 		mqttClient->mqtt_state.mqtt_connection.buffer = NULL;
 	}
 
-	if(mqttClient->connect_info.client_id != NULL) {
+	if (mqttClient->connect_info.client_id != NULL) {
+#ifdef PROTOCOL_NAMEv311
+		if (mqttClient->connect_info.client_id != zero_len_id) {
+			os_free(mqttClient->connect_info.client_id);
+		}
+#else
 		os_free(mqttClient->connect_info.client_id);
+#endif
 		mqttClient->connect_info.client_id = NULL;
 	}
 
@@ -529,10 +566,17 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				break;
 			case MQTT_MSG_TYPE_PINGRESP:
 				client->keepAliveTick = 0;
-				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PINGREQ && client->mqtt_state.is_waiting_for_ack) {
+				if (client->is_waiting_for_pingresp) {
+					/* Automatic keepalive PINGREQ: clear only keepalive state. */
+					client->is_waiting_for_pingresp = 0;
+					client->pingrespTimeout = 0;
+				} else if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PINGREQ &&
+				           client->mqtt_state.is_waiting_for_ack) {
+					/* Explicit MQTT_Ping() completes its own queued message. */
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
 					client->mqtt_state.pending_msg_id = 0;
+					client->mqtt_state.pending_msg_type = 0;
 					client->sendTimeout = 0;
 				}
 				deliver_pingresp(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
@@ -573,13 +617,17 @@ mqtt_tcpclient_sent_cb(void *arg)
 	if (client == NULL) return; // aborted connection
 	
 	INFO("TCP: Sent\r\n");
-	client->sendTimeout = 0;
-	client->keepAliveTick =0;
+	client->keepAliveTick = 0;
+	if (!client->mqtt_state.is_waiting_for_ack) {
+		client->sendTimeout = 0;
+	}
 
-	if ((client->connState == MQTT_DATA || client->connState == MQTT_KEEPALIVE_SEND)
-				&& client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH) {
-		if (client->publishedCb)
+	if (client->publish_send_callback_pending) {
+		client->publish_send_callback_pending = 0;
+		if ((client->connState == MQTT_DATA || client->connState == MQTT_KEEPALIVE_SEND) &&
+		    client->publishedCb) {
 			client->publishedCb((uint32_t*)client);
+		}
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 }
@@ -589,8 +637,11 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 	MQTT_Client* client = (MQTT_Client*)arg;
 
 	if (client->connState == MQTT_DATA) {
-		client->keepAliveTick ++;
-		if (client->keepAliveTick > (client->mqtt_state.connect_info->keepalive / 2)) {
+		client->keepAliveTick++;
+		if (client->keepAliveTick > (client->mqtt_state.connect_info->keepalive / 2) &&
+		    !client->is_waiting_for_pingresp &&
+		    !client->mqtt_state.is_waiting_for_ack &&
+		    client->sendTimeout == 0) {
 			client->connState = MQTT_KEEPALIVE_SEND;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
@@ -615,6 +666,17 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 		}
 	}
 	
+	/* Keepalive timeout is independent of queued-message ACK timeout. */
+	if (client->is_waiting_for_pingresp && client->pingrespTimeout > 0) {
+		client->pingrespTimeout--;
+		if (client->pingrespTimeout == 0) {
+			INFO("MQTT: Keepalive PINGRESP timeout! Forcing reconnect.\r\n");
+			client->is_waiting_for_pingresp = 0;
+			client->connState = TCP_RECONNECT_DISCONNECTING;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		}
+	}
+
 	if (client->sendTimeout > 0) {
 		client->sendTimeout--;
 		if (client->sendTimeout == 0) {
@@ -637,6 +699,9 @@ mqtt_tcpclient_discon_cb(void *arg)
 	client->mqtt_state.pending_msg_id = 0;
 	client->mqtt_state.pending_msg_type = 0;
 	client->sendTimeout = 0;
+	client->is_waiting_for_pingresp = 0;
+	client->pingrespTimeout = 0;
+	client->publish_send_callback_pending = 0;
 
 	if(TCP_DISCONNECTING == client->connState) {
 		client->connState = TCP_DISCONNECTED;
@@ -910,6 +975,9 @@ MQTT_Task(os_event_t *e)
 		if (client->mqtt_state.is_waiting_for_ack) {
 			break; // Wait for pending MQTT ACK
 		}
+		if (client->is_waiting_for_pingresp) {
+			break; // Keep automatic PINGREQ/PINGRESP separate from queued traffic
+		}
 
 		// 1. Snapshot the queue pointers BEFORE reading the message
 		rollback_p_r = client->msgQueue.rb.p_r;
@@ -940,6 +1008,8 @@ MQTT_Task(os_event_t *e)
 			client->sendTimeout = MQTT_SEND_TIMOUT;
 			INFO("MQTT: Sending, type: %d, id: %04X\r\n", client->mqtt_state.pending_msg_type, client->mqtt_state.pending_msg_id);
 			
+			client->publish_send_callback_pending =
+				(client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH);
 			tcp_error = false;
 			if (client->security) {
 #ifdef MQTT_SSL_ENABLE
@@ -964,6 +1034,7 @@ MQTT_Task(os_event_t *e)
 				client->mqtt_state.pending_msg_id = 0;
 				client->mqtt_state.pending_msg_type = 0;
 				client->sendTimeout = 0;
+				client->publish_send_callback_pending = 0;
 			}
 
 			client->mqtt_state.outbound_message = NULL;
@@ -1074,6 +1145,9 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 	mqttClient->mqtt_state.connect_info = &mqttClient->connect_info;
 	mqttClient->mqtt_state.is_waiting_for_ack = 0;
 	mqttClient->mqtt_state.pending_msg_id = 0;
+	mqttClient->is_waiting_for_pingresp = 0;
+	mqttClient->pingrespTimeout = 0;
+	mqttClient->publish_send_callback_pending = 0;
 
 	mqtt_msg_init(&mqttClient->mqtt_state.mqtt_connection, mqttClient->mqtt_state.out_buffer, mqttClient->mqtt_state.out_buffer_length);
 
@@ -1152,7 +1226,11 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	mqttClient->connectTick = 0;
 	mqttClient->mqtt_state.is_waiting_for_ack = 0;
 	mqttClient->mqtt_state.pending_msg_id = 0;
+	mqttClient->mqtt_state.pending_msg_type = 0;
 	mqttClient->sendTimeout = 0;
+	mqttClient->is_waiting_for_pingresp = 0;
+	mqttClient->pingrespTimeout = 0;
+	mqttClient->publish_send_callback_pending = 0;
 
 	os_timer_disarm(&mqttClient->mqttTimer);
 	os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
