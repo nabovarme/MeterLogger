@@ -105,8 +105,10 @@ ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -DPRINTF_DEBUG
 endif
 
-# ALWAYS define OTA_FW so the ESP SDK correctly maps flash memory across BOTH rBoot slots!
-CFLAGS += -DOTA_FW
+# Define OTA_FW only when building secondary OTA packages
+ifeq ($(OTA), 1)
+    CFLAGS += -DOTA_FW
+endif
 
 ifdef SERIAL
     CFLAGS += -DDEFAULT_METER_SERIAL=\"$(SERIAL)\"
