@@ -1054,7 +1054,7 @@ MQTT_Task(os_event_t *e)
 
 #ifdef DEBUG
 	printf("\t-> %s()\n\r", __FUNCTION__);
-	printf("\t\tevent sig: %d, par: %p, conn state: %d\n\r", e->sig, e->par, client->connState);
+	printf("\t\tevent sig: %d, par: %u, conn state: %d\n\r", e->sig, (unsigned int)e->par, client->connState);
 #endif
 
 	switch (client->connState) {
