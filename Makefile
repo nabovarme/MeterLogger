@@ -34,8 +34,15 @@ CFLAGS += -DESPFS_POS=$(ESPFS)
 FLAVOR ?= release
 
 GIT_VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
-CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
-CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
+
+# For OTA=1, clear the keys so they aren't transmitted over Wi-Fi. (Device reads from flash)
+ifeq ($(OTA), 1)
+	CUSTOM_KEY = "{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
+	CUSTOM_AP_PASSWORD = ""
+else
+	CUSTOM_KEY = $(shell perl -e 'my $$key = qq[$(KEY)]; print(q["{ ] . join(q[, ], (map(qq[0x$$_], $$key =~ /(..)/g))) . q[ }"])')
+	CUSTOM_AP_PASSWORD = $(shell perl -e 'print substr(qq[$(KEY)], 0, 16)')
+endif
 
 #############################################################
 # Linux Build Environment Configuration
@@ -93,10 +100,8 @@ ifeq ($(DEBUG), 1)
     CFLAGS += -DDEBUG -DPRINTF_DEBUG
 endif
 
-# Only link OTA_FW if this is an OTA build loop
-ifeq ($(OTA), 1)
-    CFLAGS += -DOTA_FW
-endif
+# ALWAYS define OTA_FW so the ESP SDK correctly maps flash memory across BOTH rBoot slots!
+CFLAGS += -DOTA_FW
 
 ifdef SERIAL
     CFLAGS += -DDEFAULT_METER_SERIAL=\"$(SERIAL)\"
