@@ -273,7 +273,10 @@ int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t
     uint16_t crc16;
     unsigned int i;
     unsigned int kmp_register_idx;
-    unsigned int register_count;
+
+    uint8_t reg_len;
+    int32_t val;
+    int b;
 
     kmp_frame = frame;
     kmp_frame_length = frame_length;
@@ -330,15 +333,19 @@ int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t
         else if (kmp_frame[KMP_CID_IDX] == 0x10) {
             // kmp_get_register
             if (kmp_data_length > 2) {
-                register_count = (kmp_data_length - 2) / 9;
+                kmp_register_idx = KMP_DATA_IDX;
+                i = 0;
 
-                if (register_count > 8) {
-                	register_count = 8;
-                }
+                // Ensure there is enough room for at least the 5-byte header (rid, unit, length, si_ex)
+                while ((kmp_register_idx + 5) <= kmp_data_length && i < 8) {
+                    reg_len = kmp_frame[kmp_register_idx + 3];
+                    val = 0;
 
-                for (i = 0; i < register_count; i++) {
-                    kmp_register_idx = 9 * i + KMP_DATA_IDX;
-                    
+                    // Protect against buffer overflow if length byte is corrupted or exceeds frame
+                    if ((kmp_register_idx + 5 + reg_len) > kmp_data_length) {
+                        break;
+                    }
+
                     // rid
                     kmp_response->kmp_response_register_list[i].rid = (kmp_frame[kmp_register_idx + 0] << 8) + kmp_frame[kmp_register_idx + 1];
                     
@@ -346,13 +353,20 @@ int kmp_decode_frame(unsigned char *frame, uint16_t frame_length, kmp_response_t
                     kmp_response->kmp_response_register_list[i].unit = kmp_frame[kmp_register_idx + 2];
                     
                     // length
-                    kmp_response->kmp_response_register_list[i].length = kmp_frame[kmp_register_idx + 3];
+                    kmp_response->kmp_response_register_list[i].length = reg_len;
                     
                     // si_ex
                     kmp_response->kmp_response_register_list[i].si_ex = kmp_frame[kmp_register_idx + 4];
                     
-                    // value
-                    kmp_response->kmp_response_register_list[i].value = (kmp_frame[kmp_register_idx + 5] << 24) + (kmp_frame[kmp_register_idx + 6] << 16) + (kmp_frame[kmp_register_idx + 7] << 8) + kmp_frame[kmp_register_idx + 8];
+                    // value (dynamically shift based on length, capturing up to 4 bytes)
+                    for (b = 0; b < reg_len && b < 4; b++) {
+                        val = (val << 8) + kmp_frame[kmp_register_idx + 5 + b];
+                    }
+                    kmp_response->kmp_response_register_list[i].value = val;
+                    
+                    // Advance the index dynamically based on the exact size of this register
+                    kmp_register_idx += 5 + reg_len;
+                    i++;
                 }
                 return 1;
             }

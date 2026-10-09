@@ -60,7 +60,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(frame, stx);			   // find position of stx char
 					if (pos != NULL) {							  // if found stx char...
 						length = pos - frame;			   // ...save meter_type string
-						if (((length - 3) > EN61107_METER_TYPE_L) || ((length - 3) <= 0)) {	// check bounds
+						if (length <= 3 || (length - 3) > EN61107_METER_TYPE_L) {	// check bounds safely without underflow
 							return false;
 						}
 						memcpy(response->meter_type, frame + 1, length - 3);
