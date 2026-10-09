@@ -206,7 +206,7 @@ int query_string_unescape(char *str) {
 		len -= 2;
 	}
 
-	return strlen(len);
+	return len;
 }
 
 ICACHE_FLASH_ATTR
