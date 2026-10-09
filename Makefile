@@ -80,12 +80,13 @@ EXTRA_INCDIR	= . \
 LIBS			= main net80211 wpa pp phy hal ssl lwip_open gcc c
 
 # compiler flags using during compilation of source files
-CFLAGS			+= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
+CFLAGS			+= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
 # linker flags used to generate the main object file
 LDFLAGS =	-nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static \
 			-Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections \
 			-Wl,--wrap=cnx_csa_fn \
+			-Wl,--wrap=system_get_sdk_version \
 			-Lld -L$(SDK_BASE)/ld
 
 ifeq ($(FLAVOR),debug)
@@ -195,8 +196,8 @@ BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S)) 
-C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c)) 
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
+C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
 AS_OBJ		:= $(patsubst %.S,%.o,$(AS_SRC))
 C_OBJ		:= $(patsubst %.c,%.o,$(C_SRC))
 OBJ			:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(AS_OBJ) $(C_OBJ))
@@ -241,12 +242,6 @@ ota_bins: $(USER1_BIN) $(USER2_BIN)
 $(TARGET_OUT_SLOT0): $(APP_AR)
 	$(vecho) "LD $@ (Slot 0)"
 	$(Q) $(LD) -L$(SDK_LIBDIR) -T$(LD_SCRIPT_SLOT0) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-#	$(vecho) "PATCH $@ (cnx_csa_fn(): 12c1f0d911d1f2e1 -> 0df0000000000000)"
-#	$(Q) xxd -e -p $@ | tr -d '\n' | perl -p -e 's/12c1f0d911d1f2e1/0df0000000000000/' | xxd -r -e -p > $@-patched
-#	$(Q) mv $@-patched $@
-	$(vecho) "PATCH $@ (add + to version)"
-	$(Q) xxd -e -p $@ | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p > $@-patched
-	$(Q) mv $@-patched $@
 
 $(USER1_BIN): $(TARGET_OUT_SLOT0)
 	$(vecho) "FW $@"
@@ -255,12 +250,6 @@ $(USER1_BIN): $(TARGET_OUT_SLOT0)
 $(TARGET_OUT_SLOT1): $(APP_AR)
 	$(vecho) "LD $@ (Slot 1)"
 	$(Q) $(LD) -L$(SDK_LIBDIR) -T$(LD_SCRIPT_SLOT1) $(LDFLAGS) -Wl,--start-group $(LIBS) $(APP_AR) -Wl,--end-group -o $@
-#	$(vecho) "PATCH $@ (cnx_csa_fn(): 12c1f0d911d1f2e1 -> 0df0000000000000)"
-#	$(Q) xxd -e -p $@ | tr -d '\n' | perl -p -e 's/12c1f0d911d1f2e1/0df0000000000000/' | xxd -r -e -p > $@-patched
-#	$(Q) mv $@-patched $@
-	$(vecho) "PATCH $@ (add + to version)"
-	$(Q) xxd -e -p $@ | tr -d '\n' | perl -p -e 's/332e302e362d646576/332e302e362b646576/' | xxd -r -e -p > $@-patched
-	$(Q) mv $@-patched $@
 
 $(USER2_BIN): $(TARGET_OUT_SLOT1)
 	$(vecho) "FW $@"

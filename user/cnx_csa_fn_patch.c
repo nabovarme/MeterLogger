@@ -12,6 +12,9 @@
 uint32_t cnx_csa_call_count = 0;
 bool cnx_csa_new_call_flag = false;
 
+// Reference to the original system_get_sdk_version function provided by SDK
+extern const char * __real_system_get_sdk_version(void);
+
 //#ifdef DEBUG
 //static void dump_hex(const void *ptr, size_t len) {
 //	const uint8_t *b = (const uint8_t *)ptr;
@@ -36,4 +39,39 @@ void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
 //	}
 //#endif
 	return;
+}
+
+ICACHE_FLASH_ATTR
+const char * __wrap_system_get_sdk_version(void) {
+	static char patched_version[64];
+	const char *orig = __real_system_get_sdk_version();
+
+	if (orig == NULL) {
+		return "unknown-patched";
+	}
+
+	// Look for the starting parenthesis of the git commit hash e.g., "3.0.6-dev(072755c)"
+	const char *paren = os_strchr(orig, '(');
+
+	if (paren != NULL) {
+		// Calculate length of version string prior to '('
+		size_t prefix_len = paren - orig;
+
+		if (prefix_len < sizeof(patched_version) - 16) {
+			// Copy base version (e.g., "3.0.6-dev")
+			os_memcpy(patched_version, orig, prefix_len);
+			patched_version[prefix_len] = '\0';
+
+			// Append "-patched" and the remaining string starting from "("
+			os_sprintf(patched_version + prefix_len, "-patched%s", paren);
+			return patched_version;
+		}
+	} else {
+		// Fallback: If no '(' exists (e.g., "3.0.6"), simply append "-patched" to the end
+		os_sprintf(patched_version, "%s-patched", orig);
+		return patched_version;
+	}
+
+	// Safety fallback if buffer overflow protection triggers
+	return orig;
 }
