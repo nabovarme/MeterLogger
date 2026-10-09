@@ -653,6 +653,10 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 	if (cnx_csa_new_call_flag) {
 		cnx_csa_new_call_flag = false; // Reset flag
 
+#ifdef DEBUG
+		os_printf("CSA drop intercepted! Total cnx_csa_fn calls: %u\n", cnx_csa_call_count);
+#endif
+
 		if (mqtt_client.pCon != NULL) {
 			char mqtt_topic[MQTT_TOPIC_L];
 			char mqtt_message[MQTT_MESSAGE_L];
