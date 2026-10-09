@@ -6,13 +6,17 @@
 static os_timer_t sntp_check_timer;
 
 uint64_t init_time = 0;
-uint64_t current_unix_time;
+uint64_t current_unix_time = 0;
 uint64_t ntp_offline_second_counter = 0;
+
+// Tracking for 32-bit epoch rollover
+static uint32_t last_sntp_raw = 0;
+static uint64_t epoch_overflow_offset = 0;
 
 static os_timer_t ntp_offline_second_counter_timer;
 
 ICACHE_FLASH_ATTR void static sntp_check_timer_func(void *arg) {
-	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
+	current_unix_time = get_unix_time();
 	
 	if (current_unix_time == 0) {
 		os_timer_disarm(&sntp_check_timer);
@@ -32,6 +36,9 @@ ICACHE_FLASH_ATTR void static ntp_offline_second_counter_timer_func(void *arg) {
 }
 
 ICACHE_FLASH_ATTR void init_unix_time(void) {
+	last_sntp_raw = 0;
+	epoch_overflow_offset = 0;
+
 	// init sntp
 	sntp_setservername(0, NTP_SERVER_1); // set server 0 by domain name
 	sntp_setservername(1, NTP_SERVER_2); // set server 1 by domain name
@@ -50,13 +57,25 @@ ICACHE_FLASH_ATTR void init_unix_time(void) {
 }
 
 ICACHE_FLASH_ATTR uint64_t get_unix_time(void) {
-	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
+	uint32_t sntp_raw = sntp_get_current_timestamp();
 
+	if (sntp_raw == 0) {
+		return 0;
+	}
+
+	// Detect 32-bit rollover: if raw timestamp wraps around (e.g. 0xFFFFFFFF -> 0x00000005)
+	if (sntp_raw < last_sntp_raw && last_sntp_raw > 0xF0000000UL) {
+		epoch_overflow_offset += 0x100000000ULL; // Add 2^32 seconds
+	}
+	last_sntp_raw = sntp_raw;
+
+	current_unix_time = epoch_overflow_offset + (uint64_t)sntp_raw;
 	return current_unix_time;
 }
 
 ICACHE_FLASH_ATTR uint64_t get_uptime(void) {
-	current_unix_time = sntp_get_current_timestamp();	// DEBUG: possible wrapping error here, when casting from 32 bit to 64 bit variable
+	current_unix_time = get_unix_time();
+
 	if (init_time == 0) {	// just booted
 		return ntp_offline_second_counter;
 	}
