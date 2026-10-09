@@ -71,6 +71,20 @@ static uint16_t mqtt_in_buffer_used = 0;
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 #endif
 
+// Helper function to send control packets immediately, bypassing the FIFO queue
+static void ICACHE_FLASH_ATTR mqtt_send_direct(MQTT_Client *client) {
+	if (client->security) {
+#ifdef MQTT_SSL_ENABLE
+		espconn_secure_send(client->pCon, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
+#else
+		INFO("TCP: Do not support SSL\r\n");
+#endif
+	} else {
+		espconn_send(client->pCon, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
+	}
+	client->mqtt_state.outbound_message = NULL;
+}
+
 LOCAL void ICACHE_FLASH_ATTR
 mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
@@ -154,11 +168,11 @@ mqtt_send_keepalive(MQTT_Client *client) {
 	INFO("\r\nMQTT: Send keepalive packet to %s:%d!\r\n", client->host, client->port);
 	client->mqtt_state.outbound_message = mqtt_msg_pingreq(&client->mqtt_state.mqtt_connection);
 	client->mqtt_state.pending_msg_type = MQTT_MSG_TYPE_PINGREQ;
-	client->mqtt_state.pending_msg_type = mqtt_get_type(client->mqtt_state.outbound_message->data);
 	client->mqtt_state.pending_msg_id = mqtt_get_id(client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
 
 
 	client->sendTimeout = MQTT_SEND_TIMOUT;
+	client->mqtt_state.is_waiting_for_ack = 0; // ensure we don't pop queue on PINGRESP
 	INFO("MQTT: Sending, type: %d, id: %04X\r\n", client->mqtt_state.pending_msg_type, client->mqtt_state.pending_msg_id);
 	err_t result = ESPCONN_OK;
 	if (client->security) {
@@ -195,6 +209,8 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 	// Drop any partial MQTT packet from the old TCP connection.
 	mqtt_in_buffer_used = 0;
 	mqttClient->mqtt_state.is_waiting_for_ack = 0;
+	mqttClient->mqtt_state.pending_msg_id = 0;
+	mqttClient->mqtt_state.pending_msg_type = 0;
 	mqttClient->sendTimeout = 0;
 
 	if (mqttClient->pCon != NULL) {
@@ -450,6 +466,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 					INFO("MQTT: Subscribe successful\r\n");
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
+					client->mqtt_state.pending_msg_id = 0;
 					client->sendTimeout = 0;
 				}
 				break;
@@ -458,22 +475,17 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 					INFO("MQTT: UnSubscribe successful\r\n");
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
+					client->mqtt_state.pending_msg_id = 0;
 					client->sendTimeout = 0;
 				}
 				break;
 			case MQTT_MSG_TYPE_PUBLISH:
-				if (msg_qos == 1)
+				if (msg_qos == 1) {
 					client->mqtt_state.outbound_message = mqtt_msg_puback(&client->mqtt_state.mqtt_connection, msg_id);
-				else if (msg_qos == 2)
+					mqtt_send_direct(client);
+				} else if (msg_qos == 2) {
 					client->mqtt_state.outbound_message = mqtt_msg_pubrec(&client->mqtt_state.mqtt_connection, msg_id);
-				if (msg_qos == 1 || msg_qos == 2) {
-					INFO("MQTT: Queue response QoS: %d\r\n", msg_qos);
-					while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
-						INFO("MQTT: Queue full\r\n");
-						if (QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE) == -1) break;
-						client->mqtt_state.is_waiting_for_ack = 0;
-						client->sendTimeout = 0;
-					}
+					mqtt_send_direct(client);
 				}
 
 				deliver_publish(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
@@ -483,32 +495,23 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 					INFO("MQTT: received MQTT_MSG_TYPE_PUBACK, finish QoS1 publish\r\n");
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
+					client->mqtt_state.pending_msg_id = 0;
 					client->sendTimeout = 0;
 				}
 				break;
 			case MQTT_MSG_TYPE_PUBREC:
-				client->mqtt_state.outbound_message = mqtt_msg_pubrel(&client->mqtt_state.mqtt_connection, msg_id);
 				INFO("MQTT: received MQTT_MSG_TYPE_PUBREC for id: %d\r\n", msg_id);
+				client->mqtt_state.outbound_message = mqtt_msg_pubrel(&client->mqtt_state.mqtt_connection, msg_id);
+				mqtt_send_direct(client);
+				
 				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH && client->mqtt_state.pending_msg_id == msg_id) {
-					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
-					client->mqtt_state.is_waiting_for_ack = 0;
-					client->sendTimeout = 0;
-				}
-				while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
-					INFO("MQTT: Queue full\r\n");
-					if (QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE) == -1) break;
-					client->mqtt_state.is_waiting_for_ack = 0;
-					client->sendTimeout = 0;
+					client->mqtt_state.pending_msg_type = MQTT_MSG_TYPE_PUBREL;
+					client->sendTimeout = MQTT_SEND_TIMOUT; 
 				}
 				break;
 			case MQTT_MSG_TYPE_PUBREL:
 				client->mqtt_state.outbound_message = mqtt_msg_pubcomp(&client->mqtt_state.mqtt_connection, msg_id);
-				while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
-					INFO("MQTT: Queue full\r\n");
-					if (QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE) == -1) break;
-					client->mqtt_state.is_waiting_for_ack = 0;
-					client->sendTimeout = 0;
-				}
+				mqtt_send_direct(client);
 				break;
 			case MQTT_MSG_TYPE_PUBCOMP:
 				INFO("MQTT: received MQTT_MSG_TYPE_PUBCOMP for id: %d\r\n", msg_id);
@@ -516,23 +519,20 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 					INFO("MQTT: receive MQTT_MSG_TYPE_PUBCOMP, finish QoS2 publish\r\n");
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
+					client->mqtt_state.pending_msg_id = 0;
 					client->sendTimeout = 0;
 				}
 				break;
 			case MQTT_MSG_TYPE_PINGREQ:
 				client->mqtt_state.outbound_message = mqtt_msg_pingresp(&client->mqtt_state.mqtt_connection);
-				while (QUEUE_Puts(&client->msgQueue, client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length) == -1) {
-					INFO("MQTT: Queue full\r\n");
-					if (QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE) == -1) break;
-					client->mqtt_state.is_waiting_for_ack = 0;
-					client->sendTimeout = 0;
-				}
+				mqtt_send_direct(client);
 				break;
 			case MQTT_MSG_TYPE_PINGRESP:
 				client->keepAliveTick = 0;
-				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PINGREQ) {
+				if (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PINGREQ && client->mqtt_state.is_waiting_for_ack) {
 					QUEUE_Gets(&client->msgQueue, sharedDataBuffer, &dummyDataLen, MQTT_BUF_SIZE);
 					client->mqtt_state.is_waiting_for_ack = 0;
+					client->mqtt_state.pending_msg_id = 0;
 					client->sendTimeout = 0;
 				}
 				deliver_pingresp(client, client->mqtt_state.in_buffer, client->mqtt_state.message_length_read);
@@ -573,10 +573,8 @@ mqtt_tcpclient_sent_cb(void *arg)
 	if (client == NULL) return; // aborted connection
 	
 	INFO("TCP: Sent\r\n");
-	client->keepAliveTick = 0;
-	if (!client->mqtt_state.is_waiting_for_ack) {
-		client->sendTimeout = 0;
-	}
+	client->sendTimeout = 0;
+	client->keepAliveTick =0;
 
 	if ((client->connState == MQTT_DATA || client->connState == MQTT_KEEPALIVE_SEND)
 				&& client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH) {
@@ -636,6 +634,8 @@ mqtt_tcpclient_discon_cb(void *arg)
 	
 	INFO("TCP: Disconnected callback\r\n");
 	client->mqtt_state.is_waiting_for_ack = 0;
+	client->mqtt_state.pending_msg_id = 0;
+	client->mqtt_state.pending_msg_type = 0;
 	client->sendTimeout = 0;
 
 	if(TCP_DISCONNECTING == client->connState) {
@@ -747,6 +747,8 @@ MQTT_Publish(MQTT_Client *client, const char* topic, const char* data, int data_
 			return FALSE;
 		}
 		client->mqtt_state.is_waiting_for_ack = 0;
+		client->mqtt_state.pending_msg_id = 0;
+		client->mqtt_state.pending_msg_type = 0;
 		client->sendTimeout = 0;
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
@@ -777,6 +779,8 @@ MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos)
 			return FALSE;
 		}
 		client->mqtt_state.is_waiting_for_ack = 0;
+		client->mqtt_state.pending_msg_id = 0;
+		client->mqtt_state.pending_msg_type = 0;
 		client->sendTimeout = 0;
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
@@ -805,6 +809,8 @@ MQTT_UnSubscribe(MQTT_Client *client, char* topic)
 			return FALSE;
 		}
 		client->mqtt_state.is_waiting_for_ack = 0;
+		client->mqtt_state.pending_msg_id = 0;
+		client->mqtt_state.pending_msg_type = 0;
 		client->sendTimeout = 0;
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
@@ -834,6 +840,8 @@ MQTT_Ping(MQTT_Client *client)
 			return FALSE;
 		}
 		client->mqtt_state.is_waiting_for_ack = 0;
+		client->mqtt_state.pending_msg_id = 0;
+		client->mqtt_state.pending_msg_type = 0;
 		client->sendTimeout = 0;
 	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
@@ -850,13 +858,14 @@ MQTT_Task(os_event_t *e)
 	int32_t rollback_fill_cnt;
 	bool tcp_error;
 
+	if (e->par == 0)
+		return;
+
 #ifdef DEBUG
 	printf("\t-> %s()\n\r", __FUNCTION__);
 	printf("\t\tevent sig: %d, par: %d, conn state: %d\n\r", e->sig, e->par, client->connState);
 #endif
 
-	if (e->par == 0)
-		return;
 	switch (client->connState) {
 
 	case TCP_RECONNECT_REQ:
@@ -952,6 +961,8 @@ MQTT_Task(os_event_t *e)
 				client->msgQueue.rb.p_r = rollback_p_r;
 				client->msgQueue.rb.fill_cnt = rollback_fill_cnt;
 				client->mqtt_state.is_waiting_for_ack = 0;
+				client->mqtt_state.pending_msg_id = 0;
+				client->mqtt_state.pending_msg_type = 0;
 				client->sendTimeout = 0;
 			}
 
@@ -1062,6 +1073,7 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 	mqttClient->mqtt_state.out_buffer_length = MQTT_BUF_SIZE;
 	mqttClient->mqtt_state.connect_info = &mqttClient->connect_info;
 	mqttClient->mqtt_state.is_waiting_for_ack = 0;
+	mqttClient->mqtt_state.pending_msg_id = 0;
 
 	mqtt_msg_init(&mqttClient->mqtt_state.mqtt_connection, mqttClient->mqtt_state.out_buffer, mqttClient->mqtt_state.out_buffer_length);
 
@@ -1138,6 +1150,9 @@ MQTT_Connect(MQTT_Client *mqttClient)
 	mqttClient->keepAliveTick = 0;
 	mqttClient->reconnectTick = 0;
 	mqttClient->connectTick = 0;
+	mqttClient->mqtt_state.is_waiting_for_ack = 0;
+	mqttClient->mqtt_state.pending_msg_id = 0;
+	mqttClient->sendTimeout = 0;
 
 	os_timer_disarm(&mqttClient->mqttTimer);
 	os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
