@@ -13,58 +13,60 @@
 uint32_t cnx_csa_call_count = 0;
 bool cnx_csa_new_call_flag = false;
 
+// Internal scan state tracking
+static volatile bool is_scanning = false;
+static scan_done_cb_t user_scan_cb = NULL;
+
 // References to real functions wrapped by GNU linker
 extern const char * __real_system_get_sdk_version(void);
 extern void __real_cnx_csa_fn(void *arg);
+extern bool __real_wifi_station_scan(struct scan_config *config, scan_done_cb_t cb);
+
+// Intercepted scan callback to clear the scanning flag
+static void ICACHE_FLASH_ATTR intercepted_scan_cb(void *arg, STATUS status) {
+	scan_done_cb_t orig_cb;
+
+	is_scanning = false; // Clear flag when scan completes or fails
+	
+	orig_cb = user_scan_cb;
+	user_scan_cb = NULL;
+
+	if (orig_cb != NULL) {
+		orig_cb(arg, status);
+	}
+}
+
+// Intercept the scan call to set the flag and inject our callback
+bool ICACHE_FLASH_ATTR __wrap_wifi_station_scan(struct scan_config *config, scan_done_cb_t cb) {
+	bool res;
+	
+	user_scan_cb = cb;
+	is_scanning = true; // Set flag before starting scan
+
+	res = __real_wifi_station_scan(config, intercepted_scan_cb);
+	if (!res) {
+		// Scan failed to start, clear flag immediately
+		is_scanning = false;
+		user_scan_cb = NULL;
+	}
+	
+	return res;
+}
 
 void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
-	uint8 mode;
-	enum station_status status;
-	uint8_t *connected_bssid;
-
 	// Increment counter and flag for MQTT/system logging
 	cnx_csa_call_count++;
 	cnx_csa_new_call_flag = true;
 
-	// Check if station interface is enabled
-	mode = wifi_get_opmode();
-	if (mode != STATION_MODE && mode != STATIONAP_MODE) {
-		// Station disabled; ignore CSA frame
-		return;
-	}
-
-	// Validate current connection status
-	// If the station is scanning or disconnected, ignore incoming CSA commands
-	status = wifi_station_get_connect_status();
-	if (status != STATION_GOT_IP && status != STATION_CONNECTED) {
+	// If we are actively scanning, this CSA is almost certainly from a foreign AP on another channel.
+	if (is_scanning) {
 		#ifdef DEBUG
-		os_printf("cnx_csa_fn: Blocked unassociated/scanning CSA switch (status: %d)\n", (int)status);
+		os_printf("cnx_csa_fn: Blocked rogue CSA switch during active scan\n");
 		#endif
 		return;
 	}
 
-	// Check if the station is associated with a valid BSSID
-	connected_bssid = wifi_get_bssid();
-	if (connected_bssid == NULL) {
-		#ifdef DEBUG
-		os_printf("cnx_csa_fn: Blocked CSA switch (no active BSSID)\n");
-		#endif
-		return;
-	}
-
-	// If arg contains frame data or context, verify frame origin matches connected_bssid
-	if (arg != NULL) {
-		// arg typically points to struct cnx_mgr or frame buffer containing source BSSID at offset 0 or 4
-		const uint8_t *frame_bssid = (const uint8_t *)arg;
-		if (os_memcmp(frame_bssid, connected_bssid, 6) != 0) {
-			#ifdef DEBUG
-			os_printf("cnx_csa_fn: Blocked rogue CSA switch (BSSID mismatch)\n");
-			#endif
-			return;
-		}
-	}
-
-	// Allow valid CSA execution if BSSID matches the connected AP
+	// Allow valid CSA execution if we are just idling/connected normally
 	__real_cnx_csa_fn(arg);
 }
 

@@ -87,6 +87,7 @@ LDFLAGS =	-nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static \
 			-Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections \
 			-Wl,--wrap=cnx_csa_fn \
 			-Wl,--wrap=system_get_sdk_version \
+			-Wl,--wrap=wifi_station_scan \
 			-Lld -L$(SDK_BASE)/ld
 
 ifeq ($(FLAVOR),debug)
