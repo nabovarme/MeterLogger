@@ -19,6 +19,7 @@
 #define ESP_IMAGE_MAGIC_V1	0xE9
 #define ESP_IMAGE_MAGIC_V2	0xEA
 #define OTA_DEFAULT_PORT	80
+#define OTA_MAX_HEADER_SIZE 1024
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -35,6 +36,9 @@ static bool is_valid_binary = false;
 static uint32_t ota_content_length = 0;
 static uint32_t ota_received_bytes = 0;
 
+static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
+static uint16_t ota_header_len = 0;
+
 static char ota_host[64];
 static char ota_path[128];
 static int ota_port = OTA_DEFAULT_PORT;
@@ -50,7 +54,7 @@ ICACHE_FLASH_ATTR
 static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char *pdata;
 	uint16_t len;
-	char *body;
+	char *body_marker;
 	uint8_t magic_byte;
 	rboot_config conf;
 	uint32_t target_addr;
@@ -58,19 +62,27 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	static uint8_t last_reported_progress = 0;
 	uint8_t current_progress = 0;
 	char progress_msg[32];
+	uint16_t copy_len;
+	uint16_t total_header_size;
 
 	pdata = pusrdata;
 	len = length;
 
 	if (!headers_parsed) {
-		// Reset progress tracker for a new download session
-		last_reported_progress = 0;
-
-		// Wait to check for 200 OK until the entire header is downloaded
-		body = (char *)os_strstr(pdata, "\r\n\r\n");
-		if (body) {
-			// Validate HTTP status now that the whole header is here
-			if (os_strstr(pdata, "200 OK") == NULL && os_strstr(pdata, "200") == NULL) {
+		// Buffer incoming data to assemble a complete HTTP header
+		copy_len = length;
+		if (ota_header_len + copy_len > OTA_MAX_HEADER_SIZE - 1) {
+			copy_len = OTA_MAX_HEADER_SIZE - 1 - ota_header_len;
+		}
+		
+		os_memcpy(ota_header_buffer + ota_header_len, pusrdata, copy_len);
+		ota_header_len += copy_len;
+		ota_header_buffer[ota_header_len] = '\0';
+		
+		body_marker = (char *)os_strstr(ota_header_buffer, "\r\n\r\n");
+		if (body_marker) {
+			// Validate HTTP status now that the whole header is accumulated
+			if (os_strstr(ota_header_buffer, "200 OK") == NULL && os_strstr(ota_header_buffer, "200") == NULL) {
 #ifdef DEBUG
 				os_printf("OTA Error: Non-200 HTTP response received!\n");
 #endif
@@ -83,22 +95,38 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			}
 
 			// Extract Content-Length for size validation
-			cl = (char *)os_strstr(pdata, "Content-Length: ");
+			cl = (char *)os_strstr(ota_header_buffer, "Content-Length: ");
 			if (!cl) {
-				cl = (char *)os_strstr(pdata, "content-length: ");
+				cl = (char *)os_strstr(ota_header_buffer, "content-length: ");
 			}
 			if (cl) {
 				ota_content_length = atoi(cl + 16);
 			}
 
 			headers_parsed = true;
-			body += 4; // Skip past the \r\n\r\n
-			len -= (body - pdata);
-			pdata = body;
-		}
-		else {
-			// Still waiting for the end of headers
-			return;
+			last_reported_progress = 0; // Reset progress tracker
+			
+			// Calculate how much of the CURRENT payload is actually binary data
+			total_header_size = (body_marker + 4) - ota_header_buffer;
+			
+			if (ota_header_len > total_header_size) {
+				len = ota_header_len - total_header_size;
+				pdata = pusrdata + (length - len); // Offset into the current packet
+			} else {
+				len = 0;
+			}
+		} else {
+			if (ota_header_len >= OTA_MAX_HEADER_SIZE - 1) {
+#ifdef DEBUG
+				os_printf("OTA Error: Header too large / No empty line found.\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_header_overflow");
+				}
+				ota_in_progress = false;
+				espconn_disconnect(&ota_conn);
+			}
+			return; // Still waiting for the rest of the header
 		}
 	}
 
@@ -347,6 +375,7 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	// 2. Setup the TCP connection
 	headers_parsed = false;
 	is_valid_binary = false;
+	ota_header_len = 0;
 	memset(&ota_conn, 0, sizeof(ota_conn));
 	memset(&ota_tcp, 0, sizeof(ota_tcp));
 	ota_conn.type = ESPCONN_TCP;
