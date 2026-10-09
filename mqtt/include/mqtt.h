@@ -50,6 +50,9 @@ typedef struct mqtt_state_t
 	mqtt_connect_info_t* connect_info;
 	uint8_t* in_buffer;
 	uint8_t* out_buffer;
+	/* Per-client scratch space and TCP-stream receive accounting. */
+	uint8_t* work_buffer;
+	uint16_t in_buffer_used;
 	int in_buffer_length;
 	int out_buffer_length;
 	uint16_t message_length;
@@ -101,6 +104,7 @@ typedef struct  {
 	mqtt_connect_info_t connect_info;
 	MqttCallback connectedCb;
 	MqttCallback disconnectedCb;
+	/* Invoked when a queued PUBLISH completes its TCP send, not on broker PUBACK/PUBCOMP. */
 	MqttCallback publishedCb;
 	MqttCallback pingrespCb;
 	MqttCallback timeoutCb;
@@ -110,14 +114,11 @@ typedef struct  {
 	uint32_t reconnectTick;
 	uint32_t connectTick;
 	uint32_t sendTimeout;
-
 	/* Separate timeout/state for automatic keepalive PINGREQ/PINGRESP. */
 	uint32_t pingrespTimeout;
 	uint8_t is_waiting_for_pingresp;
-
 	/* One-shot marker for the sent callback of a queued PUBLISH packet. */
 	uint8_t publish_send_callback_pending;
-
 	tConnState connState;
 	QUEUE msgQueue;
 	void* user_data;
