@@ -59,6 +59,7 @@ typedef struct mqtt_state_t
 	uint16_t pending_msg_id;
 	int pending_msg_type;
 	int pending_publish_qos;
+	uint8_t is_waiting_for_ack;
 } mqtt_state_t;
 
 typedef enum {
