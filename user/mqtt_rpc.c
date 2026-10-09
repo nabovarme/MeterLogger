@@ -231,7 +231,11 @@ void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
-		
+
+	if (ssid == NULL) {
+		return;
+	}
+
 	// change sta_ssid, save if different
 	if (strncmp(sys_cfg.sta_ssid, ssid, 32 - 1) != 0) {
 		memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
@@ -265,7 +269,11 @@ void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
-		
+
+	if (password == NULL) {
+		return;
+	}
+
 	// change sta_pwd, save if different
 	if (strncmp(sys_cfg.sta_pwd, password, 64 - 1) != 0) {
 		memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
@@ -299,6 +307,10 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (ssid_pwd == NULL) {
+		return;
+	}
 
 #ifdef DEBUG
 	printf("param: %s\n", ssid_pwd);
@@ -351,6 +363,10 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 
+	if (password == NULL) {
+		return;
+	}
+
 	if (fallback_ap_is_running) return; // Prevent overwriting rescue AP config
 		
 	// change sta_pwd, save if different
@@ -400,6 +416,10 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+
+	if (params == NULL) {
+		return;
+	}
 	
 	// Parse input parameters
 	strncpy(params_copy, params, COMMAND_PARAMS_L);
@@ -582,6 +602,10 @@ void mqtt_rpc_start_ap(MQTT_Client *client, char *mesh_ssid) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 
+	if (mesh_ssid == NULL) {
+		return;
+	}
+
 	if (fallback_ap_is_running) return; // Prevent overwriting rescue AP
 
 	// start AP
@@ -650,10 +674,14 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ssid) {
 	uint32_t time_ms = 0;
 	
-	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	uint8_t cleartext[MQTT_MESSAGE_L];
+
+	if (mesh_ssid == NULL) {
+		return;
+	}
 
 	if (params != NULL && strlen(params) > 0) time_ms = atoi(params) * 1000;
 
@@ -960,6 +988,10 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	uint8_t target_rom = 0;
 	bool success = false;
 
+	if (params == NULL) {
+		return;
+	}
+
 	// 1. Check if an OTA upgrade is already running
 	if (ota_in_progress) {
 #ifdef DEBUG
@@ -1057,6 +1089,10 @@ void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
+	if (status == NULL) {
+		return;
+	}
+
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -1084,6 +1120,10 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 	bool success = false;
+
+	if (params == NULL) {
+		return;
+	}
 
 	// Parse input parameters (e.g., "key=ef500c9268cf749016d26d6cbfaaf7bf")
 	strncpy(params_copy, params, MQTT_MESSAGE_L);
@@ -1165,6 +1205,10 @@ void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 	char mqtt_message[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
+	if (query == NULL) {
+		return;
+	}
+
 	add_cron_job_from_query(query);
 
 #ifdef EN61107
@@ -1245,6 +1289,11 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	int int_value;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (value == NULL) {
+		return;
+	}
+
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
 	char volume_string[32];
@@ -1310,6 +1359,10 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 		
+	if (value == NULL) {
+		return;
+	}
+
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
 	char volume_string[32];
