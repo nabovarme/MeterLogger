@@ -32,32 +32,31 @@
 
 #include <esp8266.h>
 
-uint8_t *last_rb_p_r;
-uint8_t *last_rb_p_w;
-uint32_t last_fill_cnt;
-
 void ICACHE_FLASH_ATTR QUEUE_Init(QUEUE *queue, int bufferSize)
 {
 	queue->buf = (uint8_t*)os_zalloc(bufferSize);
 	RINGBUF_Init(&queue->rb, queue->buf, bufferSize);
 }
+
 int32_t QUEUE_Puts(QUEUE *queue, uint8_t* buffer, uint16_t len)
 {
 	uint32_t ret;
 	
-	last_rb_p_r = queue->rb.p_r;
-	last_rb_p_w = queue->rb.p_w;
-	last_fill_cnt = queue->rb.fill_cnt;
+	// Snapshot state locally so it is thread-safe
+	uint8_t *local_rb_p_r = queue->rb.p_r;
+	uint8_t *local_rb_p_w = queue->rb.p_w;
+	int32_t local_fill_cnt = queue->rb.fill_cnt;
 	
 	ret = PROTO_AddRb(&queue->rb, buffer, len);
 	if (ret == -1) {
 		// rolling ring buffer back
-		queue->rb.p_r = last_rb_p_r;
-		queue->rb.p_w = last_rb_p_w;
-		queue->rb.fill_cnt = last_fill_cnt;
+		queue->rb.p_r = local_rb_p_r;
+		queue->rb.p_w = local_rb_p_w;
+		queue->rb.fill_cnt = local_fill_cnt;
 	}
 	return ret;
 }
+
 int32_t QUEUE_Gets(QUEUE *queue, uint8_t* buffer, uint16_t* len, uint16_t maxLen)
 {
 	return PROTO_ParseRb(&queue->rb, buffer, len, maxLen);

@@ -791,6 +791,8 @@ MQTT_Task(os_event_t *e)
 	MQTT_Client* client = (MQTT_Client*)e->par;
 	uint8_t *dataBuffer = sharedDataBuffer;
 	uint16_t dataLen;
+	uint8_t *rollback_p_r;
+	int32_t rollback_fill_cnt;
 
 #ifdef DEBUG
 	printf("\t-> %s()\n\r", __FUNCTION__);
@@ -840,6 +842,11 @@ MQTT_Task(os_event_t *e)
 		if (QUEUE_IsEmpty(&client->msgQueue) || client->sendTimeout != 0) {
 			break;
 		}
+
+		// 1. Snapshot the queue pointers BEFORE reading the message
+		rollback_p_r = client->msgQueue.rb.p_r;
+		rollback_fill_cnt = client->msgQueue.rb.fill_cnt;
+
 		if (QUEUE_Gets(&client->msgQueue, dataBuffer, &dataLen, MQTT_BUF_SIZE) == 0) {
 			client->mqtt_state.pending_msg_type = mqtt_get_type(dataBuffer);
 			client->mqtt_state.pending_msg_id = mqtt_get_id(dataBuffer, dataLen);
@@ -849,11 +856,10 @@ MQTT_Task(os_event_t *e)
 			if (client->security) {
 #ifdef MQTT_SSL_ENABLE
 				if (espconn_secure_send(client->pCon, dataBuffer, dataLen) != 0) {
-					// error sending, put it back into the queue again
-					INFO("MQTT: espconn_secure_send() returned an error, re-queueing\r\n");
-					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
-						INFO("MQTT: Queue full\r\n");
-					}
+					INFO("MQTT: espconn_secure_send() error, rolling back queue\r\n");
+					// 2. Roll back the read pointer to keep message at the front
+					client->msgQueue.rb.p_r = rollback_p_r;
+					client->msgQueue.rb.fill_cnt = rollback_fill_cnt;
 				}
 #else
 				INFO("TCP: Do not support SSL\r\n");
@@ -861,11 +867,10 @@ MQTT_Task(os_event_t *e)
 			}
 			else {
 				if (espconn_send(client->pCon, dataBuffer, dataLen) != 0) {
-					// error sending, put it back into the queue again
-					INFO("MQTT: espconn_send() returned an error, re-queueing\r\n");
-					if (QUEUE_Puts(&client->msgQueue, dataBuffer, dataLen) == -1) {
-						INFO("MQTT: Queue full\r\n");
-					}
+					INFO("MQTT: espconn_send() error, rolling back queue\r\n");
+					// 2. Roll back the read pointer to keep message at the front
+					client->msgQueue.rb.p_r = rollback_p_r;
+					client->msgQueue.rb.fill_cnt = rollback_fill_cnt;
 				}
 			}
 
