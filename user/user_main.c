@@ -289,7 +289,7 @@ ICACHE_FLASH_ATTR void static config_mode_timer_func(void *arg) {
 ICACHE_FLASH_ATTR void static sample_timer_func(void *arg) {
 #ifdef IMPULSE
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;	
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -508,7 +508,7 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 #ifndef IMPULSE
 ICACHE_FLASH_ATTR void meter_sent_data(void) {
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;	
 	// vars for aes encryption
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -659,7 +659,7 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 
 		if (mqtt_client.pCon != NULL) {
 			char mqtt_topic[MQTT_TOPIC_L];
-			char mqtt_message[MQTT_MESSAGE_L];
+			char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 			char cleartext[MQTT_MESSAGE_L];
 			int mqtt_message_l;
 
@@ -684,7 +684,7 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static wifi_test_report_timer_func(void *arg) {
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	char cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
 
@@ -814,7 +814,7 @@ ICACHE_FLASH_ATTR void mqtt_timeout_cb(uint32_t *args) {
 ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 
 	char *str;
 	char function_name[FUNCTIONNAME_L];
@@ -1047,7 +1047,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 ICACHE_FLASH_ATTR void mqtt_send_wifi_scan_results_cb(const struct bss_info *info) {
 	char cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	char ssid_escaped[SSID_ESCAPED_LENGTH + 1];
@@ -1535,7 +1535,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 
 ICACHE_FLASH_ATTR void mqtt_flash_error(uint16_t calculated_crc, uint16_t saved_crc) {
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;	
 	// vars for aes encryption
 	char cleartext[MQTT_MESSAGE_L];

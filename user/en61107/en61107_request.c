@@ -108,7 +108,7 @@ static void en61107_received_task(os_event_t *events) {
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[128];
 	char topic[MQTT_TOPIC_L];
-	char message[EN61107_FRAME_L];
+	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 
 	// vars for aes encryption
@@ -428,7 +428,7 @@ void en61107_request_send() {
 #else
 	char topic[128];
 	char cleartext[EN61107_FRAME_L];
-	char message[EN61107_FRAME_L];
+	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int topic_l;
 	int message_l;
 	

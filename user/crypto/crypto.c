@@ -75,16 +75,21 @@ size_t encrypt_aes_hmac_combined(uint8_t *dst, uint8_t *topic, size_t topic_l, u
 	// Generate random IV (after HMAC field)
 	os_get_random(dst + SHA256_DIGEST_LENGTH, 16);
 
-	// PKCS#7 padding
+	// Calculate PKCS#7 padding
 	pad = 16 - (message_l % 16);
-	for (i = 0; i < pad; i++) {
-		message[message_l + i] = pad;
-	}
 	padded_len = message_l + pad;
 
-	// AES-CBC encrypt: ciphertext goes after HMAC + IV
+	// Copy plaintext to dst BEFORE encrypting to avoid modifying the caller's 'message' array
+	memcpy(dst + SHA256_DIGEST_LENGTH + 16, message, message_l);
+
+	// Add padding directly to the dst buffer
+	for (i = 0; i < pad; i++) {
+		dst[SHA256_DIGEST_LENGTH + 16 + message_l + i] = pad;
+	}
+
+	// AES-CBC encrypt in-place: ciphertext goes after HMAC + IV
 	AES128_CBC_encrypt_buffer(dst + SHA256_DIGEST_LENGTH + 16,
-							  message,
+							  dst + SHA256_DIGEST_LENGTH + 16,
 							  padded_len,
 							  aes_key,
 							  dst + SHA256_DIGEST_LENGTH);

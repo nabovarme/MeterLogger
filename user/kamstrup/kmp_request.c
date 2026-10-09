@@ -64,7 +64,7 @@ static void kmp_received_task(os_event_t *events) {
 	char current_unix_time_string[64];	// BUGFIX var
 	char key_value[256];
 	char topic[MQTT_TOPIC_L];
-	char message[KMP_FRAME_L];
+	char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 		
 	// vars for aes encryption
@@ -378,7 +378,7 @@ void kmp_request_send() {
 #ifdef DEBUG_NO_METER
 	char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
-	char message[KMP_FRAME_L];
+	char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 
 	uint8_t sine_wave[256] = {

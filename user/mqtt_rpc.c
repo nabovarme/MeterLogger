@@ -57,7 +57,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_ping(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 #ifdef EN61107
@@ -78,7 +78,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_version(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 #ifdef EN61107
@@ -102,7 +102,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_uptime(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 #ifdef EN61107
@@ -124,7 +124,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_vdd(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	
 
@@ -150,7 +150,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_rssi(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -172,7 +172,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_ssid(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -197,7 +197,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_scan(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	if (fallback_ap_is_running) return; // Prevent Fatal Exception 9
@@ -227,7 +227,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
@@ -265,7 +265,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
@@ -303,7 +303,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
@@ -358,7 +358,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
@@ -414,7 +414,7 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	// Variables for the immediate acknowledgement reply
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	if (params == NULL) {
@@ -497,7 +497,7 @@ void mqtt_rpc_disconnect_count(MQTT_Client *client) {
 	// send disconnect count
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -520,7 +520,7 @@ void mqtt_rpc_network_quality(MQTT_Client *client) {
 	// send disconnect count
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -548,7 +548,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint32_t wifi_status;
 	const char *reason_str;
@@ -579,7 +579,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_ap_status(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -675,7 +675,7 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	uint32_t time_ms = 0;
 	
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	uint8_t cleartext[MQTT_MESSAGE_L];
 
@@ -740,7 +740,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_fallback_status(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	struct station_config stationConf;
 		
@@ -771,7 +771,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_mem(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -797,7 +797,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_chip_id(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	// Build MQTT topic with timestamp
@@ -830,7 +830,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_flash_id(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -856,7 +856,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_flash_size(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -882,7 +882,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_crypto(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -906,7 +906,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 	uint32_t watchdog_rebooted;
@@ -948,7 +948,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_restart(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
@@ -981,7 +981,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	
 	char *str, *param_key, *param_val, *ctx1, *ctx2, *separator;
@@ -1086,7 +1086,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	if (status == NULL) {
@@ -1117,7 +1117,7 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	bool success = false;
 
@@ -1174,7 +1174,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_stack_trace(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 	exception_handler_init();
@@ -1202,7 +1202,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	if (query == NULL) {
@@ -1230,7 +1230,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_clear_cron(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
 	clear_cron_jobs();
@@ -1253,7 +1253,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_cron(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	
 #ifdef DEBUG
@@ -1284,7 +1284,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	int int_value;
 	uint16_t calculated_crc;
@@ -1353,7 +1353,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 	int int_value;
 	uint16_t calculated_crc;
@@ -1444,7 +1444,7 @@ ICACHE_FLASH_ATTR
 void mqtt_rpc_status(MQTT_Client *client) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
-	char mqtt_message[MQTT_MESSAGE_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 		
 #ifdef EN61107
