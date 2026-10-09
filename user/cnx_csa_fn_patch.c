@@ -44,10 +44,18 @@ void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
 ICACHE_FLASH_ATTR
 const char * __wrap_system_get_sdk_version(void) {
 	static char patched_version[64];
+	static bool is_cached = false;
+
+	if (is_cached) {
+		return patched_version;
+	}
+
 	const char *orig = __real_system_get_sdk_version();
 
 	if (orig == NULL) {
-		return "unknown-patched";
+		os_strcpy(patched_version, "unknown-patched");
+		is_cached = true;
+		return patched_version;
 	}
 
 	// Look for the starting parenthesis of the git commit hash e.g., "3.0.6-dev(072755c)"
@@ -64,11 +72,13 @@ const char * __wrap_system_get_sdk_version(void) {
 
 			// Append "-patched" and the remaining string starting from "("
 			os_sprintf(patched_version + prefix_len, "-patched%s", paren);
+			is_cached = true;
 			return patched_version;
 		}
 	} else {
 		// Fallback: If no '(' exists (e.g., "3.0.6"), simply append "-patched" to the end
 		os_sprintf(patched_version, "%s-patched", orig);
+		is_cached = true;
 		return patched_version;
 	}
 
