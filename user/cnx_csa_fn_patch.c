@@ -13,14 +13,14 @@
 uint32_t cnx_csa_call_count = 0;
 bool cnx_csa_new_call_flag = false;
 
-// Reference to the original system_get_sdk_version function provided by SDK
+// References to real functions wrapped by GNU linker
 extern const char * __real_system_get_sdk_version(void);
 extern void __real_cnx_csa_fn(void *arg);
 
 void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
-	// Increment counter and flag for MQTT/system logging
 	uint8 mode;
 	enum station_status status;
+	uint8_t *connected_bssid;
 
 	// Increment counter and flag for MQTT/system logging
 	cnx_csa_call_count++;
@@ -43,7 +43,28 @@ void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
 		return;
 	}
 
-	// Allow valid CSA execution if station is currently associated to an AP
+	// Check if the station is associated with a valid BSSID
+	connected_bssid = wifi_get_bssid();
+	if (connected_bssid == NULL) {
+		#ifdef DEBUG
+		os_printf("cnx_csa_fn: Blocked CSA switch (no active BSSID)\n");
+		#endif
+		return;
+	}
+
+	// If arg contains frame data or context, verify frame origin matches connected_bssid
+	if (arg != NULL) {
+		// arg typically points to struct cnx_mgr or frame buffer containing source BSSID at offset 0 or 4
+		const uint8_t *frame_bssid = (const uint8_t *)arg;
+		if (os_memcmp(frame_bssid, connected_bssid, 6) != 0) {
+			#ifdef DEBUG
+			os_printf("cnx_csa_fn: Blocked rogue CSA switch (BSSID mismatch)\n");
+			#endif
+			return;
+		}
+	}
+
+	// Allow valid CSA execution if BSSID matches the connected AP
 	__real_cnx_csa_fn(arg);
 }
 
