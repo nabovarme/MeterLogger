@@ -187,6 +187,7 @@ int query_string_unescape(char *str) {
 	for (p = str; (p = strstr(p, "%26")); ++p) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "&", 1);
+		len -= 2;
 	}
 	
 	// and "%3d" with "=";
@@ -194,6 +195,7 @@ int query_string_unescape(char *str) {
 	for (p = str; (p = strstr(p, "%3d")); ++p) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "=", 1);
+		len -= 2;
 	}
 	
 	// and uppercase "%3D" with "=";
@@ -201,9 +203,10 @@ int query_string_unescape(char *str) {
 	for (p = str; (p = strstr(p, "%3D")); ++p) {
 		memmove(p + 1, p + 3, len - (p - str) + 1);
 		memcpy(p, "=", 1);
+		len -= 2;
 	}
 
-	return strlen(str);
+	return strlen(len);
 }
 
 ICACHE_FLASH_ATTR
