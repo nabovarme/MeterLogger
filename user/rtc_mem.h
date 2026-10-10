@@ -1,4 +1,4 @@
-#define RTC_ADDR 64  // Word offset (64*4 = 256 bytes into RTC memory)
+#define RTC_ADDR 68  // Word offset (64*4 = 256 bytes into RTC memory)
 #define MAGIC 0xDEADBEEF
 
 // A struct to hold your data (must be 4-byte aligned)

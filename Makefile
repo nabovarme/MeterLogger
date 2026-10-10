@@ -82,6 +82,8 @@ LIBS			= main net80211 wpa pp phy hal ssl lwip_open gcc c
 # compiler flags using during compilation of source files
 CFLAGS			+= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wno-switch -Wno-unknown-pragmas -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -DVERSION=\"$(GIT_VERSION)\" -DLWIP_VERSION=\"$(GIT_LWIP_VERSION)\" -DECB=0 -DKEY=$(CUSTOM_KEY) -DAP_PASSWORD=\"$(CUSTOM_AP_PASSWORD)\" -mforce-l32 -DCONFIG_ENABLE_IRAM_MEMORY=1 -DLWIP_OPEN_SRC
 
+CFLAGS += -DBOOT_RTC_ENABLED
+
 # linker flags used to generate the main object file
 LDFLAGS =	-nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static \
 			-Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections \
