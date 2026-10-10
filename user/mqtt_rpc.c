@@ -81,25 +81,6 @@ void mqtt_rpc_version(MQTT_Client *client) {
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
-	rboot_config rconf;
-	uint8_t current_rom;
-
-	// Self-Test Confirmation Hook
-	rconf = rboot_get_config();
-	current_rom = rboot_get_current_rom();
-
-	// If current active ROM does not match stored default ROM, commit it permanently!
-	if (rconf.current_rom != current_rom) {
-#ifdef DEBUG
-		os_printf("OTA Confirmation: Self-test passed via /version! Permanently committing ROM %d.\n", current_rom);
-#endif
-		rboot_set_current_rom(current_rom);
-		
-		// Send notification status back over MQTT
-		mqtt_rpc_ota_status(client, "self_test_passed_committed");
-	}
-
-	// Send version
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -112,7 +93,7 @@ void mqtt_rpc_version(MQTT_Client *client) {
 
 	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s-%s-%s-%s", system_get_sdk_version(), VERSION, LWIP_VERSION, HW_MODEL);
 
-	// Encrypt and publish
+	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
@@ -1008,7 +989,41 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	uint8_t target_rom = 0;
 	bool success = false;
 
+	rboot_config rconf;
+	uint8_t current_rom;
+
 	if (params == NULL) {
+		return;
+	}
+
+	// 0. Check if this is a confirmation command for a pending self-test boot
+	if (strstr(params, "action=confirm") != NULL) {
+		rconf = rboot_get_config();
+		current_rom = rboot_get_current_rom();
+
+#ifdef EN61107
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+		memset(mqtt_message, 0, sizeof(mqtt_message));
+		memset(cleartext, 0, sizeof(cleartext));
+
+		// If currently running on a temporary / uncommitted ROM slot
+		if (rconf.current_rom != current_rom) {
+#ifdef DEBUG
+			os_printf("OTA Confirmation: Self-test passed via /ota_upgrade action=confirm! Committing ROM %d permanently.\n", current_rom);
+#endif
+			rboot_set_current_rom(current_rom);
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=self_test_passed_committed");
+		} else {
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=already_committed");
+		}
+
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
 		return;
 	}
 
