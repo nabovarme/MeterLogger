@@ -208,7 +208,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
 | /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&version=1.2.3&key=new_32_char_hex_key] (url, version, and key are optional) |
+| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&version=1.2.3] (url and version are optional) or action=confirm    |
 | /config/v2/9999999/[unix time]/set_key                 | [key=new_32_char_hex_key]                                                                           |
 
 **MQTT format for messages sent _from_ meter**  
@@ -246,7 +246,7 @@ hmac sha256 key
 | /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
 | /restart/v2/9999999/[unix time]                  |                                                                                                      |
-| /ota_upgrade/v2/9999999/[unix time]              | [status=started&target_rom=2 (or status=error_no_url)]                                               |
+| /ota_upgrade/v2/9999999/[unix time]              | [status=started&target_rom=2] (or status=self_test_passed_committed, status=already_committed, status=flashing_10%, status=success&target_rom=2, status=restarting_in_22s, status=error_no_url, status=error_busy, status=error_http_not_200, status=error_header_overflow, status=error_invalid_magic, status=error_flash_write, status=error_tcp_drop, status=error_too_small, status=error_truncated, status=error_disconnected, status=error_dns) |
 | /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
 
 **Note on Wi-Fi Test Reason Codes:**
