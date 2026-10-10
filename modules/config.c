@@ -148,11 +148,9 @@ cfg_load() {
 		tfp_snprintf((char *)sys_cfg.mqtt_pass, 32, "%s", MQTT_PASS);
 
 		sys_cfg.security = DEFAULT_SECURITY;	//default non ssl
-		
-#ifndef OTA_FW
-		// Initialize the hardcoded key ONLY on standard Serial firmware
+
+		// Only populate default key if no valid key is currently set
 		os_memcpy(sys_cfg.key, key, sizeof(key));
-#endif
 
 		sys_cfg.mqtt_keepalive = MQTT_KEEPALIVE;
 #ifdef IMPULSE

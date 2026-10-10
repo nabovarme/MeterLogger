@@ -39,9 +39,7 @@
 #define METER_SERIAL_LEN			10
 #endif
 
-#ifndef OTA_FW
 static const char key[] = KEY;
-#endif
 
 typedef struct{
 	uint32_t cfg_holder;
