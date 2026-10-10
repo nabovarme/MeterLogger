@@ -208,7 +208,7 @@ hmac sha256 key
 | /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
 | /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&key=new_32_char_hex_key] (key parameter is optional)               |
+| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&version=1.2.3&key=new_32_char_hex_key] (url, version, and key are optional) |
 | /config/v2/9999999/[unix time]/set_key                 | [key=new_32_char_hex_key]                                                                           |
 
 **MQTT format for messages sent _from_ meter**  
