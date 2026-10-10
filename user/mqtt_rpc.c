@@ -1001,29 +1001,32 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// 0. Check if this is a confirmation command for a pending self-test boot
 	if (strstr(params, "action=confirm") != NULL) {
 		boot_mode = MODE_STANDARD;
+		
+		// Default to flash-based current ROM
 		current_rom = rboot_get_current_rom();
 
-	#ifdef BOOT_RTC_ENABLED
-		// Fetch actual boot mode from RTC memory
+#ifdef BOOT_RTC_ENABLED
+		// Fetch actual boot mode AND the actually running ROM from RTC memory
 		rboot_get_last_boot_mode(&boot_mode);
-	#endif
+		rboot_get_last_boot_rom(&current_rom);
+#endif
 
-	#ifdef EN61107
+#ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-	#elif defined IMPULSE
+#elif defined IMPULSE
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
-	#else
+#else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
-	#endif
+#endif
 		memset(mqtt_message, 0, sizeof(mqtt_message));
 		memset(cleartext, 0, sizeof(cleartext));
 
 		// Check if we booted via MODE_TEMP_ROM or if rconf is out of sync
 		rconf = rboot_get_config();
 		if (boot_mode == MODE_TEMP_ROM || rconf.current_rom != current_rom) {
-	#ifdef DEBUG
+#ifdef DEBUG
 			os_printf("OTA Confirmation: Self-test passed! Committing ROM %d permanently.\n", current_rom);
-	#endif
+#endif
 			rboot_set_current_rom(current_rom);
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=self_test_passed_committed");
 		} else {
