@@ -991,6 +991,8 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	rboot_config rconf;
 	uint8_t current_rom;
+	
+	uint8_t boot_mode;
 
 	if (params == NULL) {
 		return;
@@ -998,7 +1000,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	// 0. Check if this is a confirmation command for a pending self-test boot
 	if (strstr(params, "action=confirm") != NULL) {
-		uint8_t boot_mode = MODE_STANDARD;
+		boot_mode = MODE_STANDARD;
 		current_rom = rboot_get_current_rom();
 
 	#ifdef BOOT_RTC_ENABLED
