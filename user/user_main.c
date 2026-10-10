@@ -1455,7 +1455,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 		ac_thermo_close();
 	}
 #endif // IMPULSE
-	
+
+	// Initialize NAT mapping tables before manipulating network interfaces
+	wifi_init_napt();
+
 	// dont enable wireless before we have configured ssid
 	wifi_set_opmode_current(NULL_MODE);
 	wifi_station_disconnect();

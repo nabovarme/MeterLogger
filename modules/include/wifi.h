@@ -22,6 +22,9 @@
 #define WIFI_TEST_PWD_MAX_LEN 64
 #define WIFI_TEST_STAY_MAX_LEN 10
 
+#define IP_NAPT_MAX 512
+#define IP_PORTMAP_MAX 16
+
 extern uint32_t disconnect_count;
 extern bool fallback_ap_is_running;
 extern volatile bool wifi_fallback_active;
@@ -50,6 +53,7 @@ typedef struct {
 extern wifi_test_ctx_t wifi_test_ctx;
 
 bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p);
+void ICACHE_FLASH_ATTR wifi_init_napt(void);
 
 void wifi_handle_event_cb(System_Event_t *evt);
 void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);

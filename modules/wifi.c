@@ -122,6 +122,7 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 #pragma GCC diagnostic pop
 	uint16_t dest_port = 0;
 	uint8_t *packet;
+	uint8_t ip_hlen;
 
 	if (p->len < sizeof(struct eth_hdr)) {
 		return false;
@@ -147,21 +148,24 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	ip_h = (struct ip_hdr *)&packet[sizeof(struct eth_hdr)];
 	proto = IPH_PROTO(ip_h);
 
+	// Calculate actual IP header length (Header Length field is in 32-bit words, so multiply by 4)
+	ip_hlen = IPH_HL(ip_h) * 4;
+
 	switch (proto) {
 		case IP_PROTO_UDP:
-			if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct udp_hdr)) {
+			if (p->len < sizeof(struct eth_hdr) + ip_hlen + sizeof(struct udp_hdr)) {
 				return false;
 			}
-			udp_h = (struct udp_hdr *)&packet[sizeof(struct eth_hdr)+sizeof(struct ip_hdr)];
+			udp_h = (struct udp_hdr *)&packet[sizeof(struct eth_hdr) + ip_hlen];
 			src_port = ntohs(udp_h->src);
 			dest_port = ntohs(udp_h->dest);
 			break;
 
 		case IP_PROTO_TCP:
-			if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct tcp_hdr)) {
+			if (p->len < sizeof(struct eth_hdr) + ip_hlen + sizeof(struct tcp_hdr)) {
 				return false;
 			}
-			tcp_h = (struct tcp_hdr *)&packet[sizeof(struct eth_hdr)+sizeof(struct ip_hdr)];
+			tcp_h = (struct tcp_hdr *)&packet[sizeof(struct eth_hdr) + ip_hlen];
 			src_port = ntohs(tcp_h->src);
 			dest_port = ntohs(tcp_h->dest);
 			break;
@@ -193,6 +197,11 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 
 	// default allow everything else
 	return true;
+}
+
+void ICACHE_FLASH_ATTR wifi_init_napt(void) {
+	// Allocate global NAPT and portmap tables in memory
+	ip_napt_init(IP_NAPT_MAX, IP_PORTMAP_MAX);
 }
 
 // static functions
