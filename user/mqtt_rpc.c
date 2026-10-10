@@ -975,6 +975,7 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 ICACHE_FLASH_ATTR
 void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char base_url[128] = {0};
+	char version_str[32] = {0};
 	char final_url[256] = {0};
 	char serial_str[32] = {0};
 	char params_copy[MQTT_MESSAGE_L];
@@ -1019,7 +1020,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Pre-calculate target ROM slot (0 -> 1, 1 -> 0)
 	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
 
-	// 2. Parse key-value parameters (url=...)
+	// 2. Parse key-value parameters (url=... & version=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
@@ -1028,9 +1029,12 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		param_key = strtok_r(str, "=", &ctx2);
 		param_val = strtok_r(NULL, "=", &ctx2);
 		if (param_key && param_val) {
-			if (strncmp(param_key, "url", 3) == 0) {
+			if (strcmp(param_key, "url") == 0) {
 				query_string_unescape(param_val);
 				strncpy(base_url, param_val, sizeof(base_url) - 1);
+			} else if (strcmp(param_key, "version") == 0) {
+				query_string_unescape(param_val);
+				strncpy(version_str, param_val, sizeof(version_str) - 1);
 			}
 		}
 		str = strtok_r(NULL, "&", &ctx1);
@@ -1052,7 +1056,12 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	// Safely append query parameters (? vs &)
 	separator = (strchr(base_url, '?') == NULL) ? "?" : "&";
-	tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
+
+	if (strlen(version_str) > 0) {
+		tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d&version=%s", base_url, separator, serial_str, target_rom, version_str);
+	} else {
+		tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
+	}
 
 	// 3. Start the OTA download with the constructed URL
 	if (strlen(final_url) > 0) {
