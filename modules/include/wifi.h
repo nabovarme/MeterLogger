@@ -22,7 +22,10 @@
 #define WIFI_TEST_PWD_MAX_LEN 64
 #define WIFI_TEST_STAY_MAX_LEN 10
 
+#undef IP_NAPT_MAX
 #define IP_NAPT_MAX 128
+
+#undef IP_PORTMAP_MAX
 #define IP_PORTMAP_MAX 2
 
 extern uint32_t disconnect_count;
