@@ -276,8 +276,8 @@ static void en61107_received_task(os_event_t *events) {
 #endif	// FLOW_METER
 
 				memset(cleartext, 0, sizeof(cleartext));
-				os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-				os_memset(message, 0, sizeof(message));				// ...and clear it
+				strncpy(cleartext, message, sizeof(cleartext) - 1);	// make a copy of message for later use
+				memset(message, 0, sizeof(message));				// ...and clear it
 
 				// encrypt and send
 				message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
