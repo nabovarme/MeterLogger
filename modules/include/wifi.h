@@ -22,8 +22,8 @@
 #define WIFI_TEST_PWD_MAX_LEN 64
 #define WIFI_TEST_STAY_MAX_LEN 10
 
-#define IP_NAPT_MAX 512
-#define IP_PORTMAP_MAX 16
+#define IP_NAPT_MAX 128
+#define IP_PORTMAP_MAX 2
 
 extern uint32_t disconnect_count;
 extern bool fallback_ap_is_running;
