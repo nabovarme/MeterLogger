@@ -15,11 +15,12 @@
 #include "mqtt_rpc.h"
 #include "utils.h"
 
-#define OTA_REBOOT_DELAY_MS	6000
-#define ESP_IMAGE_MAGIC_V1	0xE9
-#define ESP_IMAGE_MAGIC_V2	0xEA
-#define OTA_DEFAULT_PORT	80
-#define OTA_MAX_HEADER_SIZE 1024
+#define OTA_REBOOT_DELAY_MS    6000
+#define ESP_IMAGE_MAGIC_V1     0xE9
+#define ESP_IMAGE_MAGIC_V2     0xEA
+#define OTA_DEFAULT_PORT       80
+#define OTA_MAX_HEADER_SIZE    1024
+#define MIN_FIRMWARE_SIZE      102400 // 100 KB minimum sane size for firmware binary
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -217,7 +218,19 @@ static void ota_tcp_discon_cb(void *arg) {
 	if (is_valid_binary) {
 		rboot_write_end(&ota_status);
 		
-		// 1. Verify Content-Length if it was provided by the HTTP server
+		// 1. Enforce minimum received byte check to prevent soft-bricking on truncated downloads
+		if (ota_received_bytes < MIN_FIRMWARE_SIZE) {
+#ifdef DEBUG
+			os_printf("OTA Error: Downloaded size too small (%u bytes < %u bytes limit).\n", ota_received_bytes, MIN_FIRMWARE_SIZE);
+#endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_too_small");
+			}
+			ota_in_progress = false;
+			return;
+		}
+
+		// 2. Verify Content-Length if it was provided by the HTTP server
 		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
@@ -229,13 +242,13 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// 2. We omit user-space checksum verification. 
-		// The rboot bootloader natively verifies the ROM checksum upon reboot.
-		// If the ROM is corrupt, rboot will safely fall back to the previous slot.
-		rboot_set_current_rom(ota_target_rom);
+		// 3. Stage a temporary boot to the target slot.
+		// If the new binary crashes or fails to connect/pass self-test,
+		// rBoot will automatically roll back to the old working slot on next reset.
+		rboot_set_temp_rom(ota_target_rom);
 
 #ifdef DEBUG
-		os_printf("OTA: Download complete. Rebooting to rom %d...\n", ota_target_rom);
+		os_printf("OTA: Download complete. Staging temp boot to rom %d...\n", ota_target_rom);
 #endif
 		if (ota_mqtt_client) {
 			tfp_snprintf(status_msg, sizeof(status_msg), "success&target_rom=%d", ota_target_rom + 1);
@@ -246,7 +259,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 		
-		// Delay reboot by 3 seconds to allow the MQTT stack to flush its queue 
+		// Delay reboot by 6 seconds to allow the MQTT stack to flush its queue 
 		// over the network before the Wi-Fi radio shuts down.
 		os_timer_disarm(&ota_reboot_timer);
 		os_timer_setfn(&ota_reboot_timer, (os_timer_func_t *)ota_reboot_timer_cb, NULL);
