@@ -612,6 +612,16 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	bool switched_network = false;
 	static uint8_t fallback_miss_count = 0;
+	uint8_t s;
+
+	// If a scan was aborted mid-flight (e.g. by wifi_stop_scan or a timeout),
+	// wifi_scan_runnning will be false. Abort immediately to prevent chaining.
+	if (!wifi_scan_runnning) {
+#ifdef DEBUG
+		printf("wifi_scan_done_cb: Scan was aborted, breaking timer chain.\n\r");
+#endif
+		return;
+	}
 
 #ifdef DEBUG
 	printf ("\t-> %s(%x, %d)\n\r", __FUNCTION__, arg == NULL ? 0 : (unsigned int)arg, status);
@@ -704,7 +714,6 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 		}
 
 #ifdef DEBUG
-		uint8_t s;
 		s = wifi_station_get_connect_status();
 		printf("wifi present: %s\n", (wifi_present ? "yes" : "no"));
 		printf("wifi fallback present: %s\n", (wifi_fallback_present ? "yes" : "no"));
