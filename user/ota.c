@@ -21,6 +21,7 @@
 #define OTA_DEFAULT_PORT       80
 #define OTA_MAX_HEADER_SIZE    1024
 #define MIN_FIRMWARE_SIZE      102400 // 100 KB minimum sane size for firmware binary
+#define MAX_FIRMWARE_SIZE      0x69000 // 420 KB maximum safe partition size for 1MB flash maps
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -45,10 +46,26 @@ static char ota_path[128];
 static int ota_port = OTA_DEFAULT_PORT;
 
 static os_timer_t ota_reboot_timer;
+static os_timer_t ota_timeout_timer;
 
 ICACHE_FLASH_ATTR
 static void ota_reboot_timer_cb(void *arg) {
 	system_restart_defered();
+}
+
+ICACHE_FLASH_ATTR
+static void ota_timeout_timer_cb(void *arg) {
+	if (ota_in_progress) {
+#ifdef DEBUG
+		os_printf("OTA Error: Download timed out. Aborting connection.\n");
+#endif
+		if (ota_mqtt_client) {
+			mqtt_rpc_ota_status(ota_mqtt_client, "error_timeout");
+		}
+		espconn_abort(&ota_conn); // Force drop the dead TCP socket immediately
+		is_valid_binary = false;
+		ota_in_progress = false;
+	}
 }
 
 ICACHE_FLASH_ATTR
@@ -69,6 +86,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	/* Word-aligned buffer for initial unaligned payload block */
 	uint32_t aligned_buf[128 / 4];
 	uint8_t *aligned_pdata;
+
+	// Reset timeout timer every time we receive a chunk
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
+	os_timer_arm(&ota_timeout_timer, 15000, 0); // 15 second timeout
 
 	pdata = pusrdata;
 	len = length;
@@ -183,6 +205,20 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	// Write incoming payload chunks directly to flash memory
 	// rboot_write_flash automatically handles unaligned chunk sizes buffering
 	if (is_valid_binary && len > 0) {
+		// Enforce absolute maximum size boundary to protect RF and SDK sectors
+		if (ota_received_bytes + len > MAX_FIRMWARE_SIZE) {
+#ifdef DEBUG
+			os_printf("OTA Error: Image too large (%u bytes). Aborting to protect system partitions.\n", ota_received_bytes + len);
+#endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_file_too_large");
+			}
+			is_valid_binary = false;
+			ota_in_progress = false;
+			espconn_abort(&ota_conn);
+			return;
+		}
+
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
 			os_printf("OTA: Flash write failed. Disconnecting.\n");
@@ -196,6 +232,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		}
 		else {
 			ota_received_bytes += len;
+
+			// ---> FEED THE WATCHDOGS HERE TO PREVENT REASON 4 RESET <---
+			system_soft_wdt_feed();
+			WRITE_PERI_REG(0X60000914, 0X73); 
+			// -----------------------------------------------------------
 
 			// Send periodic MQTT progress reports every 10%
 			if (ota_content_length > 0) {
@@ -215,6 +256,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 ICACHE_FLASH_ATTR
 static void ota_tcp_recon_cb(void *arg, sint8 err) {
+	os_timer_disarm(&ota_timeout_timer); // Disarm timeout timer
 #ifdef DEBUG
 	os_printf("OTA: TCP network error (%d). Aborting.\n", err);
 #endif
@@ -227,6 +269,8 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 ICACHE_FLASH_ATTR
 static void ota_tcp_discon_cb(void *arg) {
 	char status_msg[32];
+
+	os_timer_disarm(&ota_timeout_timer); // Disarm timeout timer
 
 	// Only finalize and reboot if the file was a valid binary
 	if (is_valid_binary) {
@@ -408,6 +452,11 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	ota_conn.type = ESPCONN_TCP;
 	ota_conn.state = ESPCONN_NONE;
 	ota_conn.proto.tcp = &ota_tcp;
+
+	// Set initial timeout in case DNS resolves but TCP connect hangs
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
+	os_timer_arm(&ota_timeout_timer, 15000, 0);
 
 	// 3. Resolve DNS (or connect immediately if it's an IP)
 	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
