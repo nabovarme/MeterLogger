@@ -83,16 +83,24 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
+	uint16_t previous_header_len;
+	uint16_t body_offset;
 
-	// Reset timeout timer every time we receive a chunk
+	// Refresh timeout timer safely (DO NOT call os_timer_setfn here)
 	os_timer_disarm(&ota_timeout_timer);
-	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
 	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
 
 	pdata = pusrdata;
 	len = length;
 
 	if (!headers_parsed) {
+		// Force string literals into RAM to bypass the ESP8266 ROM flash alignment bug
+		char str_rnrn[] = "\r\n\r\n";
+		char str_200ok[] = "200 OK";
+		char str_200[] = "200";
+		char str_cl_up[] = "Content-Length: ";
+		char str_cl_lo[] = "content-length: ";
+
 		// Buffer incoming data to assemble a complete HTTP header
 		copy_len = length;
 		if (ota_header_len + copy_len > OTA_MAX_HEADER_SIZE - 1) {
@@ -103,11 +111,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		ota_header_len += copy_len;
 		ota_header_buffer[ota_header_len] = '\0';
 		
-		body_marker = (char *)os_strstr(ota_header_buffer, "\r\n\r\n");
+		body_marker = (char *)os_strstr(ota_header_buffer, str_rnrn);
 		if (body_marker) {
 			// Validate HTTP status now that the whole header is accumulated
-			if (os_strstr(ota_header_buffer, "200 OK") == NULL &&
-				os_strstr(ota_header_buffer, "200") == NULL) {
+			if (os_strstr(ota_header_buffer, str_200ok) == NULL && os_strstr(ota_header_buffer, str_200) == NULL) {
 #ifdef DEBUG
 				os_printf("OTA Error: Non-200 HTTP response received!\n");
 #endif
@@ -120,9 +127,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			}
 
 			// Extract Content-Length for size validation
-			cl = (char *)os_strstr(ota_header_buffer, "Content-Length: ");
+			cl = (char *)os_strstr(ota_header_buffer, str_cl_up);
 			if (!cl) {
-				cl = (char *)os_strstr(ota_header_buffer, "content-length: ");
+				cl = (char *)os_strstr(ota_header_buffer, str_cl_lo);
 			}
 			if (cl) {
 				ota_content_length = atoi(cl + 16);
@@ -196,11 +203,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		// Enforce absolute maximum size boundary to protect RF and SDK sectors
 		if (ota_received_bytes + len > MAX_FIRMWARE_SIZE) {
 #ifdef DEBUG
-			os_printf("OTA Error: Image too large (%u bytes). Aborting to protect system partitions.\n", ota_received_bytes + len);
+			os_printf("OTA Error: Image too large (%u bytes). Aborting.\n", ota_received_bytes + len);
 #endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_file_too_large");
-			}
+			if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_file_too_large");
 			is_valid_binary = false;
 			ota_in_progress = false;
 			espconn_abort(&ota_conn);
@@ -283,7 +288,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		
 		// Finalize flash writes only after download length has been verified
 		rboot_write_end(&ota_status);
-
+		
 		// 3. Stage a temporary boot to the target slot.
 		// If the new binary crashes or fails to connect/pass self-test,
 		// rBoot will automatically roll back to the old working slot on next reset.
@@ -438,7 +443,7 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	ota_conn.state = ESPCONN_NONE;
 	ota_conn.proto.tcp = &ota_tcp;
 
-	// Set initial timeout in case DNS resolves but TCP connect hangs
+	// Initialize the timeout timer once
 	os_timer_disarm(&ota_timeout_timer);
 	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
 	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
