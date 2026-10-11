@@ -83,8 +83,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
-	uint16_t previous_header_len;
-	uint16_t body_offset;
 
 	// Refresh timeout timer safely (DO NOT call os_timer_setfn here)
 	os_timer_disarm(&ota_timeout_timer);
