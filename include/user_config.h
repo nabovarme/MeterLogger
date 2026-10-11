@@ -8,7 +8,7 @@
 //#define MQTT_CA_FLASH_SECTOR	0x5c
 
 #define STACK_TRACE_N				0x4000
-#define STACK_TRACE_SEC				0x80
+#define STACK_TRACE_SEC				0xF8
 
 #ifdef IMPULSE
 #ifndef FLOW_METER	// electricity meter

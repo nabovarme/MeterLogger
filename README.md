@@ -164,6 +164,25 @@ hmac sha256 key
 ```  
 
 
+## Flash Memory Map (1MB ESP07)
+
+The firmware relies on a strict dual-ROM partition layout to support rBoot Over-The-Air (OTA) upgrades and a dedicated LittleFS/ESPFS webserver filesystem. It is critical that configuration blocks and crash logs do not overlap with executable ROM spaces.
+
+| Start Address | End Address | Size (KB) | Purpose |
+| :--- | :--- | :--- | :--- |
+| `0x00000` | `0x00FFF` | 4 KB | **rBoot Bootloader** (`rboot.bin`) |
+| `0x01000` | `0x01FFF` | 4 KB | **rBoot Configuration** (`blank.bin`) |
+| `0x02000` | `0x75FFF` | 464 KB | **ROM 0** (`user1.bin` / Primary Firmware Slot) |
+| `0x76000` | `0x7BFFF` | 24 KB | **System Configuration** (`CFG_LOCATION` / Wi-Fi credentials & states) |
+| `0x7C000` | `0x81FFF` | 24 KB | **Web UI Filesystem** (`webpages.espfs` / HTML/CSS/JS assets) |
+| `0x82000` | `0xF7FFF` | 472 KB | **ROM 1** (`user2.bin` / Secondary OTA Firmware Slot) |
+| `0xF8000` | `0xFBFFF` | 16 KB | **Stack Trace Crash Log** (`STACK_TRACE_SEC` / Exception Handler dumps) |
+| `0xFC000` | `0xFDFFF` | 8 KB | **ESP8266 System Init Data** (`esp_init_data_default_112th_byte_0x03.bin`) |
+| `0xFE000` | `0xFFFFF` | 8 KB | **System Blank** (`blank.bin`) |
+
+*Note: The `STACK_TRACE_SEC` must be strictly set to `0xF8` in `user_config.h` to prevent the crash logger from corrupting ROM 1 or the web filesystem during exception handling.*
+
+
 **MQTT format for messages sent _to_ meter**  
 
 | Topic                                                  | Message                                                                                             |
