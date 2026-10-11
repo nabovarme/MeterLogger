@@ -683,12 +683,12 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 		return;
 	}
 
-	if (params != NULL && strlen(params) > 0) time_ms = atoi(params) * 1000;
-
-	if (time_ms == 0) return; // Abort if no valid time was provided
+	if (params != NULL && strlen(params) > 0) {
+		time_ms = atoi(params) * 1000;
+	}
 
 #ifdef DEBUG
-	os_printf("MQTT RPC: Starting temporary Fallback AP for %u seconds\n", time_ms / 1000);
+	os_printf("MQTT RPC: Fallback AP requested with %u seconds\n", time_ms / 1000);
 #endif
 
 	// Immediate acknowledgement reply
@@ -702,13 +702,23 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", params);
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", params != NULL ? params : "0");
 	
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
 
 	// If we are already broadcasting the fallback AP, just extend the timer!
 	// Skipping the wifi_softap_config prevents dropping already-connected meters.
+	// If time is 0, disable immediately
+	if (time_ms == 0) {
+		if (fallback_ap_is_running) {
+			os_timer_disarm(&fallback_ap_timer);
+			fallback_ap_timer_func(mesh_ssid);
+		}
+		return;
+	}
+
+	// If already running, just extend the timer without resetting softap
 	if (fallback_ap_is_running) {
 		os_timer_disarm(&fallback_ap_timer);
 		os_timer_arm(&fallback_ap_timer, time_ms, 0);
