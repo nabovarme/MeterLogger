@@ -34,6 +34,7 @@ ICACHE_FLASH_ATTR void mqtt_rpc_ota_status(MQTT_Client *client, const char *stat
 ICACHE_FLASH_ATTR void mqtt_rpc_set_key(MQTT_Client *client, char *params);
 #ifdef DEBUG_STACK_TRACE
 ICACHE_FLASH_ATTR void mqtt_rpc_stack_trace(MQTT_Client *client);
+ICACHE_FLASH_ATTR void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params);
 #endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE
 #ifndef NO_CRON

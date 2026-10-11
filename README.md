@@ -185,50 +185,51 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 
 **MQTT format for messages sent _to_ meter**  
 
-| Topic                                                  | Message                                                                                             |
-| :----------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
-| /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/open                    | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/open_until              | [kWh when meter should close (only write to flash if changed and not negative value)]               |
-| /config/v2/9999999/[unix time]/open_until_delta        | [[kWh when meter should close as delta (only write to flash if changed and not negative value)]     |
-| /config/v2/9999999/[unix time]/close                   | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/status                  |                                                                                                     |
-| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open                                  |
-| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=close                                 |
-| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=set_ssid_pwd=ssid=the_ssid&pwd=secret |
-| /config/v2/9999999/[unix time]/set_cron                | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=clear_cron                            |
-| /config/v2/9999999/[unix time]/cron                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/clear_cron              | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/ping                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/version                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/uptime                  |                                                                                                     |
-| /config/v2/9999999/[unix time]/stack_trace             | [enable stack trace dumps until restart i.e. once (only if built with DEBUG_STACK_TRACE=1)]         |
-| /config/v2/9999999/[unix time]/vdd                     |                                                                                                     |
-| /config/v2/9999999/[unix time]/rssi                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/ssid                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/scan                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/set_ssid                | [ssid]                                                                                              |
-| /config/v2/9999999/[unix time]/set_pwd                 | [pwd]                                                                                               |
-| /config/v2/9999999/[unix time]/set_ssid_pwd            | [ssid=name&pwd=secret]                                                                              |
-| /config/v2/9999999/[unix time]/test_ssid_pwd           | [ssid=name&pwd=secret&stay=seconds]                                                                 |
-| /config/v2/9999999/[unix time]/set_ap_mesh_pwd         | [pwd]                                                                                               |
-| /config/v2/9999999/[unix time]/wifi_status             |                                                                                                     |
-| /config/v2/9999999/[unix time]/start_ap                | [start ap + save to flash if changed]                                                               |
-| /config/v2/9999999/[unix time]/stop_ap                 | [stop ap + save to flash if changed]                                                                |
-| /config/v2/9999999/[unix time]/start_fallback_ap       | [seconds] temporarily broadcasts the fallback rescue network (no flash write)                       |
-| /config/v2/9999999/[unix time]/fallback_status         |                                                                                                     |
-| /config/v2/9999999/[unix time]/ap_status               |                                                                                                     |
-| /config/v2/9999999/[unix time]/reconnect               |                                                                                                     |
-| /config/v2/9999999/[unix time]/network_quality         |                                                                                                     |
-| /config/v2/9999999/[unix time]/save (only pulse meter) |                                                                                                     |
-| /config/v2/9999999/[unix time]/mem                     |                                                                                                     |
-| /config/v2/9999999/[unix time]/chip_id                 | [chip ID of the device as 0xXXXXXX]                                                                 |
-| /config/v2/9999999/[unix time]/flash_id                |                                                                                                     |
-| /config/v2/9999999/[unix time]/flash_size              |                                                                                                     |
-| /config/v2/9999999/[unix time]/reset_reason            |                                                                                                     |
-| /config/v2/9999999/[unix time]/restart                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/ota_upgrade             | [url=http://domain.com/user2.bin&version=1.2.3] (url and version are optional) or action=confirm    |
-| /config/v2/9999999/[unix time]/set_key                 | [key=new_32_char_hex_key]                                                                           |
+| Topic                                                    | Message                                                                                             |
+| :------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| /config/v2/9999999/[unix time]/ping                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/open                      | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/open_until                | [kWh when meter should close (only write to flash if changed and not negative value)]               |
+| /config/v2/9999999/[unix time]/open_until_delta          | [[kWh when meter should close as delta (only write to flash if changed and not negative value)]     |
+| /config/v2/9999999/[unix time]/close                     | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/status                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open                                  |
+| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=close                                 |
+| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=set_ssid_pwd=ssid=the_ssid&pwd=secret |
+| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=clear_cron                            |
+| /config/v2/9999999/[unix time]/cron                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/clear_cron                | [unix time]                                                                                         |
+| /config/v2/9999999/[unix time]/ping                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/version                   |                                                                                                     |
+| /config/v2/9999999/[unix time]/uptime                    |                                                                                                     |
+| /config/v2/9999999/[unix time]/stack_trace               | [enable stack trace dumps until restart i.e. once (only if built with DEBUG_STACK_TRACE=1)]         |
+| /config/v2/9999999/[unix time]/read_stack_trace          | [offset=0] Requests a chunk of the saved exception handler crash log.                               |
+| /config/v2/9999999/[unix time]/vdd                       |                                                                                                     |
+| /config/v2/9999999/[unix time]/rssi                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/ssid                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/scan                      |                                                                                                     |
+| /config/v2/9999999/[unix time]/set_ssid                  | [ssid]                                                                                              |
+| /config/v2/9999999/[unix time]/set_pwd                   | [pwd]                                                                                               |
+| /config/v2/9999999/[unix time]/set_ssid_pwd              | [ssid=name&pwd=secret]                                                                              |
+| /config/v2/9999999/[unix time]/test_ssid_pwd             | [ssid=name&pwd=secret&stay=seconds]                                                                 |
+| /config/v2/9999999/[unix time]/set_ap_mesh_pwd           | [pwd]                                                                                               |
+| /config/v2/9999999/[unix time]/wifi_status               |                                                                                                     |
+| /config/v2/9999999/[unix time]/start_ap                  | [start ap + save to flash if changed]                                                               |
+| /config/v2/9999999/[unix time]/stop_ap                   | [stop ap + save to flash if changed]                                                                |
+| /config/v2/9999999/[unix time]/start_fallback_ap         | [seconds] temporarily broadcasts the fallback rescue network (no flash write)                       |
+| /config/v2/9999999/[unix time]/fallback_status           |                                                                                                     |
+| /config/v2/9999999/[unix time]/ap_status                 |                                                                                                     |
+| /config/v2/9999999/[unix time]/reconnect                 |                                                                                                     |
+| /config/v2/9999999/[unix time]/network_quality           |                                                                                                     |
+| /config/v2/9999999/[unix time]/save (only pulse meter)   |                                                                                                     |
+| /config/v2/9999999/[unix time]/mem                       |                                                                                                     |
+| /config/v2/9999999/[unix time]/chip_id                   | [chip ID of the device as 0xXXXXXX]                                                                 |
+| /config/v2/9999999/[unix time]/flash_id                  |                                                                                                     |
+| /config/v2/9999999/[unix time]/flash_size                |                                                                                                     |
+| /config/v2/9999999/[unix time]/reset_reason              |                                                                                                     |
+| /config/v2/9999999/[unix time]/restart                   |                                                                                                     |
+| /config/v2/9999999/[unix time]/ota_upgrade               | [url=http://domain.com/user2.bin&version=1.2.3] (url and version are optional) or action=confirm    |
+| /config/v2/9999999/[unix time]/set_key                   | [key=new_32_char_hex_key]                                                                           |
 
 **MQTT format for messages sent _from_ meter**  
 
@@ -243,6 +244,7 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /open_until_delta/v2/9999999/[unix time]         | [kWh when meter should close]                                                                        |
 | /uptime/v2/9999999/[unix time]                   | [uptime in seconds]                                                                                  |
 | /stack_trace/v2/9999999/[unix time]              |                                                                                                      |
+| /stack_trace_result/v2/9999999/[unix time]       | [offset=0&data=Stack%20dump%3A%0A...] URL-escaped block of the recorded stack trace. Returns empty data if end of log is reached. |
 | /vdd/v2/9999999/[unix time]                      | [power supply voltage level]                                                                         |
 | /rssi/v2/9999999/[unix time]                     | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
 | /ssid/v2/9999999/[unix time]                     | [ssid of the wifi it is connected to]                                                                |

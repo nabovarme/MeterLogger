@@ -1250,6 +1250,96 @@ void mqtt_rpc_stack_trace(MQTT_Client *client) {
 }
 #endif	// DEBUG_STACK_TRACE
 
+#ifdef DEBUG_STACK_TRACE
+ICACHE_FLASH_ATTR
+void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
+	int mqtt_message_l;
+	
+	uint32_t offset = 0;
+	char *str, *key, *val, *ctx1, *ctx2;
+	char params_copy[128]; 
+
+	// 1. Parse the requested offset
+	if (params != NULL && strlen(params) > 0) {
+		strncpy(params_copy, params, sizeof(params_copy) - 1);
+		params_copy[sizeof(params_copy) - 1] = '\0';
+		str = strtok_r(params_copy, "&", &ctx1);
+		while (str != NULL) {
+			key = strtok_r(str, "=", &ctx2);
+			val = strtok_r(NULL, "=", &ctx2);
+			if (key && val && strncmp(key, "offset", 6) == 0) {
+				offset = atoi(val);
+			}
+			str = strtok_r(NULL, "&", &ctx1);
+		}
+	}
+
+	// Boundary check
+	if (offset >= STACK_TRACE_N) {
+		offset = 0;
+	}
+
+	// 2. Read exactly 128 bytes from SPI flash (Buffer must be 32-bit aligned)
+	uint32_t read_len = 128;
+	if (offset + read_len > STACK_TRACE_N) {
+		read_len = STACK_TRACE_N - offset;
+	}
+
+	uint32_t flash_addr = (STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + offset;
+	uint32_t flash_buf[(128 / 4) + 1]; // 32 words + safety
+	memset(flash_buf, 0, sizeof(flash_buf));
+	
+	spi_flash_read(flash_addr, flash_buf, read_len);
+
+	// 3. Extract string up until unwritten flash (0xFF) or NULL (0x00)
+	char temp_data[129];
+	memset(temp_data, 0, sizeof(temp_data));
+	char *raw_flash = (char *)flash_buf;
+	int valid_len = 0;
+	
+	for (int i = 0; i < read_len; i++) {
+		if (raw_flash[i] == 0xFF || raw_flash[i] == 0x00) {
+			break; // Reached end of recorded stack trace
+		}
+		temp_data[valid_len++] = raw_flash[i];
+	}
+
+	// 4. Build MQTT Response Topic
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+	
+	// Format base return string
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "offset=%u&data=", offset);
+	
+	// 5. URL-escape the payload and append to cleartext
+	if (valid_len > 0) {
+		char escaped_data[MQTT_MESSAGE_L];
+		memset(escaped_data, 0, sizeof(escaped_data));
+		strncpy(escaped_data, temp_data, sizeof(escaped_data) - 1);
+		
+		// Escape special chars (like =, & and \n) so it doesn't break backend parsers
+		if (query_string_escape(escaped_data, MQTT_MESSAGE_L) >= 0) {
+			strncat(cleartext, escaped_data, MQTT_MESSAGE_L - strlen(cleartext) - 1);
+		}
+	}
+
+	// 6. Encrypt and Publish
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+}
+#endif // DEBUG_STACK_TRACE
+
 #ifndef IMPULSE
 #ifndef NO_CRON
 ICACHE_FLASH_ATTR

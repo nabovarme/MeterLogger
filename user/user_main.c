@@ -1005,6 +1005,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found stack_trace
 		mqtt_rpc_stack_trace(&mqtt_client);
 	}
+	else if (strncmp(function_name, "read_stack_trace", FUNCTIONNAME_L) == 0) {
+		// found stack_trace
+		mqtt_rpc_read_stack_trace(&mqtt_client, query);
+	}
 #endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE
 #ifndef NO_CRON
