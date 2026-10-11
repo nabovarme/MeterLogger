@@ -85,6 +85,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint16_t total_header_size;
 	uint16_t previous_header_len;
 	uint16_t body_offset;
+	uint16_t offset;
+	
+	// Word-aligned buffer for initial unaligned payload block
+	uint32_t aligned_buf[128 / 4];
+	uint8_t *aligned_pdata;
 
 	// Reset timeout timer every time we receive a chunk
 	os_timer_disarm(&ota_timeout_timer);
@@ -145,7 +150,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			headers_parsed = true;
 			last_reported_progress = 0; // Reset progress tracker
 			
-			// Calculate how much of the CURRENT payload is actually binary data
+			// Calculate exactly how many bytes of the HTTP header were in the current packet
 			total_header_size = (body_marker + 4) - ota_header_buffer;
 			
 			if (total_header_size > previous_header_len) {
@@ -225,20 +230,36 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
-		// ---> FEED THE SOFTWARE WATCHDOG <---
-		system_soft_wdt_feed();
+		offset = 0;
 
-		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
-#ifdef DEBUG
-			os_printf("OTA: Flash write failed. Disconnecting.\n");
-#endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
+		// spi_flash_write requires 32-bit aligned source RAM.
+		// Copy unaligned TCP payload to an aligned stack buffer first.
+		while (offset < len) {
+			copy_len = len - offset;
+			if (copy_len > sizeof(aligned_buf)) {
+				copy_len = sizeof(aligned_buf);
 			}
-			is_valid_binary = false;
-			ota_in_progress = false;
-			espconn_disconnect(&ota_conn);
-			return;
+
+			aligned_pdata = (uint8_t *)aligned_buf;
+			os_memcpy(aligned_pdata, pdata + offset, copy_len);
+
+			// ---> FEED THE SOFTWARE WATCHDOG <---
+			system_soft_wdt_feed();
+
+			if (!rboot_write_flash(&ota_status, aligned_pdata, copy_len)) {
+#ifdef DEBUG
+				os_printf("OTA: Flash write failed. Disconnecting.\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
+				}
+				is_valid_binary = false;
+				ota_in_progress = false;
+				espconn_disconnect(&ota_conn);
+				return;
+			}
+
+			offset += copy_len;
 		}
 
 		ota_received_bytes += len;
