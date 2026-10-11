@@ -772,7 +772,7 @@ int tfp_vsscanf(const char *str, const char *format, ...) {
 
       case 's':
         pos = 0;
-        char *tab = va_arg(ap, char **);
+        char *tab = va_arg(ap, char *);
         while (*str != ' ' && *str != 0)
           *(tab++) = *str++;
         *tab = 0;
