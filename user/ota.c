@@ -83,13 +83,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
-	uint16_t previous_header_len;
-	uint16_t body_offset;
-	uint16_t offset;
-	
-	// Word-aligned buffer for initial unaligned payload block
-	uint32_t aligned_buf[128 / 4];
-	uint8_t *aligned_pdata;
 
 	// Reset timeout timer every time we receive a chunk
 	os_timer_disarm(&ota_timeout_timer);
@@ -101,7 +94,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 	if (!headers_parsed) {
 		// Buffer incoming data to assemble a complete HTTP header
-		previous_header_len = ota_header_len;
 		copy_len = length;
 		if (ota_header_len + copy_len > OTA_MAX_HEADER_SIZE - 1) {
 			copy_len = OTA_MAX_HEADER_SIZE - 1 - ota_header_len;
@@ -113,9 +105,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		
 		body_marker = (char *)os_strstr(ota_header_buffer, "\r\n\r\n");
 		if (body_marker) {
-			// Accept only an HTTP 200 response status line.
-			if (strncmp(ota_header_buffer, "HTTP/1.0 200 ", 13) != 0 &&
-			    strncmp(ota_header_buffer, "HTTP/1.1 200 ", 13) != 0) {
+			// Validate HTTP status now that the whole header is accumulated
+			if (os_strstr(ota_header_buffer, "200 OK") == NULL &&
+				os_strstr(ota_header_buffer, "200") == NULL) {
 #ifdef DEBUG
 				os_printf("OTA Error: Non-200 HTTP response received!\n");
 #endif
@@ -135,32 +127,16 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (cl) {
 				ota_content_length = atoi(cl + 16);
 			}
-			if (!cl || ota_content_length == 0) {
-#ifdef DEBUG
-				os_printf("OTA Error: Missing or invalid Content-Length.\n");
-#endif
-				if (ota_mqtt_client) {
-					mqtt_rpc_ota_status(ota_mqtt_client, "error_content_length");
-				}
-				ota_in_progress = false;
-				espconn_disconnect(&ota_conn);
-				return;
-			}
 
 			headers_parsed = true;
 			last_reported_progress = 0; // Reset progress tracker
 			
-			// Calculate exactly how many bytes of the HTTP header were in the current packet
+			// Calculate how much of the CURRENT payload is actually binary data
 			total_header_size = (body_marker + 4) - ota_header_buffer;
 			
-			if (total_header_size > previous_header_len) {
-				body_offset = total_header_size - previous_header_len;
-				if (body_offset <= length) {
-					pdata = pusrdata + body_offset;
-					len = length - body_offset;
-				} else {
-					len = 0;
-				}
+			if (ota_header_len > total_header_size) {
+				len = ota_header_len - total_header_size;
+				pdata = pusrdata + (length - len); // Offset into the current packet
 			} else {
 				len = 0;
 			}
@@ -215,6 +191,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	}
 
 	// Write incoming payload chunks directly to flash memory
+	// rboot_write_flash automatically handles unaligned chunk sizes buffering
 	if (is_valid_binary && len > 0) {
 		// Enforce absolute maximum size boundary to protect RF and SDK sectors
 		if (ota_received_bytes + len > MAX_FIRMWARE_SIZE) {
@@ -230,46 +207,30 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
-		offset = 0;
-
-		// spi_flash_write requires 32-bit aligned source RAM.
-		// Copy unaligned TCP payload to an aligned stack buffer first.
-		while (offset < len) {
-			copy_len = len - offset;
-			if (copy_len > sizeof(aligned_buf)) {
-				copy_len = sizeof(aligned_buf);
-			}
-
-			aligned_pdata = (uint8_t *)aligned_buf;
-			os_memcpy(aligned_pdata, pdata + offset, copy_len);
-
-			if (!rboot_write_flash(&ota_status, aligned_pdata, copy_len)) {
+		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
-				os_printf("OTA: Flash write failed. Disconnecting.\n");
+			os_printf("OTA: Flash write failed. Disconnecting.\n");
 #endif
-				if (ota_mqtt_client) {
-					mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
-				}
-				is_valid_binary = false;
-				ota_in_progress = false;
-				espconn_disconnect(&ota_conn);
-				return;
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 			}
-
-			offset += copy_len;
+			is_valid_binary = false;
+			ota_in_progress = false;
+			espconn_disconnect(&ota_conn);
 		}
+		else {
+			ota_received_bytes += len;
 
-		ota_received_bytes += len;
+			// Send periodic MQTT progress reports every 10%
+			if (ota_content_length > 0) {
+				current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
 
-		// Send periodic MQTT progress reports every 10%
-		if (ota_content_length > 0) {
-			current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
-
-			if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
-				last_reported_progress = (current_progress / 10) * 10;
-				if (ota_mqtt_client) {
-					tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
-					mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
+				if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
+					last_reported_progress = (current_progress / 10) * 10;
+					if (ota_mqtt_client) {
+						tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
+						mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
+					}
 				}
 			}
 		}
@@ -294,7 +255,7 @@ static void ota_tcp_discon_cb(void *arg) {
 
 	os_timer_disarm(&ota_timeout_timer); // Disarm timeout timer
 
-	// Only finalize and reboot if the file was a complete valid binary
+	// Only finalize and reboot if the file was a valid binary
 	if (is_valid_binary) {
 		// 1. Enforce minimum received byte check to prevent soft-bricking on truncated downloads
 		if (ota_received_bytes < MIN_FIRMWARE_SIZE) {
@@ -320,7 +281,7 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// Finalize flash writes only after the download length has been verified.
+		// Finalize flash writes only after download length has been verified
 		rboot_write_end(&ota_status);
 
 		// 3. Stage a temporary boot to the target slot.
