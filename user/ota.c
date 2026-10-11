@@ -85,11 +85,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint16_t total_header_size;
 	uint16_t previous_header_len;
 	uint16_t body_offset;
-	uint16_t offset;
-	
-	/* Word-aligned buffer for initial unaligned payload block */
-	uint32_t aligned_buf[128 / 4];
-	uint8_t *aligned_pdata;
 
 	// Reset timeout timer every time we receive a chunk
 	os_timer_disarm(&ota_timeout_timer);
@@ -215,7 +210,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	}
 
 	// Write incoming payload chunks directly to flash memory
-	// rboot_write_flash automatically handles unaligned chunk sizes buffering
 	if (is_valid_binary && len > 0) {
 		// Enforce absolute maximum size boundary to protect RF and SDK sectors
 		if (ota_received_bytes + len > MAX_FIRMWARE_SIZE) {
@@ -231,39 +225,23 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
-		offset = 0;
+		// ---> FEED THE SOFTWARE WATCHDOG <---
+		system_soft_wdt_feed();
 
-		while (offset < len) {
-			copy_len = len - offset;
-			if (copy_len > sizeof(aligned_buf)) {
-				copy_len = sizeof(aligned_buf);
-			}
-
-			aligned_pdata = (uint8_t *)aligned_buf;
-			os_memcpy(aligned_pdata, pdata + offset, copy_len);
-
-			if (!rboot_write_flash(&ota_status, aligned_pdata, copy_len)) {
+		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
-				os_printf("OTA: Flash write failed. Disconnecting.\n");
+			os_printf("OTA: Flash write failed. Disconnecting.\n");
 #endif
-				if (ota_mqtt_client) {
-					mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
-				}
-				is_valid_binary = false;
-				ota_in_progress = false;
-				espconn_disconnect(&ota_conn);
-				return;
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 			}
-
-			offset += copy_len;
+			is_valid_binary = false;
+			ota_in_progress = false;
+			espconn_disconnect(&ota_conn);
+			return;
 		}
 
 		ota_received_bytes += len;
-
-		// ---> FEED THE WATCHDOGS HERE TO PREVENT REASON 4 RESET <---
-		system_soft_wdt_feed();
-		WRITE_PERI_REG(0X60000914, 0X73);
-		// -----------------------------------------------------------
 
 		// Send periodic MQTT progress reports every 10%
 		if (ota_content_length > 0) {
@@ -313,7 +291,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		}
 
 		// 2. Verify Content-Length if it was provided by the HTTP server
-		if (ota_received_bytes != ota_content_length) {
+		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
 #endif
@@ -494,4 +472,3 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 
 	return true;
 }
-
