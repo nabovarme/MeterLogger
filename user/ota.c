@@ -83,6 +83,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
+	uint16_t offset;
 	
 	/* Word-aligned buffer for initial unaligned payload block */
 	uint32_t aligned_buf[128 / 4];
@@ -141,15 +142,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 				len = ota_header_len - total_header_size;
 				pdata = pusrdata + (length - len); // Offset into the current packet
 				
-				// Ensure strict 32-bit alignment by copying initial slice into stack buffer
-				if (len > sizeof(aligned_buf)) {
-					copy_len = sizeof(aligned_buf);
-				} else {
-					copy_len = len;
-				}
-				aligned_pdata = (uint8_t *)aligned_buf;
-				os_memcpy(aligned_pdata, pdata, copy_len);
-				pdata = (char *)aligned_pdata;
+				// Keep pdata pointing into the TCP packet. The flash write loop below
+				// copies the complete payload into aligned_buf in bounded chunks.
 			} else {
 				len = 0;
 			}
@@ -220,35 +214,49 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
-		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
-#ifdef DEBUG
-			os_printf("OTA: Flash write failed. Disconnecting.\n");
-#endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
+		offset = 0;
+
+		while (offset < len) {
+			copy_len = len - offset;
+			if (copy_len > sizeof(aligned_buf)) {
+				copy_len = sizeof(aligned_buf);
 			}
-			is_valid_binary = false;
-			ota_in_progress = false;
-			espconn_disconnect(&ota_conn);
+
+			aligned_pdata = (uint8_t *)aligned_buf;
+			os_memcpy(aligned_pdata, pdata + offset, copy_len);
+
+			if (!rboot_write_flash(&ota_status, aligned_pdata, copy_len)) {
+#ifdef DEBUG
+				os_printf("OTA: Flash write failed. Disconnecting.\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
+				}
+				is_valid_binary = false;
+				ota_in_progress = false;
+				espconn_disconnect(&ota_conn);
+				return;
+			}
+
+			offset += copy_len;
 		}
-		else {
-			ota_received_bytes += len;
 
-			// ---> FEED THE WATCHDOGS HERE TO PREVENT REASON 4 RESET <---
-			system_soft_wdt_feed();
-			WRITE_PERI_REG(0X60000914, 0X73); 
-			// -----------------------------------------------------------
+		ota_received_bytes += len;
 
-			// Send periodic MQTT progress reports every 10%
-			if (ota_content_length > 0) {
-				current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
+		// ---> FEED THE WATCHDOGS HERE TO PREVENT REASON 4 RESET <---
+		system_soft_wdt_feed();
+		WRITE_PERI_REG(0X60000914, 0X73);
+		// -----------------------------------------------------------
 
-				if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
-					last_reported_progress = (current_progress / 10) * 10;
-					if (ota_mqtt_client) {
-						tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
-						mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
-					}
+		// Send periodic MQTT progress reports every 10%
+		if (ota_content_length > 0) {
+			current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
+
+			if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
+				last_reported_progress = (current_progress / 10) * 10;
+				if (ota_mqtt_client) {
+					tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
+					mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
 				}
 			}
 		}
