@@ -650,6 +650,11 @@ ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 #endif
 
 ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
+	char cleartext[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+
 	if (cnx_csa_new_call_flag) {
 		cnx_csa_new_call_flag = false; // Reset flag
 
@@ -658,11 +663,6 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 #endif
 
 		if (mqtt_client.pCon != NULL) {
-			char mqtt_topic[MQTT_TOPIC_L];
-			char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
-			char cleartext[MQTT_MESSAGE_L];
-			int mqtt_message_l;
-
 			memset(mqtt_message, 0, sizeof(mqtt_message));
 			memset(cleartext, 0, sizeof(cleartext));
 
@@ -1007,7 +1007,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	}
 	else if (strncmp(function_name, "read_stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace
-		mqtt_rpc_read_stack_trace(&mqtt_client, query);
+		mqtt_rpc_read_stack_trace(&mqtt_client, cleartext);
 	}
 #endif	// DEBUG_STACK_TRACE
 #ifndef IMPULSE

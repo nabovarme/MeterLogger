@@ -1261,6 +1261,14 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	uint32_t offset = 0;
 	char *str, *key, *val, *ctx1, *ctx2;
 	char params_copy[128]; 
+	
+	uint32_t read_len;
+	uint32_t flash_addr;
+	uint32_t flash_buf[(128 / 4) + 1]; // 32 words + safety
+	char temp_data[129];
+	char *raw_flash;
+	int valid_len;
+	int i;
 
 	// 1. Parse the requested offset
 	if (params != NULL && strlen(params) > 0) {
@@ -1283,24 +1291,22 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	}
 
 	// 2. Read exactly 128 bytes from SPI flash (Buffer must be 32-bit aligned)
-	uint32_t read_len = 128;
+	read_len = 128;
 	if (offset + read_len > STACK_TRACE_N) {
 		read_len = STACK_TRACE_N - offset;
 	}
 
-	uint32_t flash_addr = (STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + offset;
-	uint32_t flash_buf[(128 / 4) + 1]; // 32 words + safety
+	flash_addr = (STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + offset;
 	memset(flash_buf, 0, sizeof(flash_buf));
 	
 	spi_flash_read(flash_addr, flash_buf, read_len);
 
 	// 3. Extract string up until unwritten flash (0xFF) or NULL (0x00)
-	char temp_data[129];
 	memset(temp_data, 0, sizeof(temp_data));
-	char *raw_flash = (char *)flash_buf;
-	int valid_len = 0;
+	raw_flash = (char *)flash_buf;
+	valid_len = 0;
 	
-	for (int i = 0; i < read_len; i++) {
+	for (i = 0; i < read_len; i++) {
 		if (raw_flash[i] == 0xFF || raw_flash[i] == 0x00) {
 			break; // Reached end of recorded stack trace
 		}
@@ -1433,6 +1439,9 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 	int int_value;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+#ifdef FLOW_METER
+	char volume_string[32];
+#endif
 
 	if (value == NULL) {
 		return;
@@ -1440,8 +1449,6 @@ void mqtt_rpc_open_until(MQTT_Client *client, char *value) {
 
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
-	char volume_string[32];
-	
 	multiply_str_by_1000(value, volume_string);
 	int_value = atoi(volume_string);
 #else
@@ -1502,6 +1509,9 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 	int int_value;
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+#ifdef FLOW_METER
+	char volume_string[32];
+#endif
 		
 	if (value == NULL) {
 		return;
@@ -1509,8 +1519,6 @@ void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value) {
 
 #ifdef FLOW_METER
 	// use liters internally for FLOW_METER
-	char volume_string[32];
-	
 	multiply_str_by_1000(value, volume_string);
 	int_value = atoi(volume_string);
 #else
