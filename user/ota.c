@@ -243,9 +243,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			aligned_pdata = (uint8_t *)aligned_buf;
 			os_memcpy(aligned_pdata, pdata + offset, copy_len);
 
-			// ---> FEED THE SOFTWARE WATCHDOG <---
-			system_soft_wdt_feed();
-
 			if (!rboot_write_flash(&ota_status, aligned_pdata, copy_len)) {
 #ifdef DEBUG
 				os_printf("OTA: Flash write failed. Disconnecting.\n");
