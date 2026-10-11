@@ -83,6 +83,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
+	uint16_t previous_header_len;
+	uint16_t body_offset;
 	uint16_t offset;
 	
 	/* Word-aligned buffer for initial unaligned payload block */
@@ -99,6 +101,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 	if (!headers_parsed) {
 		// Buffer incoming data to assemble a complete HTTP header
+		previous_header_len = ota_header_len;
 		copy_len = length;
 		if (ota_header_len + copy_len > OTA_MAX_HEADER_SIZE - 1) {
 			copy_len = OTA_MAX_HEADER_SIZE - 1 - ota_header_len;
@@ -110,8 +113,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		
 		body_marker = (char *)os_strstr(ota_header_buffer, "\r\n\r\n");
 		if (body_marker) {
-			// Validate HTTP status now that the whole header is accumulated
-			if (os_strstr(ota_header_buffer, "200 OK") == NULL && os_strstr(ota_header_buffer, "200") == NULL) {
+			// Accept only an HTTP 200 response status line.
+			if (strncmp(ota_header_buffer, "HTTP/1.0 200 ", 13) != 0 &&
+			    strncmp(ota_header_buffer, "HTTP/1.1 200 ", 13) != 0) {
 #ifdef DEBUG
 				os_printf("OTA Error: Non-200 HTTP response received!\n");
 #endif
@@ -131,6 +135,17 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (cl) {
 				ota_content_length = atoi(cl + 16);
 			}
+			if (!cl || ota_content_length == 0) {
+#ifdef DEBUG
+				os_printf("OTA Error: Missing or invalid Content-Length.\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_content_length");
+				}
+				ota_in_progress = false;
+				espconn_disconnect(&ota_conn);
+				return;
+			}
 
 			headers_parsed = true;
 			last_reported_progress = 0; // Reset progress tracker
@@ -138,12 +153,14 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			// Calculate how much of the CURRENT payload is actually binary data
 			total_header_size = (body_marker + 4) - ota_header_buffer;
 			
-			if (ota_header_len > total_header_size) {
-				len = ota_header_len - total_header_size;
-				pdata = pusrdata + (length - len); // Offset into the current packet
-				
-				// Keep pdata pointing into the TCP packet. The flash write loop below
-				// copies the complete payload into aligned_buf in bounded chunks.
+			if (total_header_size > previous_header_len) {
+				body_offset = total_header_size - previous_header_len;
+				if (body_offset <= length) {
+					pdata = pusrdata + body_offset;
+					len = length - body_offset;
+				} else {
+					len = 0;
+				}
 			} else {
 				len = 0;
 			}
@@ -281,10 +298,8 @@ static void ota_tcp_discon_cb(void *arg) {
 
 	os_timer_disarm(&ota_timeout_timer); // Disarm timeout timer
 
-	// Only finalize and reboot if the file was a valid binary
+	// Only finalize and reboot if the file was a complete valid binary
 	if (is_valid_binary) {
-		rboot_write_end(&ota_status);
-		
 		// 1. Enforce minimum received byte check to prevent soft-bricking on truncated downloads
 		if (ota_received_bytes < MIN_FIRMWARE_SIZE) {
 #ifdef DEBUG
@@ -298,7 +313,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		}
 
 		// 2. Verify Content-Length if it was provided by the HTTP server
-		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
+		if (ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
 			os_printf("OTA Error: Download incomplete. Received %u of %u bytes.\n", ota_received_bytes, ota_content_length);
 #endif
@@ -309,6 +324,9 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
+		// Finalize flash writes only after the download length has been verified.
+		rboot_write_end(&ota_status);
+
 		// 3. Stage a temporary boot to the target slot.
 		// If the new binary crashes or fails to connect/pass self-test,
 		// rBoot will automatically roll back to the old working slot on next reset.
@@ -362,6 +380,7 @@ static void ota_tcp_connect_cb(void *arg) {
 ICACHE_FLASH_ATTR
 static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	if (ipaddr == NULL) {
+		os_timer_disarm(&ota_timeout_timer);
 #ifdef DEBUG
 		os_printf("OTA: DNS resolution failed.\n");
 #endif
@@ -475,3 +494,4 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 
 	return true;
 }
+
