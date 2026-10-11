@@ -22,6 +22,7 @@
 #define OTA_MAX_HEADER_SIZE    1024
 #define MIN_FIRMWARE_SIZE      102400 // 100 KB minimum sane size for firmware binary
 #define MAX_FIRMWARE_SIZE      0x69000 // 420 KB maximum safe partition size for 1MB flash maps
+#define OTA_NETWORK_TIMEOUT_MS 15000   // 15 seconds timeout for stalled connections
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -90,7 +91,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	// Reset timeout timer every time we receive a chunk
 	os_timer_disarm(&ota_timeout_timer);
 	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
-	os_timer_arm(&ota_timeout_timer, 15000, 0); // 15 second timeout
+	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
 
 	pdata = pusrdata;
 	len = length;
@@ -456,7 +457,7 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	// Set initial timeout in case DNS resolves but TCP connect hangs
 	os_timer_disarm(&ota_timeout_timer);
 	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
-	os_timer_arm(&ota_timeout_timer, 15000, 0);
+	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
 
 	// 3. Resolve DNS (or connect immediately if it's an IP)
 	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
