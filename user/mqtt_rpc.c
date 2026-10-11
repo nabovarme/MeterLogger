@@ -1266,7 +1266,6 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	uint32_t flash_addr;
 	uint32_t flash_buf[(128 / 4) + 1]; /* 32 words + safety */
 	uint8_t *raw_flash;
-	int valid_len;
 	int i;
 	char hex_buf[3];
 
@@ -1301,18 +1300,9 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	
 	spi_flash_read(flash_addr, flash_buf, read_len);
 
-	/* 3. Extract byte count up until unwritten flash (0xFF) or NULL (0x00) */
 	raw_flash = (uint8_t *)flash_buf;
-	valid_len = 0;
-	
-	for (i = 0; i < read_len; i++) {
-		if (raw_flash[i] == 0xFF || raw_flash[i] == 0x00) {
-			break; /* Reached end of recorded stack trace */
-		}
-		valid_len++;
-	}
 
-	/* 4. Build MQTT Response Topic */
+	/* 3. Build MQTT Response Topic */
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -1327,13 +1317,13 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	/* Format base return string */
 	tfp_snprintf((char *)cleartext, MQTT_MESSAGE_L, "offset=%u&data=", offset);
 	
-	/* 5. Hex-encode raw flash bytes directly into cleartext payload */
-	for (i = 0; i < valid_len; i++) {
+	/* 4. Hex-encode all read_len flash bytes without stopping at 0x00 or 0xFF */
+	for (i = 0; i < read_len; i++) {
 		tfp_snprintf(hex_buf, sizeof(hex_buf), "%02x", raw_flash[i]);
 		strncat((char *)cleartext, hex_buf, MQTT_MESSAGE_L - strlen((char *)cleartext) - 1);
 	}
 
-	/* 6. Encrypt and Publish */
+	/* 5. Encrypt and Publish */
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen((char *)cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
 }
