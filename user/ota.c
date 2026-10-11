@@ -65,6 +65,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char progress_msg[32];
 	uint16_t copy_len;
 	uint16_t total_header_size;
+	
+	/* Word-aligned buffer for initial unaligned payload block */
+	uint32_t aligned_buf[128 / 4];
+	uint8_t *aligned_pdata;
 
 	pdata = pusrdata;
 	len = length;
@@ -113,6 +117,16 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (ota_header_len > total_header_size) {
 				len = ota_header_len - total_header_size;
 				pdata = pusrdata + (length - len); // Offset into the current packet
+				
+				// Ensure strict 32-bit alignment by copying initial slice into stack buffer
+				if (len > sizeof(aligned_buf)) {
+					copy_len = sizeof(aligned_buf);
+				} else {
+					copy_len = len;
+				}
+				aligned_pdata = (uint8_t *)aligned_buf;
+				os_memcpy(aligned_pdata, pdata, copy_len);
+				pdata = (char *)aligned_pdata;
 			} else {
 				len = 0;
 			}
