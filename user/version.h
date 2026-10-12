@@ -1,11 +1,11 @@
-#ifdef MC_66B
+#if defined(DEBUG_NO_METER)
+#	define HW_MODEL_STRING "NO_METER"
+#elif defined(MC_66B)
 #	define HW_MODEL_STRING "MC_B"
 #elif defined(EN61107)
 #	define HW_MODEL_STRING "MC"
 #elif defined(IMPULSE)
 #	define HW_MODEL_STRING "IMPULSE"
-#elif defined(DEBUG_NO_METER)
-#	define HW_MODEL_STRING "NO_METER"
 #elif defined(IMPULSE_DEV_BOARD)
 #	define HW_MODEL_STRING "IMPULSE_DEV_BOARD"
 #else
