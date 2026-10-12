@@ -25,6 +25,8 @@
 #include "rtc_mem.h"
 #include "icmp_ping.h"
 #include "version.h"
+#include "ota.h"
+#include "rboot-api.h"
 
 #ifdef EN61107
 #include "en61107_request.h"
