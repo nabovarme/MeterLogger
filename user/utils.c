@@ -16,6 +16,7 @@
 #include "utils.h"
 
 static os_timer_t system_restart_defered_timer;
+static system_restart_teardown_cb restart_teardown_cb = NULL;
 
 // crc table
 #ifdef ESP_CONST_DATA
@@ -210,7 +211,7 @@ int query_string_unescape(char *str) {
 }
 
 ICACHE_FLASH_ATTR
-size_t spi_flash_size() {  // returns the flash chip's size, in BYTES
+size_t spi_flash_size() {  // returns flash chip's size in BYTES
 	uint32_t id = spi_flash_get_id();
 	uint8_t manufacturer_id = id & 0xff;
 	// uint8_t type_id = (id >> 8) & 0xff;  // not relevant for size calculation
@@ -230,7 +231,11 @@ size_t spi_flash_size() {  // returns the flash chip's size, in BYTES
 			// Unknown manufacturer ID
 			return 0;
 	}
+}
 
+ICACHE_FLASH_ATTR
+void register_system_restart_defered_cb) {
+	restart_teardown_cb = cb;
 }
 
 ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
@@ -243,6 +248,11 @@ ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
+	// Call registered meter teardown function before shutting down stack
+	if (restart_teardown_cb != NULL) {
+		restart_teardown_cb();
+	}
+
 	httpdStop();		// stop http configuration server
 	captdnsStop();		// stop captive dns
 
@@ -250,7 +260,7 @@ void system_restart_defered() {
 	set_my_auto_connect(false);
 	wifi_station_disconnect();
 	wifi_set_opmode_current(NULL_MODE);
-	led_destroy();	// stop led blinking timers if its running
+	led_destroy();	// stop led blinking timers if running
 #ifndef IMPULSE
 #ifndef NO_CRON
 	cron_destroy();

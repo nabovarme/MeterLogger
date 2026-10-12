@@ -54,6 +54,23 @@ volatile uint8_t en61107_eod;
 bool en61107_etx_received;
 
 ICACHE_FLASH_ATTR
+void en61107_teardown_session(void) {
+	// Disarm active response timers
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_disarm(&en61107_meter_wake_up_timer);
+
+	// Set UART to 300 baud for EN61107 teardown
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+	// Send EN61107 session break (\006001\r\n)
+	strcpy(frame, "\006001\r\n");
+	uart0_tx_buffer(frame, strlen(frame));
+}
+
+ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
 	// if no reply received, retransmit
@@ -320,6 +337,8 @@ void en61107_request_init() {
 
 	en61107_etx_received = false;
 
+	register_system_defered_restart_cb(en61107_teardown_session);
+
 	if (!fast_boot) {
 		// wake up meter with 500 ms of null characters only on cold boot
 #ifdef EN61107
@@ -333,6 +352,10 @@ void en61107_request_init() {
 			uart_tx_one_char(UART0, '\0');
 		}
 #endif
+	} else {
+		// Warm boot: execute teardown right after initializing serial 
+		// to guarantee clean state before sending sign-on / \006000\r\n
+		en61107_teardown_session();
 	}
 
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
@@ -425,14 +448,7 @@ void en61107_request_send() {
 
 	if (fast_boot) {
 		// On warm reboot, clear any active session on the meter before re-identifying
-		uart_set_baudrate(UART0, BIT_RATE_300);
-		uart_set_word_length(UART0, SEVEN_BITS);
-		uart_set_parity(UART0, EVEN_BITS);
-		uart_set_stop_bits(UART0, TWO_STOP_BIT);
-
-		// Send session break string \006001\r\n to return Kamstrup parser to IDLE
-		strcpy(frame, "\006001\r\n");
-		uart0_tx_buffer(frame, strlen(frame));
+		en61107_teardown_session();
 
 		// Schedule en61107_uart_send_en61107_ident() after a 500ms delay
 		os_timer_disarm(&en61107_meter_wake_up_timer);
@@ -447,6 +463,31 @@ void en61107_request_send() {
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 		os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);
 	}
+#else
+	char topic[128];
+	char cleartext[EN61107_FRAME_L];
+	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
+	int topic_l;
+	int message_l;
+	
+	// fake serial for testing without meter
+	en61107_serial = 4615611;
+	
+	topic_l = os_sprintf(topic, "/sample/v2/%u/%u", en61107_serial, get_unix_time());
+	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
+	memset(cleartext, 0, sizeof(cleartext));
+	os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
+	os_memset(message, 0, sizeof(message));				// ...and clear it
+
+	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
+
+	if (mqtt_client) {
+		// if mqtt_client is initialized
+		if (message_l > 1) {
+			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
+		}
+	}
+
 #endif
 }
 
