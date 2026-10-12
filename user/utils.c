@@ -234,7 +234,7 @@ size_t spi_flash_size() {  // returns flash chip's size in BYTES
 }
 
 ICACHE_FLASH_ATTR
-void register_system_restart_defered_cb) {
+void register_system_restart_defered_cb(system_restart_teardown_cb cb) {
 	restart_teardown_cb = cb;
 }
 
