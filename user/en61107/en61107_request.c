@@ -12,6 +12,10 @@
 #include "utils.h"
 #include "led.h"
 
+#ifdef DEBUG
+	#include "wifi.h"	// needed for debug_print_wifi_ip() and debug_print_wifi_config()
+#endif
+
 #define QUEUE_SIZE 256
 
 extern bool fast_boot;
@@ -52,6 +56,10 @@ UartDevice uart_settings;
 
 volatile uint8_t en61107_eod;
 bool en61107_etx_received;
+
+#ifdef DEBUG_NO_METER
+uint8_t pseudo_data_debug_no_meter = 0;
+#endif
 
 ICACHE_FLASH_ATTR
 void en61107_teardown_session(void) {
@@ -381,15 +389,22 @@ uint32_t en61107_get_received_serial() {
 #ifdef FLOW_METER
 ICACHE_FLASH_ATTR
 uint32_t en61107_get_received_volume_l() {
+#ifdef DEBUG_NO_METER
+	return pseudo_data_debug_no_meter;
+#else
 	char v1_l_string[64];
 	
 	multiply_str_by_1000(response.v1.value, v1_l_string);
 	return atoi(v1_l_string);
+#endif
 }
 #else
 // helper function to pass energy to user_main.c
 ICACHE_FLASH_ATTR
 uint32_t en61107_get_received_energy_kwh() {
+#ifdef DEBUG_NO_METER
+	return pseudo_data_debug_no_meter;
+#else
 	float e1_kwh;
 
 	if (strncmp(response.e1.unit, "MWh", EN61107_UNIT_L) == 0) {
@@ -400,6 +415,7 @@ uint32_t en61107_get_received_energy_kwh() {
 	else {
 		return atoi(response.e1.value);
 	}
+#endif
 }
 #endif	// FLOW_METER
 
@@ -464,30 +480,91 @@ void en61107_request_send() {
 		os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);
 	}
 #else
-	char topic[128];
-	char cleartext[EN61107_FRAME_L];
+	char cleartext[MQTT_MESSAGE_L];
+	char topic[MQTT_TOPIC_L];
 	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
-	int topic_l;
 	int message_l;
-	
-	// fake serial for testing without meter
-	en61107_serial = 4615611;
-	
-	topic_l = os_sprintf(topic, "/sample/v2/%u/%u", en61107_serial, get_unix_time());
-	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
-	memset(cleartext, 0, sizeof(cleartext));
-	os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-	os_memset(message, 0, sizeof(message));				// ...and clear it
 
+	uint8_t sine_wave[256] = {
+		0x80, 0x83, 0x86, 0x89, 0x8C, 0x90, 0x93, 0x96,
+		0x99, 0x9C, 0x9F, 0xA2, 0xA5, 0xA8, 0xAB, 0xAE,
+		0xB1, 0xB3, 0xB6, 0xB9, 0xBC, 0xBF, 0xC1, 0xC4,
+		0xC7, 0xC9, 0xCC, 0xCE, 0xD1, 0xD3, 0xD5, 0xD8,
+		0xDA, 0xDC, 0xDE, 0xE0, 0xE2, 0xE4, 0xE6, 0xE8,
+		0xEA, 0xEB, 0xED, 0xEF, 0xF0, 0xF1, 0xF3, 0xF4,
+		0xF5, 0xF6, 0xF8, 0xF9, 0xFA, 0xFA, 0xFB, 0xFC,
+		0xFD, 0xFD, 0xFE, 0xFE, 0xFE, 0xFF, 0xFF, 0xFF,
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFE, 0xFE, 0xFE, 0xFD,
+		0xFD, 0xFC, 0xFB, 0xFA, 0xFA, 0xF9, 0xF8, 0xF6,
+		0xF5, 0xF4, 0xF3, 0xF1, 0xF0, 0xEF, 0xED, 0xEB,
+		0xEA, 0xE8, 0xE6, 0xE4, 0xE2, 0xE0, 0xDE, 0xDC,
+		0xDA, 0xD8, 0xD5, 0xD3, 0xD1, 0xCE, 0xCC, 0xC9,
+		0xC7, 0xC4, 0xC1, 0xBF, 0xBC, 0xB9, 0xB6, 0xB3,
+		0xB1, 0xAE, 0xAB, 0xA8, 0xA5, 0xA2, 0x9F, 0x9C,
+		0x99, 0x96, 0x93, 0x90, 0x8C, 0x89, 0x86, 0x83,
+		0x80, 0x7D, 0x7A, 0x77, 0x74, 0x70, 0x6D, 0x6A,
+		0x67, 0x64, 0x61, 0x5E, 0x5B, 0x58, 0x55, 0x52,
+		0x4F, 0x4D, 0x4A, 0x47, 0x44, 0x41, 0x3F, 0x3C,
+		0x39, 0x37, 0x34, 0x32, 0x2F, 0x2D, 0x2B, 0x28,
+		0x26, 0x24, 0x22, 0x20, 0x1E, 0x1C, 0x1A, 0x18,
+		0x16, 0x15, 0x13, 0x11, 0x10, 0x0F, 0x0D, 0x0C,
+		0x0B, 0x0A, 0x08, 0x07, 0x06, 0x06, 0x05, 0x04,
+		0x03, 0x03, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01,
+		0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x02, 0x03,
+		0x03, 0x04, 0x05, 0x06, 0x06, 0x07, 0x08, 0x0A,
+		0x0B, 0x0C, 0x0D, 0x0F, 0x10, 0x11, 0x13, 0x15,
+		0x16, 0x18, 0x1A, 0x1C, 0x1E, 0x20, 0x22, 0x24,
+		0x26, 0x28, 0x2B, 0x2D, 0x2F, 0x32, 0x34, 0x37,
+		0x39, 0x3C, 0x3F, 0x41, 0x44, 0x47, 0x4A, 0x4D,
+		0x4F, 0x52, 0x55, 0x58, 0x5B, 0x5E, 0x61, 0x64,
+		0x67, 0x6A, 0x6D, 0x70, 0x74, 0x77, 0x7A, 0x7D
+	};
+
+	// clear data
+	memset(message, 0, sizeof(message));
+	memset(topic, 0, sizeof(topic));
+
+	// fake serial for testing without meter
+	en61107_serial = atoi(DEFAULT_METER_SERIAL);
+
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/sample/v2/%u/%llu", en61107_serial, get_unix_time());
+	memset(cleartext, 0, sizeof(cleartext));
+	pseudo_data_debug_no_meter = (get_unix_time() / 60) % 256;
+	tfp_snprintf(cleartext, EN61107_FRAME_L, "heap=%u&program=1000000&t1=%u.00 C&t2=%u.00 C&tdif=%u.00 K&flow1=%u l/h&effect1=%u.0 kW&hr=%u h&v1=%u.00 m3&e1=%u kWh&",
+		system_get_free_heap_size(),
+		65 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// t1
+		45 + ((sine_wave[(pseudo_data_debug_no_meter + 128) & 0xff] * 10) >> 8),	// t2
+		10,																// tdif
+		100 + ((sine_wave[((pseudo_data_debug_no_meter + 64) * 7) & 0xff] * 50) >> 8),	// flow
+		15 + ((sine_wave[pseudo_data_debug_no_meter] * 10) >> 8),		// effect1
+		pseudo_data_debug_no_meter / 60,								// hr
+		pseudo_data_debug_no_meter,										// v1
+		pseudo_data_debug_no_meter										// e1
+	);
+
+	// tell user_main we got a serial
+	if (en61107_meter_is_ready_cb && !meter_is_ready_cb_called) {
+		meter_is_ready_cb_called = true;
+		en61107_meter_is_ready_cb();
+	}
+	// tell user_main we got data from meter
+	if (en61107_meter_sent_data_cb) {
+		en61107_meter_sent_data_cb();
+	}
+
+#ifdef DEBUG
+	else {
+		os_printf("tried to call en61107_meter_is_ready_cb() before it was set - should not happen\n");
+	}
+#endif
+
+	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
 	if (mqtt_client) {
 		// if mqtt_client is initialized
-		if (message_l > 1) {
-			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-		}
+		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}
-
 #endif
 }
 
