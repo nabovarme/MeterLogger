@@ -298,9 +298,9 @@ custom_release: UNIQUE_DIR ?= $(shell date +%Y%m%d_%H%M%S)
 custom_release: GIT_VERSION = $(GIT_VERSION_RAW)-$(UNIQUE_DIR)
 custom_release:
 	$(vecho) "--- 1/3: Building Factory Firmware for $(SERIAL) ---"
-	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
+	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0 GIT_VERSION="$(GIT_VERSION)"
 	$(vecho) "--- 2/3: Building OTA Firmware for $(SERIAL) ---"
-	$(Q) $(MAKE) ota_bins OTA=1
+	$(Q) $(MAKE) ota_bins OTA=1 GIT_VERSION="$(GIT_VERSION)"
 	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/rboot.bin
