@@ -103,6 +103,8 @@ uint32 user_iram_memory_is_enabled(void) {
 
 ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg) {
 	unsigned char mqtt_topic[MQTT_TOPIC_L];
+	uint8_t current_rom = 0;
+	uint8_t boot_mode = MODE_STANDARD;
 
 	switch (mqtt_connected_first_mqtt_rpc_state) {
 		case 0:
@@ -148,8 +150,21 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-#ifndef IMPULSE
 		case 6:
+			// announce unconfirmed temp boot status if in MODE_TEMP_ROM
+			current_rom = rboot_get_current_rom();
+#ifdef BOOT_RTC_ENABLED
+			rboot_get_last_boot_mode(&boot_mode);
+			rboot_get_last_boot_rom(&current_rom);
+#endif
+			if (boot_mode == MODE_TEMP_ROM) {
+				mqtt_rpc_ota_status(&mqtt_client, "pending_confirmation");
+			}
+			mqtt_connected_first_mqtt_rpc_state++;
+			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
+			break;
+#ifndef IMPULSE
+		case 7:
 			// send mqtt status
 			mqtt_rpc_status(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
