@@ -132,44 +132,46 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
+
 		case 1:
 			// 2. send mqtt version
 			mqtt_rpc_version(&mqtt_client);
-			mqtt_connected_first_mqtt_rpc_state++;
-			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
-			break;
-		case 2:
 #ifndef IMPULSE
-			// 3. send mqtt status
+			// 3. send mqtt status immediately in the same tick or next
 			mqtt_rpc_status(&mqtt_client);
 #endif
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-		case 3:
+
+		case 2:
 			// 4. send currently connected ssid
 			mqtt_rpc_ssid(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-		case 4:
+
+		case 3:
 			// 5. send mqtt reset_reason
 			mqtt_rpc_reset_reason(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-		case 5:
+
+		case 4:
 			// 6. send fallback network status
 			mqtt_rpc_fallback_status(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-		case 6:
+
+		case 5:
 			// 7. send mqtt uptime (last)
 			mqtt_rpc_uptime(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
+
 		default:
 			mqtt_connected_first_mqtt_rpc_state = 0;
 			os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
