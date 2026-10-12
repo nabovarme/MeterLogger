@@ -75,7 +75,7 @@ ICACHE_FLASH_ATTR
 static void ota_timeout_timer_cb(void *arg) {
 	if (ota_in_progress) {
 #ifdef DEBUG
-		os_printf("[OTA DBG] Timeout timer triggered! Aborting.\n");
+		os_printf("[OTA] Timeout timer triggered! Aborting.\n");
 #endif
 		if (ota_mqtt_client) {
 			mqtt_rpc_ota_status(ota_mqtt_client, "error_timeout");
@@ -107,16 +107,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint16_t aligned_len;
 	uint8_t new_remainder_len;
 	uint8_t fill;
-	uint8_t *write_ptr;
-	bool is_write_ok;
-
-	// 4-byte aligned write buffer on stack
-	uint32_t _align_32_bit aligned_chunk[1460 / 4 + 1];
-
-#ifdef DEBUG
-	os_printf("[OTA DBG] recv_cb START: rx_ptr=0x%08X (aligned=%d), len=%u\n", 
-		(uint32_t)pusrdata, is_aligned(pusrdata, 4), length);
-#endif
 
 	// Refresh timeout timer safely
 	os_timer_disarm(&ota_timeout_timer);
@@ -133,25 +123,15 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			copy_len = OTA_MAX_HEADER_SIZE - 1 - ota_header_len;
 		}
 		
-#ifdef DEBUG
-		os_printf("[OTA DBG] Copying header chunk: offset=%u, len=%u\n", ota_header_len, copy_len);
-#endif
 		os_memcpy(ota_header_buffer + ota_header_len, pusrdata, copy_len);
 		ota_header_len += copy_len;
 		ota_header_buffer[ota_header_len] = '\0';
 		
-#ifdef DEBUG
-		os_printf("[OTA DBG] Searching str_rnrn in ota_header_buffer (total_hdr_len=%u)\n", ota_header_len);
-#endif
 		body_marker = (char *)os_strstr(ota_header_buffer, str_rnrn);
 		if (body_marker) {
-#ifdef DEBUG
-			os_printf("[OTA DBG] Body marker found at ptr=0x%08X\n", (uint32_t)body_marker);
-			os_printf("[OTA DBG] Searching str_200ok\n");
-#endif
 			if (os_strstr(ota_header_buffer, str_200ok) == NULL && os_strstr(ota_header_buffer, str_200) == NULL) {
 #ifdef DEBUG
-				os_printf("[OTA DBG] ERROR: Non-200 HTTP response!\n");
+				os_printf("[OTA] ERROR: Non-200 HTTP response!\n");
 #endif
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
@@ -161,20 +141,14 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 				return;
 			}
 
-#ifdef DEBUG
-			os_printf("[OTA DBG] Searching str_cl_up\n");
-#endif
 			cl = (char *)os_strstr(ota_header_buffer, str_cl_up);
 			if (!cl) {
-#ifdef DEBUG
-				os_printf("[OTA DBG] Searching str_cl_lo\n");
-#endif
 				cl = (char *)os_strstr(ota_header_buffer, str_cl_lo);
 			}
 			if (cl) {
 				ota_content_length = atoi(cl + 16);
 #ifdef DEBUG
-				os_printf("[OTA DBG] Content-Length parsed: %u\n", ota_content_length);
+				os_printf("[OTA] Firmware size: %u bytes\n", ota_content_length);
 #endif
 			}
 
@@ -183,15 +157,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			
 			// Calculate exact body slicing offset for current packet
 			total_header_size = (body_marker + 4) - ota_header_buffer;
-#ifdef DEBUG
-			os_printf("[OTA DBG] total_hdr_size=%u, prev_hdr_len=%u\n", total_header_size, previous_header_len);
-#endif
 
 			if (total_header_size > previous_header_len) {
 				body_offset = total_header_size - previous_header_len;
-#ifdef DEBUG
-				os_printf("[OTA DBG] Slicing body offset=%u\n", body_offset);
-#endif
 				if (body_offset <= length) {
 					pdata = pusrdata + body_offset;
 					len = length - body_offset;
@@ -201,17 +169,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			} else {
 				len = 0;
 			}
-#ifdef DEBUG
-			os_printf("[OTA DBG] Sliced payload: pdata=0x%08X (aligned=%d), len=%u\n", 
-				(uint32_t)pdata, is_aligned(pdata, 4), len);
-#endif
 		} else {
-#ifdef DEBUG
-			os_printf("[OTA DBG] Header incomplete, waiting for next packet...\n");
-#endif
 			if (ota_header_len >= OTA_MAX_HEADER_SIZE - 1) {
 #ifdef DEBUG
-				os_printf("[OTA DBG] ERROR: Header overflow!\n");
+				os_printf("[OTA] ERROR: Header overflow!\n");
 #endif
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_header_overflow");
@@ -226,13 +187,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	// Validate magic byte on the very first binary chunk
 	if (headers_parsed && !is_valid_binary && len > 0) {
 		magic_byte = (uint8_t)pdata[0];
-#ifdef DEBUG
-		os_printf("[OTA DBG] Checking magic byte at pdata[0]=0x%02X\n", magic_byte);
-#endif
 		
 		if (magic_byte != ESP_IMAGE_MAGIC_V1 && magic_byte != ESP_IMAGE_MAGIC_V2) {
 #ifdef DEBUG
-			os_printf("[OTA DBG] ERROR: Invalid magic byte 0x%02X!\n", magic_byte);
+			os_printf("[OTA] ERROR: Invalid magic byte 0x%02X!\n", magic_byte);
 #endif
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_magic");
@@ -246,15 +204,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		conf = rboot_get_config();
 		target_addr = conf.roms[ota_target_rom];
-#ifdef DEBUG
-		os_printf("[OTA DBG] Calling rboot_write_init(target_addr=0x%08X, target_rom=%d)\n", 
-			target_addr, ota_target_rom);
-#endif
-
 		ota_status = rboot_write_init(target_addr);
 #ifdef DEBUG
-		os_printf("[OTA DBG] rboot_write_init complete: start_addr=0x%08X, start_sector=%u\n", 
-			ota_status.start_addr, ota_status.start_sector);
+		os_printf("[OTA] Flashing to ROM %d (0x%08X)...\n", ota_target_rom, target_addr);
 #endif
 	}
 
@@ -262,14 +214,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		chunk_ptr = (uint8_t *)pdata;
 		chunk_len = len;
 
-#ifdef DEBUG
-		os_printf("[OTA DBG] Preparing flash write: rx_bytes=%u, chunk_len=%u\n", ota_received_bytes, chunk_len);
-#endif
-
 		if (ota_received_bytes + chunk_len > MAX_FIRMWARE_SIZE) {
 #ifdef DEBUG
-			os_printf("[OTA DBG] ERROR: Firmware image exceeds limit (%u > %u)!\n", 
-				ota_received_bytes + chunk_len, (uint32_t)MAX_FIRMWARE_SIZE);
+			os_printf("[OTA] ERROR: Firmware image exceeds maximum partition size!\n");
 #endif
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_file_too_large");
@@ -285,22 +232,10 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		// 1. Process remainder from previous packet first to reach 4-byte boundary
 		if (ota_remainder_len > 0) {
 			fill = 4 - ota_remainder_len;
-#ifdef DEBUG
-			os_printf("[OTA DBG] Filling remainder: rem_len=%u, fill=%u\n", ota_remainder_len, fill);
-#endif
 			if (chunk_len >= fill) {
 				os_memcpy(ota_remainder + ota_remainder_len, chunk_ptr, fill);
-#ifdef DEBUG
-				os_printf("[OTA DBG] Writing remainder chunk to flash: flash_offset=0x%08X, len=4\n", 
-					ota_status.start_addr);
-#endif
 				if (!rboot_write_flash(&ota_status, ota_remainder, 4)) {
-#ifdef DEBUG
-					os_printf("[OTA DBG] ERROR: rboot_write_flash remainder failed!\n");
-#endif
-					if (ota_mqtt_client) {
-						mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
-					}
+					if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 					is_valid_binary = false;
 					ota_in_progress = false;
 					espconn_disconnect(&ota_conn);
@@ -324,33 +259,13 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			new_remainder_len = chunk_len & 3;
 
 			if (aligned_len > 0) {
-				write_ptr = chunk_ptr;
-				if (!is_aligned(chunk_ptr, 4)) {
+				// We now pass chunk_ptr directly to rboot_write_flash.
+				// The updated rboot-api.c uses os_memcpy internally to safely handle unaligned pointers.
+				if (!rboot_write_flash(&ota_status, chunk_ptr, aligned_len)) {
 #ifdef DEBUG
-					os_printf("[OTA DBG] chunk_ptr 0x%08X unaligned! Copying to aligned_chunk 0x%08X\n", 
-						(uint32_t)chunk_ptr, (uint32_t)aligned_chunk);
+					os_printf("[OTA] ERROR: rboot_write_flash returned false!\n");
 #endif
-					os_memcpy(aligned_chunk, chunk_ptr, aligned_len);
-					write_ptr = (uint8_t *)aligned_chunk;
-				}
-
-#ifdef DEBUG
-				os_printf("[OTA DBG] Executing rboot_write_flash: flash_offset=0x%08X, write_ptr=0x%08X (aligned=%d), len=%u\n", 
-					ota_status.start_addr, (uint32_t)write_ptr, is_aligned(write_ptr, 4), aligned_len);
-#endif
-
-				is_write_ok = rboot_write_flash(&ota_status, write_ptr, aligned_len);
-#ifdef DEBUG
-				os_printf("[OTA DBG] rboot_write_flash result=%d\n", is_write_ok);
-#endif
-
-				if (!is_write_ok) {
-#ifdef DEBUG
-					os_printf("[OTA DBG] ERROR: rboot_write_flash returned false!\n");
-#endif
-					if (ota_mqtt_client) {
-						mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
-					}
+					if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 					is_valid_binary = false;
 					ota_in_progress = false;
 					espconn_disconnect(&ota_conn);
@@ -361,9 +276,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			}
 
 			if (new_remainder_len > 0) {
-#ifdef DEBUG
-				os_printf("[OTA DBG] Saving new remainder: len=%u\n", new_remainder_len);
-#endif
 				os_memcpy(ota_remainder, chunk_ptr, new_remainder_len);
 				ota_remainder_len = new_remainder_len;
 				ota_received_bytes += new_remainder_len;
@@ -377,7 +289,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (current_progress >= last_reported_progress + 10 && current_progress < 100) {
 				last_reported_progress = (current_progress / 10) * 10;
 #ifdef DEBUG
-				os_printf("[OTA DBG] Progress: %u%%\n", last_reported_progress);
+				os_printf("[OTA] Progress: %u%%\n", last_reported_progress);
 #endif
 				if (ota_mqtt_client) {
 					tfp_snprintf(progress_msg, sizeof(progress_msg), "flashing_%d%%", last_reported_progress);
@@ -386,17 +298,13 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			}
 		}
 	}
-
-#ifdef DEBUG
-	os_printf("[OTA DBG] recv_cb END\n");
-#endif
 }
 
 ICACHE_FLASH_ATTR
 static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	os_timer_disarm(&ota_timeout_timer); 
 #ifdef DEBUG
-	os_printf("[OTA DBG] recon_cb: err=%d\n", err);
+	os_printf("[OTA] TCP Connection dropped (err=%d)\n", err);
 #endif
 	if (ota_mqtt_client) {
 		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
@@ -409,16 +317,10 @@ static void ota_tcp_discon_cb(void *arg) {
 	char status_msg[32];
 
 	os_timer_disarm(&ota_timeout_timer); 
-#ifdef DEBUG
-	os_printf("[OTA DBG] discon_cb: total_rx=%u, valid_bin=%d\n", ota_received_bytes, is_valid_binary);
-#endif
 
 	if (is_valid_binary) {
 		// Flush any final remainder bytes by padding with 0xFF to reach 4-byte multiple
 		if (ota_remainder_len > 0) {
-#ifdef DEBUG
-			os_printf("[OTA DBG] Flushing final remainder: len=%u\n", ota_remainder_len);
-#endif
 			while (ota_remainder_len < 4) {
 				ota_remainder[ota_remainder_len++] = 0xFF;
 			}
@@ -427,36 +329,29 @@ static void ota_tcp_discon_cb(void *arg) {
 
 		if (ota_received_bytes < MIN_FIRMWARE_SIZE) {
 #ifdef DEBUG
-			os_printf("[OTA DBG] ERROR: Image too small (%u < %u)\n", 
-				ota_received_bytes, (uint32_t)MIN_FIRMWARE_SIZE);
+			os_printf("[OTA] ERROR: Image too small (%u bytes)\n", ota_received_bytes);
 #endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_too_small");
-			}
+			if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_too_small");
 			ota_in_progress = false;
 			return;
 		}
 
 		if (ota_content_length > 0 && ota_received_bytes != ota_content_length) {
 #ifdef DEBUG
-			os_printf("[OTA DBG] ERROR: Size mismatch (%u != %u)\n", 
-				ota_received_bytes, ota_content_length);
+			os_printf("[OTA] ERROR: Size mismatch. Expected %u, got %u\n", ota_content_length, ota_received_bytes);
 #endif
-			if (ota_mqtt_client) {
-				mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
-			}
+			if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_truncated");
 			ota_in_progress = false;
 			return;
 		}
 		
-#ifdef DEBUG
-		os_printf("[OTA DBG] Calling rboot_write_end...\n");
-#endif
 		rboot_write_end(&ota_status);
 
 #ifdef DEBUG
-		os_printf("[OTA DBG] Staging temp rom %d...\n", ota_target_rom);
+		os_printf("[OTA] Download complete! Staging Temp Boot to ROM %d...\n", ota_target_rom);
 #endif
+
+		// THIS COMMAND PREVENTS BRICKING. IT TELLS RBOOT TO TEST THIS FIRMWARE EXACTLY ONCE.
 		rboot_set_temp_rom(ota_target_rom);
 
 		if (ota_mqtt_client) {
@@ -472,12 +367,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		os_timer_arm(&ota_reboot_timer, OTA_REBOOT_DELAY_MS, 0);
 	}
 	else {
-#ifdef DEBUG
-		os_printf("[OTA DBG] Disconnected before valid download completed.\n");
-#endif
-		if (ota_mqtt_client) {
-			mqtt_rpc_ota_status(ota_mqtt_client, "error_disconnected");
-		}
+		if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_disconnected");
 		ota_in_progress = false; 
 	}
 }
@@ -485,17 +375,7 @@ static void ota_tcp_discon_cb(void *arg) {
 ICACHE_FLASH_ATTR
 static void ota_tcp_connect_cb(void *arg) {
 	char request[512];
-	
-#ifdef DEBUG
-	os_printf("[OTA DBG] connect_cb: str_http_get_fmt=0x%08X (aligned=%d)\n", 
-		(uint32_t)str_http_get_fmt, is_aligned(str_http_get_fmt, 4));
-#endif
-
 	tfp_snprintf(request, sizeof(request), str_http_get_fmt, ota_path, ota_host);
-	
-#ifdef DEBUG
-	os_printf("[OTA DBG] Sending request: %s\n", request);
-#endif
 	espconn_send(&ota_conn, (uint8_t *)request, strlen(request));
 }
 
@@ -504,20 +384,12 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	if (ipaddr == NULL) {
 		os_timer_disarm(&ota_timeout_timer);
 #ifdef DEBUG
-		os_printf("[OTA DBG] DNS failed!\n");
+		os_printf("[OTA] DNS Failed!\n");
 #endif
-		if (ota_mqtt_client) {
-			mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
-		}
+		if (ota_mqtt_client) mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
 		ota_in_progress = false; 
 		return;
 	}
-
-#ifdef DEBUG
-	os_printf("[OTA DBG] DNS resolved: %d.%d.%d.%d\n",
-		*((uint8 *)&ipaddr->addr), *((uint8 *)&ipaddr->addr + 1),
-		*((uint8 *)&ipaddr->addr + 2), *((uint8 *)&ipaddr->addr + 3));
-#endif
 
 	os_memcpy(ota_conn.proto.tcp->remote_ip, &ipaddr->addr, 4);
 	ota_conn.proto.tcp->remote_port = ota_port;
@@ -542,7 +414,11 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 
 	ota_mqtt_client = client;
 
-	current_rom = rboot_get_current_rom();
+	// Ask RTC memory what we actually booted, fallback to flash config if RTC is empty
+	if (!rboot_get_last_boot_rom(&current_rom)) {
+		current_rom = rboot_get_current_rom();
+	}
+	
 	ota_target_rom = (current_rom == 0) ? 1 : 0;
 	
 	if (out_target_rom) {
@@ -555,11 +431,6 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 
 	strncpy(ota_url, url, sizeof(ota_url) - 1);
 	ota_url[sizeof(ota_url) - 1] = '\0';
-
-#ifdef DEBUG
-	os_printf("[OTA DBG] start_ota_upgrade: url=%s, current_rom=%d, target_rom=%d\n", 
-		ota_url, current_rom, ota_target_rom);
-#endif
 
 	p = ota_url;
 	if (strncmp(p, "http://", 7) == 0) {
@@ -590,7 +461,7 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	}
 
 #ifdef DEBUG
-	os_printf("[OTA DBG] Parsed host=%s, port=%d, path=%s\n", ota_host, ota_port, ota_path);
+	os_printf("[OTA] Starting Update. Current ROM: %d | Target ROM: %d\n", current_rom, ota_target_rom);
 #endif
 
 	headers_parsed = false;
