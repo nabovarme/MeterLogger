@@ -308,6 +308,12 @@ custom_release:
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/blank.bin
 	$(vecho) "Custom release packaged in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) successfully."
+	@echo "--------------------------------------------------------------------------------"
+	@echo "OTA Upgrade Notice:"
+	@echo "This firmware can be flashed OTA via the MQTT RPC system for meter serial: $(SERIAL)"
+	@echo "Use function: ota_upgrade"
+	@echo "With payload parameter: version=$(UNIQUE_DIR)"
+	@echo "--------------------------------------------------------------------------------"
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
