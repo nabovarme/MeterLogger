@@ -1032,7 +1032,20 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 #ifdef DEBUG
 			os_printf("OTA Confirmation: Self-test passed! Committing ROM %d permanently.\n", current_rom);
 #endif
+			// 1. Commit permanent ROM slot to SPI flash
 			rboot_set_current_rom(current_rom);
+
+#ifdef BOOT_RTC_ENABLED
+			// 2. Clear MODE_TEMP_ROM from RTC memory so subsequent OTAs are not blocked
+			rboot_rtc_data rtc;
+			if (rboot_get_rtc_data(&rtc)) {
+				rtc.last_mode = MODE_STANDARD;
+				rtc.next_mode = MODE_STANDARD;
+				rtc.last_rom = current_rom;
+				rboot_set_rtc_data(&rtc);
+			}
+#endif
+
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=self_test_passed_committed");
 		} else {
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=already_committed");
