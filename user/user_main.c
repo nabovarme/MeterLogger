@@ -139,14 +139,16 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 2:
-			// 3. send currently connected ssid
-			mqtt_rpc_ssid(&mqtt_client);
+#ifndef IMPULSE
+			// 3. send mqtt status
+			mqtt_rpc_status(&mqtt_client);
+#endif
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
 		case 3:
-			// 4. send mqtt uptime
-			mqtt_rpc_uptime(&mqtt_client);
+			// 4. send currently connected ssid
+			mqtt_rpc_ssid(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
@@ -162,14 +164,12 @@ ICACHE_FLASH_ATTR void static mqtt_connected_first_mqtt_rpc_timer_func(void *arg
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-#ifndef IMPULSE
 		case 6:
-			// 7. send mqtt status
-			mqtt_rpc_status(&mqtt_client);
+			// 7. send mqtt uptime (last)
+			mqtt_rpc_uptime(&mqtt_client);
 			mqtt_connected_first_mqtt_rpc_state++;
 			os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 100, 0);
 			break;
-#endif
 		default:
 			mqtt_connected_first_mqtt_rpc_state = 0;
 			os_timer_disarm(&mqtt_connected_first_mqtt_rpc_timer);
