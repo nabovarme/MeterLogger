@@ -14,6 +14,8 @@
 
 #define QUEUE_SIZE 256
 
+extern bool fast_boot;
+
 os_event_t en61107_received_task_queue[en61107_received_task_queue_length];
 
 uint32_t en61107_serial = 0;
@@ -318,18 +320,20 @@ void en61107_request_init() {
 
 	en61107_etx_received = false;
 
-	// wake up meter with 500 ms of null characters
+	if (!fast_boot) {
+		// wake up meter with 500 ms of null characters only on cold boot
 #ifdef EN61107
-	// BIT_RATE_300
-	for (i = 0; i < 16; i++) {
-		uart_tx_one_char(UART0, '\0');
-	}
+		// BIT_RATE_300
+		for (i = 0; i < 16; i++) {
+			uart_tx_one_char(UART0, '\0');
+		}
 #else
-	// BIT_RATE_1200
-	for (i = 0; i < 60; i++) {
-		uart_tx_one_char(UART0, '\0');
-	}
+		// BIT_RATE_1200
+		for (i = 0; i < 60; i++) {
+			uart_tx_one_char(UART0, '\0');
+		}
 #endif
+	}
 
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -411,45 +415,38 @@ void en61107_request_send() {
 	char c;
 	unsigned int i;
 
-	// clear message buffer
+	// Clear FIFO message buffer
 	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
 		i++;
 	}
 
 	en61107_request_num++;
-	if (en61107_uart_state == UART_STATE_NONE) {
-		// give the meter some time between retransmissions
+
+	if (fast_boot) {
+		// On warm reboot, clear any active session on the meter before re-identifying
+		uart_set_baudrate(UART0, BIT_RATE_300);
+		uart_set_word_length(UART0, SEVEN_BITS);
+		uart_set_parity(UART0, EVEN_BITS);
+		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+		// Send session break string \006001\r\n to return Kamstrup parser to IDLE
+		strcpy(frame, "\006001\r\n");
+		uart0_tx_buffer(frame, strlen(frame));
+
+		// Schedule en61107_uart_send_en61107_ident() after a 500ms delay
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);         // 6 seconds for meter to wake up
+		os_timer_arm(&en61107_meter_wake_up_timer, 500, 0);
+		return;
 	}
 
-#else
-	char topic[128];
-	char cleartext[EN61107_FRAME_L];
-	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
-	int topic_l;
-	int message_l;
-	
-	// fake serial for testing without meter
-	en61107_serial = 4615611;
-	
-	topic_l = os_sprintf(topic, "/sample/v2/%u/%u", en61107_serial, get_unix_time());
-	message_l = os_sprintf(message, "heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&");
-	memset(cleartext, 0, sizeof(cleartext));
-	os_strncpy(cleartext, message, sizeof(message));	// make a copy of message for later use
-	os_memset(message, 0, sizeof(message));				// ...and clear it
-
-	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
-
-	if (mqtt_client) {
-		// if mqtt_client is initialized
-		if (message_l > 1) {
-			MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
-		}
+	if (en61107_uart_state == UART_STATE_NONE) {
+		// Cold boot path: 6-second optical wake-up timer
+		os_timer_disarm(&en61107_meter_wake_up_timer);
+		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
+		os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);
 	}
-
 #endif
 }
 
