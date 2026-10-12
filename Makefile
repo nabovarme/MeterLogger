@@ -237,7 +237,10 @@ $1/%.o: %.c | checkdirs
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS)  -c $$< -o $$@
 endef
 
-.PHONY: all checkdirs clean ota_bins release size objdump rebuild
+.PHONY: all checkdirs clean ota_bins release custom_release size objdump rebuild
+
+# Custom unique directory name (defaults to timestamp if not specified)
+UNIQUE_DIR ?= $(shell date +%Y%m%d_%H%M%S)
 
 all: release
 
@@ -288,6 +291,23 @@ release:
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
 	$(vecho) "Release populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
+
+custom_release:
+	$(vecho) "--- 1/3: Building Factory Firmware for $(SERIAL) ---"
+	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
+	$(vecho) "--- 2/3: Building OTA Firmware for $(SERIAL) ---"
+	$(Q) $(MAKE) ota_bins OTA=1
+	$(vecho) "--- 3/3: Packaging Custom Release for $(SERIAL) in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) ---"
+	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)
+	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/rboot.bin
+	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.bin
+	$(Q) cp firmware/user2.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.bin
+	$(Q) cp firmware_ota/user1.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin
+	$(Q) cp firmware_ota/user2.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin
+	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/webpages.espfs
+	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/esp_init_data_default_112th_byte_0x03.bin
+	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/blank.bin
+	$(vecho) "Custom release packaged in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) successfully."
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
 	$(Q) cd html; find | ../mkespfsimage/mkespfsimage > ../webpages.espfs; cd ..
