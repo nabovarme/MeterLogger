@@ -277,7 +277,7 @@ void ICACHE_FLASH_ATTR
 uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
 {
   // rom use 74880 baut_rate, here reinitialize
-#ifndef EN61107
+#if !defined(EN61107) || defined(DEBUG_NO_METER)
   UartDev.baut_rate = uart0_br;
   UartDev.exist_parity = STICK_PARITY_DIS;
   UartDev.data_bits = EIGHT_BITS;
@@ -291,7 +291,8 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
   UartDev.stop_bits = TWO_STOP_BIT;
 #endif
   uart_config(UART0);
-#ifndef EN61107
+
+#if !defined(EN61107) || defined(DEBUG_NO_METER)
   UartDev.baut_rate = uart1_br;
   UartDev.exist_parity = STICK_PARITY_DIS;
   UartDev.data_bits = EIGHT_BITS;
@@ -345,4 +346,3 @@ void ICACHE_FLASH_ATTR
 uart_set_baudrate(uint8 uart_no, uint32_t baud_rate) {
     uart_div_modify(uart_no, UART_CLK_FREQ / baud_rate);
 }
-
