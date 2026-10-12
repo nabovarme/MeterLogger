@@ -1001,26 +1001,21 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	rboot_config rconf;
 	uint8_t current_rom;
-	
-	uint8_t boot_mode;
+	uint8_t boot_mode = MODE_STANDARD;
 
 	if (params == NULL) {
 		return;
 	}
 
-	// 0. Check if this is a confirmation command for a pending self-test boot
-	if (strstr(params, "action=confirm") != NULL) {
-		boot_mode = MODE_STANDARD;
-		
-		// Default to flash-based current ROM
-		current_rom = rboot_get_current_rom();
-
+	// Fetch actual running boot mode and running ROM slot from RTC memory
+	current_rom = rboot_get_current_rom();
 #ifdef BOOT_RTC_ENABLED
-		// Fetch actual boot mode AND the actually running ROM from RTC memory
-		rboot_get_last_boot_mode(&boot_mode);
-		rboot_get_last_boot_rom(&current_rom);
+	rboot_get_last_boot_mode(&boot_mode);
+	rboot_get_last_boot_rom(&current_rom);
 #endif
 
+	// 0. Handle confirmation command for pending temp boot self-test
+	if (strstr(params, "action=confirm") != NULL) {
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
@@ -1048,7 +1043,28 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		return;
 	}
 
-	// 1. Check if an OTA upgrade is already running
+	// 1. SAFETY GUARD: Reject new upgrade if device is in unconfirmed TEMP BOOT mode
+	if (boot_mode == MODE_TEMP_ROM) {
+#ifdef DEBUG
+		os_printf("OTA Error: Cannot re-flash while running in unconfirmed temp boot mode!\n");
+#endif
+#ifdef EN61107
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+		memset(mqtt_message, 0, sizeof(mqtt_message));
+		memset(cleartext, 0, sizeof(cleartext));
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_unconfirmed_temp_rom");
+
+		mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+		return;
+	}
+
+	// 2. Check if an OTA upgrade is already running
 	if (ota_in_progress) {
 #ifdef DEBUG
 		os_printf("OTA: Upgrade already in progress. Ignoring request.\r\n");
@@ -1072,10 +1088,10 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Lock the OTA function until reboot
 	ota_in_progress = true;
 
-	// Pre-calculate target ROM slot (0 -> 1, 1 -> 0)
-	target_rom = (rboot_get_current_rom() == 0) ? 1 : 0;
+	// Invert current ROM to target the opposite slot (0 -> 1, 1 -> 0)
+	target_rom = (current_rom == 0) ? 1 : 0;
 
-	// 2. Parse key-value parameters (url=... & version=...)
+	// 3. Parse key-value parameters (url=... & version=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
@@ -1100,7 +1116,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		strncpy(base_url, "http://meterlogger.net/api/ota_firmware", sizeof(base_url) - 1);
 	}
 
-	// Always get the meter's actual serial number
+	// Retrieve serial number for request
 #ifdef EN61107
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", en61107_get_received_serial());
 #elif defined IMPULSE
@@ -1118,12 +1134,17 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		tfp_snprintf(final_url, sizeof(final_url), "%s%sserial=%s&slot=%d", base_url, separator, serial_str, target_rom);
 	}
 
-	// 3. Start the OTA download with the constructed URL
+#ifdef DEBUG
+	os_printf("[OTA] Current ROM: %d | Target ROM: %d\n", current_rom, target_rom);
+	os_printf("[OTA] Constructed Request URL: %s\n", final_url);
+#endif
+
+	// 4. Start the OTA download with the constructed URL
 	if (strlen(final_url) > 0) {
 		success = start_ota_upgrade(client, final_url, &target_rom);
 	}
 
-	// 4. Send Encrypted MQTT Acknowledgment
+	// 5. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
