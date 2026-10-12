@@ -75,7 +75,9 @@ void en61107_teardown_session(void) {
 
 	// Send EN61107 session break (\006001\r\n)
 	strcpy(frame, "\006001\r\n");
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, strlen(frame));
+#endif
 }
 
 ICACHE_FLASH_ATTR
@@ -589,7 +591,9 @@ void en61107_uart_send_en61107_ident() {
 
 	strcpy(frame, "/?!\r\n");
 	frame_length = strlen(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);     // send request
+#endif
 
 	// reply is 300 bps, 7e1, not 7e2 as stated in standard
 	uart_settings.baut_rate = BIT_RATE_300;
@@ -621,7 +625,9 @@ void en61107_uart_send_en61107() {
 
 	strcpy(frame, "\006000\r\n");
 	frame_length = strlen(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);     // send request
+#endif
 
 	// reply is 300 bps, 7e1, not 7e2 as stated in standard
 	uart_settings.baut_rate = BIT_RATE_300;
@@ -652,7 +658,9 @@ void en61107_uart_send_standard_data_1() {
 
 	strcpy(frame, "/#1\r");
 	frame_length = strlen(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);     // send request
+#endif
 
 	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
 	uart_settings.baut_rate = BIT_RATE_1200;
@@ -683,7 +691,9 @@ void en61107_uart_send_standard_data_2() {
 
 	strcpy(frame, "/#2\r");
 	frame_length = strlen(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);     // send request
+#endif
 
 	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
 	uart_settings.baut_rate = BIT_RATE_1200;
@@ -715,7 +725,9 @@ void en61107_uart_send_inst_values() {
 
 	strcpy(frame, "/#C");
 	frame_length = strlen(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);     // send request
+#endif
 
 	// reply is 1200 bps, 7e1, not 7e2 as stated in standard
 	uart_settings.baut_rate = BIT_RATE_1200;
