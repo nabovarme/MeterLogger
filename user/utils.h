@@ -12,6 +12,6 @@ ICACHE_FLASH_ATTR int int_pow(int x, int y);
 ICACHE_FLASH_ATTR int query_string_escape(char *str, size_t size);
 ICACHE_FLASH_ATTR int query_string_unescape(char *str);
 ICACHE_FLASH_ATTR size_t spi_flash_size();
-ICACHE_FLASH_ATTR void register_system_restart_defered_cb);
+ICACHE_FLASH_ATTR void register_system_restart_defered_cb(system_defered_restart_cb cb);
 ICACHE_FLASH_ATTR void system_restart_defered();
 #endif /* UTILS_H_ */
