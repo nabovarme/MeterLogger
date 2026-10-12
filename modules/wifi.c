@@ -642,11 +642,17 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 				wifi_present = true;
 				channel = info->channel;
 			}
-			if ((info != NULL) && (info->ssid != NULL) &&
-				(info->ssid_len == strlen(STA_FALLBACK_SSID)) &&
-				(memcmp(info->ssid, STA_FALLBACK_SSID, info->ssid_len) == 0)) {
-				wifi_fallback_present = true;
+
+			// Only flag fallback as present if we are NOT currently active as a fallback network.
+			// This prevents nodes in fallback mode from connecting to each other in circular loops.
+			if (!wifi_fallback_active) {
+				if ((info != NULL) && (info->ssid != NULL) &&
+					(info->ssid_len == strlen(STA_FALLBACK_SSID)) &&
+					(memcmp(info->ssid, STA_FALLBACK_SSID, info->ssid_len) == 0)) {
+					wifi_fallback_present = true;
+				}
 			}
+
 //#ifdef DEBUG
 //			printf("channel: %d, ssid: %s, bssid %02x:%02x:%02x:%02x:%02x:%02x, rssi: %d, freq_offset: %d, freqcal_val: %d\n\r", info->channel,
 //				info->ssid,
