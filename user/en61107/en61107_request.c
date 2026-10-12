@@ -336,7 +336,9 @@ static void en61107_received_task(os_event_t *events) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_init() {
+#ifndef DEBUG_NO_METER
 	unsigned int i;
+#endif
 
 	fifo_head = 0;
 	fifo_tail = 0;
