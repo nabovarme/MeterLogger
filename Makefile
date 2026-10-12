@@ -33,7 +33,11 @@ CFLAGS += -DESPFS_POS=$(ESPFS)
 
 FLAVOR ?= release
 
-GIT_VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
+# Base Git version string
+GIT_VERSION_RAW := $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-list HEAD --count)-$(shell git describe --abbrev=4 --dirty --always)
+
+# Fallback GIT_VERSION for standard builds (no UNIQUE_DIR unless explicitly passed)
+GIT_VERSION ?= $(if $(UNIQUE_DIR),$(GIT_VERSION_RAW)-$(UNIQUE_DIR),$(GIT_VERSION_RAW))
 
 # For OTA=1, clear the keys so they aren't transmitted over Wi-Fi. (Device reads from flash)
 ifeq ($(OTA), 1)
@@ -239,9 +243,6 @@ endef
 
 .PHONY: all checkdirs clean ota_bins release custom_release size objdump rebuild
 
-# Custom unique directory name (defaults to timestamp if not specified)
-UNIQUE_DIR ?= $(shell date +%Y%m%d_%H%M%S)
-
 all: release
 
 ota_bins: $(USER1_BIN) $(USER2_BIN)
@@ -292,12 +293,15 @@ release:
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
 	$(vecho) "Release populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
+# Target-specific variables for custom_release
+custom_release: UNIQUE_DIR ?= $(shell date +%Y%m%d_%H%M%S)
+custom_release: GIT_VERSION = $(GIT_VERSION_RAW)-$(UNIQUE_DIR)
 custom_release:
 	$(vecho) "--- 1/3: Building Factory Firmware for $(SERIAL) ---"
 	$(Q) $(MAKE) ota_bins webpages.espfs OTA=0
 	$(vecho) "--- 2/3: Building OTA Firmware for $(SERIAL) ---"
 	$(Q) $(MAKE) ota_bins OTA=1
-	$(vecho) "--- 3/3: Packaging Custom Release for $(SERIAL) in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) ---"
+	$(vecho) "--- 3/3: Packaging Release for $(SERIAL) in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) ---"
 	$(Q) mkdir -p $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)
 	$(Q) cp rboot/rboot.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/rboot.bin
 	$(Q) cp firmware/user1.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.bin
@@ -307,12 +311,12 @@ custom_release:
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/blank.bin
-	$(vecho) "Custom release packaged in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) successfully."
+	$(vecho) "Release packaged in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) successfully."
 	@echo "--------------------------------------------------------------------------------"
 	@echo "OTA Upgrade Notice:"
-	@echo "This firmware can be flashed OTA via the MQTT RPC system for meter serial: $(SERIAL)"
-	@echo "Use function: ota_upgrade"
-	@echo "With payload parameter: version=$(UNIQUE_DIR)"
+	@echo "This firmware can be flashed OTA via MQTT RPC for meter serial: $(SERIAL)"
+	@echo "Function: ota_upgrade | Payload: version=$(UNIQUE_DIR)"
+	@echo "Firmware VERSION macro set to: $(GIT_VERSION)"
 	@echo "--------------------------------------------------------------------------------"
 
 webpages.espfs: html/ html/wifi/ mkespfsimage/mkespfsimage
