@@ -349,7 +349,7 @@ void en61107_request_init() {
 
 	en61107_etx_received = false;
 
-	register_system_defered_restart_cb(en61107_teardown_session);
+	register_system_restart_defered_cb(en61107_teardown_session);
 
 #ifndef DEBUG_NO_METER
 	if (!fast_boot) {
