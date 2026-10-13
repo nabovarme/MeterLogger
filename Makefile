@@ -291,6 +291,11 @@ release:
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/blank.bin
+	$(vecho) "--- Generating SHA-256 Checksum Files ---"
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/user1.bin > $(RELEASE_BASE)/$(SERIAL)/user1.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/user2.bin > $(RELEASE_BASE)/$(SERIAL)/user2.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin > $(RELEASE_BASE)/$(SERIAL)/user1.ota.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin > $(RELEASE_BASE)/$(SERIAL)/user2.ota.bin.sha256
 	$(vecho) "Release populated in $(RELEASE_BASE)/$(SERIAL)/ successfully."
 
 # Target-specific variables for custom_release
@@ -311,12 +316,17 @@ custom_release:
 	$(Q) cp webpages.espfs $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/webpages.espfs
 	$(Q) cp firmware/esp_init_data_default_112th_byte_0x03.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/esp_init_data_default_112th_byte_0x03.bin
 	$(Q) cp firmware/blank.bin $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/blank.bin
+	$(vecho) "--- Generating SHA-256 Checksum Files ---"
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.bin > $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.bin > $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin > $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin.sha256
+	$(Q) sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin > $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin.sha256
 	$(vecho) "Release packaged in $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR) successfully."
 	@echo "--------------------------------------------------------------------------------"
 	@echo "OTA Upgrade Notice:"
 	@echo "This firmware can be flashed OTA via MQTT RPC for meter serial: $(SERIAL)"
 	@echo "Function: ota_upgrade"
-	@echo "Payload: version=$(UNIQUE_DIR)&sha1=$$(sha256sum 	$(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin | awk '{print $$1}')&sha2=$$(sha256sum 	$(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin | awk '{print $$1}')"
+	@echo "Payload: version=$(UNIQUE_DIR)&sha1=$$(sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin | awk '{print $$1}')&sha2=$$(sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin | awk '{print $$1}')"
 	@echo "Firmware VERSION macro set to: $(GIT_VERSION)"
 	@echo "--------------------------------------------------------------------------------"
 
