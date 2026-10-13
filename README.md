@@ -273,7 +273,7 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 **Secure OTA Updates with Dual SHA-256 Validation:**
 The OTA (Over-The-Air) firmware upgrade process now features streaming cryptographic verification to prevent corrupted downloads from soft-bricking the device. Because the ESP8266 rBoot bootloader requires two separate memory slots, user1.bin and user2.bin are compiled with different memory layouts and consequently have completely different SHA-256 hashes.
 
-To ensure safety without requiring the server to track which slot the meter is currently using, the MQTT RPC payload accepts both hashes (sha256_user1 and sha256_user2). As the meter streams the HTTP download into flash, it calculates the SHA-256 hash on the fly. Before switching the boot slot, it verifies the downloaded file against both provided hashes. If the checksum does not match, the update is aborted, an error is reported over MQTT, and the device safely reboots into the existing valid firmware.
+To ensure safety without requiring the server to track which slot the meter is currently using, the MQTT RPC payload accepts both hashes (sha256_user1 and sha256_user2). As the meter streams the HTTP download into flash, it calculates the SHA-256 hash on the fly. Before switching the boot slot, it verifies the downloaded file against both provided hashes. If the checksum does not match, the upgrade is aborted, an error is reported over MQTT, and the device safely reboots into the existing valid firmware.
 
 **Note on Wi-Fi Test Reason Codes:**
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:

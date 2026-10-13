@@ -983,7 +983,7 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 }
 
 ICACHE_FLASH_ATTR
-void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
+void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 	char base_url[128] = {0};
 	char version_str[32] = {0};
 	char final_url[256] = {0};
@@ -1019,11 +1019,11 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// 0. Handle confirmation command for pending temp boot self-test
 	if (strstr(params, "action=confirm") != NULL) {
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(mqtt_message, 0, sizeof(mqtt_message));
 		memset(cleartext, 0, sizeof(cleartext));
@@ -1064,11 +1064,11 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		os_printf("OTA Error: Cannot re-flash while running in unconfirmed temp boot mode!\n");
 #endif
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(mqtt_message, 0, sizeof(mqtt_message));
 		memset(cleartext, 0, sizeof(cleartext));
@@ -1085,11 +1085,11 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 		os_printf("OTA: Upgrade already in progress. Ignoring request.\r\n");
 #endif
 #ifdef EN61107
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 		memset(mqtt_message, 0, sizeof(mqtt_message));
 		memset(cleartext, 0, sizeof(cleartext));
@@ -1162,16 +1162,16 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 
 	// 4. Start the OTA download with the constructed URL, passing BOTH hashes for validation
 	if (strlen(final_url) > 0) {
-		success = start_ota_upgrade(client, final_url, sha256_user1[0] ? sha256_user1 : NULL, sha256_user2[0] ? sha256_user2 : NULL, &target_rom);
+		success = start_ota_update(client, final_url, sha256_user1[0] ? sha256_user1 : NULL, sha256_user2[0] ? sha256_user2 : NULL, &target_rom);
 	}
 
 	// 5. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 
 	memset(mqtt_message, 0, sizeof(mqtt_message));
@@ -1200,11 +1200,11 @@ void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
 	}
 
 #ifdef EN61107
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_upgrade/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 
 	memset(mqtt_message, 0, sizeof(mqtt_message));

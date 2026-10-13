@@ -13,6 +13,6 @@
 
 // Starts the OTA HTTP download. 
 // Returns true if successfully initiated.
-ICACHE_FLASH_ATTR bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha256_1, const char *hex_sha256_2, uint8_t *out_target_rom);
+ICACHE_FLASH_ATTR bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha256_1, const char *hex_sha256_2, uint8_t *out_target_rom);
 
 #endif /* USER_OTA_H_ */
