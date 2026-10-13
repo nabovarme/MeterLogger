@@ -266,6 +266,7 @@ ICACHE_FLASH_ATTR
 static void ota_tcp_discon_cb(void *arg) {
 	char status_msg[32];
 	uint8_t calculated_sha256[32];
+	bool matched;
 
 	os_timer_disarm(&ota_timeout_timer);
 
@@ -299,7 +300,7 @@ static void ota_tcp_discon_cb(void *arg) {
 		
 		// 3. Verify Cryptographic Signature against either user1 or user2 hashes
 		if (has_sha256_check_1 || has_sha256_check_2) {
-			bool matched = false;
+			matched = false;
 			sha256_final(&ota_sha_ctx, calculated_sha256);
 
 			if (has_sha256_check_1 && os_memcmp(calculated_sha256, expected_sha256_1, 32) == 0) {
