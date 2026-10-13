@@ -842,7 +842,7 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 #ifdef DEBUG
 	os_printf("topic_len: %d, data_len: %d\n", topic_len, data_len);
 #endif
-	if (topic_len == 0 || topic_len >= MQTT_TOPIC_L || data_len == 0 || data_len >= (MQTT_MESSAGE_L + AES_HMAC_OVERHEAD))
+	if (topic_len == 0 || topic_len >= MQTT_TOPIC_L || data_len == 0 || data_len >= (MQTT_MESSAGE_L + AES_HMAC_OVERHEAD)) {
 #ifdef DEBUG
 		os_printf("data length error\n");
 #endif
