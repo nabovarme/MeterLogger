@@ -988,7 +988,8 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	char version_str[32] = {0};
 	char final_url[256] = {0};
 	char serial_str[32] = {0};
-	char sha256_hex[65] = {0};
+	char sha256_user1[65] = {0};
+	char sha256_user2[65] = {0};
 	char params_copy[MQTT_MESSAGE_L];
 
 	uint8_t cleartext[MQTT_MESSAGE_L];
@@ -1105,7 +1106,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Invert current ROM to target the opposite slot (0 -> 1, 1 -> 0)
 	target_rom = (current_rom == 0) ? 1 : 0;
 
-	// 3. Parse key-value parameters (url=... & version=... & sha256=...)
+	// 3. Parse key-value parameters (url=... & version=... & sha256_user1=... & sha256_user2=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
@@ -1120,9 +1121,12 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 			} else if (strcmp(param_key, "version") == 0) {
 				query_string_unescape(param_val);
 				strncpy(version_str, param_val, sizeof(version_str) - 1);
-			} else if (strcmp(param_key, "sha256") == 0) {
+			} else if (strcmp(param_key, "sha256_user1") == 0) {
 				query_string_unescape(param_val);
-				strncpy(sha256_hex, param_val, sizeof(sha256_hex) - 1);
+				strncpy(sha256_user1, param_val, sizeof(sha256_user1) - 1);
+			} else if (strcmp(param_key, "sha256_user2") == 0) {
+				query_string_unescape(param_val);
+				strncpy(sha256_user2, param_val, sizeof(sha256_user2) - 1);
 			}
 		}
 		str = strtok_r(NULL, "&", &ctx1);
@@ -1156,9 +1160,9 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	os_printf("[OTA] Constructed Request URL: %s\n", final_url);
 #endif
 
-	// 4. Start the OTA download with the constructed URL
+	// 4. Start the OTA download with the constructed URL, passing BOTH hashes for validation
 	if (strlen(final_url) > 0) {
-		success = start_ota_upgrade(client, final_url, sha256_hex[0] ? sha256_hex : NULL, &target_rom);
+		success = start_ota_upgrade(client, final_url, sha256_user1[0] ? sha256_user1 : NULL, sha256_user2[0] ? sha256_user2 : NULL, &target_rom);
 	}
 
 	// 5. Send Encrypted MQTT Acknowledgment

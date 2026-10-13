@@ -51,8 +51,10 @@ static os_timer_t ota_timeout_timer;
 
 // SHA-256 state
 static sha256_ctx_t ota_sha_ctx;
-static uint8_t expected_sha256[32];
-static bool has_sha256_check = false;
+static uint8_t expected_sha256_1[32];
+static uint8_t expected_sha256_2[32];
+static bool has_sha256_check_1 = false;
+static bool has_sha256_check_2 = false;
 
 ICACHE_FLASH_ATTR
 static void ota_reboot_timer_cb(void *arg) {
@@ -210,7 +212,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		}
 
 		// Calculate SHA-256 hash stream
-		if (has_sha256_check) {
+		if (has_sha256_check_1 || has_sha256_check_2) {
 			sha256_update(&ota_sha_ctx, (uint8_t *)pdata, len);
 		}
 
@@ -294,14 +296,22 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// 3. Verify Cryptographic Signature
-		if (has_sha256_check) {
+		// 3. Verify Cryptographic Signature against either user1 or user2 hashes
+		if (has_sha256_check_1 || has_sha256_check_2) {
 			uint8_t calculated_sha256[32];
+			bool matched = false;
 			sha256_final(&ota_sha_ctx, calculated_sha256);
 
-			if (os_memcmp(calculated_sha256, expected_sha256, 32) != 0) {
+			if (has_sha256_check_1 && os_memcmp(calculated_sha256, expected_sha256_1, 32) == 0) {
+				matched = true;
+			}
+			if (has_sha256_check_2 && os_memcmp(calculated_sha256, expected_sha256_2, 32) == 0) {
+				matched = true;
+			}
+
+			if (!matched) {
 #ifdef DEBUG
-				os_printf("[OTA] ERROR: SHA-256 checksum mismatch!\n");
+				os_printf("[OTA] ERROR: SHA-256 checksum mismatch against all provided hashes!\n");
 #endif
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum_mismatch");
@@ -391,7 +401,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 }
 
 ICACHE_FLASH_ATTR
-bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha256, uint8_t *out_target_rom) {
+bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha256_1, const char *hex_sha256_2, uint8_t *out_target_rom) {
 	const char *p;
 	const char *slash;
 	const char *colon;
@@ -401,12 +411,22 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha
 
 	ota_mqtt_client = client;
 
-	if (hex_sha256 && strlen(hex_sha256) == 64) {
-		hex_to_bytes(hex_sha256, expected_sha256, 32);
-		sha256_init(&ota_sha_ctx);
-		has_sha256_check = true;
+	if (hex_sha256_1 && strlen(hex_sha256_1) == 64) {
+		hex_to_bytes(hex_sha256_1, expected_sha256_1, 32);
+		has_sha256_check_1 = true;
 	} else {
-		has_sha256_check = false;
+		has_sha256_check_1 = false;
+	}
+
+	if (hex_sha256_2 && strlen(hex_sha256_2) == 64) {
+		hex_to_bytes(hex_sha256_2, expected_sha256_2, 32);
+		has_sha256_check_2 = true;
+	} else {
+		has_sha256_check_2 = false;
+	}
+
+	if (has_sha256_check_1 || has_sha256_check_2) {
+		sha256_init(&ota_sha_ctx);
 	}
 
 	if (!rboot_get_last_boot_rom(&current_rom)) {

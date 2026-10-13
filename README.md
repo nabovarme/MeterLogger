@@ -228,7 +228,7 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /config/v2/9999999/[unix time]/flash_size                |                                                                                                     |
 | /config/v2/9999999/[unix time]/reset_reason              |                                                                                                     |
 | /config/v2/9999999/[unix time]/restart                   |                                                                                                     |
-| /config/v2/9999999/[unix time]/ota_upgrade               | [url=http://domain.com/user2.bin&version=1.2.3] (url and version are optional) or action=confirm    |
+| /config/v2/9999999/[unix time]/ota_upgrade               | [url=http://domain.com/api&version=20261013_001000&sha256_user1=<64-char_hex_hash>&sha256_user2=<64-char_hex_hash>] (all optional; meter selects correct hash based on target slot) OR [action=confirm] (permanently commits a successful temporary boot slot) |
 | /config/v2/9999999/[unix time]/set_key                   | [key=new_32_char_hex_key]                                                                           |
 
 **MQTT format for messages sent _from_ meter**  
@@ -267,8 +267,13 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
 | /restart/v2/9999999/[unix time]                  |                                                                                                      |
-| /ota_upgrade/v2/9999999/[unix time]              | [status=started&target_rom=2] (or status=self_test_passed_committed, status=already_committed, status=flashing_10%, status=success&target_rom=2, status=restarting_in_22s, status=error_no_url, status=error_busy, status=error_http_not_200, status=error_header_overflow, status=error_invalid_magic, status=error_flash_write, status=error_tcp_drop, status=error_too_small, status=error_truncated, status=error_disconnected, status=error_dns) |
+| /ota_upgrade/v2/9999999/[unix time]              | [status=started&target_rom=1|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error_[no_url|busy|unconfirmed_temp_rom|http_not_200|header_overflow|invalid_magic|file_too_large|flash_write|tcp_drop|too_small|truncated|checksum_mismatch|disconnected|dns]) |
 | /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
+
+**Secure OTA Updates with Dual SHA-256 Validation:**
+The OTA (Over-The-Air) firmware upgrade process now features streaming cryptographic verification to prevent corrupted downloads from soft-bricking the device. Because the ESP8266 rBoot bootloader requires two separate memory slots, user1.bin and user2.bin are compiled with different memory layouts and consequently have completely different SHA-256 hashes.
+
+To ensure safety without requiring the server to track which slot the meter is currently using, the MQTT RPC payload accepts both hashes (sha256_user1 and sha256_user2). As the meter streams the HTTP download into flash, it calculates the SHA-256 hash on the fly. Before switching the boot slot, it verifies the downloaded file against both provided hashes. If the checksum does not match, the update is aborted, an error is reported over MQTT, and the device safely reboots into the existing valid firmware.
 
 **Note on Wi-Fi Test Reason Codes:**
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
