@@ -50,7 +50,7 @@ static os_timer_t ota_reboot_timer;
 static os_timer_t ota_timeout_timer;
 
 // SHA-256 state
-static sha256_ctx ota_sha_ctx;
+static sha256_ctx_t ota_sha_ctx;
 static uint8_t expected_sha256[32];
 static bool has_sha256_check = false;
 
@@ -211,7 +211,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		// Calculate SHA-256 hash stream
 		if (has_sha256_check) {
-			sha256_update(&ota_sha_ctx, (const uint8_t *)pdata, len);
+			sha256_update(&ota_sha_ctx, (uint8_t *)pdata, len);
 		}
 
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
