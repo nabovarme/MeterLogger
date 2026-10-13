@@ -141,6 +141,7 @@ static void en61107_received_task(os_event_t *events) {
 	char topic[MQTT_TOPIC_L];
 	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
+	uint32_t parsed_serial;
 
 	// vars for aes encryption
 	uint8_t cleartext[EN61107_FRAME_L];
@@ -164,12 +165,16 @@ static void en61107_received_task(os_event_t *events) {
 				break;
 			}
 
-			en61107_serial = atoi(response.customer_no);
-			if (en61107_serial == 0) {
-				// timeout if we didn't got a serial number
-				break;
+			// Only read and set the serial number ONCE on the first successful read
+			if (!en61107_serial_set) {
+				parsed_serial = atoi(response.customer_no);
+				if (parsed_serial == 0) {
+					// timeout if we didn't get a serial number
+					break;
+				}
+				en61107_serial = parsed_serial;
+				en61107_serial_set = true;
 			}
-			en61107_serial_set = true;
 
 #ifndef MC_66B
 			en61107_uart_send_inst_values();
