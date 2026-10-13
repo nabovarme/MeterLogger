@@ -355,10 +355,10 @@ void en61107_request_init() {
 
 #ifndef DEBUG_NO_METER
 	if (!fast_boot) {
-		// wake up meter with 500 ms of null characters only on cold boot
+		// wake up meter with 2000 ms of null characters only on cold boot
 #ifdef EN61107
 		// BIT_RATE_300
-		for (i = 0; i < 16; i++) {
+		for (i = 0; i < 60; i++) {
 			uart_tx_one_char(UART0, '\0');
 		}
 #else
@@ -482,10 +482,10 @@ void en61107_request_send() {
 	}
 
 	if (en61107_uart_state == UART_STATE_NONE) {
-		// Cold boot path: 6-second optical wake-up timer
+		// Cold boot path: optical wake-up timer (400ms to catch meter before sleep)
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 6000, 0);
+		os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
 	}
 #else
 	char cleartext[MQTT_MESSAGE_L];
