@@ -108,6 +108,10 @@ void en61107_receive_timeout_timer_func(void *arg) {
 	}
 	else {
 		// too many errors, wait for meter to be clear and start over
+		// reset state and counter so the next cycle isn't instantly penalized
+		en61107_uart_state = UART_STATE_NONE;
+		en61107_request_num = 0;
+
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 		os_timer_arm(&en61107_meter_wake_up_timer, 60000, 0);         // wait 60 seconds
@@ -126,8 +130,30 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_meter_wake_up_timer_func(void *arg) {
-//	en61107_uart_state = UART_STATE_EN61107_IDENT;
-	en61107_uart_send_en61107_ident();
+	unsigned int i;
+
+	// If recovering from a 60-second error penalty, the meter is asleep.
+	// We MUST send the wake-up stream before identifying.
+	if (en61107_uart_state == UART_STATE_NONE) {
+#ifndef DEBUG_NO_METER
+		uart_set_baudrate(UART0, BIT_RATE_300);
+		uart_set_word_length(UART0, SEVEN_BITS);
+		uart_set_parity(UART0, EVEN_BITS);
+		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+
+		// Send wake-up stream
+		for (i = 0; i < 60; i++) {
+			uart_tx_one_char(UART0, '\0');
+		}
+#endif
+		// Wait 400ms for meter CPU to stabilize before sending /?!\r\n
+		os_timer_disarm(&en61107_meter_wake_up_timer);
+		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
+		os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
+	} else {
+		// Normal flow
+		en61107_uart_send_en61107_ident();
+	}
 }
 
 // define en61107_received_task() first
