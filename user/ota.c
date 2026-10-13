@@ -402,7 +402,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 }
 
 ICACHE_FLASH_ATTR
-bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha256_1, const char *hex_sha256_2, uint8_t *out_target_rom) {
+bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha256_1, const char *hex_sha256_2, uint8_t *out_target_rom) {
 	const char *p;
 	const char *slash;
 	const char *colon;

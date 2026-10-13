@@ -1008,9 +1008,9 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found restart
 		mqtt_rpc_restart(&mqtt_client);
 	}
-	else if (strncmp(function_name, "ota_update", FUNCTIONNAME_L) == 0) {
+	else if (strncmp(function_name, "ota_upgrade", FUNCTIONNAME_L) == 0) {
 		// pass the full decrypted payload text string to be parsed
-		mqtt_rpc_ota_update(&mqtt_client, cleartext);
+		mqtt_rpc_ota_upgrade(&mqtt_client, cleartext);
 	}
 	else if (strncmp(function_name, "set_key", FUNCTIONNAME_L) == 0) {
 		// handle standalone master key injection
