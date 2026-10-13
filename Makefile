@@ -316,7 +316,7 @@ custom_release:
 	@echo "OTA Upgrade Notice:"
 	@echo "This firmware can be flashed OTA via MQTT RPC for meter serial: $(SERIAL)"
 	@echo "Function: ota_upgrade"
-	@echo "Payload: version=$(UNIQUE_DIR)&sha256_user1=$$(sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin | awk '{print $$1}')&sha256_user2=$$(sha256sum $(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin | awk '{print $$1}')"
+	@echo "Payload: version=$(UNIQUE_DIR)&sha1=$$(sha256sum 	$(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user1.ota.bin | awk '{print $$1}')&sha2=$$(sha256sum 	$(RELEASE_BASE)/$(SERIAL)/$(UNIQUE_DIR)/user2.ota.bin | awk '{print $$1}')"
 	@echo "Firmware VERSION macro set to: $(GIT_VERSION)"
 	@echo "--------------------------------------------------------------------------------"
 

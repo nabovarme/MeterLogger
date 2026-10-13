@@ -1106,7 +1106,7 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 	// Invert current ROM to target the opposite slot (0 -> 1, 1 -> 0)
 	target_rom = (current_rom == 0) ? 1 : 0;
 
-	// 3. Parse key-value parameters (url=... & version=... & sha256_user1=... & sha256_user2=...)
+	// 3. Parse key-value parameters (url=... & version=... & sha1=... & sha2=...)
 	strncpy(params_copy, params, sizeof(params_copy) - 1);
 	params_copy[sizeof(params_copy) - 1] = '\0';
 
@@ -1121,10 +1121,10 @@ void mqtt_rpc_ota_upgrade(MQTT_Client *client, char *params) {
 			} else if (strcmp(param_key, "version") == 0) {
 				query_string_unescape(param_val);
 				strncpy(version_str, param_val, sizeof(version_str) - 1);
-			} else if (strcmp(param_key, "sha256_user1") == 0) {
+			} else if (strcmp(param_key, "sha1") == 0 || strcmp(param_key, "sha256_user1") == 0) {
 				query_string_unescape(param_val);
 				strncpy(sha256_user1, param_val, sizeof(sha256_user1) - 1);
-			} else if (strcmp(param_key, "sha256_user2") == 0) {
+			} else if (strcmp(param_key, "sha2") == 0 || strcmp(param_key, "sha256_user2") == 0) {
 				query_string_unescape(param_val);
 				strncpy(sha256_user2, param_val, sizeof(sha256_user2) - 1);
 			}
