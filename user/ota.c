@@ -13,6 +13,7 @@
 #include "spi_flash.h"
 #include "mqtt.h"
 #include "mqtt_rpc.h"
+#include "crypto/sha256.h"
 
 #define OTA_REBOOT_DELAY_MS    6000
 #define ESP_IMAGE_MAGIC_V1     0xE9
@@ -47,6 +48,26 @@ static int ota_port = OTA_DEFAULT_PORT;
 
 static os_timer_t ota_reboot_timer;
 static os_timer_t ota_timeout_timer;
+
+// SHA-256 state
+static sha256_ctx ota_sha_ctx;
+static uint8_t expected_sha256[32];
+static bool has_sha256_check = false;
+
+// Safe hex parsing helper to avoid heavy sscanf
+static uint8_t hex_char_to_val(char c) {
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+	if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+	return 0;
+}
+
+static void hex_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
+	size_t i;
+	for (i = 0; i < len; i++) {
+		bytes[i] = (hex_char_to_val(hex[2 * i]) << 4) | hex_char_to_val(hex[2 * i + 1]);
+	}
+}
 
 ICACHE_FLASH_ATTR
 static void ota_reboot_timer_cb(void *arg) {
@@ -203,6 +224,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
+		// Calculate SHA-256 hash stream
+		if (has_sha256_check) {
+			sha256_update(&ota_sha_ctx, (const uint8_t *)pdata, len);
+		}
+
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
 			os_printf("[OTA] ERROR: Flash write failed!\n");
@@ -283,7 +309,27 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// 3. Stage a temporary boot to the target slot.
+		// 3. Verify Cryptographic Signature
+		if (has_sha256_check) {
+			uint8_t calculated_sha256[32];
+			sha256_final(&ota_sha_ctx, calculated_sha256);
+
+			if (os_memcmp(calculated_sha256, expected_sha256, 32) != 0) {
+#ifdef DEBUG
+				os_printf("[OTA] ERROR: SHA-256 checksum mismatch!\n");
+#endif
+				if (ota_mqtt_client) {
+					mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum_mismatch");
+				}
+				ota_in_progress = false;
+				return;
+			}
+#ifdef DEBUG
+			os_printf("[OTA] SUCCESS: SHA-256 verified.\n");
+#endif
+		}
+		
+		// 4. Stage a temporary boot to the target slot.
 		// If the new binary crashes or fails to connect/pass self-test,
 		// rBoot will automatically roll back to the old working slot on next reset.
 		rboot_set_temp_rom(ota_target_rom);
@@ -360,7 +406,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 }
 
 ICACHE_FLASH_ATTR
-bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target_rom) {
+bool start_ota_upgrade(MQTT_Client *client, const char *url, const char *hex_sha256, uint8_t *out_target_rom) {
 	const char *p;
 	const char *slash;
 	const char *colon;
@@ -369,6 +415,14 @@ bool start_ota_upgrade(MQTT_Client *client, const char *url, uint8_t *out_target
 	err_t err;
 
 	ota_mqtt_client = client;
+
+	if (hex_sha256 && strlen(hex_sha256) == 64) {
+		hex_to_bytes(hex_sha256, expected_sha256, 32);
+		sha256_init(&ota_sha_ctx);
+		has_sha256_check = true;
+	} else {
+		has_sha256_check = false;
+	}
 
 	if (!rboot_get_last_boot_rom(&current_rom)) {
 		current_rom = rboot_get_current_rom();
