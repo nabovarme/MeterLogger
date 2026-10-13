@@ -278,3 +278,19 @@ void system_restart_defered() {
 	printf("going to restart in %d sec...\n\r", SYSTEM_RESTART_DELAY_MS / 1000);
 #endif
 }
+
+ICACHE_FLASH_ATTR
+uint8_t hex_char_to_val(char c) {
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+	if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+	return 0;
+}
+
+ICACHE_FLASH_ATTR
+void hex_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
+	size_t i;
+	for (i = 0; i < len; i++) {
+		bytes[i] = (hex_char_to_val(hex[2 * i]) << 4) | hex_char_to_val(hex[2 * i + 1]);
+	}
+}

@@ -14,4 +14,7 @@ ICACHE_FLASH_ATTR int query_string_unescape(char *str);
 ICACHE_FLASH_ATTR size_t spi_flash_size();
 ICACHE_FLASH_ATTR void register_system_restart_defered_cb(system_restart_teardown_cb cb);
 ICACHE_FLASH_ATTR void system_restart_defered();
+ICACHE_FLASH_ATTR uint8_t hex_char_to_val(char c);
+ICACHE_FLASH_ATTR void hex_to_bytes(const char *hex, uint8_t *bytes, size_t len);
+
 #endif /* UTILS_H_ */
