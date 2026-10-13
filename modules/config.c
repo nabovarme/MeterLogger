@@ -24,30 +24,11 @@ SAVE_FLAG saveFlag;
 static os_timer_t config_save_timer;
 char config_save_timer_running;
 
-// Convert 32-char hex string back to 16 bytes raw binary
-static bool ICACHE_FLASH_ATTR hex2bytes(const char *hex_str, uint8_t *byte_arr, size_t len) {
-	size_t i;
-	char byte_hex[3];
-
-	byte_hex[2] = '\0';
-	if (!hex_str || os_strlen(hex_str) < len * 2) {
-		return false;
-	}
-
-	for (i = 0; i < len; i++) {
-		byte_hex[0] = hex_str[i * 2];
-		byte_hex[1] = hex_str[i * 2 + 1];
-		byte_arr[i] = (uint8_t)strtol(byte_hex, NULL, 16);
-	}
-	return true;
-}
-
 // Available to ALL builds so the Serial build can parse and save the key before OTA
 bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str) {
-	if (key_hex_str && os_strlen(key_hex_str) >= 32) {
-		if (hex2bytes(key_hex_str, sys_cfg.key, 16)) {
-			return cfg_save(NULL, NULL);
-		}
+	if (key_hex_str && os_strlen(key_hex_str) == 32) {
+		hex_to_bytes(key_hex_str, sys_cfg.key, 16);
+		return cfg_save(NULL, NULL);
 	}
 	return false;
 }
