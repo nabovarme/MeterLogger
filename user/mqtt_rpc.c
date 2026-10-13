@@ -1058,7 +1058,7 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 		return;
 	}
 
-	// 1. SAFETY GUARD: Reject new upgrade if device is in unconfirmed TEMP BOOT mode
+	// 1. SAFETY GUARD: Reject new update if device is in unconfirmed TEMP BOOT mode
 	if (boot_mode == MODE_TEMP_ROM) {
 #ifdef DEBUG
 		os_printf("OTA Error: Cannot re-flash while running in unconfirmed temp boot mode!\n");
@@ -1079,10 +1079,10 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 		return;
 	}
 
-	// 2. Check if an OTA upgrade is already running
+	// 2. Check if an OTA update is already running
 	if (ota_in_progress) {
 #ifdef DEBUG
-		os_printf("OTA: Upgrade already in progress. Ignoring request.\r\n");
+		os_printf("OTA: Update already in progress. Ignoring request.\r\n");
 #endif
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
