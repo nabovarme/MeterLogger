@@ -60,10 +60,14 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(frame, stx);			   // find position of stx char
 					if (pos != NULL) {							  // if found stx char...
 						length = pos - frame;			   // ...save meter_type string
-						if (length <= 3 || (length - 3) > EN61107_METER_TYPE_L) {	// check bounds safely without underflow
+						
+						// check bounds safely without underflow
+						if (length <= 3 || (length - 3) >= EN61107_METER_TYPE_L) {
 							return false;
 						}
 						memcpy(response->meter_type, frame + 1, length - 3);
+						response->meter_type[length - 3] = '\0'; // explicitly null-terminate
+						
 						// detect meter type and protocol from returned meter type
 						frame += length + 3;
 					}
@@ -73,7 +77,14 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(frame, etx);			   // find position of etx
 					if (pos != NULL) {
 						length = pos - frame;
+						
+						// Prevent register_list_string buffer overflow
+						if (length >= EN61107_FRAME_L) {
+							length = EN61107_FRAME_L - 1;
+						}
+						
 						memcpy(register_list_string, frame, length);
+						register_list_string[length] = '\0'; // explicitly null-terminate
 					}
 
 					// parse values
@@ -85,6 +96,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 #else
 						length = pos - register_list_string_ptr + 1;	// + 1 becouse we need the last ')' in further parsing
 #endif
+						
+						// Prevent rid_value_unit_string buffer overflow
+						if (length >= EN61107_REGISTER_L) {
+							length = EN61107_REGISTER_L - 1;
+						}
+						
 						memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 						memcpy(rid_value_unit_string, register_list_string_ptr, length);
 						rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
@@ -93,13 +110,19 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						pos = strstr(rid_value_unit_string, "(");
 						if (pos != NULL) {
 							rid_string_length = pos - rid_value_unit_string;
+							
+							// Prevent rid string overflow
+							if (rid_string_length >= EN61107_RID_L) {
+								rid_string_length = EN61107_RID_L - 1;
+							}
+							
 							memset(rid, 0, EN61107_RID_L);					// zero (null terminate)
 							memcpy(rid, rid_value_unit_string, rid_string_length);
 							rid_value_unit_string_ptr += rid_string_length + 1;
 						}
 						pos = strstr(rid_value_unit_string_ptr, "*");
 						if (pos != NULL) {
-							value_string_length = pos - rid_value_unit_string_ptr;							
+							value_string_length = pos - rid_value_unit_string_ptr;
 							tfp_vsscanf(rid_value_unit_string_ptr, "%f", &rid_value_unit);
 							tfp_snprintf(decimal_str, EN61107_VALUE_L, "%f", rid_value_unit);
 							en61107_response_set_value(response, rid, decimal_str, strlen(decimal_str));
@@ -110,6 +133,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 							if (strncmp(rid, "0", 1) == 0) {
 								// customer number, no unit
 								customer_no_string_length = pos - rid_value_unit_string_ptr;
+								
+								// Prevent customer_no buffer overflow
+								if (customer_no_string_length >= EN61107_CUSTOMER_NO_L) {
+									customer_no_string_length = EN61107_CUSTOMER_NO_L - 1;
+								}
+								
 								memset(response->customer_no, 0, EN61107_CUSTOMER_NO_L);	// zero (null terminate)
 								memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 							}
@@ -130,6 +159,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 #ifndef MC_66B
 					// handle the last
 					length = strlen(register_list_string_ptr);
+					
+					// Bounds check the last segment
+					if (length >= EN61107_REGISTER_L) {
+						length = EN61107_REGISTER_L - 1;
+					}
+					
 					memset(rid_value_unit_string, 0, EN61107_REGISTER_L);	// zero (null terminate)
 					memcpy(rid_value_unit_string, register_list_string_ptr, length);
 					rid_value_unit_string_ptr = rid_value_unit_string;  // force pointer arithmetics
@@ -138,6 +173,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					pos = strstr(rid_value_unit_string, "(");
 					if (pos != NULL) {
 						rid_string_length = pos - rid_value_unit_string;
+						
+						// Bounds check on final rid extraction
+						if (rid_string_length >= EN61107_RID_L) {
+							rid_string_length = EN61107_RID_L - 1;
+						}
+						
 						memset(rid, 0, EN61107_RID_L);					// zero (null terminate)
 						memcpy(rid, rid_value_unit_string, rid_string_length);
 						rid_value_unit_string_ptr += rid_string_length + 1;
@@ -155,6 +196,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						if (strncmp(rid, "0", 1) == 0) {
 							// customer number, no unit
 							customer_no_string_length = pos - rid_value_unit_string_ptr;
+							
+							// Bounds check final customer_no extraction
+							if (customer_no_string_length >= EN61107_CUSTOMER_NO_L) {
+								customer_no_string_length = EN61107_CUSTOMER_NO_L - 1;
+							}
+							
 							memset(response->customer_no, 0, EN61107_CUSTOMER_NO_L);	// zero (null terminate)
 							memcpy(response->customer_no, rid_value_unit_string_ptr, customer_no_string_length);
 						}
