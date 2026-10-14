@@ -286,21 +286,25 @@ unsigned int add_cron_job_from_query(char *query) {
 	char key_value[KEY_VALUE_L];
 	char command_params[COMMAND_PARAMS_L];
 	char *context_query_string, *context_key_value;
+	char *cmd_ptr;
 	
-	strncpy(cron_params, query, MQTT_MESSAGE_L);	// work with a copy
+	strncpy(cron_params, query, MQTT_MESSAGE_L - 1);
+	cron_params[MQTT_MESSAGE_L - 1] = '\0'; // Ensure NULL-termination
 	
-	command_params[0] = 0;  // set zero length
-	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) {		// if there are room for more cron jobs
+	command_params[0] = '\0';  // set zero length
+	if (sys_cfg.cron_jobs.n <= CRON_JOBS_MAX - 1) { // if there is room for more cron jobs
 		memset(&sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n], 0, sizeof(cron_job_t));
 		
-		str = strstr(cron_params, "command=") + 8;						// get string after command=
-		if (str != NULL) {
-			str = strtok_r(str, "=", &context_query_string);		// get function name
+		cmd_ptr = strstr(cron_params, "command=");
+		if (cmd_ptr != NULL) {
+			str = cmd_ptr + 8;
+			str = strtok_r(str, "=", &context_query_string); // get function name
 			if (str != NULL) {
-				str = strtok_r(NULL, "", &context_query_string);	// get paramters to function
+				str = strtok_r(NULL, "", &context_query_string); // get parameters to function
 				if (str != NULL) {
-					strncpy(command_params, str, COMMAND_PARAMS_L);
-					memcpy(cron_params + (str - cron_params), "\0", 1);			// truncate cron_params after function
+					strncpy(command_params, str, COMMAND_PARAMS_L - 1);
+					command_params[COMMAND_PARAMS_L - 1] = '\0';
+					*str = '\0'; // truncate cron_params at the parameters string
 				}
 			}
 		}
@@ -308,39 +312,51 @@ unsigned int add_cron_job_from_query(char *query) {
 		// parse mqtt message for query string
 		str = strtok_r(cron_params, "&", &context_query_string);
 		while (str != NULL) {
-			strncpy(key_value, str, KEY_VALUE_L);
+			strncpy(key_value, str, KEY_VALUE_L - 1);
+			key_value[KEY_VALUE_L - 1] = '\0';
+
 			key = strtok_r(key_value, "=", &context_key_value);
 			value = strtok_r(NULL, "=", &context_key_value);
-			if (strncmp(key, "minute", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].minute, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "hour", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].hour, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "day_of_month", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_month, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "month", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].month, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "day_of_week", KEY_VALUE_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_week, value, CRON_FIELD_L);
-			}
-			else if (strncmp(key, "command", COMMAND_L) == 0) {
-				strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command, value, COMMAND_L);
+
+			if (key != NULL && value != NULL) {
+				if (strncmp(key, "minute", KEY_VALUE_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].minute, value, CRON_FIELD_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].minute[CRON_FIELD_L - 1] = '\0';
+				}
+				else if (strncmp(key, "hour", KEY_VALUE_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].hour, value, CRON_FIELD_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].hour[CRON_FIELD_L - 1] = '\0';
+				}
+				else if (strncmp(key, "day_of_month", KEY_VALUE_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_month, value, CRON_FIELD_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_month[CRON_FIELD_L - 1] = '\0';
+				}
+				else if (strncmp(key, "month", KEY_VALUE_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].month, value, CRON_FIELD_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].month[CRON_FIELD_L - 1] = '\0';
+				}
+				else if (strncmp(key, "day_of_week", KEY_VALUE_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_week, value, CRON_FIELD_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].day_of_week[CRON_FIELD_L - 1] = '\0';
+				}
+				else if (strncmp(key, "command", COMMAND_L) == 0) {
+					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command, value, COMMAND_L - 1);
+					sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command[COMMAND_L - 1] = '\0';
 #ifdef DEBUG
-				os_printf("command: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command);
+					os_printf("command: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command);
 #endif
-				if (strlen(command_params)) {
-					strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params, command_params, COMMAND_PARAMS_L);
+					if (strlen(command_params)) {
+						strncpy(sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params, command_params, COMMAND_PARAMS_L - 1);
+						sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params[COMMAND_PARAMS_L - 1] = '\0';
 #ifdef DEBUG
-					os_printf("command_params: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params);
+						os_printf("command_params: %s\n\r", sys_cfg.cron_jobs.cron_job_list[sys_cfg.cron_jobs.n].command_params);
+#endif
+					}
+					sys_cfg.cron_jobs.n++;
+#ifdef DEBUG
+					os_printf("job #%d added\n\r", sys_cfg.cron_jobs.n);
 #endif
 				}
-				sys_cfg.cron_jobs.n++;
-#ifdef DEBUG
-				os_printf("job #%d added\n\r", sys_cfg.cron_jobs.n);
-#endif
 			}
 			
 			str = strtok_r(NULL, "&", &context_query_string);
