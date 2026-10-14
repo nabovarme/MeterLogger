@@ -298,21 +298,25 @@ static void ota_tcp_discon_cb(void *arg) {
 			return;
 		}
 		
-		// 3. Verify Cryptographic Signature against either user1 or user2 hashes
+		// 3. Verify Cryptographic Signature strictly against target ROM slot hash
 		if (has_sha256_check_1 || has_sha256_check_2) {
 			matched = false;
 			sha256_final(&ota_sha_ctx, calculated_sha256);
 
-			if (has_sha256_check_1 && os_memcmp(calculated_sha256, expected_sha256_1, 32) == 0) {
-				matched = true;
+			if (ota_target_rom == 0 && has_sha256_check_1) {
+				if (os_memcmp(calculated_sha256, expected_sha256_1, 32) == 0) {
+					matched = true;
+				}
 			}
-			if (has_sha256_check_2 && os_memcmp(calculated_sha256, expected_sha256_2, 32) == 0) {
-				matched = true;
+			else if (ota_target_rom == 1 && has_sha256_check_2) {
+				if (os_memcmp(calculated_sha256, expected_sha256_2, 32) == 0) {
+					matched = true;
+				}
 			}
 
 			if (!matched) {
 #ifdef DEBUG
-				os_printf("[OTA] ERROR: SHA-256 checksum mismatch against all provided hashes!\n");
+				os_printf("[OTA] ERROR: SHA-256 checksum mismatch for target ROM slot %d!\n", ota_target_rom);
 #endif
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_checksum_mismatch");
@@ -321,7 +325,7 @@ static void ota_tcp_discon_cb(void *arg) {
 				return;
 			}
 #ifdef DEBUG
-			os_printf("[OTA] SUCCESS: SHA-256 verified.\n");
+			os_printf("[OTA] SUCCESS: SHA-256 verified for ROM slot %d.\n", ota_target_rom);
 #endif
 		}
 		
