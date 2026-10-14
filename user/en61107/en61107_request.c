@@ -263,7 +263,7 @@ static void en61107_received_task(os_event_t *events) {
 					meter_is_ready_cb_called = true;
 					en61107_meter_is_ready_cb();
 				}
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(DEBUG_NO_METER)
 				else {
 					os_printf("tried to call en61107_meter_is_ready_cb() before it was set - should not happen\n");
 				}
@@ -591,12 +591,6 @@ void en61107_request_send() {
 		en61107_meter_sent_data_cb();
 	}
 
-#ifdef DEBUG
-	else {
-		os_printf("tried to call en61107_meter_is_ready_cb() before it was set - should not happen\n");
-	}
-#endif
-
 	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
@@ -811,18 +805,19 @@ inline bool en61107_fifo_put(char c) {
 
 ICACHE_FLASH_ATTR
 bool en61107_fifo_get(char *c) {
-	if (en61107_fifo_in_use() != 0) {
+	// Disable UART interrupts to prevent race conditions when updating fifo_buffer_fill_count.
+	ETS_UART_INTR_DISABLE();
+	if (fifo_buffer_fill_count != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
-		// wrap
 		if (fifo_tail == QUEUE_SIZE) {
 			fifo_tail = 0;
 		}
 		fifo_buffer_fill_count--;
+		ETS_UART_INTR_ENABLE();
 		return true;
 	}
-	else {
-		return false;
-	}
+	ETS_UART_INTR_ENABLE();
+	return false;
 }
 
 ICACHE_FLASH_ATTR

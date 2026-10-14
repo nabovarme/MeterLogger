@@ -129,7 +129,7 @@ static void kmp_received_task(os_event_t *events) {
 			meter_is_ready_cb_called = true;
 			kmp_meter_is_ready_cb();
 		}
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(DEBUG_NO_METER)
 		else {
 			os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
 		}
@@ -463,12 +463,6 @@ void kmp_request_send() {
 	if (kmp_meter_sent_data_cb) {
 		kmp_meter_sent_data_cb();
 	}
-
-#ifdef DEBUG
-	else {
-		os_printf("tried to call kmp_meter_is_ready_cb() before it was set - should not happen\n");
-	}
-#endif
 
 	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
