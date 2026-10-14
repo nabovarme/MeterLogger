@@ -503,6 +503,8 @@ bool kmp_fifo_put(char c) {
 }
 
 bool kmp_fifo_get(char *c) {
+	// Disable UART interrupts to prevent race conditions when updating fifo_buffer_fill_count.
+	ETS_UART_INTR_DISABLE();
 	if (kmp_fifo_in_use() != 0) {
 		*c = fifo_buffer[fifo_tail++ % QUEUE_SIZE];
 		// wrap
@@ -510,11 +512,11 @@ bool kmp_fifo_get(char *c) {
 			fifo_tail = 0;
 		}
 		fifo_buffer_fill_count--;
+		ETS_UART_INTR_ENABLE();
 		return true;
 	}
-	else {
-		return false;
-	}
+	ETS_UART_INTR_ENABLE();
+	return false;
 }
 
 bool kmp_fifo_snoop(char *c, unsigned int pos) {
