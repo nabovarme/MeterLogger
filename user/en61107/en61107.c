@@ -272,41 +272,45 @@ bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *fra
 	while (p != NULL) {
 		switch (i) {
 			case 7:	// ABCCC
-				// A
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2, 1);
-				response->meter_program.a = atoi(value);
+				if (strlen(p) >= 7) { // Guard against out-of-bounds read
+					// A
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 2, 1);
+					response->meter_program.a = atoi(value);
 
-				// B
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2 + 1, 1);
-				response->meter_program.b = atoi(value);
+					// B
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 3, 1);
+					response->meter_program.b = atoi(value);
 
-				// CCC
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2 + 2, 3);
-				response->meter_program.ccc = atoi(value);
+					// CCC
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 4, 3);
+					response->meter_program.ccc = atoi(value);
+				}
 				break;
 			case 8:	// DDEFFGG
-				// DD
-				memset(value, 0, sizeof(value));
-				memcpy(value, p, 2);
-				response->meter_program.dd = atoi(value);
+				if (strlen(p) >= 7) { // Guard against out-of-bounds read
+					// DD
+					memset(value, 0, sizeof(value));
+					memcpy(value, p, 2);
+					response->meter_program.dd = atoi(value);
 
-				// E
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 2, 1);
-				response->meter_program.e = atoi(value);
+					// E
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 2, 1);
+					response->meter_program.e = atoi(value);
 
-				// FF
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 3, 2);
-				response->meter_program.ff = atoi(value);
+					// FF
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 3, 2);
+					response->meter_program.ff = atoi(value);
 
-				// GG
-				memset(value, 0, sizeof(value));
-				memcpy(value, p + 5, 2);
-				response->meter_program.gg = atoi(value);
+					// GG
+					memset(value, 0, sizeof(value));
+					memcpy(value, p + 5, 2);
+					response->meter_program.gg = atoi(value);
+				}
 				break;
 		}
 		i++;
@@ -349,23 +353,21 @@ void en61107_response_set_value(en61107_response_t *response, char *rid, char *v
 	memset(value_copy, 0, EN61107_VALUE_L);
 	if (value_length >= EN61107_VALUE_L) {
 		value_length = EN61107_VALUE_L - 1;
-
 	}
 	memcpy(value_copy, value, value_length);
-	value_copy[value_length] = 0;
-	value_length++;
+	value_copy[value_length] = '\0';
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
-		tfp_snprintf(response->e1.value, value_length, "%s", value_copy);
+		tfp_snprintf(response->e1.value, sizeof(response->e1.value), "%s", value_copy);
 	}
 	else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
 		// volume
-		tfp_snprintf(response->v1.value, value_length, "%s", value_copy);
+		tfp_snprintf(response->v1.value, sizeof(response->v1.value), "%s", value_copy);
 	}
 	else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
 		// hours
-		tfp_snprintf(response->hr.value, value_length, "%s", value_copy);
+		tfp_snprintf(response->hr.value, sizeof(response->hr.value), "%s", value_copy);
 	}
 }
 
@@ -377,23 +379,21 @@ void en61107_response_set_unit(en61107_response_t *response, char *rid, char *un
 	memset(unit_copy, 0, EN61107_UNIT_L);
 	if (unit_length >= EN61107_UNIT_L) {
 		unit_length = EN61107_UNIT_L - 1;
-
 	}
 	memcpy(unit_copy, unit, unit_length);
-	unit_copy[unit_length] = 0;
-	unit_length++;
+	unit_copy[unit_length] = '\0';
 
 	if (strncmp(rid, "6.8", EN61107_RID_L) == 0) {
 		// energy
-		tfp_snprintf(response->e1.unit, unit_length, "%s", unit_copy);
+		tfp_snprintf(response->e1.unit, sizeof(response->e1.unit), "%s", unit_copy);
 	}
 	else if (strncmp(rid, "6.26", EN61107_RID_L) == 0) {
 		// volume
-		tfp_snprintf(response->v1.unit, unit_length, "%s", unit_copy);
+		tfp_snprintf(response->v1.unit, sizeof(response->v1.unit), "%s", unit_copy);
 	}
 	else if (strncmp(rid, "6.31", EN61107_RID_L) == 0) {
 		// hours
-		tfp_snprintf(response->hr.unit, unit_length, "%s", unit_copy);
+		tfp_snprintf(response->hr.unit, sizeof(response->hr.unit), "%s", unit_copy);
 	}
 }
 

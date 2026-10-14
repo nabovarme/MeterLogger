@@ -157,6 +157,15 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 	}
 }
 
+// Helper to safely append strings without overflowing the destination buffer
+static void append_key_value(char *dst, size_t max_len, const char *src) {
+	size_t cur_len = strlen(dst);
+	size_t src_len = strlen(src);
+	if (cur_len + src_len < max_len - 1) {
+		memcpy(dst + cur_len, src, src_len + 1);
+	}
+}
+
 // define en61107_received_task() first
 ICACHE_FLASH_ATTR
 static void en61107_received_task(os_event_t *events) {
@@ -279,7 +288,7 @@ static void en61107_received_task(os_event_t *events) {
 
 				// heap size
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "heap=%u&", system_get_free_heap_size());
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 				// meter program
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "program=%01u%01u%03u%02u%01u%02u%02u&", 
@@ -291,51 +300,51 @@ static void en61107_received_task(os_event_t *events) {
 					response.meter_program.ff, 
 					response.meter_program.gg
 				);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 #ifndef FLOW_METER
 				// heating meter specific
 				// flow temperature
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t1=%s %s&", response.t1.value, response.t1.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 				// return flow temperature
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t2=%s %s&", response.t2.value, response.t2.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 #ifndef MC_66B
 				// t3 temperature
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "t3=%s %s&", response.t3.value, response.t3.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 #endif	// MC_66B
 
 				// calculated temperature difference
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "tdif=%s %s&", response.tdif.value, response.tdif.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 #endif	// FLOW_METER
 
 				// flow
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "flow1=%s %s&", response.flow1.value, response.flow1.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 #ifndef FLOW_METER
 				// current power
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "effect1=%s %s&", response.effect1.value, response.effect1.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 #endif	// FLOW_METER
 
 				// hours
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "hr=%s %s&", response.hr.value, response.hr.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 				// volume
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "v1=%s %s&", response.v1.value, response.v1.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 
 #ifndef FLOW_METER
 				// power
 				tfp_snprintf(key_value, MQTT_TOPIC_L, "e1=%s %s&", response.e1.value, response.e1.unit);
-				strcat(message, key_value);
+				append_key_value(message, sizeof(message), key_value);
 #endif	// FLOW_METER
 
 				memset(cleartext, 0, sizeof(cleartext));
@@ -348,7 +357,7 @@ static void en61107_received_task(os_event_t *events) {
 				// and stop retransmission timeout timer, last data from meter
 				os_timer_disarm(&en61107_receive_timeout_timer);
 
-				if (mqtt_client) {
+				if (mqtt_client && mqtt_client->pCon && mqtt_client->mqtt_state.work_buffer) {
 					// if mqtt_client is initialized
 					if (message_l > 1) {
 						MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
@@ -595,7 +604,7 @@ void en61107_request_send() {
 	// encrypt and send
 	message_l = encrypt_aes_hmac_combined(message, topic, strlen(topic), cleartext, strlen(cleartext) + 1);
 
-	if (mqtt_client) {
+	if (mqtt_client && mqtt_client->pCon && mqtt_client->mqtt_state.work_buffer) {
 		// if mqtt_client is initialized
 		MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 	}

@@ -173,47 +173,54 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 	char *context_query_string, *context_key_value;
 	char ssid_pwd_copy[COMMAND_PARAMS_L];
 
-	strncpy(ssid_pwd_copy, ssid_pwd, COMMAND_PARAMS_L);	// make a copy since strtok_r() changes it
+	strncpy(ssid_pwd_copy, ssid_pwd, COMMAND_PARAMS_L - 1);	// make a copy since strtok_r() changes it
+	ssid_pwd_copy[COMMAND_PARAMS_L - 1] = '\0'; // Ensure NULL-termination
 
 	str = strtok_r(ssid_pwd_copy, "&", &context_query_string);
 	while (str != NULL) {
-		strncpy(query_string_key_value, str, MQTT_MESSAGE_L);
+		strncpy(query_string_key_value, str, MQTT_MESSAGE_L - 1);
+		query_string_key_value[MQTT_MESSAGE_L - 1] = '\0'; // Ensure NULL-termination
+		
 		query_string_key = strtok_r(query_string_key_value, "=", &context_key_value);
 		query_string_value = strtok_r(NULL, "=", &context_key_value);
-		if (strncmp(query_string_key, "ssid", MQTT_MESSAGE_L) == 0) {
-			// un-escape & and =
-			query_string_unescape(query_string_value);
-			
-			// change sta_ssid, save if different
+		
+		if (query_string_key != NULL) {
+			if (strncmp(query_string_key, "ssid", MQTT_MESSAGE_L) == 0) {
+				if (query_string_value != NULL) {
+					// un-escape & and =
+					query_string_unescape(query_string_value);
+					
+					// change sta_ssid, save if different
 #ifdef DEBUG
-			printf("key: %s value: %s\n", query_string_key, query_string_value);
+					printf("key: %s value: %s\n", query_string_key, query_string_value);
 #endif	// DEBUG
-			if (strncmp((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
-				memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
-				strncpy((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1);
-			}
-		}
-		else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
-			// change sta_pwd, save if different
-			if (query_string_value == 0) {
-				// there is no value - no password used, use null string
-#ifdef DEBUG
-				printf("key: %s value: %s\n", query_string_key, "null");
-#endif	// DEBUG
-				if (strncmp((char *)sys_cfg.sta_pwd, "", 1) != 0) {
-					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy((char *)sys_cfg.sta_pwd, "", 1);
+					if (strncmp((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1) != 0) {
+						memset(sys_cfg.sta_ssid, 0, sizeof(sys_cfg.sta_ssid));
+						strncpy((char *)sys_cfg.sta_ssid, query_string_value, 32 - 1);
+					}
 				}
 			}
-			else {
-				// un-escape & and =
-				query_string_unescape(query_string_value);
+			else if (strncmp(query_string_key, "pwd", MQTT_MESSAGE_L) == 0) {
+				// change sta_pwd, save if different
+				if (query_string_value == NULL) {
+					// there is no value - no password used, use null string
 #ifdef DEBUG
-				printf("key: %s value: %s\n", query_string_key, query_string_value);
+					printf("key: %s value: %s\n", query_string_key, "null");
 #endif	// DEBUG
-				if (strncmp((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
-					memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
-					strncpy((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1);
+					if (strncmp((char *)sys_cfg.sta_pwd, "", 1) != 0) {
+						memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+					}
+				}
+				else {
+					// un-escape & and =
+					query_string_unescape(query_string_value);
+#ifdef DEBUG
+					printf("key: %s value: %s\n", query_string_key, query_string_value);
+#endif	// DEBUG
+					if (strncmp((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1) != 0) {
+						memset(sys_cfg.sta_pwd, 0, sizeof(sys_cfg.sta_pwd));
+						strncpy((char *)sys_cfg.sta_pwd, query_string_value, 64 - 1);
+					}
 				}
 			}
 		}
