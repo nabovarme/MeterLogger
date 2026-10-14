@@ -130,8 +130,9 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 
 ICACHE_FLASH_ATTR
 void en61107_meter_wake_up_timer_func(void *arg) {
+#ifndef DEBUG_NO_METER
 	unsigned int i;
-
+#endif
 	// If recovering from a 60-second error penalty, the meter is asleep.
 	// We MUST send the wake-up stream before identifying.
 	if (en61107_uart_state == UART_STATE_NONE) {
