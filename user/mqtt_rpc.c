@@ -174,6 +174,7 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
+	struct station_config stationConf;
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
@@ -185,8 +186,16 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	
-	// Always report the configured target SSID, not the fallback one
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
+	// Fetch the actual active Wi-Fi configuration from the hardware
+	wifi_station_get_config(&stationConf);
+	
+	// If currently on the fallback rescue network, report the saved user configuration.
+	// Otherwise, report the active runtime SSID (which supports test_ssid_pwd routines).
+	if (strncmp((char*)stationConf.ssid, STA_FALLBACK_SSID, sizeof(stationConf.ssid)) == 0) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.sta_ssid);
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", stationConf.ssid);
+	}
 	
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen((char*)cleartext) + 1);
