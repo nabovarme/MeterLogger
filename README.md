@@ -2,7 +2,7 @@
 
 MeterLogger is a custom daughterboard you can insert in Kamstrup Meters and get them to transmit their samples 
 to a remote MQTT server.
-MeterLogger is part of the [**Nabovarme**](https://github.com/nabovarme) orgnaization.
+MeterLogger is part of the [**Nabovarme**](https://github.com/nabovarme) organization.
 
 Check out the [WIKI](https://github.com/nabovarme/MeterLogger/wiki) for more details!
 
@@ -26,95 +26,95 @@ If you need custom parameters (e.g., turning an EN61107 meter into an Impulse me
 ## Build details (old procedure)
 
 To build and flash for KMP type meter (Multical 601):  
-```  
-KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
-```  
-  
-To build and flash for en61107, sub type Multical 66 C:  
-```  
-EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
-```  
-  
-To build and flash for en61107, sub type Multical 66 B:  
-```  
-MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
-```  
-  
-To build and flash for KMP/en61107 type, forced as flow meter:  
-```  
-FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
-```  
-  
-To build and flash for impulse based electricity meter:  
-```  
-IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall  
-```  
-  
+```
+KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall
+```
+ 
+To build and flash for EN61107, sub type Multical 66 C:  
+```
+EN61107=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall
+```
+ 
+To build and flash for EN61107, sub type Multical 66 B:  
+```
+MC_66B=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall
+```
+ 
+To build and flash for KMP/EN61107 type, forced as flow meter:  
+```
+FLOW_METER=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall
+```
+ 
+To build and flash for impulse-based electricity meter:  
+```
+IMPULSE=1 KEY=ef500c9268cf749016d26d6cbfaaf7bf make clean all flashall
+```
+ 
 To configure wireless network:  
-```  
-SERIAL=9999999 KEY=ef500c9268cf749016d26d6cbfaaf7bf make wifisetup  
-```  
-  
+```
+SERIAL=9999999 KEY=ef500c9268cf749016d26d6cbfaaf7bf make wifisetup
+```
+ 
 **BUILD OPTIONS**  
 DEBUG=1  
 enable serial debugging  
-  
+ 
 DEBUG_NO_METER=1  
-dont wait for meter to answer serial. Build for nodemcu board  
-  
+don't wait for meter to answer serial. Build for nodemcu board  
+ 
 IMPULSE_DEV_BOARD=1  
 build for nodemcu board  
-  
+ 
 DEBUG_SHORT_WEB_CONFIG_TIME=1  
-dont wait for web config  
-  
+don't wait for web config  
+ 
 IMPULSE=1  
-meter type is impulse based (100 mS)  
-  
+meter type is impulse-based (100 mS)  
+ 
 EN61107=0  
 meter type is KMP (Multical 601)  
-  
+ 
 EN61107=1  
-meter type is en61107, sub type Multical 66 C  
-  
+meter type is EN61107, sub type Multical 66 C  
+ 
 MC_66B=1  
-meter type is en61107, sub type Multical 66 B  
-  
+meter type is EN61107, sub type Multical 66 B  
+ 
 FLOW_METER=1  
 meter is forced to run as a flow meter and close when volume is reached  
-  
+ 
 AUTO_CLOSE=1  
-automatically check if energy is larger than the value set by open_until mqtt command 
-  
+automatically check if energy is larger than the value set by open_until MQTT command
+ 
 DEBUG_STACK_TRACE=1  
-Enable exception stack trace dump at to flash at address STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE (0x80000), STACK_TRACE_N bytes  
+Enable exception stack trace dump to flash at address STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE (0x80000), STACK_TRACE_N bytes  
 
 NO_CRON=1  
 disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this  
 
 THERMO_NO=0  
-thermo actuator is normal closed  
-  
+thermo actuator is normally closed  
+ 
 THERMO_NO=1  
-thermo actuator is normal open  
+thermo actuator is normally open  
 
 THERMO_ON_AC_2  
-thermo actuator connected on ac 2  
-  
+thermo actuator connected on AC 2  
+ 
 LED_ON_AC=1  
-use led to indicate ac state  
+use LED to indicate AC state  
 
 AC_TEST=1  
-run a test pattern on ac out and blink led  
+run a test pattern on AC out and blink LED  
 
 SERIAL=9999999  
 serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1 
 
 KEY=ef500c9268cf749016d26d6cbfaaf7bf
 master key for crypto, 16 bytes
-First 8 bytes hex encoded (ef500c9268cf7490) is wifi setup password. Master key is sha256 hashed to 32 bit and first 16 bytes is aes key and last 16 bytes is hmac sha256 key.
+First 8 bytes hex encoded (ef500c9268cf7490) is Wi-Fi setup password. Master key is SHA256 hashed to 32 bytes and first 16 bytes is AES key and last 16 bytes is HMAC SHA256 key.
 
-```  
+```
 master key                            wifi key (first 16 bytes)
 +--------------------------------+    +----------------+
 |ef500c9268cf749016d26d6cbfaaf7bf| -> |ef500c9268cf7490| 
@@ -132,16 +132,16 @@ aes key         v                   hmac sha256 key      v
 |89a5d4f82ad86bc9ec27427e246fd154|  |81663afea8c463d93cc93c967c9b31be|
 +--------------------------------+  +--------------------------------+
 
-```  
+```
 
-Crypto is applies on mqtt packages like this:
+Crypto is applied on MQTT packages like this:
 1) at 32 bytes offset in mqtt_message contains IV, 16 bytes random bytes used for AES128 CBC encryption.
 
-2) cleartext (0-terminated) is AES128 CBC encrypted, with aes key and IV. Result is written to mqtt_message at 32 + 16 bytes offset (binary data not 0-terminated).
+2) cleartext (0-terminated) is AES128 CBC encrypted, with AES key and IV. Result is written to mqtt_message at 32 + 16 bytes offset (binary data not 0-terminated).
 
 3) HMAC SHA256 checksum is calculated on topic + IV + encrypted data and written to first 32 bytes.
 
-```  
+```
 hmac sha256                                                       IV                               encrypted data
 +----------------------------------------------------------------+--------------------------------+------------------------------------+
 |b218d7ec2f7977c942b5bf16d535de3cb5f0e012638148e5a7fc6e09efe440a7|54cd3d04f024e7e5c4876248cc146c41|9616bb291182861b7a5ea238a0c267115...|
@@ -161,7 +161,7 @@ cleartext message (null terminated)
 +
 
 hmac sha256 key
-```  
+```
 
 
 ## Flash Memory Map (1MB ESP07)
@@ -267,19 +267,18 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
 | /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
 | /restart/v2/9999999/[unix time]                  |                                                                                                      |
-| /ota_update/v2/9999999/[unix time]               | [status=started&target_rom=1|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error_[no_url|busy|unconfirmed_temp_rom|http_not_200|header_overflow|invalid_magic|file_too_large|flash_write|tcp_drop|too_small|truncated|checksum_mismatch|disconnected|dns]) |
+| /ota_update/v2/9999999/[unix time]               | [status=started&target_rom=1|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error\_[no_url|busy|unconfirmed_temp_rom|http_not_200|header_overflow|invalid_magic|file_too_large|flash_write|tcp_drop|too_small|truncated|checksum_mismatch|disconnected|dns]) |
 | /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
 
-**Secure OTA Updates with Dual SHA-256 Validation:**
+**Secure OTA Updates with Dual SHA-256 Validation:**  
 The OTA (Over-The-Air) firmware update process now features streaming cryptographic verification to prevent corrupted downloads from soft-bricking the device. Because the ESP8266 rBoot bootloader requires two separate memory slots, user1.bin and user2.bin are compiled with different memory layouts and consequently have completely different SHA-256 hashes.
 
 To ensure safety without requiring the server to track which slot the meter is currently using, the MQTT RPC payload accepts both hashes (sha256_user1 and sha256_user2). As the meter streams the HTTP download into flash, it calculates the SHA-256 hash on the fly. Before switching the boot slot, it verifies the downloaded file against both provided hashes. If the checksum does not match, the update is aborted, an error is reported over MQTT, and the device safely reboots into the existing valid firmware.
 
-**Note on Wi-Fi Test Reason Codes:**
+**Note on Wi-Fi Test Reason Codes:**  
 The `reason` field in the `/test_ssid_pwd_result` payload maps to ESP8266 SDK disconnect codes. The most common are:
 * **none**: Success (No error)
 * **4way_handshake_timeout**: Wrong Password 
 * **no_ap_found**: Network Not Found / Out of Range
 * **auth_expire**: AP Rejected Authentication 
 * **timeout**: Custom code for internal timeout (Test took longer than 15 seconds)
-
