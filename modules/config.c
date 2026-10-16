@@ -27,9 +27,13 @@ char config_save_timer_running;
 // Available to ALL builds so the Serial build can parse and save the key before OTA
 bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str) {
 	if (key_hex_str && os_strlen(key_hex_str) == 32) {
-		hex_to_bytes(key_hex_str, sys_cfg.key, 16);
+		if (!hex_to_bytes(key_hex_str, sys_cfg.key, 16)) {
+			return false;
+		}
+
 		return cfg_save(NULL, NULL);
 	}
+
 	return false;
 }
 

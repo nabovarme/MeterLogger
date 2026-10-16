@@ -280,17 +280,53 @@ void system_restart_defered() {
 }
 
 ICACHE_FLASH_ATTR
-uint8_t hex_char_to_val(char c) {
-	if (c >= '0' && c <= '9') return c - '0';
-	if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-	if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-	return 0;
+int hex_char_to_val(char c) {
+	if (c >= '0' && c <= '9') {
+		return c - '0';
+	}
+
+	if (c >= 'a' && c <= 'f') {
+		return c - 'a' + 10;
+	}
+
+	if (c >= 'A' && c <= 'F') {
+		return c - 'A' + 10;
+	}
+
+	return -1;
 }
 
 ICACHE_FLASH_ATTR
-void hex_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
+bool hex_to_bytes(const char *hex, uint8_t *bytes, size_t len) {
 	size_t i;
-	for (i = 0; i < len; i++) {
-		bytes[i] = (hex_char_to_val(hex[2 * i]) << 4) | hex_char_to_val(hex[2 * i + 1]);
+	int high;
+	int low;
+
+	if (hex == NULL || bytes == NULL) {
+		return false;
 	}
+
+	/* Validate all characters before modifying the output buffer. */
+	for (i = 0; i < len; i++) {
+		if (hex[2 * i] == '\0' || hex[2 * i + 1] == '\0') {
+			return false;
+		}
+
+		high = hex_char_to_val(hex[2 * i]);
+		low = hex_char_to_val(hex[2 * i + 1]);
+
+		if (high < 0 || low < 0) {
+			return false;
+		}
+	}
+
+	/* Convert the validated hexadecimal string to bytes. */
+	for (i = 0; i < len; i++) {
+		high = hex_char_to_val(hex[2 * i]);
+		low = hex_char_to_val(hex[2 * i + 1]);
+
+		bytes[i] = (uint8_t)((high << 4) | low);
+	}
+
+	return true;
 }

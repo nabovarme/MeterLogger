@@ -56,21 +56,29 @@ static bool ota_firmware_size_known = false;
 static uint32_t ota_response_length = 0;
 static uint32_t ota_response_received_bytes = 0;
 static bool ota_response_length_known = false;
+static int ota_response_status_code = 0;
+static uint32_t ota_response_range_end = 0;
+static uint32_t ota_response_range_total = 0;
+static bool ota_response_range_valid = false;
 
 static uint32_t ota_received_bytes = 0;
 static uint32_t ota_request_offset = 0;
 
 static uint8_t ota_retry_count = 0;
 static bool ota_retry_pending = false;
+static bool ota_continue_pending = false;
+static bool ota_dns_pending = false;
 static bool ota_incomplete_http_response_seen = false;
 static bool ota_dns_failure_seen = false;
 static bool ota_tcp_failure_seen = false;
+static bool ota_other_failure_seen = false;
 static uint8_t ota_last_reported_progress = 0;
 
 static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
 static uint16_t ota_header_len = 0;
 
 static char ota_host[64];
+static char ota_host_header[72];
 static char ota_path[128];
 static int ota_port = OTA_DEFAULT_PORT;
 
@@ -87,6 +95,7 @@ static bool has_sha256_check_2 = false;
 
 static void ota_trigger_reconnect(ota_retry_reason_t reason);
 static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg);
+static bool ota_incomplete_http_response(void);
 
 /*
  * Compare ASCII text without depending on a locale-aware library.
@@ -229,9 +238,6 @@ static bool ota_parse_content_range(
 	uint32_t end = 0;
 	uint32_t total = 0;
 	bool have_digit;
-	char *unused;
-
-	(void)unused;
 
 	while (*p == ' ' || *p == '\t') {
 		p++;
@@ -364,6 +370,52 @@ static bool ota_parse_status_code(int *status_code) {
 	return true;
 }
 
+/*
+ * Parse an optional SHA-256 hex string. A missing/empty value disables this
+ * digest; a non-empty malformed value is rejected instead of disabling the
+ * integrity check silently.
+ */
+ICACHE_FLASH_ATTR
+static bool ota_parse_sha256(
+	const char *hex,
+	uint8_t digest[32],
+	bool *enabled
+) {
+	size_t i;
+
+	*enabled = false;
+
+	if (!hex || !*hex) {
+		return true;
+	}
+
+	if (strlen(hex) != 64) {
+		return false;
+	}
+
+	for (i = 0; i < 32; i++) {
+		char high_char;
+		char low_char;
+		int high;
+		int low;
+
+		high_char = hex[i * 2];
+		low_char = hex[i * 2 + 1];
+
+		high = hex_char_to_val(high_char);
+		low = hex_char_to_val(low_char);
+
+		if (high < 0 || low < 0) {
+			return false;
+		}
+
+		digest[i] = (uint8_t)((high << 4) | low);
+	}
+
+	*enabled = true;
+	return true;
+}
+
 ICACHE_FLASH_ATTR
 static void ota_cleanup_timers(void) {
 	os_timer_disarm(&ota_timeout_timer);
@@ -385,6 +437,8 @@ static void ota_fail_update(const char *status, bool abort_connection) {
 	os_timer_disarm(&ota_reboot_timer);
 
 	ota_retry_pending = false;
+	ota_continue_pending = false;
+	ota_dns_pending = false;
 	is_valid_binary = false;
 	ota_in_progress = false;
 
@@ -397,12 +451,40 @@ static void ota_fail_update(const char *status, bool abort_connection) {
 	}
 }
 
+/*
+ * The inactivity timeout must schedule recovery itself. Do not rely on
+ * espconn_abort() producing a callback: DNS lookup and connection setup can
+ * time out before an established TCP connection exists.
+ */
 ICACHE_FLASH_ATTR
 static void ota_timeout_timer_cb(void *arg) {
-	if (ota_in_progress) {
+	bool was_waiting_for_dns;
+	bool incomplete_http_response;
+
+	if (!ota_in_progress || ota_retry_pending) {
+		return;
+	}
+
+	was_waiting_for_dns = ota_dns_pending;
+	incomplete_http_response = !was_waiting_for_dns &&
+		ota_incomplete_http_response();
+	ota_dns_pending = false;
+	os_timer_disarm(&ota_timeout_timer);
+
 #ifdef DEBUG
-		os_printf("[OTA] Error: Download stalled/timed out! Aborting connection...\n");
+	os_printf("[OTA] Error: Network operation timed out! Scheduling recovery...\n");
 #endif
+
+	if (incomplete_http_response) {
+		ota_tcp_failure_seen = true;
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE);
+	} else if (was_waiting_for_dns) {
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
+	} else {
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
+	}
+
+	if (!was_waiting_for_dns) {
 		espconn_abort(&ota_conn);
 	}
 }
@@ -422,8 +504,9 @@ static bool ota_incomplete_http_response(void) {
 /*
  * Reconstruct the SHA-256 state from the already-written firmware prefix.
  *
- * Resumes are always rounded down to a 4KB sector boundary, so the byte count
- * passed here is aligned for the flash read requirements.
+ * Network failures rewind to a 4KB sector boundary, so the byte count passed
+ * here is aligned for flash reads. A zero-length prefix also reinitializes the
+ * hash after a retry that rewound all the way to byte zero.
  */
 ICACHE_FLASH_ATTR
 static bool ota_rehash_flash(void) {
@@ -465,20 +548,34 @@ static bool ota_rehash_flash(void) {
 ICACHE_FLASH_ATTR
 static void ota_retry_timer_cb(void *arg) {
 	err_t err;
+	bool continuing_range;
 
 	if (!ota_in_progress) {
 		return;
 	}
 
+	continuing_range = ota_continue_pending;
+	ota_continue_pending = false;
 	ota_retry_pending = false;
 
 	headers_parsed = false;
-	is_valid_binary = false;	// must be false so the payload block triggers rboot_write_init and ota_rehash_flash
+	/*
+	 * A successful partial 206 response keeps the existing rBoot writer and
+	 * hash stream alive. A failed attempt must restart the writer after its
+	 * received-byte count has been rewound to a sector boundary.
+	 */
+	if (!continuing_range) {
+		is_valid_binary = false;
+	}
 	ota_header_len = 0;
 
 	ota_response_length = 0;
 	ota_response_received_bytes = 0;
 	ota_response_length_known = false;
+	ota_response_status_code = 0;
+	ota_response_range_end = 0;
+	ota_response_range_total = 0;
+	ota_response_range_valid = false;
 
 	memset(ota_header_buffer, 0, sizeof(ota_header_buffer));
 	memset(&ota_conn, 0, sizeof(ota_conn));
@@ -492,23 +589,55 @@ static void ota_retry_timer_cb(void *arg) {
 	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
 	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
 
+	ota_dns_pending = true;
 	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
 
 	if (err == ERR_OK) {
 		ota_dns_found_cb(ota_host, &ota_ip, &ota_conn);
 	} else if (err != ERR_INPROGRESS) {
+		ota_dns_pending = false;
 		os_timer_disarm(&ota_timeout_timer);
 		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
 	}
 }
 
+/*
+ * Schedule the next HTTP range after a complete, valid partial 206 response.
+ * This is normal continuation, not a network retry: preserve the exact byte
+ * offset, the rBoot writer state, and the active SHA-256 stream.
+ */
+ICACHE_FLASH_ATTR
+static void ota_schedule_range_continue(void) {
+	if (!ota_in_progress || ota_retry_pending) {
+		return;
+	}
+
+	ota_dns_pending = false;
+	ota_continue_pending = true;
+	ota_retry_pending = true;
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_disarm(&ota_retry_timer);
+	os_timer_setfn(&ota_retry_timer, (os_timer_func_t *)ota_retry_timer_cb, NULL);
+	os_timer_arm(&ota_retry_timer, OTA_RECONNECT_DELAY_MS, 0);
+
+#ifdef DEBUG
+	os_printf("[OTA] Continuing partial HTTP range at byte offset %u...\n",
+		ota_received_bytes);
+#endif
+}
+
 ICACHE_FLASH_ATTR
 static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 	char status_buf[64];
+	bool reported_failure = false;
 
 	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
+
+	os_timer_disarm(&ota_timeout_timer);
+	ota_dns_pending = false;
+	ota_continue_pending = false;
 
 	switch (reason) {
 		case OTA_RETRY_FAILURE_DNS:
@@ -525,6 +654,7 @@ static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 
 		case OTA_RETRY_FAILURE_OTHER:
 		default:
+			ota_other_failure_seen = true;
 			break;
 	}
 
@@ -561,11 +691,14 @@ static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 #endif
 		ota_cleanup_timers();
 		ota_retry_pending = false;
+		ota_continue_pending = false;
+		is_valid_binary = false;
+		ota_dns_pending = false;
 
 		/*
-		 * Report each failure type encountered during the unsuccessful OTA
-		 * operation. Transient failures are not reported as final errors if
-		 * the update later succeeds.
+		 * Report every failure category encountered during this unsuccessful
+		 * OTA operation. A generic failure is always reported if no category
+		 * was recorded, so retry exhaustion cannot end silently.
 		 */
 		if (ota_mqtt_client) {
 			if (ota_dns_failure_seen) {
@@ -573,6 +706,7 @@ static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 					ota_mqtt_client,
 					"error_dns_resolution"
 				);
+				reported_failure = true;
 			}
 
 			if (ota_tcp_failure_seen) {
@@ -580,6 +714,7 @@ static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 					ota_mqtt_client,
 					"error_tcp_connection"
 				);
+				reported_failure = true;
 			}
 
 			if (ota_incomplete_http_response_seen) {
@@ -587,10 +722,25 @@ static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 					ota_mqtt_client,
 					"error_incomplete_http_response"
 				);
+				reported_failure = true;
+			}
+
+			if (ota_other_failure_seen) {
+				mqtt_rpc_ota_status(
+					ota_mqtt_client,
+					"error_incomplete_firmware"
+				);
+				reported_failure = true;
+			}
+
+			if (!reported_failure) {
+				mqtt_rpc_ota_status(
+					ota_mqtt_client,
+					"error_retry_exhausted"
+				);
 			}
 		}
 
-		is_valid_binary = false;
 		ota_in_progress = false;
 	}
 }
@@ -621,7 +771,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	uint8_t current_progress;
 	char progress_msg[32];
 
-	if (!ota_in_progress) {
+	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
 
@@ -695,10 +845,15 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			return;
 		}
 
+		ota_response_status_code = status_code;
+		ota_response_range_end = 0;
+		ota_response_range_total = 0;
+		ota_response_range_valid = false;
+
 		if (status_code == 200) {
 			/*
 			 * A server may ignore Range and return the entire file. Restart
-			 * the logical download and hash stream from byte zero.
+			 * the logical download, writer, and hash stream from byte zero.
 			 */
 			if (parsed_content_length < MIN_FIRMWARE_SIZE ||
 				parsed_content_length > MAX_FIRMWARE_SIZE) {
@@ -719,6 +874,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			ota_received_bytes = 0;
 			ota_request_offset = 0;
 			ota_response_received_bytes = 0;
+			is_valid_binary = false;
 
 			ota_firmware_size = parsed_content_length;
 			ota_firmware_size_known = true;
@@ -787,6 +943,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 			ota_firmware_size = range_total;
 			ota_firmware_size_known = true;
+			ota_response_range_end = range_end;
+			ota_response_range_total = range_total;
+			ota_response_range_valid = true;
 		}
 
 		ota_response_length = parsed_content_length;
@@ -871,9 +1030,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		ota_target_base_addr = conf.roms[ota_target_rom];
 
 		/*
-		 * Erase the sector at the write position. On resume, the offset has
-		 * been rewound to a sector boundary, so the partial sector is erased
-		 * before being downloaded again.
+		 * Erase the sector at the write position. Failed transfers rewind to a
+		 * sector boundary; a clean, partial 206 continuation keeps the active
+		 * writer alive and therefore does not erase or reinitialize this sector.
 		 */
 		current_flash_addr = ota_target_base_addr + ota_received_bytes;
 		sector_to_erase = current_flash_addr / SPI_SECTOR_SIZE;
@@ -895,8 +1054,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			ota_target_rom, ota_target_base_addr, ota_received_bytes);
 #endif
 
-		// Rebuild the hash of the prefix retained after the sector rewind.
-		if (ota_received_bytes > 0 && !ota_rehash_flash()) {
+		// Always rebuild the hash, including when the rewind offset is zero.
+		if ((has_sha256_check_1 || has_sha256_check_2) &&
+			!ota_rehash_flash()) {
 			ota_fail_update("error_flash_read", true);
 			return;
 		}
@@ -945,7 +1105,7 @@ ICACHE_FLASH_ATTR
 static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	bool incomplete_http_response;
 
-	if (!ota_in_progress) {
+	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
 
@@ -977,7 +1137,7 @@ static void ota_tcp_discon_cb(void *arg) {
 	bool matched;
 	bool incomplete_http_response;
 
-	if (!ota_in_progress) {
+	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
 
@@ -995,7 +1155,13 @@ static void ota_tcp_discon_cb(void *arg) {
 
 		ota_cleanup_timers();
 
-		rboot_write_end(&ota_status);
+		if (!rboot_write_end(&ota_status)) {
+#ifdef DEBUG
+			os_printf("[OTA] ERROR: Failed to finalize flash write!\n");
+#endif
+			ota_fail_update("error_flash_write", false);
+			return;
+		}
 
 		// Reject unexpectedly small images even after the HTTP size checks.
 		if (ota_received_bytes < MIN_FIRMWARE_SIZE) {
@@ -1051,7 +1217,13 @@ static void ota_tcp_discon_cb(void *arg) {
 		 * Stage a temporary boot to the target slot. rBoot can roll back if
 		 * the new firmware fails its boot/self-test process.
 		 */
-		rboot_set_temp_rom(ota_target_rom);
+		if (!rboot_set_temp_rom(ota_target_rom)) {
+#ifdef DEBUG
+			os_printf("[OTA] ERROR: Failed to stage temporary boot ROM!\n");
+#endif
+			ota_fail_update("error_boot_stage", false);
+			return;
+		}
 
 #ifdef DEBUG
 		os_printf("[OTA] Download complete. Staging temp boot to ROM %d...\n",
@@ -1080,9 +1252,10 @@ static void ota_tcp_discon_cb(void *arg) {
 		os_printf("[OTA] HTTP response ended before the complete firmware was received.\n");
 #endif
 		/*
-		 * A response that ended before its declared body length is an
-		 * incomplete HTTP response. If the response body is complete but is
-		 * only a valid partial 206 range, continue with the remaining range.
+		 * An incomplete response body is a failed transfer and consumes a
+		 * retry. A complete 206 response that intentionally covers only part
+		 * of the image is normal: request the next range without spending a
+		 * retry or resetting the flash writer/hash stream.
 		 */
 		incomplete_http_response = ota_incomplete_http_response();
 
@@ -1092,6 +1265,13 @@ static void ota_tcp_discon_cb(void *arg) {
 			// The connection closed before a usable HTTP response was received.
 			ota_tcp_failure_seen = true;
 			ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
+		} else if (ota_response_received_bytes == ota_response_length &&
+			ota_response_status_code == 206 &&
+			ota_response_range_valid &&
+			ota_response_range_end + 1 < ota_response_range_total &&
+			ota_received_bytes == ota_response_range_end + 1 &&
+			ota_received_bytes < ota_firmware_size) {
+			ota_schedule_range_continue();
 		} else {
 			ota_trigger_reconnect(OTA_RETRY_FAILURE_OTHER);
 		}
@@ -1103,17 +1283,22 @@ static void ota_tcp_connect_cb(void *arg) {
 	char request[512];
 	sint8 err;
 
-	if (!ota_in_progress) {
+	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
 
+	ota_dns_pending = false;
 	ota_request_offset = ota_received_bytes;
 	ota_response_received_bytes = 0;
 	ota_response_length = 0;
 	ota_response_length_known = false;
+	ota_response_status_code = 0;
+	ota_response_range_end = 0;
+	ota_response_range_total = 0;
+	ota_response_range_valid = false;
 
 	if (ota_request_offset > 0) {
-		// Request the remaining bytes starting at the aligned sector boundary.
+		// Request the remaining bytes starting at the current accepted offset.
 		tfp_snprintf(request, sizeof(request),
 			"GET %s HTTP/1.1\r\n"
 			"Host: %s\r\n"
@@ -1121,7 +1306,7 @@ static void ota_tcp_connect_cb(void *arg) {
 			"Connection: close\r\n"
 			"User-Agent: ESP8266-OTA\r\n"
 			"\r\n",
-			ota_path, ota_host, ota_request_offset);
+			ota_path, ota_host_header, ota_request_offset);
 	} else {
 		// Request the whole image.
 		tfp_snprintf(request, sizeof(request),
@@ -1130,7 +1315,7 @@ static void ota_tcp_connect_cb(void *arg) {
 			"Connection: close\r\n"
 			"User-Agent: ESP8266-OTA\r\n"
 			"\r\n",
-			ota_path, ota_host);
+			ota_path, ota_host_header);
 	}
 
 	err = espconn_send(&ota_conn, (uint8_t *)request, strlen(request));
@@ -1141,6 +1326,7 @@ static void ota_tcp_connect_cb(void *arg) {
 #endif
 		os_timer_disarm(&ota_timeout_timer);
 		ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
+		espconn_abort(&ota_conn);
 	}
 }
 
@@ -1148,9 +1334,11 @@ ICACHE_FLASH_ATTR
 static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 	sint8 err;
 
-	if (!ota_in_progress) {
+	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
+
+	ota_dns_pending = false;
 
 	if (ipaddr == NULL) {
 		os_timer_disarm(&ota_timeout_timer);
@@ -1193,10 +1381,19 @@ bool start_ota_update(
 ) {
 	const char *p;
 	const char *slash;
+	const char *question;
 	const char *colon;
-	const char *host_end;
+	const char *authority_end;
+	const char *path_start;
+	const char *path_end;
+	const char *fragment;
+	const char *port_char;
 	size_t host_len;
+	size_t path_len;
+	size_t port_len;
 	static char ota_url[256];
+	char port_buffer[6];
+	uint32_t parsed_port;
 	uint8_t current_rom;
 	err_t err;
 
@@ -1204,9 +1401,12 @@ bool start_ota_update(
 
 	ota_retry_count = 0;
 	ota_retry_pending = false;
+	ota_continue_pending = false;
+	ota_dns_pending = false;
 	ota_incomplete_http_response_seen = false;
 	ota_dns_failure_seen = false;
 	ota_tcp_failure_seen = false;
+	ota_other_failure_seen = false;
 	ota_last_reported_progress = 0;
 
 	ota_firmware_size = 0;
@@ -1214,6 +1414,10 @@ bool start_ota_update(
 	ota_response_length = 0;
 	ota_response_received_bytes = 0;
 	ota_response_length_known = false;
+	ota_response_status_code = 0;
+	ota_response_range_end = 0;
+	ota_response_range_total = 0;
+	ota_response_range_valid = false;
 	ota_request_offset = 0;
 
 	ota_received_bytes = 0;
@@ -1229,18 +1433,15 @@ bool start_ota_update(
 
 	ota_in_progress = true;
 
-	if (hex_sha256_1 && strlen(hex_sha256_1) == 64) {
-		hex_to_bytes(hex_sha256_1, expected_sha256_1, 32);
-		has_sha256_check_1 = true;
-	} else {
-		has_sha256_check_1 = false;
-	}
-
-	if (hex_sha256_2 && strlen(hex_sha256_2) == 64) {
-		hex_to_bytes(hex_sha256_2, expected_sha256_2, 32);
-		has_sha256_check_2 = true;
-	} else {
-		has_sha256_check_2 = false;
+	if (!ota_parse_sha256(hex_sha256_1, expected_sha256_1,
+		&has_sha256_check_1) ||
+		!ota_parse_sha256(hex_sha256_2, expected_sha256_2,
+			&has_sha256_check_2)) {
+#ifdef DEBUG
+		os_printf("[OTA] ERROR: Invalid SHA-256 digest; expected 64 hexadecimal characters.\n");
+#endif
+		ota_fail_update("error_invalid_sha256", false);
+		return false;
 	}
 
 	if (has_sha256_check_1 || has_sha256_check_2) {
@@ -1272,7 +1473,7 @@ bool start_ota_update(
 	os_printf("[OTA] Request URL: %s\n", ota_url);
 #endif
 
-	// Parse host, port, and path, including the query string.
+	// Parse HTTP URLs. HTTPS is intentionally unsupported by this client.
 	p = ota_url;
 
 	if (strncmp(p, "http://", 7) == 0) {
@@ -1283,61 +1484,80 @@ bool start_ota_update(
 #endif
 		ota_fail_update("error_invalid_url", false);
 		return false;
+	} else if (strstr(p, "://") != NULL) {
+		ota_fail_update("error_invalid_url", false);
+		return false;
 	}
 
+	// The authority ends at the first path or query delimiter.
 	slash = strchr(p, '/');
-	colon = strchr(p, ':');
+	question = strchr(p, '?');
+	fragment = strchr(p, '#');
+	authority_end = p + strlen(p);
 
-	if (slash) {
-		if (strlen(slash) >= sizeof(ota_path)) {
-#ifdef DEBUG
-			os_printf("[OTA] ERROR: URL path is too long!\n");
-#endif
-			ota_fail_update("error_invalid_url", false);
-			return false;
-		}
-
-		strcpy(ota_path, slash);
-	} else {
-		strcpy(ota_path, "/");
+	if (slash && slash < authority_end) {
+		authority_end = slash;
 	}
 
-	// Extract host and optional port.
-	if (colon && (!slash || colon < slash)) {
-		const char *port_str;
-		const char *port_char;
+	if (question && question < authority_end) {
+		authority_end = question;
+	}
 
-		if (colon == p || (size_t)(colon - p) >= sizeof(ota_host)) {
+	if (fragment && fragment < authority_end) {
+		authority_end = fragment;
+	}
+
+	colon = NULL;
+	for (port_char = p; port_char < authority_end; port_char++) {
+		if (*port_char == ':') {
+			if (colon) {
+				ota_fail_update("error_invalid_url", false);
+				return false;
+			}
+			colon = port_char;
+		}
+	}
+
+	if (colon) {
+		host_len = colon - p;
+		port_len = authority_end - colon - 1;
+
+		if (host_len == 0 || host_len >= sizeof(ota_host) ||
+			port_len == 0 || port_len > 5) {
 			ota_fail_update("error_invalid_url", false);
 			return false;
 		}
 
-		memcpy(ota_host, p, colon - p);
-		ota_host[colon - p] = '\0';
+		memcpy(ota_host, p, host_len);
+		ota_host[host_len] = '\0';
 
-		port_str = colon + 1;
+		memcpy(port_buffer, colon + 1, port_len);
+		port_buffer[port_len] = '\0';
 
-		if (*port_str == '\0') {
-			ota_fail_update("error_invalid_url", false);
-			return false;
-		}
-
-		for (port_char = port_str; *port_char; port_char++) {
+		parsed_port = 0;
+		for (port_char = port_buffer; *port_char; port_char++) {
 			if (*port_char < '0' || *port_char > '9') {
+				ota_fail_update("error_invalid_url", false);
+				return false;
+			}
+
+			parsed_port = parsed_port * 10UL + (uint32_t)(*port_char - '0');
+			if (parsed_port > 65535UL) {
 				ota_fail_update("error_invalid_url", false);
 				return false;
 			}
 		}
 
-		ota_port = atoi(port_str);
-
-		if (ota_port < 1 || ota_port > 65535) {
+		if (parsed_port == 0 || parsed_port > 65535UL) {
 			ota_fail_update("error_invalid_url", false);
 			return false;
 		}
+
+		ota_port = (int)parsed_port;
+		tfp_snprintf(ota_host_header, sizeof(ota_host_header), "%s:%d",
+			ota_host, ota_port);
 	} else {
-		host_end = slash ? slash : p + strlen(p);
-		host_len = host_end - p;
+		host_len = authority_end - p;
 
 		if (host_len == 0 || host_len >= sizeof(ota_host)) {
 			ota_fail_update("error_invalid_url", false);
@@ -1347,13 +1567,53 @@ bool start_ota_update(
 		memcpy(ota_host, p, host_len);
 		ota_host[host_len] = '\0';
 		ota_port = OTA_DEFAULT_PORT;
+		tfp_snprintf(ota_host_header, sizeof(ota_host_header), "%s", ota_host);
+	}
+
+	/*
+	 * Preserve paths and query strings. A query directly after the host is
+	 * sent as "/?query"; URL fragments are not part of an HTTP request target.
+	 */
+	path_start = NULL;
+	if (slash && slash < (fragment ? fragment : ota_url + strlen(ota_url)) &&
+		(!question || slash < question)) {
+		path_start = slash;
+	} else if (question &&
+		question < (fragment ? fragment : ota_url + strlen(ota_url))) {
+		path_start = question;
+	}
+
+	if (!path_start) {
+		strcpy(ota_path, "/");
+	} else {
+		path_end = ota_url + strlen(ota_url);
+		fragment = strchr(path_start, '#');
+		if (fragment) {
+			path_end = fragment;
+		}
+
+		path_len = path_end - path_start;
+		if (path_len + (path_start == question ? 1 : 0) >= sizeof(ota_path)) {
+#ifdef DEBUG
+			os_printf("[OTA] ERROR: URL path is too long!\n");
+#endif
+			ota_fail_update("error_invalid_url", false);
+			return false;
+		}
+
+		if (path_start == question) {
+			ota_path[0] = '/';
+			memcpy(ota_path + 1, path_start, path_len);
+			ota_path[path_len + 1] = '\0';
+		} else {
+			memcpy(ota_path, path_start, path_len);
+			ota_path[path_len] = '\0';
+		}
 	}
 
 #ifdef DEBUG
 	os_printf("[OTA] Parsed Host: %s | Port: %d | Path: %s\n",
 		ota_host, ota_port, ota_path);
-	os_printf("[OTA] HTTP GET Request:\nGET %s HTTP/1.0\r\nHost: %s\r\n\n",
-		ota_path, ota_host);
 #endif
 
 	// Initialize the TCP connection.
@@ -1370,6 +1630,7 @@ bool start_ota_update(
 		(os_timer_func_t *)ota_timeout_timer_cb, NULL);
 	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
 
+	ota_dns_pending = true;
 	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
 
 	if (err == ERR_OK) {
@@ -1378,6 +1639,7 @@ bool start_ota_update(
 #ifdef DEBUG
 		os_printf("[OTA] ERROR: DNS request could not be started (%d)!\n", err);
 #endif
+		ota_dns_pending = false;
 		os_timer_disarm(&ota_timeout_timer);
 		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
 	}
