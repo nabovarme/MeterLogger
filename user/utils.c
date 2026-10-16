@@ -17,6 +17,7 @@
 
 static os_timer_t system_restart_defered_timer;
 static system_restart_teardown_cb restart_teardown_cb = NULL;
+static bool system_restart_pending = false;
 
 // crc table
 #ifdef ESP_CONST_DATA
@@ -73,16 +74,16 @@ ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str) {
 	uint32_t result_int, result_frac;
 	uint32_t i;
 	uint32_t len;
-	
+
 	bool dec_separator;
-	
+
 	char result_int_str[32 + 1];
-	
+
 	uint32_t pos_int;
 	uint32_t pos_frac;
-	
+
 	len = strlen(str);
-	
+
 	result_frac = 0;
 	pos_int = 0;
 	pos_frac = 0;
@@ -102,7 +103,7 @@ ICACHE_FLASH_ATTR void multiply_str_by_1000(char *str, char *decimal_str) {
 	}
 	result_int_str[pos_int] = 0;	// null terminate
 	result_int = 1000 * atoi(result_int_str);   // multiply by 1000
-	
+
 	result_int += result_frac;
 	tfp_snprintf(decimal_str, 11, "%u", result_int);
 }
@@ -135,11 +136,11 @@ ICACHE_FLASH_ATTR
 int int_pow(int x, int y) {
 	int i;
 	int result;
-	
+
 	if (y == 0) {
 		return 1;
 	}
-	
+
 	result = x;
 	for (i = 1; i < y; i++) {
 		result *= x;
@@ -182,7 +183,7 @@ ICACHE_FLASH_ATTR
 int query_string_unescape(char *str) {
 	char *p;
 	int len;
-	
+
 	// replace "%26" with "&";
 	len = strlen(str);
 	for (p = str; (p = strstr(p, "%26")); ++p) {
@@ -190,7 +191,7 @@ int query_string_unescape(char *str) {
 		memcpy(p, "&", 1);
 		len -= 2;
 	}
-	
+
 	// and "%3d" with "=";
 	len = strlen(str);
 	for (p = str; (p = strstr(p, "%3d")); ++p) {
@@ -198,7 +199,7 @@ int query_string_unescape(char *str) {
 		memcpy(p, "=", 1);
 		len -= 2;
 	}
-	
+
 	// and uppercase "%3D" with "=";
 	len = strlen(str);
 	for (p = str; (p = strstr(p, "%3D")); ++p) {
@@ -239,33 +240,49 @@ void register_system_restart_defered_cb(system_restart_teardown_cb cb) {
 }
 
 ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
-	os_timer_disarm(&system_restart_defered_timer);
-	system_restart();
 #ifdef DEBUG
 	printf("...restarting now\n\r");
 #endif
+
+	// Gracefully shut down the Wi-Fi radio to prevent background MAC tasks 
+	// from triggering Exception 28 (NULL pointer dereference) during restart
+	wifi_station_disconnect();
+	wifi_set_opmode(NULL_MODE);
+
+	system_restart();
 }
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
-	// 1. Call registered meter teardown function to save final state (CRITICAL)
+	// Do not execute teardown or schedule another restart twice.
+	if (system_restart_pending) {
+		return;
+	}
+	system_restart_pending = true;
+
+	// Call registered meter teardown function before shutting down services
 	if (restart_teardown_cb != NULL) {
 		restart_teardown_cb();
 	}
 
-	// 2. Disconnect WiFi cleanly to prevent flash corruption on reboot
-	wifi_station_disconnect();
+	httpdStop();		// stop http configuration server
+	captdnsStop();		// stop captive dns
 
-	// Note: We DO NOT stop the watchdog! If the timer fails, the watchdog will 
-	// force the reboot safely anyway.
-		
-	// 3. Arm the delayed restart timer to allow final TCP/MQTT packets to transmit
+	set_my_auto_connect(false);
+	wifi_destroy();
+	led_destroy();	// stop led blinking timers if running
+#ifndef IMPULSE
+#ifndef NO_CRON
+	cron_destroy();
+#endif	// NO_CRON
+#endif	// IMPULSE
+
+	// Allow final TCP/MQTT packets to transmit before restarting.
 	os_timer_disarm(&system_restart_defered_timer);
 	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
 	os_timer_arm(&system_restart_defered_timer, SYSTEM_RESTART_DELAY_MS, 0);
-
 #ifdef DEBUG
-	printf("Going to restart in %d sec...\n\r", SYSTEM_RESTART_DELAY_MS / 1000);
+	printf("going to restart in %d sec...\n\r", SYSTEM_RESTART_DELAY_MS / 1000);
 #endif
 }
 
