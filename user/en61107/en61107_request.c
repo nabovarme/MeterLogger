@@ -331,17 +331,16 @@ static void en61107_received_task(os_event_t *events) {
 				break;
 			}
 
-			// Only read and set the serial number ONCE on the first successful read
+			// Read and set the serial number on the first successful read
 			if (!en61107_serial_set) {
 				parsed_serial = atoi(response.customer_no);
-				if (parsed_serial == 0) {
-					// timeout if we didn't get a serial number
-					break;
+				if (parsed_serial != 0) {
+					en61107_serial = parsed_serial;
+					en61107_serial_set = true;
 				}
-				en61107_serial = parsed_serial;
-				en61107_serial_set = true;
 			}
 
+			// ALWAYS advance to next state regardless of en61107_serial_set
 #ifndef MC_66B
 			en61107_uart_send_inst_values();
 #else
