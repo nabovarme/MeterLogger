@@ -1,7 +1,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#define SYSTEM_RESTART_DELAY_MS 16000
+#define SYSTEM_RESTART_DELAY_MS 3000
 
 typedef void (*system_restart_teardown_cb)(void);
 

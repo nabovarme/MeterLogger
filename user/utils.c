@@ -248,34 +248,24 @@ ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
-	// Call registered meter teardown function before shutting down stack
+	// 1. Call registered meter teardown function to save final state (CRITICAL)
 	if (restart_teardown_cb != NULL) {
 		restart_teardown_cb();
 	}
 
-	httpdStop();		// stop http configuration server
-	captdnsStop();		// stop captive dns
-
-	wifi_destroy();
-	set_my_auto_connect(false);
+	// 2. Disconnect WiFi cleanly to prevent flash corruption on reboot
 	wifi_station_disconnect();
-	wifi_set_opmode_current(NULL_MODE);
-	led_destroy();	// stop led blinking timers if running
-#ifndef IMPULSE
-#ifndef NO_CRON
-	cron_destroy();
-#endif	// NO_CRON
-#endif	// IMPULSE
-	destroy_unix_time();
-	stop_watchdog();
-		
-	ETS_UART_INTR_DISABLE();
 
+	// Note: We DO NOT stop the watchdog! If the timer fails, the watchdog will 
+	// force the reboot safely anyway.
+		
+	// 3. Arm the delayed restart timer to allow final TCP/MQTT packets to transmit
 	os_timer_disarm(&system_restart_defered_timer);
 	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
 	os_timer_arm(&system_restart_defered_timer, SYSTEM_RESTART_DELAY_MS, 0);
+
 #ifdef DEBUG
-	printf("going to restart in %d sec...\n\r", SYSTEM_RESTART_DELAY_MS / 1000);
+	printf("Going to restart in %d sec...\n\r", SYSTEM_RESTART_DELAY_MS / 1000);
 #endif
 }
 
