@@ -340,6 +340,18 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		else {
 			ota_received_bytes += len;
 
+			// --- START TEMPORARY RESUME TEST ---
+			static bool forced_drop = false;
+			if (!forced_drop && ota_received_bytes > 150000) { // Sabotage at ~150KB
+#ifdef DEBUG
+				os_printf("\n[OTA-TEST] Artificially killing socket to test chunked resume!\n\n");
+#endif
+				forced_drop = true;
+				espconn_abort(&ota_conn);
+				return;
+			}
+			// --- END TEMPORARY RESUME TEST ---
+
 			// Send periodic MQTT progress reports every 10%
 			if (ota_content_length > 0) {
 				current_progress = (uint8_t)((ota_received_bytes * 100) / ota_content_length);
