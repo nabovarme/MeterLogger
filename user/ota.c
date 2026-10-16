@@ -20,6 +20,7 @@
 #define SPI_SECTOR_SIZE        4096    // 4KB flash erase sector boundary
 
 #define OTA_REBOOT_DELAY_MS    6000
+#define OTA_PROGRESS_INTERVAL_MS 10000 // Report OTA progress every 10 seconds
 #define ESP_IMAGE_MAGIC_V1     0xE9
 #define ESP_IMAGE_MAGIC_V2     0xEA
 #define OTA_DEFAULT_PORT       80
@@ -72,7 +73,6 @@ static bool ota_incomplete_http_response_seen = false;
 static bool ota_dns_failure_seen = false;
 static bool ota_tcp_failure_seen = false;
 static bool ota_other_failure_seen = false;
-static uint8_t ota_last_reported_progress = 0;
 
 static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
 static uint16_t ota_header_len = 0;
@@ -85,6 +85,7 @@ static int ota_port = OTA_DEFAULT_PORT;
 static os_timer_t ota_reboot_timer;
 static os_timer_t ota_timeout_timer;
 static os_timer_t ota_retry_timer;
+static os_timer_t ota_progress_timer;
 
 // SHA-256 state
 static sha256_ctx_t ota_sha_ctx;
@@ -416,10 +417,47 @@ static bool ota_parse_sha256(
 	return true;
 }
 
+/*
+ * Report the current download progress at a steady interval.
+ *
+ * The firmware size must be known before a meaningful percentage can be
+ * calculated. A 100% flashing status is omitted because successful completion
+ * is reported separately after finalizing the flash and verifying the image.
+ */
+ICACHE_FLASH_ATTR
+static void ota_progress_timer_cb(void *arg) {
+	char progress_msg[32];
+	uint8_t current_progress;
+
+	if (!ota_in_progress || !ota_firmware_size_known ||
+		ota_firmware_size == 0) {
+		return;
+	}
+
+	current_progress = (uint8_t)(
+		(ota_received_bytes * 100UL) / ota_firmware_size
+	);
+
+	if (current_progress >= 100) {
+		return;
+	}
+
+#ifdef DEBUG
+	os_printf("[OTA] Progress: %u%%\n", current_progress);
+#endif
+
+	if (ota_mqtt_client) {
+		tfp_snprintf(progress_msg, sizeof(progress_msg),
+			"flashing_%d%%", current_progress);
+		mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
+	}
+}
+
 ICACHE_FLASH_ATTR
 static void ota_cleanup_timers(void) {
 	os_timer_disarm(&ota_timeout_timer);
 	os_timer_disarm(&ota_retry_timer);
+	os_timer_disarm(&ota_progress_timer);
 }
 
 ICACHE_FLASH_ATTR
@@ -768,8 +806,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	int status_code;
 	bool cl_duplicate;
 	bool cr_duplicate;
-	uint8_t current_progress;
-	char progress_msg[32];
 
 	if (!ota_in_progress || ota_retry_pending) {
 		return;
@@ -959,11 +995,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		headers_parsed = true;
 
-		ota_last_reported_progress = (uint8_t)(
-			(ota_received_bytes * 100UL) /
-			(ota_firmware_size > 0 ? ota_firmware_size : 1)
-		);
-
 		total_header_size = (uint16_t)((body_marker + 4) - ota_header_buffer);
 
 		if (total_header_size < previous_header_len) {
@@ -1077,28 +1108,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 	ota_received_bytes += len;
 	ota_response_received_bytes += len;
-
-	// Send periodic MQTT progress reports every 10%.
-	if (ota_firmware_size > 0) {
-		current_progress = (uint8_t)(
-			(ota_received_bytes * 100UL) / ota_firmware_size
-		);
-
-		if (current_progress >= ota_last_reported_progress + 10 &&
-			current_progress < 100) {
-
-			ota_last_reported_progress = (current_progress / 10) * 10;
-
-#ifdef DEBUG
-			os_printf("[OTA] Progress: %u%%\n", ota_last_reported_progress);
-#endif
-			if (ota_mqtt_client) {
-				tfp_snprintf(progress_msg, sizeof(progress_msg),
-					"flashing_%d%%", ota_last_reported_progress);
-				mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
-			}
-		}
-	}
 }
 
 ICACHE_FLASH_ATTR
@@ -1407,7 +1416,6 @@ bool start_ota_update(
 	ota_dns_failure_seen = false;
 	ota_tcp_failure_seen = false;
 	ota_other_failure_seen = false;
-	ota_last_reported_progress = 0;
 
 	ota_firmware_size = 0;
 	ota_firmware_size_known = false;
@@ -1432,6 +1440,10 @@ bool start_ota_update(
 	ota_cleanup_timers();
 
 	ota_in_progress = true;
+
+	os_timer_setfn(&ota_progress_timer,
+		(os_timer_func_t *)ota_progress_timer_cb, NULL);
+	os_timer_arm(&ota_progress_timer, OTA_PROGRESS_INTERVAL_MS, 1);
 
 	if (!ota_parse_sha256(hex_sha256_1, expected_sha256_1,
 		&has_sha256_check_1) ||
