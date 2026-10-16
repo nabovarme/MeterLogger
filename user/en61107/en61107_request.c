@@ -297,15 +297,15 @@ static void en61107_received_task(os_event_t *events) {
 	char c;
 	unsigned int i;
 	uint64_t current_unix_time;
-	char current_unix_time_string[64];	// BUGFIX var
+	char current_unix_time_string[64];
 	char key_value[128];
 	char topic[MQTT_TOPIC_L];
-	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
+	static char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 	uint32_t parsed_serial;
 
 	// vars for aes encryption
-	uint8_t cleartext[EN61107_FRAME_L];
+	static uint8_t cleartext[EN61107_FRAME_L];
 
 	switch (en61107_uart_state) {
 		case UART_STATE_EN61107_IDENT:
@@ -652,9 +652,9 @@ void en61107_request_send() {
 	os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 	os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
 #else
-	char cleartext[MQTT_MESSAGE_L];
+	static char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
-	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
+	static char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 
 	uint8_t sine_wave[256] = {
