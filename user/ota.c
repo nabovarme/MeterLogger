@@ -259,6 +259,8 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 	if (ota_mqtt_client) {
 		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
 	}
+	// Prevent a later disconnect callback from finalizing a partial download.
+	is_valid_binary = false;
 	ota_in_progress = false;
 }
 
@@ -410,6 +412,8 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 	const char *p;
 	const char *slash;
 	const char *colon;
+	const char *host_end;
+	size_t host_len;
 	char ota_url[256];
 	uint8_t current_rom;
 	err_t err;
@@ -447,15 +451,25 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 	ota_content_length = 0;
 	ota_received_bytes = 0;
 
-	// Use exact full URL constructed by mqtt_rpc.c
-	strncpy(ota_url, url, sizeof(ota_url) - 1);
-	ota_url[sizeof(ota_url) - 1] = '\0';
+	// Reject URLs that cannot fit in the parsing buffer instead of silently truncating them.
+	if (!url || strlen(url) >= sizeof(ota_url)) {
+#ifdef DEBUG
+		os_printf("[OTA] ERROR: URL is missing or too long!\n");
+#endif
+		if (ota_mqtt_client) {
+			mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
+		}
+		ota_in_progress = false;
+		return false;
+	}
+	strcpy(ota_url, url);
 
 #ifdef DEBUG
 	os_printf("[OTA] Request URL: %s\n", ota_url);
 #endif
 
-	// 1. Parse host, port, and full path (including query string)
+	// 1. Parse host, port, and full path (including query string).
+	// The host and path must fit their destination buffers, including the NUL.
 	p = ota_url;
 	if (strncmp(p, "http://", 7) == 0) {
 		p += 7;
@@ -464,29 +478,56 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 	slash = strchr(p, '/');
 	colon = strchr(p, ':');
 
-	// Extract path
 	if (slash) {
-		strncpy(ota_path, slash, sizeof(ota_path) - 1);
+		if (strlen(slash) >= sizeof(ota_path)) {
+#ifdef DEBUG
+			os_printf("[OTA] ERROR: URL path is too long!\n");
+#endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
+			}
+			ota_in_progress = false;
+			return false;
+		}
+		strcpy(ota_path, slash);
 	}
 	else {
 		strcpy(ota_path, "/");
 	}
 
-	// Extract host and port
+	// Extract host and optional port, checking the host length before copying.
 	if (colon && (!slash || colon < slash)) {
-		strncpy(ota_host, p, colon - p);
+		if (colon == p || (size_t)(colon - p) >= sizeof(ota_host)) {
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
+			}
+			ota_in_progress = false;
+			return false;
+		}
+		memcpy(ota_host, p, colon - p);
 		ota_host[colon - p] = '\0';
 		ota_port = atoi(colon + 1);
+		if (ota_port < 1 || ota_port > 65535) {
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
+			}
+			ota_in_progress = false;
+			return false;
+		}
 	}
 	else {
-		if (slash) {
-			strncpy(ota_host, p, slash - p);
-			ota_host[slash - p] = '\0';
+		host_end = slash ? slash : p + strlen(p);
+		host_len = host_end - p;
+		if (host_len == 0 || host_len >= sizeof(ota_host)) {
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
+			}
+			ota_in_progress = false;
+			return false;
 		}
-		else {
-			strncpy(ota_host, p, sizeof(ota_host) - 1);
-		}
-		ota_port = 80;
+		memcpy(ota_host, p, host_len);
+		ota_host[host_len] = '\0';
+		ota_port = OTA_DEFAULT_PORT;
 	}
 
 #ifdef DEBUG
