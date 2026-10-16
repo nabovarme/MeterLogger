@@ -94,7 +94,8 @@ ICACHE_FLASH_ATTR
 static void ota_rehash_flash(void) {
 	uint32_t addr;
 	uint32_t chunk_len;
-	uint8_t buffer[256];
+	// Must be 32-bit aligned for spi_flash_read hardware requirements
+	uint32_t buffer[64];
 
 	if (!has_sha256_check_1 && !has_sha256_check_2) return;
 
@@ -106,8 +107,8 @@ static void ota_rehash_flash(void) {
 		if (addr + chunk_len > ota_target_base_addr + ota_received_bytes) {
 			chunk_len = (ota_target_base_addr + ota_received_bytes) - addr;
 		}
-		spi_flash_read(addr, (uint32_t *)buffer, chunk_len);
-		sha256_update(&ota_sha_ctx, buffer, chunk_len);
+		spi_flash_read(addr, buffer, chunk_len);
+		sha256_update(&ota_sha_ctx, (uint8_t *)buffer, chunk_len);
 		addr += chunk_len;
 	}
 }
@@ -117,7 +118,7 @@ static void ota_retry_timer_cb(void *arg) {
 	err_t err;
 
 	headers_parsed = false;
-	is_valid_binary = (ota_received_bytes > 0);
+	is_valid_binary = false;	// must be false so the payload block triggers rboot_write_init and ota_rehash_flash
 	ota_header_len = 0;
 
 	memset(&ota_conn, 0, sizeof(ota_conn));
