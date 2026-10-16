@@ -1,5 +1,6 @@
 #include <esp8266.h>
 #include "driver/uart.h"
+#include "driver/uart_register.h"
 
 #include "unix_time.h"
 #include "mqtt.h"
@@ -17,6 +18,9 @@
 #endif
 
 #define QUEUE_SIZE 256
+#define EN61107_WAKEUP_STREAM_DELAY_MS 2600
+#define EN61107_MAX_TIMEOUT_RETRIES 3
+#define EN61107_RECOVERY_DELAY_MS 60000
 
 extern bool fast_boot;
 
@@ -49,6 +53,8 @@ static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
 static os_timer_t en61107_meter_wake_up_timer;
+static uint8_t en61107_timeout_retries = 0;
+static bool en61107_request_in_progress = false;
 
 volatile en61107_uart_state_t en61107_uart_state;
 
@@ -61,60 +67,81 @@ bool en61107_etx_received;
 uint8_t pseudo_data_debug_no_meter = 0;
 #endif
 
-ICACHE_FLASH_ATTR
-void en61107_teardown_session(void) {
-	// Disarm active response timers
+static void en61107_reset_receive_buffer(void) {
+	ETS_UART_INTR_DISABLE();
+	fifo_head = 0;
+	fifo_tail = 0;
+	fifo_buffer_fill_count = 0;
+	en61107_etx_received = false;
+	en61107_eod = '\n';
+
+	// Discard bytes that arrived before the receive state was reset.
+	SET_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST);
+	CLEAR_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST);
+	WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR | UART_RXFIFO_TOUT_INT_CLR | UART_FRM_ERR_INT_CLR);
+	ETS_UART_INTR_ENABLE();
+}
+
+static void en61107_schedule_recovery(uint32_t delay_ms) {
 	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
 	os_timer_disarm(&en61107_meter_wake_up_timer);
 
-#ifndef DEBUG_NO_METER
-	// Set UART to 300 baud for EN61107 teardown
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	en61107_uart_state = UART_STATE_NONE;
+	memset(&response, 0, sizeof(response));
+	en61107_reset_receive_buffer();
+	en61107_request_in_progress = true;
 
-	// Send EN61107 session break (\006001\r\n)
-	strcpy(frame, "\006001\r\n");
-	uart0_tx_buffer(frame, strlen(frame));
-#endif
+	os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
+	os_timer_arm(&en61107_meter_wake_up_timer, delay_ms, 0);
+}
+
+ICACHE_FLASH_ATTR
+void en61107_teardown_session(void) {
+	// Stop pending serial activity without changing the meter's protocol state.
+	os_timer_disarm(&en61107_receive_timeout_timer);
+	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
+	os_timer_disarm(&en61107_meter_wake_up_timer);
 }
 
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
-	// if no reply received, retransmit
-
-	if (en61107_request_num <= 2) {
-		switch (en61107_uart_state) {
-			case UART_STATE_EN61107_IDENT:
-				en61107_uart_send_en61107_ident();
-				break;
-			case UART_STATE_EN61107:
-				en61107_uart_send_en61107_ident();	// restart en61107 request from state UART_STATE_EN61107_IDENT
-				break;
-#ifndef MC_66B
-			case UART_STATE_INST_VALUES:
-				en61107_uart_send_inst_values();
-				break;
-#endif
-			case UART_STATE_STANDARD_DATA_1:
-				en61107_uart_send_standard_data_1();
-				break;
-			case UART_STATE_STANDARD_DATA_2:
-				en61107_uart_send_standard_data_2();
-				break;
-		}
+	// Retry the current protocol step twice, then restart from a clean 300-baud state.
+	if (en61107_timeout_retries < EN61107_MAX_TIMEOUT_RETRIES) {
+		en61107_timeout_retries++;
 	}
-	else {
-		// too many errors, wait for meter to be clear and start over
-		// reset state and counter so the next cycle isn't instantly penalized
-		en61107_uart_state = UART_STATE_NONE;
-		en61107_request_num = 0;
 
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 60000, 0);         // wait 60 seconds
+	if (en61107_timeout_retries >= EN61107_MAX_TIMEOUT_RETRIES) {
+		// Give the meter time to leave any previous session before starting over.
+		en61107_schedule_recovery(EN61107_RECOVERY_DELAY_MS);
+		return;
+	}
+
+	// Discard an incomplete or noisy response before retransmitting.
+	en61107_reset_receive_buffer();
+	switch (en61107_uart_state) {
+		case UART_STATE_EN61107_IDENT:
+			en61107_uart_send_en61107_ident();
+			break;
+		case UART_STATE_EN61107:
+			memset(&response, 0, sizeof(response));
+			en61107_uart_send_en61107_ident();	// restart en61107 request from state UART_STATE_EN61107_IDENT
+			break;
+#ifndef MC_66B
+		case UART_STATE_INST_VALUES:
+			en61107_uart_send_inst_values();
+			break;
+#endif
+		case UART_STATE_STANDARD_DATA_1:
+			en61107_uart_send_standard_data_1();
+			break;
+		case UART_STATE_STANDARD_DATA_2:
+			en61107_uart_send_standard_data_2();
+			break;
+		default:
+			en61107_schedule_recovery(EN61107_RECOVERY_DELAY_MS);
+			break;
 	}
 }
 
@@ -133,10 +160,10 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 #ifndef DEBUG_NO_METER
 	unsigned int i;
 #endif
-	// If recovering from a 60-second error penalty, the meter is asleep.
-	// We MUST send the wake-up stream before identifying.
+	// Start recovery at the protocol's initial baud rate, independent of the previous session.
 	if (en61107_uart_state == UART_STATE_NONE) {
 #ifndef DEBUG_NO_METER
+		en61107_reset_receive_buffer();
 		uart_set_baudrate(UART0, BIT_RATE_300);
 		uart_set_word_length(UART0, SEVEN_BITS);
 		uart_set_parity(UART0, EVEN_BITS);
@@ -147,14 +174,112 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 			uart_tx_one_char(UART0, '\0');
 		}
 #endif
-		// Wait 400ms for meter CPU to stabilize before sending /?!\r\n
+		// Wait for the wake-up stream to finish before sending /?!\r\n.
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
+		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STREAM_DELAY_MS, 0);
 	} else {
 		// Normal flow
 		en61107_uart_send_en61107_ident();
 	}
+}
+
+
+static bool en61107_ident_response_ready(void) {
+	unsigned int count;
+	unsigned int i, j, k;
+	unsigned int valid_start = QUEUE_SIZE;
+	unsigned int valid_length = 0;
+	unsigned int last_complete_line = 0;
+	char c;
+	bool valid;
+
+	ETS_UART_INTR_DISABLE();
+	count = fifo_buffer_fill_count;
+	if (count > QUEUE_SIZE) {
+		count = QUEUE_SIZE;
+	}
+
+	for (i = 0; i < count; i++) {
+		if (fifo_buffer[(fifo_tail + i) % QUEUE_SIZE] != '/') {
+			continue;
+		}
+
+		for (j = i + 1; j < count; j++) {
+			c = fifo_buffer[(fifo_tail + j) % QUEUE_SIZE];
+			if (c != '\n') {
+				continue;
+			}
+
+			valid = (j >= i + 7 && fifo_buffer[(fifo_tail + j - 1) % QUEUE_SIZE] == '\r');
+			for (k = i + 1; valid && k < j - 1; k++) {
+				c = fifo_buffer[(fifo_tail + k) % QUEUE_SIZE];
+				if (c < 0x20 || c > 0x7e) {
+					valid = false;
+				}
+			}
+
+			if (valid) {
+				valid_start = i;
+				valid_length = j - i + 1;
+			}
+			break;
+		}
+
+		if (valid_start != QUEUE_SIZE) {
+			break;
+		}
+	}
+
+	if (valid_start != QUEUE_SIZE) {
+		// Keep the valid identification line and discard any surrounding noise.
+		fifo_tail = (fifo_tail + valid_start) % QUEUE_SIZE;
+		fifo_head = (fifo_tail + valid_length) % QUEUE_SIZE;
+		fifo_buffer_fill_count = valid_length;
+		ETS_UART_INTR_ENABLE();
+		return true;
+	}
+
+	// Discard completed noise lines but retain a trailing partial line.
+	for (i = 0; i < count; i++) {
+		if (fifo_buffer[(fifo_tail + i) % QUEUE_SIZE] == '\n') {
+			last_complete_line = i + 1;
+		}
+	}
+	if (last_complete_line) {
+		fifo_tail = (fifo_tail + last_complete_line) % QUEUE_SIZE;
+		fifo_buffer_fill_count = count - last_complete_line;
+	}
+
+	ETS_UART_INTR_ENABLE();
+	return false;
+}
+
+static bool en61107_readout_frame_ready(void) {
+	unsigned int count;
+	unsigned int i;
+	bool stx_seen = false;
+	bool ready = false;
+	char c;
+
+	// Ignore stale receive-task events until an EN61107 frame and its BCC are present.
+	ETS_UART_INTR_DISABLE();
+	count = fifo_buffer_fill_count;
+	if (count > QUEUE_SIZE) {
+		count = QUEUE_SIZE;
+	}
+	for (i = 0; i < count; i++) {
+		c = fifo_buffer[(fifo_tail + i) % QUEUE_SIZE];
+		if (c == 0x02) {
+			stx_seen = true;
+		}
+		else if (stx_seen && c == 0x03 && i + 1 < count) {
+			ready = true;
+			break;
+		}
+	}
+	ETS_UART_INTR_ENABLE();
+	return ready;
 }
 
 // Helper to safely append strings without overflowing the destination buffer
@@ -184,10 +309,15 @@ static void en61107_received_task(os_event_t *events) {
 
 	switch (en61107_uart_state) {
 		case UART_STATE_EN61107_IDENT:
-			// dont en61107_fifo_get() anything here, we get it in next state
-			en61107_uart_send_en61107();
+			// Only acknowledge a complete, plausible identification line.
+			if (en61107_ident_response_ready()) {
+				en61107_uart_send_en61107();
+			}
 			break;
 		case UART_STATE_EN61107:
+			if (!en61107_readout_frame_ready()) {
+				break;
+			}
 			// get message buffer
 			memset(message, 0, sizeof(message));
 			i = 0;
@@ -268,6 +398,8 @@ static void en61107_received_task(os_event_t *events) {
 			}
 
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
+				en61107_timeout_retries = 0;
+				en61107_request_in_progress = false;
 				// tell user_main we got a serial
 				if (en61107_meter_is_ready_cb && !meter_is_ready_cb_called) {
 					meter_is_ready_cb_called = true;
@@ -389,6 +521,8 @@ void en61107_request_init() {
 	en61107_uart_state = UART_STATE_NONE;
 
 	en61107_request_num = 0;
+	en61107_timeout_retries = 0;
+	en61107_request_in_progress = false;
 
 	en61107_etx_received = false;
 
@@ -408,10 +542,6 @@ void en61107_request_init() {
 			uart_tx_one_char(UART0, '\0');
 		}
 #endif
-	} else {
-		// Warm boot: execute teardown right after initializing serial 
-		// to guarantee clean state before sending sign-on / \006000\r\n
-		en61107_teardown_session();
 	}
 #endif
 
@@ -482,7 +612,7 @@ inline bool en61107_is_eod_char(uint8_t c) {
 			return false;
 		}
 		else if (en61107_etx_received) {
-//			en61107_etx_received = false;	// DEBUG: should really be here
+			en61107_etx_received = false;
 			return true;
 		}
 	}
@@ -503,6 +633,11 @@ void en61107_request_send() {
 	char c;
 	unsigned int i;
 
+	// Do not interrupt an active read or recovery cycle.
+	if (en61107_request_in_progress || en61107_uart_state != UART_STATE_NONE) {
+		return;
+	}
+
 	// Clear FIFO message buffer
 	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
@@ -510,24 +645,12 @@ void en61107_request_send() {
 	}
 
 	en61107_request_num++;
+	en61107_request_in_progress = true;
 
-	if (fast_boot) {
-		// On warm reboot, clear any active session on the meter before re-identifying
-		en61107_teardown_session();
-
-		// Schedule en61107_uart_send_en61107_ident() after a 500ms delay
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 500, 0);
-		return;
-	}
-
-	if (en61107_uart_state == UART_STATE_NONE) {
-		// Cold boot path: optical wake-up timer (400ms to catch meter before sleep)
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
-	}
+	// Start a new request from the initial baud rate when the meter is idle.
+	os_timer_disarm(&en61107_meter_wake_up_timer);
+	os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
+	os_timer_arm(&en61107_meter_wake_up_timer, 400, 0);
 #else
 	char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
