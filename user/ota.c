@@ -64,6 +64,7 @@ static bool ota_response_range_valid = false;
 
 static uint32_t ota_received_bytes = 0;
 static uint32_t ota_request_offset = 0;
+static uint8_t ota_last_reported_progress = 0;
 
 static uint8_t ota_retry_count = 0;
 static bool ota_retry_pending = false;
@@ -438,9 +439,13 @@ static void ota_progress_timer_cb(void *arg) {
 		(ota_received_bytes * 100UL) / ota_firmware_size
 	);
 
-	if (current_progress >= 100) {
+	// Do not repeat a percentage or report progress backwards after a retry.
+	if (current_progress <= ota_last_reported_progress ||
+		current_progress >= 100) {
 		return;
 	}
+
+	ota_last_reported_progress = current_progress;
 
 #ifdef DEBUG
 	os_printf("[OTA] Progress: %u%%\n", current_progress);
@@ -1429,6 +1434,7 @@ bool start_ota_update(
 	ota_request_offset = 0;
 
 	ota_received_bytes = 0;
+	ota_last_reported_progress = 0;
 
 	headers_parsed = false;
 	is_valid_binary = false;
