@@ -240,26 +240,26 @@ void register_system_restart_defered_cb(system_restart_teardown_cb cb) {
 
 ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 	os_timer_disarm(&system_restart_defered_timer);
-	system_restart();
+
+	// Safe shutdown of network stack right before hardware reset
+	wifi_destroy();
+	wifi_station_disconnect();
+
 #ifdef DEBUG
 	printf("...restarting now\n\r");
 #endif
+
+	system_restart();
 }
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
-	// 1. Call registered meter teardown function to save final state (CRITICAL)
+	// Call registered meter teardown function to save final state (CRITICAL)
 	if (restart_teardown_cb != NULL) {
 		restart_teardown_cb();
 	}
 
-	// 2. Disconnect WiFi cleanly to prevent flash corruption on reboot
-	wifi_station_disconnect();
-
-	// Note: We DO NOT stop the watchdog! If the timer fails, the watchdog will 
-	// force the reboot safely anyway.
-		
-	// 3. Arm the delayed restart timer to allow final TCP/MQTT packets to transmit
+	// Arm the delayed restart timer to allow final TCP/MQTT packets to transmit.
 	os_timer_disarm(&system_restart_defered_timer);
 	os_timer_setfn(&system_restart_defered_timer, system_restart_defered_timer_func, NULL);
 	os_timer_arm(&system_restart_defered_timer, SYSTEM_RESTART_DELAY_MS, 0);
