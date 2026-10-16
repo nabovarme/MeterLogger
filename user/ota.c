@@ -31,6 +31,13 @@
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
 
+typedef enum {
+	OTA_RETRY_FAILURE_OTHER,
+	OTA_RETRY_FAILURE_DNS,
+	OTA_RETRY_FAILURE_TCP,
+	OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE
+} ota_retry_reason_t;
+
 static MQTT_Client *ota_mqtt_client = NULL;
 
 static struct espconn ota_conn;
@@ -56,6 +63,8 @@ static uint32_t ota_request_offset = 0;
 static uint8_t ota_retry_count = 0;
 static bool ota_retry_pending = false;
 static bool ota_incomplete_http_response_seen = false;
+static bool ota_dns_failure_seen = false;
+static bool ota_tcp_failure_seen = false;
 static uint8_t ota_last_reported_progress = 0;
 
 static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
@@ -76,7 +85,7 @@ static uint8_t expected_sha256_2[32];
 static bool has_sha256_check_1 = false;
 static bool has_sha256_check_2 = false;
 
-static void ota_trigger_reconnect(bool incomplete_http_response);
+static void ota_trigger_reconnect(ota_retry_reason_t reason);
 static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg);
 
 /*
@@ -489,20 +498,34 @@ static void ota_retry_timer_cb(void *arg) {
 		ota_dns_found_cb(ota_host, &ota_ip, &ota_conn);
 	} else if (err != ERR_INPROGRESS) {
 		os_timer_disarm(&ota_timeout_timer);
-		ota_trigger_reconnect(false);
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
 	}
 }
 
 ICACHE_FLASH_ATTR
-static void ota_trigger_reconnect(bool incomplete_http_response) {
+static void ota_trigger_reconnect(ota_retry_reason_t reason) {
 	char status_buf[64];
 
 	if (!ota_in_progress || ota_retry_pending) {
 		return;
 	}
 
-	if (incomplete_http_response) {
-		ota_incomplete_http_response_seen = true;
+	switch (reason) {
+		case OTA_RETRY_FAILURE_DNS:
+			ota_dns_failure_seen = true;
+			break;
+
+		case OTA_RETRY_FAILURE_TCP:
+			ota_tcp_failure_seen = true;
+			break;
+
+		case OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE:
+			ota_incomplete_http_response_seen = true;
+			break;
+
+		case OTA_RETRY_FAILURE_OTHER:
+		default:
+			break;
 	}
 
 	if (ota_retry_count < OTA_MAX_RETRIES) {
@@ -517,11 +540,12 @@ static void ota_trigger_reconnect(bool incomplete_http_response) {
 			ota_retry_count, OTA_MAX_RETRIES, ota_received_bytes);
 #endif
 		/*
-		 * Only report retries caused by an incomplete HTTP response. DNS and
-		 * TCP connection failures remain internal retries and do not emit MQTT
-		 * status messages.
+		 * Only report HTTP chunk retry progress for incomplete HTTP responses.
+		 * DNS and TCP failures are reported if the OTA operation ultimately
+		 * exhausts its retries.
 		 */
-		if (incomplete_http_response && ota_mqtt_client) {
+		if (reason == OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE &&
+			ota_mqtt_client) {
 			tfp_snprintf(status_buf, sizeof(status_buf),
 				"retrying_chunk_%d_offset_%u",
 				ota_retry_count, ota_received_bytes);
@@ -539,15 +563,31 @@ static void ota_trigger_reconnect(bool incomplete_http_response) {
 		ota_retry_pending = false;
 
 		/*
-		 * Only report retry exhaustion over MQTT if an HTTP response was
-		 * interrupted before its declared body length was received. Pure
-		 * DNS/TCP failures are handled internally and are not reported.
+		 * Report each failure type encountered during the unsuccessful OTA
+		 * operation. Transient failures are not reported as final errors if
+		 * the update later succeeds.
 		 */
-		if (ota_mqtt_client && ota_incomplete_http_response_seen) {
-			mqtt_rpc_ota_status(
-				ota_mqtt_client,
-				"error_incomplete_http_response"
-			);
+		if (ota_mqtt_client) {
+			if (ota_dns_failure_seen) {
+				mqtt_rpc_ota_status(
+					ota_mqtt_client,
+					"error_dns_resolution"
+				);
+			}
+
+			if (ota_tcp_failure_seen) {
+				mqtt_rpc_ota_status(
+					ota_mqtt_client,
+					"error_tcp_connection"
+				);
+			}
+
+			if (ota_incomplete_http_response_seen) {
+				mqtt_rpc_ota_status(
+					ota_mqtt_client,
+					"error_incomplete_http_response"
+				);
+			}
 		}
 
 		is_valid_binary = false;
@@ -916,11 +956,18 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 #endif
 
 	/*
-	 * Treat a connection failure as an HTTP chunk error only if an HTTP body
-	 * had started and ended before its declared Content-Length was received.
+	 * A TCP connection error is reportable even if it interrupted an HTTP
+	 * response. Track the incomplete response separately so both failure
+	 * details can be reported if the OTA operation ultimately fails.
 	 */
+	ota_tcp_failure_seen = true;
 	incomplete_http_response = ota_incomplete_http_response();
-	ota_trigger_reconnect(incomplete_http_response);
+
+	if (incomplete_http_response) {
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE);
+	} else {
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
+	}
 }
 
 ICACHE_FLASH_ATTR
@@ -1033,11 +1080,21 @@ static void ota_tcp_discon_cb(void *arg) {
 		os_printf("[OTA] HTTP response ended before the complete firmware was received.\n");
 #endif
 		/*
-		 * This also handles a valid, shorter-than-total 206 response: the
-		 * retry requests the remaining bytes from the next sector boundary.
+		 * A response that ended before its declared body length is an
+		 * incomplete HTTP response. If the response body is complete but is
+		 * only a valid partial 206 range, continue with the remaining range.
 		 */
 		incomplete_http_response = ota_incomplete_http_response();
-		ota_trigger_reconnect(incomplete_http_response);
+
+		if (incomplete_http_response) {
+			ota_trigger_reconnect(OTA_RETRY_FAILURE_INCOMPLETE_HTTP_RESPONSE);
+		} else if (!headers_parsed || !ota_response_length_known) {
+			// The connection closed before a usable HTTP response was received.
+			ota_tcp_failure_seen = true;
+			ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
+		} else {
+			ota_trigger_reconnect(OTA_RETRY_FAILURE_OTHER);
+		}
 	}
 }
 
@@ -1083,7 +1140,7 @@ static void ota_tcp_connect_cb(void *arg) {
 		os_printf("[OTA] ERROR: Failed to send HTTP request (%d)!\n", err);
 #endif
 		os_timer_disarm(&ota_timeout_timer);
-		ota_trigger_reconnect(false);
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
 	}
 }
 
@@ -1102,7 +1159,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 		os_printf("[OTA] ERROR: DNS resolution failed!\n");
 #endif
 
-		ota_trigger_reconnect(false);
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
 		return;
 	}
 
@@ -1122,7 +1179,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 		os_printf("[OTA] ERROR: Failed to start TCP connection (%d)!\n", err);
 #endif
 		os_timer_disarm(&ota_timeout_timer);
-		ota_trigger_reconnect(false);
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_TCP);
 	}
 }
 
@@ -1148,6 +1205,8 @@ bool start_ota_update(
 	ota_retry_count = 0;
 	ota_retry_pending = false;
 	ota_incomplete_http_response_seen = false;
+	ota_dns_failure_seen = false;
+	ota_tcp_failure_seen = false;
 	ota_last_reported_progress = 0;
 
 	ota_firmware_size = 0;
@@ -1320,7 +1379,7 @@ bool start_ota_update(
 		os_printf("[OTA] ERROR: DNS request could not be started (%d)!\n", err);
 #endif
 		os_timer_disarm(&ota_timeout_timer);
-		ota_trigger_reconnect(false);
+		ota_trigger_reconnect(OTA_RETRY_FAILURE_DNS);
 	}
 
 	return true;
