@@ -20,7 +20,6 @@
 #define SPI_SECTOR_SIZE        4096    // 4KB flash erase sector boundary
 
 #define OTA_REBOOT_DELAY_MS    6000
-#define OTA_PROGRESS_INTERVAL_MS 10000 // Report OTA progress every 10 seconds
 #define ESP_IMAGE_MAGIC_V1     0xE9
 #define ESP_IMAGE_MAGIC_V2     0xEA
 #define OTA_DEFAULT_PORT       80
@@ -28,6 +27,7 @@
 #define MIN_FIRMWARE_SIZE      102400  // 100 KB minimum sane size
 #define MAX_FIRMWARE_SIZE      0x69000 // Maximum safe firmware size
 #define OTA_NETWORK_TIMEOUT_MS 15000   // 15s inactivity timeout
+#define OTA_PROGRESS_INTERVAL_MS 10000  // Report progress every 10 seconds
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -64,7 +64,6 @@ static bool ota_response_range_valid = false;
 
 static uint32_t ota_received_bytes = 0;
 static uint32_t ota_request_offset = 0;
-static uint8_t ota_last_reported_progress = 0;
 
 static uint8_t ota_retry_count = 0;
 static bool ota_retry_pending = false;
@@ -74,6 +73,7 @@ static bool ota_incomplete_http_response_seen = false;
 static bool ota_dns_failure_seen = false;
 static bool ota_tcp_failure_seen = false;
 static bool ota_other_failure_seen = false;
+static uint8_t ota_last_reported_progress = 0;
 
 static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
 static uint16_t ota_header_len = 0;
@@ -418,20 +418,13 @@ static bool ota_parse_sha256(
 	return true;
 }
 
-/*
- * Report the current download progress at a steady interval.
- *
- * The firmware size must be known before a meaningful percentage can be
- * calculated. A 100% flashing status is omitted because successful completion
- * is reported separately after finalizing the flash and verifying the image.
- */
 ICACHE_FLASH_ATTR
 static void ota_progress_timer_cb(void *arg) {
-	char progress_msg[32];
 	uint8_t current_progress;
+	char progress_msg[32];
 
-	if (!ota_in_progress || !ota_firmware_size_known ||
-		ota_firmware_size == 0) {
+	if (!ota_in_progress || ota_retry_pending ||
+		!ota_firmware_size_known || ota_firmware_size == 0) {
 		return;
 	}
 
@@ -439,9 +432,8 @@ static void ota_progress_timer_cb(void *arg) {
 		(ota_received_bytes * 100UL) / ota_firmware_size
 	);
 
-	// Do not repeat a percentage or report progress backwards after a retry.
-	if (current_progress <= ota_last_reported_progress ||
-		current_progress >= 100) {
+	// Do not repeat or move progress backwards after a retry/rewind.
+	if (current_progress <= ota_last_reported_progress) {
 		return;
 	}
 
@@ -450,7 +442,6 @@ static void ota_progress_timer_cb(void *arg) {
 #ifdef DEBUG
 	os_printf("[OTA] Progress: %u%%\n", current_progress);
 #endif
-
 	if (ota_mqtt_client) {
 		tfp_snprintf(progress_msg, sizeof(progress_msg),
 			"flashing_%d%%", current_progress);
@@ -1113,6 +1104,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 	ota_received_bytes += len;
 	ota_response_received_bytes += len;
+
 }
 
 ICACHE_FLASH_ATTR
@@ -1243,6 +1235,16 @@ static void ota_tcp_discon_cb(void *arg) {
 		os_printf("[OTA] Download complete. Staging temp boot to ROM %d...\n",
 			ota_target_rom);
 #endif
+
+		if (ota_last_reported_progress < 100) {
+			ota_last_reported_progress = 100;
+#ifdef DEBUG
+			os_printf("[OTA] Progress: 100%%\n");
+#endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "flashing_100%");
+			}
+		}
 
 		if (ota_mqtt_client) {
 			tfp_snprintf(status_msg, sizeof(status_msg),
@@ -1421,6 +1423,7 @@ bool start_ota_update(
 	ota_dns_failure_seen = false;
 	ota_tcp_failure_seen = false;
 	ota_other_failure_seen = false;
+	ota_last_reported_progress = 0;
 
 	ota_firmware_size = 0;
 	ota_firmware_size_known = false;
@@ -1434,7 +1437,6 @@ bool start_ota_update(
 	ota_request_offset = 0;
 
 	ota_received_bytes = 0;
-	ota_last_reported_progress = 0;
 
 	headers_parsed = false;
 	is_valid_binary = false;
