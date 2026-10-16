@@ -15,6 +15,10 @@
 #include "mqtt_rpc.h"
 #include "crypto/sha256.h"
 
+#define OTA_MAX_RETRIES        5       // Maximum HTTP chunk/connection retries
+#define OTA_RECONNECT_DELAY_MS 2000    // 2s backoff delay before reconnecting
+#define SPI_SECTOR_SIZE        4096    // 4KB flash erase sector boundary
+
 #define OTA_REBOOT_DELAY_MS    6000
 #define ESP_IMAGE_MAGIC_V1     0xE9
 #define ESP_IMAGE_MAGIC_V2     0xEA
@@ -33,11 +37,15 @@ static esp_tcp ota_tcp;
 static ip_addr_t ota_ip;
 static rboot_write_status ota_status;
 static uint8_t ota_target_rom;
+static uint32_t ota_target_base_addr = 0;
+
 static bool headers_parsed = false;
 static bool is_valid_binary = false;
+static bool is_partial_content = false;
 
 static uint32_t ota_content_length = 0;
 static uint32_t ota_received_bytes = 0;
+static uint8_t ota_retry_count = 0;
 
 static char ota_header_buffer[OTA_MAX_HEADER_SIZE];
 static uint16_t ota_header_len = 0;
@@ -48,6 +56,7 @@ static int ota_port = OTA_DEFAULT_PORT;
 
 static os_timer_t ota_reboot_timer;
 static os_timer_t ota_timeout_timer;
+static os_timer_t ota_retry_timer;
 
 // SHA-256 state
 static sha256_ctx_t ota_sha_ctx;
@@ -56,9 +65,18 @@ static uint8_t expected_sha256_2[32];
 static bool has_sha256_check_1 = false;
 static bool has_sha256_check_2 = false;
 
+static void ota_trigger_reconnect(void);
+static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg);
+
 ICACHE_FLASH_ATTR
 static void ota_reboot_timer_cb(void *arg) {
 	system_restart_defered();
+}
+
+ICACHE_FLASH_ATTR
+static void ota_cleanup_timers(void) {
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_disarm(&ota_retry_timer);
 }
 
 ICACHE_FLASH_ATTR
@@ -67,12 +85,88 @@ static void ota_timeout_timer_cb(void *arg) {
 #ifdef DEBUG
 		os_printf("[OTA] Error: Download stalled/timed out! Aborting connection...\n");
 #endif
+		espconn_abort(&ota_conn);
+	}
+}
+
+// Re-synchronize SHA-256 hash stream from flash up to current ota_received_bytes
+ICACHE_FLASH_ATTR
+static void ota_rehash_flash(void) {
+	uint32_t addr;
+	uint32_t chunk_len;
+	uint8_t buffer[256];
+
+	if (!has_sha256_check_1 && !has_sha256_check_2) return;
+
+	sha256_init(&ota_sha_ctx);
+	addr = ota_target_base_addr;
+
+	while (addr < ota_target_base_addr + ota_received_bytes) {
+		chunk_len = sizeof(buffer);
+		if (addr + chunk_len > ota_target_base_addr + ota_received_bytes) {
+			chunk_len = (ota_target_base_addr + ota_received_bytes) - addr;
+		}
+		spi_flash_read(addr, (uint32_t *)buffer, chunk_len);
+		sha256_update(&ota_sha_ctx, buffer, chunk_len);
+		addr += chunk_len;
+	}
+}
+
+ICACHE_FLASH_ATTR
+static void ota_retry_timer_cb(void *arg) {
+	err_t err;
+
+	headers_parsed = false;
+	is_valid_binary = (ota_received_bytes > 0);
+	ota_header_len = 0;
+
+	memset(&ota_conn, 0, sizeof(ota_conn));
+	memset(&ota_tcp, 0, sizeof(ota_tcp));
+	ota_conn.type = ESPCONN_TCP;
+	ota_conn.state = ESPCONN_NONE;
+	ota_conn.proto.tcp = &ota_tcp;
+
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_setfn(&ota_timeout_timer, (os_timer_func_t *)ota_timeout_timer_cb, NULL);
+	os_timer_arm(&ota_timeout_timer, OTA_NETWORK_TIMEOUT_MS, 0);
+
+	err = dns_gethostbyname(ota_host, &ota_ip, ota_dns_found_cb, &ota_conn);
+	if (err == ERR_OK) {
+		ota_dns_found_cb(ota_host, &ota_ip, &ota_conn);
+	}
+}
+
+ICACHE_FLASH_ATTR
+static void ota_trigger_reconnect(void) {
+	char status_buf[64];
+
+	if (ota_retry_count < OTA_MAX_RETRIES && ota_in_progress) {
+		ota_retry_count++;
+
+		// Rewind received bytes to nearest 4KB SPI flash sector boundary
+		ota_received_bytes &= ~(SPI_SECTOR_SIZE - 1);
+
+#ifdef DEBUG
+		os_printf("[OTA] Network drop! Attempting resume %d/%d from byte offset %u...\n", ota_retry_count, OTA_MAX_RETRIES, ota_received_bytes);
+#endif
 		if (ota_mqtt_client) {
-			mqtt_rpc_ota_status(ota_mqtt_client, "error_timeout");
+			tfp_snprintf(status_buf, sizeof(status_buf), "retrying_chunk_%d_offset_%u", ota_retry_count, ota_received_bytes);
+			mqtt_rpc_ota_status(ota_mqtt_client, status_buf);
+		}
+
+		os_timer_disarm(&ota_retry_timer);
+		os_timer_setfn(&ota_retry_timer, (os_timer_func_t *)ota_retry_timer_cb, NULL);
+		os_timer_arm(&ota_retry_timer, OTA_RECONNECT_DELAY_MS, 0);
+	} else {
+#ifdef DEBUG
+		os_printf("[OTA] ERROR: Max retries (%d) exceeded or aborted!\n", OTA_MAX_RETRIES);
+#endif
+		ota_cleanup_timers();
+		if (ota_mqtt_client) {
+			mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
 		}
 		is_valid_binary = false;
 		ota_in_progress = false;
-		espconn_abort(&ota_conn);
 	}
 }
 
@@ -83,7 +177,8 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	char *body_marker;
 	uint8_t magic_byte;
 	rboot_config conf;
-	uint32_t target_addr;
+	uint32_t current_flash_addr;
+	uint32_t sector_to_erase;
 	char *cl;
 	static uint8_t last_reported_progress = 0;
 	uint8_t current_progress = 0;
@@ -112,11 +207,17 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		body_marker = (char *)os_strstr(ota_header_buffer, "\r\n\r\n");
 		if (body_marker) {
 			// Validate HTTP status now that the whole header is accumulated
-			if (os_strstr(ota_header_buffer, "200 OK") == NULL && os_strstr(ota_header_buffer, "200") == NULL) {
+			if (os_strstr(ota_header_buffer, "206") != NULL) {
+				is_partial_content = true;
+			} else if (os_strstr(ota_header_buffer, "200 OK") != NULL || os_strstr(ota_header_buffer, "200") != NULL) {
+				is_partial_content = false;
+				// Server ignored Range header and sent full file; reset offset to 0
+				ota_received_bytes = 0;
+			} else {
 #ifdef DEBUG
-				os_printf("[OTA] ERROR: Non-200 HTTP response received!\n");
+				os_printf("[OTA] ERROR: Non-200/206 HTTP response received!\n");
 #endif
-				os_timer_disarm(&ota_timeout_timer);
+				ota_cleanup_timers();
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_http_not_200");
 				}
@@ -130,7 +231,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			if (!cl) {
 				cl = (char *)os_strstr(ota_header_buffer, "content-length: ");
 			}
-			if (cl) {
+			if (cl && ota_received_bytes == 0) {
 				ota_content_length = atoi(cl + 16);
 #ifdef DEBUG
 				os_printf("[OTA] Firmware size: %u bytes\n", ota_content_length);
@@ -138,7 +239,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 			}
 
 			headers_parsed = true;
-			last_reported_progress = 0;
+			last_reported_progress = (uint8_t)((ota_received_bytes * 100) / (ota_content_length > 0 ? ota_content_length : 1));
 			
 			total_header_size = (body_marker + 4) - ota_header_buffer;
 			
@@ -153,7 +254,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 #ifdef DEBUG
 				os_printf("[OTA] ERROR: Header overflow!\n");
 #endif
-				os_timer_disarm(&ota_timeout_timer);
+				ota_cleanup_timers();
 				if (ota_mqtt_client) {
 					mqtt_rpc_ota_status(ota_mqtt_client, "error_header_overflow");
 				}
@@ -169,11 +270,11 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 		magic_byte = (uint8_t)pdata[0];
 		
 		// 0xE9 is the standard ESP8266 image magic byte; 0xEA is the v2 header
-		if (magic_byte != ESP_IMAGE_MAGIC_V1 && magic_byte != ESP_IMAGE_MAGIC_V2) {
+		if (ota_received_bytes == 0 && magic_byte != ESP_IMAGE_MAGIC_V1 && magic_byte != ESP_IMAGE_MAGIC_V2) {
 #ifdef DEBUG
 			os_printf("[OTA] ERROR: Invalid magic byte 0x%02X!\n", magic_byte);
 #endif
-			os_timer_disarm(&ota_timeout_timer);
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_magic");
 			}
@@ -187,13 +288,21 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		// Look up the exact flash memory address for the target rom slot
 		conf = rboot_get_config();
-		target_addr = conf.roms[ota_target_rom];
+		ota_target_base_addr = conf.roms[ota_target_rom];
 		
+		// If resuming from a 4KB boundary, re-erase the boundary sector before writing
+		current_flash_addr = ota_target_base_addr + ota_received_bytes;
+		sector_to_erase = current_flash_addr / SPI_SECTOR_SIZE;
+		spi_flash_erase_sector(sector_to_erase);
+
 		// Initialize the rboot flash writing engine
-		ota_status = rboot_write_init(target_addr);
+		ota_status = rboot_write_init(current_flash_addr);
 #ifdef DEBUG
-		os_printf("[OTA] Flashing to ROM %d (0x%08X)...\n", ota_target_rom, target_addr);
+		os_printf("[OTA] Flashing to ROM %d (0x%08X) offset %u...\n", ota_target_rom, ota_target_base_addr, ota_received_bytes);
 #endif
+		if (ota_received_bytes > 0) {
+			ota_rehash_flash();
+		}
 	}
 
 	if (is_valid_binary && len > 0) {
@@ -201,7 +310,7 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 #ifdef DEBUG
 			os_printf("[OTA] ERROR: Firmware image exceeds partition limit!\n");
 #endif
-			os_timer_disarm(&ota_timeout_timer);
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_file_too_large");
 			}
@@ -218,9 +327,9 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		if (!rboot_write_flash(&ota_status, (uint8_t *)pdata, len)) {
 #ifdef DEBUG
-			os_printf("[OTA] ERROR: Flash write failed!\n");
+			os_printf("[OTA] ERROR: Flash write failed at offset %u!\n", ota_received_bytes);
 #endif
-			os_timer_disarm(&ota_timeout_timer);
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_flash_write");
 			}
@@ -256,12 +365,7 @@ static void ota_tcp_recon_cb(void *arg, sint8 err) {
 #ifdef DEBUG
 	os_printf("[OTA] TCP Connection error (%d)\n", err);
 #endif
-	if (ota_mqtt_client) {
-		mqtt_rpc_ota_status(ota_mqtt_client, "error_tcp_drop");
-	}
-	// Prevent a later disconnect callback from finalizing a partial download.
-	is_valid_binary = false;
-	ota_in_progress = false;
+	ota_trigger_reconnect();
 }
 
 ICACHE_FLASH_ATTR
@@ -272,8 +376,9 @@ static void ota_tcp_discon_cb(void *arg) {
 
 	os_timer_disarm(&ota_timeout_timer);
 
-	// Only finalize and reboot if the file was a valid binary
-	if (is_valid_binary) {
+	// Only finalize and reboot if the file was a valid binary and fully downloaded
+	if (is_valid_binary && (ota_content_length == 0 || ota_received_bytes >= ota_content_length)) {
+		ota_cleanup_timers();
 		rboot_write_end(&ota_status);
 		
 		// 1. Enforce minimum received byte check to prevent soft-bricking on truncated downloads
@@ -355,13 +460,11 @@ static void ota_tcp_discon_cb(void *arg) {
 		os_timer_arm(&ota_reboot_timer, OTA_REBOOT_DELAY_MS, 0);
 	}
 	else {
+		// Connection closed prematurely before completing image
 #ifdef DEBUG
 		os_printf("[OTA] Disconnected before valid download completed.\n");
 #endif
-		if (ota_mqtt_client) {
-			mqtt_rpc_ota_status(ota_mqtt_client, "error_disconnected");
-		}
-		ota_in_progress = false;
+		ota_trigger_reconnect();
 	}
 }
 
@@ -369,14 +472,25 @@ ICACHE_FLASH_ATTR
 static void ota_tcp_connect_cb(void *arg) {
 	char request[512];
 	
-	// Format the HTTP GET request. Using HTTP/1.0 ensures the server
-	// closes the connection automatically when the file finishes downloading.
-	tfp_snprintf(request, sizeof(request),
-		"GET %s HTTP/1.0\r\n"
-		"Host: %s\r\n"
-		"Connection: close\r\n"
-		"User-Agent: ESP8266-OTA\r\n"
-		"\r\n", ota_path, ota_host);
+	if (ota_received_bytes > 0) {
+		// Request Range starting at 4KB sector boundary
+		tfp_snprintf(request, sizeof(request),
+			"GET %s HTTP/1.1\r\n"
+			"Host: %s\r\n"
+			"Range: bytes=%u-\r\n"
+			"Connection: close\r\n"
+			"User-Agent: ESP8266-OTA\r\n"
+			"\r\n", ota_path, ota_host, ota_received_bytes);
+	} else {
+		// Format the HTTP GET request. Using HTTP/1.0 ensures the server
+		// closes the connection automatically when the file finishes downloading.
+		tfp_snprintf(request, sizeof(request),
+			"GET %s HTTP/1.0\r\n"
+			"Host: %s\r\n"
+			"Connection: close\r\n"
+			"User-Agent: ESP8266-OTA\r\n"
+			"\r\n", ota_path, ota_host);
+	}
 
 	espconn_send(&ota_conn, (uint8_t *)request, strlen(request));
 }
@@ -388,10 +502,7 @@ static void ota_dns_found_cb(const char *name, ip_addr_t *ipaddr, void *arg) {
 #ifdef DEBUG
 		os_printf("[OTA] ERROR: DNS resolution failed!\n");
 #endif
-		if (ota_mqtt_client) {
-			mqtt_rpc_ota_status(ota_mqtt_client, "error_dns");
-		}
-		ota_in_progress = false;
+		ota_trigger_reconnect();
 		return;
 	}
 
@@ -414,11 +525,15 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 	const char *colon;
 	const char *host_end;
 	size_t host_len;
-	char ota_url[256];
+	static char ota_url[256];
 	uint8_t current_rom;
 	err_t err;
 
 	ota_mqtt_client = client;
+
+	ota_retry_count = 0;
+	is_partial_content = false;
+	ota_in_progress = true;
 
 	if (hex_sha256_1 && strlen(hex_sha256_1) == 64) {
 		hex_to_bytes(hex_sha256_1, expected_sha256_1, 32);
@@ -483,6 +598,7 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 #ifdef DEBUG
 			os_printf("[OTA] ERROR: URL path is too long!\n");
 #endif
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
 			}
@@ -498,6 +614,7 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 	// Extract host and optional port, checking the host length before copying.
 	if (colon && (!slash || colon < slash)) {
 		if (colon == p || (size_t)(colon - p) >= sizeof(ota_host)) {
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
 			}
@@ -508,6 +625,7 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 		ota_host[colon - p] = '\0';
 		ota_port = atoi(colon + 1);
 		if (ota_port < 1 || ota_port > 65535) {
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
 			}
@@ -519,6 +637,7 @@ bool start_ota_update(MQTT_Client *client, const char *url, const char *hex_sha2
 		host_end = slash ? slash : p + strlen(p);
 		host_len = host_end - p;
 		if (host_len == 0 || host_len >= sizeof(ota_host)) {
+			ota_cleanup_timers();
 			if (ota_mqtt_client) {
 				mqtt_rpc_ota_status(ota_mqtt_client, "error_invalid_url");
 			}
