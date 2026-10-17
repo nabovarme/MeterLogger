@@ -57,13 +57,7 @@
 #define MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS	1100 // Delay before triggering the single-shot initial meter poll after boot
 #define MQTT_CONNECTED_DEFER_DELAY_MS			5000 // Delay to retry MQTT setup while waiting for initial optical serial read
 
-#ifdef EN61107
 #define FAST_BOOT_DELAY_MS					2000 // Delay before starting sample mode on fast boot
-#elif defined IMPULSE
-#define FAST_BOOT_DELAY_MS					100  // Delay before starting sample mode on fast boot
-#else
-#define FAST_BOOT_DELAY_MS					16000// Delay before starting sample mode on fast boot
-#endif
 
 #ifdef DEBUG_NO_METER
 #ifdef NO_CRON

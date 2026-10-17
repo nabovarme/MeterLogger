@@ -205,9 +205,6 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 
 	saved_regs.a1 = (uint32_t)frame;
 
-//	wifi_station_disconnect();
-//	wifi_set_opmode(NULL_MODE);			// disable both STA & AP
-//	wifi_set_sleep_type(MODEM_SLEEP_T);
 	system_phy_set_powerup_option(3);	// keep RF off after reset
 	
 	stop_watchdog();
