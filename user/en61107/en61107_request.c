@@ -137,7 +137,7 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 		uart_set_stop_bits(UART0, TWO_STOP_BIT);
 #endif
 
-		if (!en61107_serial_set) {
+		if (!fast_boot && !en61107_serial_set) {
 #ifndef DEBUG_NO_METER
 			// Send wake-up stream
 			for (i = 0; i < 60; i++) {
