@@ -518,10 +518,6 @@ static void en61107_received_task(os_event_t *events) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_init() {
-#ifndef DEBUG_NO_METER
-	unsigned int i;
-#endif
-
 	fifo_head = 0;
 	fifo_tail = 0;
 
@@ -536,23 +532,6 @@ void en61107_request_init() {
 	en61107_etx_received = false;
 
 	register_system_restart_defered_cb(en61107_teardown_session);
-
-#ifndef DEBUG_NO_METER
-	if (!fast_boot) {
-		// wake up meter with 2000 ms of null characters only on cold boot
-#ifdef EN61107
-		// BIT_RATE_300
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
-#else
-		// BIT_RATE_1200
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
-#endif
-	}
-#endif
 
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -647,6 +626,8 @@ void en61107_request_send() {
 		return;
 	}
 
+	en61107_request_in_progress = true;
+
 	// Clear FIFO message buffer
 	i = 0;
 	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
@@ -654,7 +635,6 @@ void en61107_request_send() {
 	}
 
 	en61107_request_num++;
-	en61107_request_in_progress = true;
 
 	// Start a new request from the initial baud rate when the meter is idle.
 	os_timer_disarm(&en61107_meter_wake_up_timer);
