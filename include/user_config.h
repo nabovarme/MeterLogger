@@ -54,8 +54,8 @@
 #define MQTT_SEND_TIMOUT		5	// second
 #define MQTT_RECONNECT_TIMEOUT	5	// second
 #define MQTT_CONNECT_TIMEOUT	5	// second
-#define MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS 1100	// Delay before triggering the single-shot initial meter poll after boot to allow MQTT session setup
-
+#define MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS	1100 // Delay before triggering the single-shot initial meter poll after boot
+#define MQTT_CONNECTED_DEFER_DELAY_MS			5000 // Delay to retry MQTT setup while waiting for initial optical serial read
 #ifdef DEBUG_NO_METER
 #ifdef NO_CRON
 #define QUEUE_BUFFER_SIZE		 		4096

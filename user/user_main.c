@@ -744,14 +744,17 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
-		// dont subscribe before we have a non zero serial - reschedule 60 seconds later
+		// Trigger meter request immediately to get serial if not set yet
+		en61107_request_send();
+		
+		// We MUST return here so we don't subscribe to /config/v2/0000000/#
+		// Reschedule 1 second later to check if the serial UART read finished
 		os_timer_disarm(&mqtt_connected_defer_timer);
 		os_timer_setfn(&mqtt_connected_defer_timer, (os_timer_func_t *)mqtt_connected_defer_timer_func, NULL);
-		os_timer_arm(&mqtt_connected_defer_timer, 60000, 0);
+		os_timer_arm(&mqtt_connected_defer_timer, MQTT_CONNECTED_DEFER_DELAY_MS, 0);
 		return;
 	}
 #endif
-
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
 	en61107_set_mqtt_client(&mqtt_client);
