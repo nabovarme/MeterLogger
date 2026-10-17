@@ -736,6 +736,14 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		wifi_fallback_mqtt_connected = false;
 	}
 
+#ifdef EN61107
+	en61107_set_mqtt_client(&mqtt_client);
+#elif defined IMPULSE
+	//kmp_set_mqtt_client(&mqtt_client);
+#else
+	kmp_set_mqtt_client(&mqtt_client);
+#endif
+
 #ifndef IMPULSE
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
@@ -752,15 +760,6 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		os_timer_arm(&mqtt_connected_defer_timer, MQTT_CONNECTED_DEFER_DELAY_MS, 0);
 		return;
 	}
-#endif
-
-	// set mqtt_client kmp_request should use to return data
-#ifdef EN61107
-	en61107_set_mqtt_client(&mqtt_client);
-#elif defined IMPULSE
-	//kmp_set_mqtt_client(&mqtt_client);
-#else
-	kmp_set_mqtt_client(&mqtt_client);
 #endif
 
 	// Report Wi-Fi test probe results if we just finished one

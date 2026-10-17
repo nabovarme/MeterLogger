@@ -163,16 +163,18 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 #endif
 	// Start recovery at the protocol's initial baud rate, independent of the previous session.
 	if (en61107_uart_state == UART_STATE_NONE) {
+#ifndef DEBUG_NO_METER
+		// Allways clear out stale hardware UART bytes before a fresh read sequence
+		en61107_reset_receive_buffer();
+		uart_set_baudrate(UART0, BIT_RATE_300);
+		uart_set_word_length(UART0, SEVEN_BITS);
+		uart_set_parity(UART0, EVEN_BITS);
+		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+#endif
 		// Only send the 60-byte NULL wake-up stream if we haven't successfully connected before.
 		// Skipping this on periodic reads prevents the meter from ignoring the first command.
 		if (!en61107_serial_set) {
 #ifndef DEBUG_NO_METER
-			en61107_reset_receive_buffer();
-			uart_set_baudrate(UART0, BIT_RATE_300);
-			uart_set_word_length(UART0, SEVEN_BITS);
-			uart_set_parity(UART0, EVEN_BITS);
-			uart_set_stop_bits(UART0, TWO_STOP_BIT);
-
 			// Send wake-up stream
 			for (i = 0; i < 60; i++) {
 				uart_tx_one_char(UART0, '\0');
