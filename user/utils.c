@@ -244,6 +244,11 @@ ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 	printf("...restarting now\n\r");
 #endif
 
+	// Gracefully shut down the Wi-Fi radio to prevent background MAC tasks 
+	// from triggering Exception 28 (NULL pointer dereference) during restart
+	wifi_station_disconnect();
+	wifi_set_opmode(NULL_MODE);
+
 	system_restart();
 }
 

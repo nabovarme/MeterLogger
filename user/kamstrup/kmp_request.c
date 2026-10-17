@@ -61,14 +61,14 @@ static void kmp_received_task(os_event_t *events) {
 	char c;
 	unsigned int i;
 	uint64_t current_unix_time;
-	char current_unix_time_string[64];	// BUGFIX var
+	char current_unix_time_string[64];
 	char key_value[256];
 	char topic[MQTT_TOPIC_L];
-	char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
+	static char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 		
 	// vars for aes encryption
-	uint8_t cleartext[KMP_FRAME_L];
+	static uint8_t cleartext[KMP_FRAME_L];
 
 	// allocate struct for response
 	kmp_response_t response;
@@ -376,9 +376,9 @@ void static kmp_receive_timeout_timer_func() {
 ICACHE_FLASH_ATTR
 void kmp_request_send() {
 #ifdef DEBUG_NO_METER
-	char cleartext[MQTT_MESSAGE_L];
+	static char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
-	char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
+	static char message[KMP_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 
 	uint8_t sine_wave[256] = {

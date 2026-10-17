@@ -19,7 +19,6 @@
 #define OTA_RECONNECT_DELAY_MS 2000    // 2s backoff delay before reconnecting
 #define SPI_SECTOR_SIZE        4096    // 4KB flash erase sector boundary
 
-#define OTA_REBOOT_DELAY_MS    6000
 #define ESP_IMAGE_MAGIC_V1     0xE9
 #define ESP_IMAGE_MAGIC_V2     0xEA
 #define OTA_DEFAULT_PORT       80
@@ -27,6 +26,7 @@
 #define MIN_FIRMWARE_SIZE      102400  // 100 KB minimum sane size
 #define MAX_FIRMWARE_SIZE      0x69000 // Maximum safe firmware size
 #define OTA_NETWORK_TIMEOUT_MS 15000   // 15s inactivity timeout
+#define OTA_PROGRESS_INTERVAL_MS 10000  // Report progress every 10 seconds
 
 // Bring in the lock from mqtt_rpc.c so we can unlock on failure
 extern bool ota_in_progress;
@@ -82,9 +82,9 @@ static char ota_host_header[72];
 static char ota_path[128];
 static int ota_port = OTA_DEFAULT_PORT;
 
-static os_timer_t ota_reboot_timer;
 static os_timer_t ota_timeout_timer;
 static os_timer_t ota_retry_timer;
+static os_timer_t ota_progress_timer;
 
 // SHA-256 state
 static sha256_ctx_t ota_sha_ctx;
@@ -417,14 +417,41 @@ static bool ota_parse_sha256(
 }
 
 ICACHE_FLASH_ATTR
-static void ota_cleanup_timers(void) {
-	os_timer_disarm(&ota_timeout_timer);
-	os_timer_disarm(&ota_retry_timer);
+static void ota_progress_timer_cb(void *arg) {
+	uint8_t current_progress;
+	char progress_msg[32];
+
+	if (!ota_in_progress || ota_retry_pending ||
+		!ota_firmware_size_known || ota_firmware_size == 0) {
+		return;
+	}
+
+	current_progress = (uint8_t)(
+		(ota_received_bytes * 100UL) / ota_firmware_size
+	);
+
+	// Do not repeat or move progress backwards after a retry/rewind.
+	if (current_progress <= ota_last_reported_progress) {
+		return;
+	}
+
+	ota_last_reported_progress = current_progress;
+
+#ifdef DEBUG
+	os_printf("[OTA] Progress: %u%%\n", current_progress);
+#endif
+	if (ota_mqtt_client) {
+		tfp_snprintf(progress_msg, sizeof(progress_msg),
+			"flashing_%d%%", current_progress);
+		mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
+	}
 }
 
 ICACHE_FLASH_ATTR
-static void ota_reboot_timer_cb(void *arg) {
-	system_restart_defered();
+static void ota_cleanup_timers(void) {
+	os_timer_disarm(&ota_timeout_timer);
+	os_timer_disarm(&ota_retry_timer);
+	os_timer_disarm(&ota_progress_timer);
 }
 
 /*
@@ -434,7 +461,6 @@ static void ota_reboot_timer_cb(void *arg) {
 ICACHE_FLASH_ATTR
 static void ota_fail_update(const char *status, bool abort_connection) {
 	ota_cleanup_timers();
-	os_timer_disarm(&ota_reboot_timer);
 
 	ota_retry_pending = false;
 	ota_continue_pending = false;
@@ -768,8 +794,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	int status_code;
 	bool cl_duplicate;
 	bool cr_duplicate;
-	uint8_t current_progress;
-	char progress_msg[32];
 
 	if (!ota_in_progress || ota_retry_pending) {
 		return;
@@ -959,11 +983,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 
 		headers_parsed = true;
 
-		ota_last_reported_progress = (uint8_t)(
-			(ota_received_bytes * 100UL) /
-			(ota_firmware_size > 0 ? ota_firmware_size : 1)
-		);
-
 		total_header_size = (uint16_t)((body_marker + 4) - ota_header_buffer);
 
 		if (total_header_size < previous_header_len) {
@@ -1078,27 +1097,6 @@ static void ota_tcp_recv_cb(void *arg, char *pusrdata, unsigned short length) {
 	ota_received_bytes += len;
 	ota_response_received_bytes += len;
 
-	// Send periodic MQTT progress reports every 10%.
-	if (ota_firmware_size > 0) {
-		current_progress = (uint8_t)(
-			(ota_received_bytes * 100UL) / ota_firmware_size
-		);
-
-		if (current_progress >= ota_last_reported_progress + 10 &&
-			current_progress < 100) {
-
-			ota_last_reported_progress = (current_progress / 10) * 10;
-
-#ifdef DEBUG
-			os_printf("[OTA] Progress: %u%%\n", ota_last_reported_progress);
-#endif
-			if (ota_mqtt_client) {
-				tfp_snprintf(progress_msg, sizeof(progress_msg),
-					"flashing_%d%%", ota_last_reported_progress);
-				mqtt_rpc_ota_status(ota_mqtt_client, progress_msg);
-			}
-		}
-	}
 }
 
 ICACHE_FLASH_ATTR
@@ -1230,6 +1228,16 @@ static void ota_tcp_discon_cb(void *arg) {
 			ota_target_rom);
 #endif
 
+		if (ota_last_reported_progress < 100) {
+			ota_last_reported_progress = 100;
+#ifdef DEBUG
+			os_printf("[OTA] Progress: 100%%\n");
+#endif
+			if (ota_mqtt_client) {
+				mqtt_rpc_ota_status(ota_mqtt_client, "flashing_100%");
+			}
+		}
+
 		if (ota_mqtt_client) {
 			tfp_snprintf(status_msg, sizeof(status_msg),
 				"success&target_rom=%d", ota_target_rom + 1);
@@ -1237,15 +1245,12 @@ static void ota_tcp_discon_cb(void *arg) {
 
 			tfp_snprintf(status_msg, sizeof(status_msg),
 				"restarting_in_%ds",
-				(OTA_REBOOT_DELAY_MS + SYSTEM_RESTART_DELAY_MS) / 1000);
+				SYSTEM_RESTART_DELAY_MS / 1000);
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 
-		// Allow the MQTT stack time to flush its queued messages before reboot.
-		os_timer_disarm(&ota_reboot_timer);
-		os_timer_setfn(&ota_reboot_timer,
-			(os_timer_func_t *)ota_reboot_timer_cb, NULL);
-		os_timer_arm(&ota_reboot_timer, OTA_REBOOT_DELAY_MS, 0);
+		// Trigger deferred system restart immediately
+		system_restart_defered();
 
 	} else {
 #ifdef DEBUG
@@ -1428,10 +1433,13 @@ bool start_ota_update(
 
 	memset(ota_header_buffer, 0, sizeof(ota_header_buffer));
 
-	os_timer_disarm(&ota_reboot_timer);
 	ota_cleanup_timers();
 
 	ota_in_progress = true;
+
+	os_timer_setfn(&ota_progress_timer,
+		(os_timer_func_t *)ota_progress_timer_cb, NULL);
+	os_timer_arm(&ota_progress_timer, OTA_PROGRESS_INTERVAL_MS, 1);
 
 	if (!ota_parse_sha256(hex_sha256_1, expected_sha256_1,
 		&has_sha256_check_1) ||
