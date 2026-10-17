@@ -107,6 +107,7 @@ void en61107_teardown_session(void) {
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
+
 	// Retry the current protocol step twice, then restart from a clean 300-baud state.
 	if (en61107_timeout_retries < EN61107_MAX_TIMEOUT_RETRIES) {
 		en61107_timeout_retries++;
@@ -160,25 +161,31 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 #ifndef DEBUG_NO_METER
 	unsigned int i;
 #endif
-	// Only send the 60-byte NULL wake-up stream if we haven't successfully connected before.
-	// Skipping this on periodic reads prevents the meter from ignoring the first command and timing out.
-	if (en61107_uart_state == UART_STATE_NONE && !en61107_serial_set) {
+	// Start recovery at the protocol's initial baud rate, independent of the previous session.
+	if (en61107_uart_state == UART_STATE_NONE) {
+		// Only send the 60-byte NULL wake-up stream if we haven't successfully connected before.
+		// Skipping this on periodic reads prevents the meter from ignoring the first command.
+		if (!en61107_serial_set) {
 #ifndef DEBUG_NO_METER
-		en61107_reset_receive_buffer();
-		uart_set_baudrate(UART0, BIT_RATE_300);
-		uart_set_word_length(UART0, SEVEN_BITS);
-		uart_set_parity(UART0, EVEN_BITS);
-		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+			en61107_reset_receive_buffer();
+			uart_set_baudrate(UART0, BIT_RATE_300);
+			uart_set_word_length(UART0, SEVEN_BITS);
+			uart_set_parity(UART0, EVEN_BITS);
+			uart_set_stop_bits(UART0, TWO_STOP_BIT);
 
-		// Send wake-up stream
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
+			// Send wake-up stream
+			for (i = 0; i < 60; i++) {
+				uart_tx_one_char(UART0, '\0');
+			}
 #endif
-		// Wait for the wake-up stream to finish before sending /?!\r\n.
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STREAM_DELAY_MS, 0);
+			// Wait for the wake-up stream to finish before sending /?!\r\n.
+			os_timer_disarm(&en61107_meter_wake_up_timer);
+			os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
+			os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STREAM_DELAY_MS, 0);
+		} else {
+			// No wake-up stream needed if already set, just send ident directly
+			en61107_uart_send_en61107_ident();
+		}
 	} else {
 		// Normal flow
 		en61107_uart_send_en61107_ident();

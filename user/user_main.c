@@ -68,7 +68,7 @@ static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
-#ifdef EN61107
+#ifndef IMPULSE
 static os_timer_t mqtt_connected_defer_timer;
 #endif
 static os_timer_t wifi_test_report_timer;
@@ -655,7 +655,7 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	}
 }
 
-#ifdef EN61107
+#ifndef IMPULSE
 ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 	mqtt_connected_cb((uint32_t*)&mqtt_client);
 }
@@ -736,19 +736,24 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 		wifi_fallback_mqtt_connected = false;
 	}
 
+#ifndef IMPULSE
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
-		// Trigger meter request immediately to get serial if not set yet
 		en61107_request_send();
-		
+#else
+	if (kmp_get_received_serial() == 0) {
+		kmp_request_send();
+#endif
+		// Trigger meter request immediately to get serial if not set yet
 		// We MUST return here so we don't subscribe to /config/v2/0000000/#
-		// Reschedule 1 second later to check if the serial UART read finished
+		// Reschedule later to check if the serial UART read finished
 		os_timer_disarm(&mqtt_connected_defer_timer);
 		os_timer_setfn(&mqtt_connected_defer_timer, (os_timer_func_t *)mqtt_connected_defer_timer_func, NULL);
 		os_timer_arm(&mqtt_connected_defer_timer, MQTT_CONNECTED_DEFER_DELAY_MS, 0);
 		return;
 	}
 #endif
+
 	// set mqtt_client kmp_request should use to return data
 #ifdef EN61107
 	en61107_set_mqtt_client(&mqtt_client);
