@@ -3,8 +3,8 @@
 
 //#define PRINTF_DEBUG
 
-//#define CFG_HOLDER	0x00FF55A4	/* Change this value to load default configurations */
-#define CFG_LOCATION	0x76	/* Please don't change or if you know what you doing */
+//#define CFG_HOLDER	0x00FF55A4	 // Change this value to load default configurations
+#define CFG_LOCATION	0x76	 // Please don't change or if you know what you doing
 //#define MQTT_CA_FLASH_SECTOR	0x5c
 
 #define STACK_TRACE_N				0x4000
@@ -51,9 +51,10 @@
 //#define DEFAULT_SECURITY	1		// 1 for ssl, 0 for none
 #define DEFAULT_SECURITY	0		// 1 for ssl, 0 for none
 
-#define MQTT_SEND_TIMOUT		5	/*second*/
-#define MQTT_RECONNECT_TIMEOUT	5	/*second*/
-#define MQTT_CONNECT_TIMEOUT	5	/*second*/
+#define MQTT_SEND_TIMOUT		5	// second
+#define MQTT_RECONNECT_TIMEOUT	5	// second
+#define MQTT_CONNECT_TIMEOUT	5	// second
+#define MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS 1100	// Delay before triggering the single-shot initial meter poll after boot to allow MQTT session setup
 
 #ifdef DEBUG_NO_METER
 #ifdef NO_CRON

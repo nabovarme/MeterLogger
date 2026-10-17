@@ -488,8 +488,8 @@ static void en61107_received_task(os_event_t *events) {
 				// and stop retransmission timeout timer, last data from meter
 				os_timer_disarm(&en61107_receive_timeout_timer);
 
-				if (mqtt_client && mqtt_client->pCon && mqtt_client->mqtt_state.work_buffer) {
-					// if mqtt_client is initialized
+				// Queue the MQTT message as long as the client structure is initialized
+				if (mqtt_client && mqtt_client->msgQueue.buf) {
 					if (message_l > 1) {
 						MQTT_Publish(mqtt_client, topic, message, message_l, 2, 0);	// QoS level 2
 					}

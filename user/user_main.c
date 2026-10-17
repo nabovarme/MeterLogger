@@ -59,6 +59,8 @@ uint32_t impulse_rising_edge_time;
 uint64_t last_uptime;
 #endif // ENDIF IMPULSE
 
+static bool first_mqtt_connect_after_boot = true;
+
 MQTT_Client mqtt_client;
 static void ICACHE_FLASH_ATTR mqtt_fallback_retry_cb(void);
 static os_timer_t sample_timer_first;
@@ -781,10 +783,13 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 	os_timer_setfn(&mqtt_connected_first_mqtt_rpc_timer, (os_timer_func_t *)mqtt_connected_first_mqtt_rpc_timer_func, NULL);
 	os_timer_arm(&mqtt_connected_first_mqtt_rpc_timer, 2000, 0);
 	
-	// sample once outside this function...	
-	os_timer_disarm(&sample_timer_first);
-	os_timer_setfn(&sample_timer_first, (os_timer_func_t *)sample_timer_first_func, NULL);
-	os_timer_arm(&sample_timer_first, 1100, 0);		// once after 1.1 second
+	if (first_mqtt_connect_after_boot) {
+		first_mqtt_connect_after_boot = false;
+		// sample once outside this function...	
+		os_timer_disarm(&sample_timer_first);
+		os_timer_setfn(&sample_timer_first, (os_timer_func_t *)sample_timer_first_func, NULL);
+		os_timer_arm(&sample_timer_first, MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS, 0);		// once after 1.1 second
+	}
 
 	// ...and start sample timer repeatedly
 	os_timer_disarm(&sample_timer);
