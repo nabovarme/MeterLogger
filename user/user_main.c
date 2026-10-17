@@ -464,21 +464,17 @@ ICACHE_FLASH_ATTR void static impulse_meter_calculate_timer_func(void *arg) {
 #endif // IMPULSE
 
 ICACHE_FLASH_ATTR void meter_is_ready(void) {
-	struct rst_info *rtc_info;
-	rtc_info = system_get_rst_info();
-	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
-		// fast boot if reset, go in sample/station mode
-		fast_boot = true;
+	if (fast_boot) {
+		// fast boot, go in sample/station mode
 #ifdef DEBUG
 		printf("fast boot\n");
 #endif
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
-		os_timer_arm(&sample_mode_timer, FAST_BOOT_DELAY_MS, 0);
+		os_timer_arm(&sample_mode_timer, WIFI_START_FAST_BOOT_DELAY_MS, 0);
 	}
 	else {
 #ifdef DEBUG
-		fast_boot = false;
 		printf("normal boot\n");
 //		ext_spi_flash_erase_sector(0x0);
 //		ext_spi_flash_erase_sector(0x1000);
@@ -1499,10 +1495,18 @@ ICACHE_FLASH_ATTR void user_init(void) {
 ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef DEBUG
 	uint32_t watchdog_rebooted;
-	
+#endif
 	struct rst_info *rtc_info;
 	rtc_info = system_get_rst_info();
 
+	// Evaluate boot type immediately so timers can use it
+	if ((rtc_info != NULL) && (rtc_info->reason != REASON_DEFAULT_RST) && (rtc_info->reason != REASON_EXT_SYS_RST)) {
+		fast_boot = true;
+	} else {
+		fast_boot = false;
+	}
+
+#ifdef DEBUG
 	if (load_rtc_data(&watchdog_rebooted)) {
 		printf("rst: %d\n", 7);
 	}
@@ -1515,7 +1519,6 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 		}
 		os_printf("epc1=0x%08x, epc2=0x%08x, epc3=0x%08x, excvaddr=0x%08x, depc=0x%08x\n", rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);	//The address of the last crash is printed, which is used to debug garbled output.
 	}
-	
 #endif	// DEBUG
 
 #ifdef IMPULSE
@@ -1552,13 +1555,13 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef EN61107
 	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
-	os_timer_arm(&en61107_request_send_timer, 10000, 0);
+	os_timer_arm(&en61107_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : INITIAL_METER_POLL_COLD_BOOT_DELAY_MS, 0);
 #elif defined IMPULSE
 	// do nothing here
 #else
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
-	os_timer_arm(&kmp_request_send_timer, 10000, 0);
+	os_timer_arm(&kmp_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : INITIAL_METER_POLL_COLD_BOOT_DELAY_MS, 0);
 #endif	// EN61107
 }
 
