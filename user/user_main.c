@@ -1555,13 +1555,13 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 #ifdef EN61107
 	os_timer_disarm(&en61107_request_send_timer);
 	os_timer_setfn(&en61107_request_send_timer, (os_timer_func_t *)en61107_request_send_timer_func, NULL);
-	os_timer_arm(&en61107_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : INITIAL_METER_POLL_COLD_BOOT_DELAY_MS, 0);
+	os_timer_arm(&en61107_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : METER_POLL_COLD_BOOT_DELAY_MS, 0);
 #elif defined IMPULSE
 	// do nothing here
 #else
 	os_timer_disarm(&kmp_request_send_timer);
 	os_timer_setfn(&kmp_request_send_timer, (os_timer_func_t *)kmp_request_send_timer_func, NULL);
-	os_timer_arm(&kmp_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : INITIAL_METER_POLL_COLD_BOOT_DELAY_MS, 0);
+	os_timer_arm(&kmp_request_send_timer, fast_boot ? METER_POLL_FAST_BOOT_DELAY_MS : METER_POLL_COLD_BOOT_DELAY_MS, 0);
 #endif	// EN61107
 }
 
