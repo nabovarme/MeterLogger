@@ -391,16 +391,6 @@ void en61107_request_init() {
 
 	en61107_etx_received = false;
 
-#ifndef DEBUG_NO_METER
-	if (!fast_boot) {
-		// wake up meter with 2000 ms of null characters only on cold boot
-		// BIT_RATE_1200
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
-	}
-#endif
-
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
 
