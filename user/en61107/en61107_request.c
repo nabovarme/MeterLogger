@@ -137,7 +137,8 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 		uart_set_stop_bits(UART0, TWO_STOP_BIT);
 #endif
 
-		if (!fast_boot && !en61107_serial_set) {
+		// Send wake-up stream on any boot/reboot until serial is set
+		if (!en61107_serial_set) {
 #ifndef DEBUG_NO_METER
 			// Send wake-up stream
 			for (i = 0; i < 60; i++) {
@@ -149,6 +150,7 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 			os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
 			os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
 		} else {
+			// Direct command for normal periodic 60-second fetches
 			en61107_uart_send_en61107_ident();
 		}
 	} else {
