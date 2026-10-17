@@ -1018,6 +1018,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// handle standalone master key injection
 		mqtt_rpc_set_key(&mqtt_client, cleartext);
 	}
+	else if (strncmp(function_name, "set_mqtt_host", FUNCTIONNAME_L) == 0) {
+		// handle MQTT host change
+		mqtt_rpc_set_mqtt_host(&mqtt_client, cleartext);
+	}
 #ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace

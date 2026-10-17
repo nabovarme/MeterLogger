@@ -230,6 +230,7 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /config/v2/9999999/[unix time]/restart                   |                                                                                                     |
 | /config/v2/9999999/[unix time]/ota_update                | [url=http://domain.com/api&version=20261013_001000&sha256_user1=<64-char_hex_hash>&sha256_user2=<64-char_hex_hash>] (all optional; meter selects correct hash based on target slot) OR [action=confirm] (permanently commits a successful temporary boot slot) |
 | /config/v2/9999999/[unix time]/set_key                   | [key=new_32_char_hex_key]                                                                           |
+| /config/v2/9999999/[unix time]/set_mqtt_host             | [MQTT hostname, e.g. nabovarme.meterlogger.net; saved to flash and device restarts after replying] |
 
 **MQTT format for messages sent _from_ meter**  
 
@@ -269,6 +270,7 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /restart/v2/9999999/[unix time]                  |                                                                                                      |
 | /ota_update/v2/9999999/[unix time]               | [status=started&target_rom=1|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error\_[no_url|busy|unconfirmed_temp_rom|http_not_200|header_overflow|invalid_magic|file_too_large|flash_write|tcp_drop|too_small|truncated|checksum_mismatch|disconnected|dns]) |
 | /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
+| /set_mqtt_host/v2/9999999/[unix time]            | [status=ok (or status=error_invalid_host)] |
 
 **Secure OTA Updates with Dual SHA-256 Validation:**  
 The OTA (Over-The-Air) firmware update process now features streaming cryptographic verification to prevent corrupted downloads from soft-bricking the device. Because the ESP8266 rBoot bootloader requires two separate memory slots, user1.bin and user2.bin are compiled with different memory layouts and consequently have completely different SHA-256 hashes.

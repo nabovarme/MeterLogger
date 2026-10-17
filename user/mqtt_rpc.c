@@ -1284,6 +1284,52 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
 }
 
+ICACHE_FLASH_ATTR
+void mqtt_rpc_set_mqtt_host(MQTT_Client *client, char *params) {
+	uint8_t cleartext[MQTT_MESSAGE_L];
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
+	int mqtt_message_l;
+	size_t host_len;
+	bool success = false;
+
+	if (params != NULL) {
+		host_len = strlen(params);
+		if (host_len > 0 && host_len < sizeof(sys_cfg.mqtt_host)) {
+			memset(sys_cfg.mqtt_host, 0, sizeof(sys_cfg.mqtt_host));
+			memcpy(sys_cfg.mqtt_host, params, host_len);
+			success = cfg_save(NULL, NULL);
+		}
+	}
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#elif defined IMPULSE
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+	if (success) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=ok");
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "status=error_invalid_host");
+	}
+
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+
+	if (success) {
+		// Delay the teardown and restart to let the QoS 2 ACK transmit
+		os_timer_disarm(&mqtt_restart_ack_timer);
+		os_timer_setfn(&mqtt_restart_ack_timer, (os_timer_func_t *)mqtt_restart_ack_timer_func, client);
+		os_timer_arm(&mqtt_restart_ack_timer, MQTT_RESTART_DELAY_MS, 0);
+	}
+}
+
 #ifdef DEBUG_STACK_TRACE
 ICACHE_FLASH_ATTR
 void mqtt_rpc_stack_trace(MQTT_Client *client) {
