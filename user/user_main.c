@@ -474,13 +474,7 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 #endif
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
-#ifdef EN61107
-		os_timer_arm(&sample_mode_timer, 30000, 0);
-#elif defined IMPULSE
-		os_timer_arm(&sample_mode_timer, 100, 0);
-#else
-		os_timer_arm(&sample_mode_timer, 16000, 0);
-#endif
+		os_timer_arm(&sample_mode_timer, FAST_BOOT_DELAY_MS, 0);
 	}
 	else {
 #ifdef DEBUG
