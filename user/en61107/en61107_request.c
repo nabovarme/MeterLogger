@@ -75,25 +75,6 @@ uint8_t pseudo_data_debug_no_meter = 0;
 #endif
 
 ICACHE_FLASH_ATTR
-void en61107_teardown_session(void) {
-	// Disarm active response timers
-	os_timer_disarm(&en61107_receive_timeout_timer);
-	os_timer_disarm(&en61107_meter_wake_up_timer);
-
-#ifndef DEBUG_NO_METER
-	// Set UART to 300 baud for EN61107 teardown
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-
-	// Send EN61107 session break (\006001\r\n)
-	strcpy(frame, "\006001\r\n");
-	uart0_tx_buffer(frame, strlen(frame));
-#endif
-}
-
-ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
 	// if no reply received, retransmit
@@ -154,16 +135,22 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 		uart_set_word_length(UART0, SEVEN_BITS);
 		uart_set_parity(UART0, EVEN_BITS);
 		uart_set_stop_bits(UART0, TWO_STOP_BIT);
-
-		// Send wake-up stream
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
 #endif
-		// Allow the wake-up stream to finish before sending /?!\r\n
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
+
+		if (!en61107_serial_set) {
+#ifndef DEBUG_NO_METER
+			// Send wake-up stream
+			for (i = 0; i < 60; i++) {
+				uart_tx_one_char(UART0, '\0');
+			}
+#endif
+			// Allow the wake-up stream to finish before sending /?!\r\n
+			os_timer_disarm(&en61107_meter_wake_up_timer);
+			os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
+			os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
+		} else {
+			en61107_uart_send_en61107_ident();
+		}
 	} else {
 		// Normal flow
 		en61107_uart_send_en61107_ident();
@@ -404,26 +391,13 @@ void en61107_request_init() {
 
 	en61107_etx_received = false;
 
-	register_system_restart_defered_cb(en61107_teardown_session);
-
 #ifndef DEBUG_NO_METER
 	if (!fast_boot) {
 		// wake up meter with 2000 ms of null characters only on cold boot
-#ifdef EN61107
-		// BIT_RATE_300
-		for (i = 0; i < 60; i++) {
-			uart_tx_one_char(UART0, '\0');
-		}
-#else
 		// BIT_RATE_1200
 		for (i = 0; i < 60; i++) {
 			uart_tx_one_char(UART0, '\0');
 		}
-#endif
-	} else {
-		// Warm boot: execute teardown right after initializing serial 
-		// to guarantee clean state before sending sign-on / \006000\r\n
-		en61107_teardown_session();
 	}
 #endif
 
@@ -524,9 +498,6 @@ void en61107_request_send() {
 	en61107_request_num++;
 
 	if (fast_boot) {
-		// On warm reboot, clear any active session on the meter before re-identifying
-		en61107_teardown_session();
-
 		// Schedule en61107_uart_send_en61107_ident() after a 500ms delay
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);

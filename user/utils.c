@@ -16,7 +16,6 @@
 #include "utils.h"
 
 static os_timer_t system_restart_defered_timer;
-static system_restart_teardown_cb restart_teardown_cb = NULL;
 static bool system_restart_pending = false;
 
 // crc table
@@ -234,11 +233,6 @@ size_t spi_flash_size() {  // returns flash chip's size in BYTES
 	}
 }
 
-ICACHE_FLASH_ATTR
-void register_system_restart_defered_cb(system_restart_teardown_cb cb) {
-	restart_teardown_cb = cb;
-}
-
 ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 #ifdef DEBUG
 	printf("...restarting now\n\r");
@@ -254,16 +248,11 @@ ICACHE_FLASH_ATTR void static system_restart_defered_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR
 void system_restart_defered() {
-	// Do not execute teardown or schedule another restart twice.
+	// Do not schedule another restart twice.
 	if (system_restart_pending) {
 		return;
 	}
 	system_restart_pending = true;
-
-	// Call registered meter teardown function before shutting down services
-	if (restart_teardown_cb != NULL) {
-		restart_teardown_cb();
-	}
 
 	httpdStop();		// stop http configuration server
 	captdnsStop();		// stop captive dns
