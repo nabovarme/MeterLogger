@@ -164,15 +164,16 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 	// Start recovery at the protocol's initial baud rate, independent of the previous session.
 	if (en61107_uart_state == UART_STATE_NONE) {
 #ifndef DEBUG_NO_METER
-		// Allways clear out stale hardware UART bytes before a fresh read sequence
+		// Always clear out stale hardware UART bytes before a fresh read sequence
 		en61107_reset_receive_buffer();
 		uart_set_baudrate(UART0, BIT_RATE_300);
 		uart_set_word_length(UART0, SEVEN_BITS);
 		uart_set_parity(UART0, EVEN_BITS);
 		uart_set_stop_bits(UART0, TWO_STOP_BIT);
 #endif
-		// Only send the 60-byte NULL wake-up stream if we haven't successfully connected before.
-		// Skipping this on periodic reads prevents the meter from ignoring the first command.
+
+#ifdef MC_66B
+		// MC-B meters stay awake and get confused by NULL streams on periodic reads
 		if (!en61107_serial_set) {
 #ifndef DEBUG_NO_METER
 			// Send wake-up stream
@@ -188,12 +189,25 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 			// No wake-up stream needed if already set, just send ident directly
 			en61107_uart_send_en61107_ident();
 		}
+#else
+		// Standard MC meters go to sleep and ALWAYS require the NULL wake-up stream
+#ifndef DEBUG_NO_METER
+		// Send wake-up stream
+		for (i = 0; i < 60; i++) {
+			uart_tx_one_char(UART0, '\0');
+		}
+#endif
+		// Wait for the wake-up stream to finish before sending /?!\r\n.
+		os_timer_disarm(&en61107_meter_wake_up_timer);
+		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
+		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STREAM_DELAY_MS, 0);
+#endif
+
 	} else {
 		// Normal flow
 		en61107_uart_send_en61107_ident();
 	}
 }
-
 
 static bool en61107_ident_response_ready(void) {
 	unsigned int count;
