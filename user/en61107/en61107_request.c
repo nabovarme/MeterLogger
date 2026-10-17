@@ -19,7 +19,7 @@
 #define QUEUE_SIZE 256
 
 #define EN61107_ERROR_RECOVERY_DELAY_MS 60000
-#define EN61107_WAKEUP_STABILIZATION_DELAY_MS 400
+#define EN61107_WAKEUP_STABILIZATION_DELAY_MS 2600
 #define EN61107_FAST_BOOT_WAKEUP_DELAY_MS 500
 
 #define EN61107_IDENT_RESPONSE_TIMEOUT_MS 3000
@@ -160,7 +160,7 @@ void en61107_meter_wake_up_timer_func(void *arg) {
 			uart_tx_one_char(UART0, '\0');
 		}
 #endif
-		// Wait 400ms for meter CPU to stabilize before sending /?!\r\n
+		// Allow the wake-up stream to finish before sending /?!\r\n
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
 		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
@@ -535,7 +535,7 @@ void en61107_request_send() {
 	}
 
 	if (en61107_uart_state == UART_STATE_NONE) {
-		// Cold boot path: wake-up timer (400ms to catch meter before sleep)
+		// Cold boot path: optical wake-up timer (400ms to catch meter before sleep)
 		os_timer_disarm(&en61107_meter_wake_up_timer);
 		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
 		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
