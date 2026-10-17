@@ -59,7 +59,7 @@
 
 #define WIFI_START_FAST_BOOT_DELAY_MS			2000 // Delay before starting sample mode on fast boot
 #define INITIAL_METER_POLL_COLD_BOOT_DELAY_MS	10000 // Delay before the very first meter read on power-on (cold boot)
-#define METER_POLL_FAST_BOOT_DELAY_MS			100	// Delay before the very first meter read on deep sleep wake (fast boot)
+#define METER_POLL_FAST_BOOT_DELAY_MS			20000 // Delay before the very first meter read on deep sleep wake (fast boot)
 #ifdef DEBUG_NO_METER
 #ifdef NO_CRON
 #define QUEUE_BUFFER_SIZE		 		4096
