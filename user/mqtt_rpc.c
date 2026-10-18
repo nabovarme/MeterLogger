@@ -1227,8 +1227,6 @@ void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 	char new_key[64] = {0};
-	char *str, *param_key, *param_val, *ctx1, *ctx2;
-	char params_copy[MQTT_MESSAGE_L];
 
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
@@ -1240,23 +1238,8 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 		return;
 	}
 
-	// Parse input parameters (e.g., "key=ef500c9268cf749016d26d6cbfaaf7bf")
-	strncpy(params_copy, params, MQTT_MESSAGE_L);
-	str = strtok_r(params_copy, "&", &ctx1);
-	while (str != NULL) {
-		param_key = strtok_r(str, "=", &ctx2);
-		param_val = strtok_r(NULL, "=", &ctx2);
-		if (param_key && param_val && strncmp(param_key, "key", 3) == 0) {
-			query_string_unescape(param_val);
-			strncpy(new_key, param_val, sizeof(new_key) - 1);
-		}
-		str = strtok_r(NULL, "&", &ctx1);
-	}
-
-	// Fallback: If it doesn't contain "key=", assume the whole string is the key
-	if (strlen(new_key) == 0 && strlen(params) >= 32) {
-		strncpy(new_key, params, sizeof(new_key) - 1);
-	}
+	// The whole string is the key
+	strncpy(new_key, params, sizeof(new_key) - 1);
 
 	// Save to flash
 	if (strlen(new_key) >= 32) {
@@ -1282,6 +1265,11 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0); // QoS 2
+
+	// Update the keys in RAM immediately after sending the ACK
+	if (success) {
+		init_aes_hmac_combined(sys_cfg.key);
+	}
 }
 
 ICACHE_FLASH_ATTR
