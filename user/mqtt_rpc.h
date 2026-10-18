@@ -11,7 +11,7 @@ ICACHE_FLASH_ATTR void mqtt_rpc_scan(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid);
 ICACHE_FLASH_ATTR void mqtt_rpc_set_pwd(MQTT_Client *client, char *password);
 ICACHE_FLASH_ATTR void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd);
-ICACHE_FLASH_ATTR void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password);
+ICACHE_FLASH_ATTR void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *ap_mesh_pwd);
 ICACHE_FLASH_ATTR void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params);
 ICACHE_FLASH_ATTR void mqtt_rpc_reconnect(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_disconnect_count(MQTT_Client *client);

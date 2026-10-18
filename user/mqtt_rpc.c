@@ -366,7 +366,7 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 }
 
 ICACHE_FLASH_ATTR
-void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
+void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *ap_mesh_pwd) {
 	uint8_t cleartext[MQTT_MESSAGE_L];
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
@@ -374,27 +374,30 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
 
-	if (password == NULL) {
+	if (ap_mesh_pwd == NULL) {
 		return;
 	}
 
-	if (fallback_ap_is_running) return; // Prevent overwriting rescue AP config
-		
-	// change sta_pwd, save if different
-	if (strncmp(sys_cfg.ap_mesh_pwd, password, 64 - 1) != 0) {
+#ifdef DEBUG
+	printf("ap_mesh_pwd: %s\n", ap_mesh_pwd);
+#endif	// DEBUG
+
+	if (strncmp((char *)sys_cfg.ap_mesh_pwd, ap_mesh_pwd, 64 - 1) != 0) {
 		memset(sys_cfg.ap_mesh_pwd, 0, sizeof(sys_cfg.ap_mesh_pwd));
-		strncpy(sys_cfg.ap_mesh_pwd, password, 64 - 1);
+		strncpy((char *)sys_cfg.ap_mesh_pwd, ap_mesh_pwd, 64 - 1);
+
 		if (!cfg_save(&calculated_crc, &saved_crc)) {
 			mqtt_flash_error(calculated_crc, saved_crc);
+		} else {
+			// If SoftAP is running, re-enable it to apply the new password immediately
+			if (wifi_get_opmode() == STATIONAP_MODE || wifi_get_opmode() == SOFTAP_MODE) {
+				wifi_set_opmode_current(STATION_MODE);
+				wifi_set_opmode_current(STATIONAP_MODE);
+				wifi_softap_config((uint8_t *)mesh_ssid, (uint8_t *)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
+				wifi_softap_ip_config();
+			}
 		}
 	}
-
-	// restart AP
-	wifi_set_opmode_current(STATION_MODE);
-
-	wifi_set_opmode_current(STATIONAP_MODE);
-	wifi_softap_config((uint8_t*)mesh_ssid, (uint8_t*)sys_cfg.ap_mesh_pwd, AP_MESH_TYPE);
-	wifi_softap_ip_config();	
 
 	// send mqtt reply
 #ifdef EN61107
@@ -406,7 +409,16 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *password) {
 #endif
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", sys_cfg.ap_mesh_pwd);
+
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ap_mesh_pwd=");
+	strncpy(mqtt_message, sys_cfg.ap_mesh_pwd, MQTT_MESSAGE_L - 1);
+	// escape & and =
+	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
+		// error
+		return;
+	}
+	strcat(cleartext, mqtt_message);
+
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
