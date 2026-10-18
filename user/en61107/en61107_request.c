@@ -19,7 +19,6 @@
 #define QUEUE_SIZE 256
 
 #define EN61107_ERROR_RECOVERY_DELAY_MS 60000
-#define EN61107_WAKEUP_STABILIZATION_DELAY_MS 2300
 #define EN61107_FAST_BOOT_WAKEUP_DELAY_MS 500
 
 #define EN61107_IDENT_RESPONSE_TIMEOUT_MS 3000
@@ -61,7 +60,6 @@ static MQTT_Client *mqtt_client = NULL;	// initialize to NULL
 
 static os_timer_t en61107_receive_timeout_timer;
 static os_timer_t en61107_delayed_uart_change_setting_timer;
-static os_timer_t en61107_meter_wake_up_timer;
 
 volatile en61107_uart_state_t en61107_uart_state;
 
@@ -106,9 +104,9 @@ void en61107_receive_timeout_timer_func(void *arg) {
 		en61107_uart_state = UART_STATE_NONE;
 		en61107_request_num = 0;
 
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_ERROR_RECOVERY_DELAY_MS, 0);
+		os_timer_disarm(&en61107_receive_timeout_timer);
+		os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+		os_timer_arm(&en61107_receive_timeout_timer, EN61107_ERROR_RECOVERY_DELAY_MS, 0);
 	}
 }
 
@@ -120,23 +118,6 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 //	uart_set_parity(UART0, EVEN_BITS);
 	uart_set_stop_bits(UART0, uart_settings->stop_bits);
 #endif
-}
-
-ICACHE_FLASH_ATTR
-void en61107_meter_wake_up_timer_func(void *arg) {
-#ifndef DEBUG_NO_METER
-	// Configure UART0 for 300 baud, 7E2 (EN61107 sign-on)
-	uart_set_baudrate(UART0, BIT_RATE_300);
-	uart_set_word_length(UART0, SEVEN_BITS);
-	uart_set_parity(UART0, EVEN_BITS);
-	uart_set_stop_bits(UART0, TWO_STOP_BIT);
-#endif
-
-	// Direct wired connection: Do not send the 60 null-byte (\0) wake-up stream.
-	// Sending null bytes over a wired serial line causes continuous framing errors/breaks 
-	// on the meter's UART RX pin, blocking communication for 15-20 seconds.
-	// Send the sign-on command (/?!\r\n) directly.
-	en61107_uart_send_en61107_ident();
 }
 
 // Helper to safely append strings without overflowing the destination buffer
@@ -465,20 +446,7 @@ void en61107_request_send() {
 
 	en61107_request_num++;
 
-	if (fast_boot) {
-		// Schedule en61107_uart_send_en61107_ident() after a 500ms delay
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_FAST_BOOT_WAKEUP_DELAY_MS, 0);
-		return;
-	}
-
-	if (en61107_uart_state == UART_STATE_NONE) {
-		// Cold boot path: optical wake-up timer (400ms to catch meter before sleep)
-		os_timer_disarm(&en61107_meter_wake_up_timer);
-		os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_meter_wake_up_timer_func, NULL);
-		os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
-	}
+	en61107_uart_send_en61107_ident();
 #else
 	char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
@@ -784,7 +752,7 @@ bool en61107_fifo_get(char *c) {
 ICACHE_FLASH_ATTR
 bool en61107_fifo_snoop(char *c, unsigned int pos) {
 	if (en61107_fifo_in_use() > (pos)) {
-        *c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
+		*c = fifo_buffer[(fifo_tail + pos) % QUEUE_SIZE];
 		return true;
 	}
 	else {
@@ -796,5 +764,4 @@ ICACHE_FLASH_ATTR
 void en61107_request_destroy() {
 	os_timer_disarm(&en61107_receive_timeout_timer);
 	os_timer_disarm(&en61107_delayed_uart_change_setting_timer);
-	os_timer_disarm(&en61107_meter_wake_up_timer);
 }
