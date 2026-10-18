@@ -8,7 +8,7 @@
 
 #define STACK_TRACE_BUFFER_N		128
 
-//The asm stub saves the Xtensa registers here when a debugging exception happens.
+// The asm stub saves the Xtensa registers here when a debugging exception happens.
 struct XTensa_exception_frame_s saved_regs;
 
 // struct for buffered save log to flash
@@ -26,7 +26,7 @@ extern void ets_wdt_enable();
 
 extern void save_extra_sfrs_for_exception();
 
-//Get the value of one of the A registers
+// Get the value of one of the A registers
 ICACHE_FLASH_ATTR
 static unsigned int getaregval(int reg) {
 	if (reg == 0) return saved_regs.a0;
@@ -193,6 +193,7 @@ static void print_reason() {
 ICACHE_FLASH_ATTR
 static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	uint8_t i;
+	uint16_t delay_count;
 	
 	// Save the extra registers the Xtensa HAL doesn't save
 	save_extra_sfrs_for_exception();
@@ -202,7 +203,6 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
 	// has a fixed offset from the address of the passed frame, we can recover it.
 	// saved_regs.a1 = (uint32_t)frame + EXCEPTION_GDB_SP_OFFSET;
-
 	saved_regs.a1 = (uint32_t)frame;
 
 	system_phy_set_powerup_option(3);	// keep RF off after reset
@@ -211,25 +211,34 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	system_soft_wdt_stop();
 	ets_wdt_disable();
 	
+	// Feed hardware WDT before erasing flash to avoid NMI WDT resets
+	WRITE_PERI_REG(0x60000914, 0x73);
+
 	for (i = 0; i * SPI_FLASH_SEC_SIZE < STACK_TRACE_N; i++) {
 		spi_flash_erase_sector(STACK_TRACE_SEC + i);
+		WRITE_PERI_REG(0x60000914, 0x73);
 	}
 	
 	print_reason();
+	WRITE_PERI_REG(0x60000914, 0x73);
 
 	//print_stack(reg->pc, sp, 0x3fffffb0);
 	print_stack(getaregval(1), 0x3fffffb0);
+	WRITE_PERI_REG(0x60000914, 0x73);
 	
 	// Wait ~3 seconds so logs flush out (without WDT)
-	os_delay_us(3000000);
+	for (delay_count = 0; delay_count < 300; delay_count++) {
+		WRITE_PERI_REG(0x60000914, 0x73);
+		os_delay_us(10000); // Wait 10ms at a time for a total of 3 seconds
+	}
 	
-	// Force reboot cleanly (no watchdog needed)
+	// Force reboot cleanly
 	system_restart();
 
-	// in case it does not restart
+	// In case system_restart() does not execute immediately
 	ets_wdt_enable();
 	while(1) {
-		// wait for watchdog to bite
+		// Wait for hardware watchdog to trigger reboot
 	}
 }
 
@@ -250,4 +259,3 @@ void exception_handler_init() {
 		_xtos_set_exception_handler(exno[i], exception_handler);
 	}
 }
-
