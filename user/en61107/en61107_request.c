@@ -18,6 +18,7 @@
 
 #define QUEUE_SIZE 256
 
+#define EN61107_ERROR_RECOVERY_INITIAL_DELAY_MS 5000
 #define EN61107_ERROR_RECOVERY_DELAY_MS 60000
 #define EN61107_FAST_BOOT_WAKEUP_DELAY_MS 500
 
@@ -41,8 +42,6 @@ meter_is_ready_cb en61107_meter_is_ready_cb = NULL;
 bool meter_is_ready_cb_called = false;
 
 meter_sent_data_cb en61107_meter_sent_data_cb = NULL;
-
-//unsigned int mqtt_lwt_flag = 0;
 
 // fifo
 volatile unsigned int fifo_head, fifo_tail;
@@ -68,17 +67,31 @@ UartDevice uart_settings;
 volatile uint8_t en61107_eod;
 bool en61107_etx_received;
 
+// Lock and counters for exponential backoff error recovery
+static bool is_in_error_recovery = false;
+static uint8_t error_backoff_count = 0;
+
 #ifdef DEBUG_NO_METER
 uint8_t pseudo_data_debug_no_meter = 0;
 #endif
 
 ICACHE_FLASH_ATTR
 void en61107_receive_timeout_timer_func(void *arg) {
+	uint32_t backoff_delay;
+	
 	led_blink();	// DEBUG
-	// if no reply received, retransmit
-
+	
 	en61107_fifo_flush();
 
+	// If the recovery delay is over, allow requests and trigger one
+	if (is_in_error_recovery) {
+		is_in_error_recovery = false;
+		en61107_request_num = 1;
+		en61107_uart_send_en61107_ident();
+		return;
+	}
+
+	// if no reply received, retransmit
 	if (en61107_request_num <= 2) {
 		switch (en61107_uart_state) {
 			case UART_STATE_EN61107_IDENT:
@@ -101,14 +114,31 @@ void en61107_receive_timeout_timer_func(void *arg) {
 		}
 	}
 	else {
-		// too many errors, wait for meter to be clear and start over
-		// reset state and counter so the next cycle isn't instantly penalized
+		// too many errors, backoff and wait for meter to be clear
+		is_in_error_recovery = true;
 		en61107_uart_state = UART_STATE_NONE;
 		en61107_request_num = 0;
 
+		// Exponential backoff maxing out at EN61107_ERROR_RECOVERY_DELAY_MS (60s)
+		backoff_delay = EN61107_ERROR_RECOVERY_INITIAL_DELAY_MS * (1 << error_backoff_count);
+		if (backoff_delay > EN61107_ERROR_RECOVERY_DELAY_MS) {
+			backoff_delay = EN61107_ERROR_RECOVERY_DELAY_MS;
+		}
+		
+		if (error_backoff_count < 10) {
+			error_backoff_count++;
+		}
+
+#ifndef DEBUG_NO_METER
+		uart_set_baudrate(UART0, BIT_RATE_300);
+		uart_set_word_length(UART0, SEVEN_BITS);
+		uart_set_parity(UART0, EVEN_BITS);
+		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+#endif
+
 		os_timer_disarm(&en61107_receive_timeout_timer);
 		os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
-		os_timer_arm(&en61107_receive_timeout_timer, EN61107_ERROR_RECOVERY_DELAY_MS, 0);
+		os_timer_arm(&en61107_receive_timeout_timer, backoff_delay, 0);
 	}
 }
 
@@ -232,6 +262,10 @@ static void en61107_received_task(os_event_t *events) {
 			}
 
 			if (parse_mc66cde_standard_data_2_frame(&response, message, message_l)) {
+				
+				// Reset error backoff upon a fully successful read cycle
+				error_backoff_count = 0;
+				
 				// tell user_main we got a serial
 				if (en61107_meter_is_ready_cb && !meter_is_ready_cb_called) {
 					meter_is_ready_cb_called = true;
@@ -351,6 +385,8 @@ void en61107_request_init() {
 	en61107_request_num = 0;
 
 	en61107_etx_received = false;
+	is_in_error_recovery = false;
+	error_backoff_count = 0;
 
 	system_os_task(en61107_received_task, en61107_received_task_prio, en61107_received_task_queue, en61107_received_task_queue_length);
 }
@@ -439,6 +475,11 @@ void en61107_request_send() {
 #ifndef DEBUG_NO_METER
 	char c;
 	unsigned int i;
+
+	// Ignore requests from main loop while we are in backoff penalty
+	if (is_in_error_recovery) {
+		return;
+	}
 
 	// Clear FIFO message buffer
 	i = 0;
@@ -534,6 +575,10 @@ void en61107_request_send() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_en61107_ident() {
+	if (is_in_error_recovery) {
+		return;
+	}
+
 	en61107_eod = '\n';
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -570,6 +615,10 @@ void en61107_uart_send_en61107_ident() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_en61107() {
+	if (is_in_error_recovery) {
+		return;
+	}
+
 	en61107_eod = 0x03;
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -606,6 +655,10 @@ void en61107_uart_send_en61107() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_standard_data_1() {
+	if (is_in_error_recovery) {
+		return;
+	}
+
 	en61107_eod = '\r';
 
 #ifndef DEBUG_NO_METER
@@ -641,6 +694,10 @@ void en61107_uart_send_standard_data_1() {
 
 ICACHE_FLASH_ATTR
 void en61107_uart_send_standard_data_2() {
+	if (is_in_error_recovery) {
+		return;
+	}
+
 	en61107_eod = '\r';
 
 #ifndef DEBUG_NO_METER
@@ -677,6 +734,10 @@ void en61107_uart_send_standard_data_2() {
 #ifndef MC_66B
 ICACHE_FLASH_ATTR
 void en61107_uart_send_inst_values() {
+	if (is_in_error_recovery) {
+		return;
+	}
+
 	en61107_eod = '\r';
 
 #ifndef DEBUG_NO_METER
