@@ -77,6 +77,8 @@ void en61107_receive_timeout_timer_func(void *arg) {
 	led_blink();	// DEBUG
 	// if no reply received, retransmit
 
+	en61107_fifo_flush();
+
 	if (en61107_request_num <= 2) {
 		switch (en61107_uart_state) {
 			case UART_STATE_EN61107_IDENT:
@@ -758,6 +760,15 @@ bool en61107_fifo_snoop(char *c, unsigned int pos) {
 	else {
 		return false;
 	}
+}
+
+ICACHE_FLASH_ATTR
+void en61107_fifo_flush() {
+	ETS_UART_INTR_DISABLE();
+	fifo_head = 0;
+	fifo_tail = 0;
+	fifo_buffer_fill_count = 0;
+	ETS_UART_INTR_ENABLE();
 }
 
 ICACHE_FLASH_ATTR

@@ -74,6 +74,9 @@ ICACHE_FLASH_ATTR
 bool en61107_fifo_snoop(char *c, unsigned int pos);
 
 ICACHE_FLASH_ATTR
+void en61107_fifo_flush();
+
+ICACHE_FLASH_ATTR
 void en61107_request_destroy();
 
 // private methods
