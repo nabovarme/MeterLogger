@@ -327,6 +327,8 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 
 	if (!cfg_save_ssid_pwd(ssid_pwd, &calculated_crc, &saved_crc)) {
 		mqtt_flash_error(calculated_crc, saved_crc);
+	} else {
+		wifi_default();
 	}
 	
 	// send mqtt reply
