@@ -28,7 +28,7 @@
 #define EN61107_INST_VALUES_RESPONSE_TIMEOUT_MS 3200
 
 #define EN61107_UART_SETTINGS_DELAY_MS 400
-#define EN61107_STANDARD_DATA_UART_SETTINGS_DELAY_MS 300
+#define EN61107_STANDARD_DATA_UART_SETTINGS_DELAY_MS 220
 #define EN61107_INST_VALUES_UART_SETTINGS_DELAY_MS 300
 
 extern bool fast_boot;
@@ -90,6 +90,9 @@ void en61107_receive_timeout_timer_func(void *arg) {
 		en61107_uart_send_en61107_ident();
 		return;
 	}
+
+	// Increment attempt counter on timeout so backoff can be reached
+	en61107_request_num++;
 
 	// if no reply received, retransmit
 	if (en61107_request_num <= 2) {
@@ -621,8 +624,6 @@ void en61107_uart_send_en61107() {
 		return;
 	}
 
-	en61107_fifo_flush();
-
 	en61107_eod = 0x03;
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -663,8 +664,6 @@ void en61107_uart_send_standard_data_1() {
 		return;
 	}
 
-	en61107_fifo_flush();
-
 	en61107_eod = '\r';
 
 #ifndef DEBUG_NO_METER
@@ -703,8 +702,6 @@ void en61107_uart_send_standard_data_2() {
 	if (is_in_error_recovery) {
 		return;
 	}
-
-	en61107_fifo_flush();
 
 	en61107_eod = '\r';
 
@@ -745,8 +742,6 @@ void en61107_uart_send_inst_values() {
 	if (is_in_error_recovery) {
 		return;
 	}
-
-	en61107_fifo_flush();
 
 	en61107_eod = '\r';
 
