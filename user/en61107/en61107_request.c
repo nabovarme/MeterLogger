@@ -125,38 +125,18 @@ void en61107_delayed_uart_change_setting_timer_func(UartDevice *uart_settings) {
 ICACHE_FLASH_ATTR
 void en61107_meter_wake_up_timer_func(void *arg) {
 #ifndef DEBUG_NO_METER
-	unsigned int i;
-#endif
-	// If recovering from a 60-second error penalty, the meter is asleep.
-	// We MUST send the wake-up stream before identifying.
-	if (en61107_uart_state == UART_STATE_NONE) {
-#ifndef DEBUG_NO_METER
-		uart_set_baudrate(UART0, BIT_RATE_300);
-		uart_set_word_length(UART0, SEVEN_BITS);
-		uart_set_parity(UART0, EVEN_BITS);
-		uart_set_stop_bits(UART0, TWO_STOP_BIT);
+	// Configure UART0 for 300 baud, 7E2 (EN61107 sign-on)
+	uart_set_baudrate(UART0, BIT_RATE_300);
+	uart_set_word_length(UART0, SEVEN_BITS);
+	uart_set_parity(UART0, EVEN_BITS);
+	uart_set_stop_bits(UART0, TWO_STOP_BIT);
 #endif
 
-		// Send wake-up stream on any boot/reboot until serial is set
-		if (!en61107_serial_set) {
-#ifndef DEBUG_NO_METER
-			// Send wake-up stream
-			for (i = 0; i < 60; i++) {
-				uart_tx_one_char(UART0, '\0');
-			}
-#endif
-			// Allow the wake-up stream to finish before sending /?!\r\n
-			os_timer_disarm(&en61107_meter_wake_up_timer);
-			os_timer_setfn(&en61107_meter_wake_up_timer, (os_timer_func_t *)en61107_uart_send_en61107_ident, NULL);
-			os_timer_arm(&en61107_meter_wake_up_timer, EN61107_WAKEUP_STABILIZATION_DELAY_MS, 0);
-		} else {
-			// Direct command for normal periodic 60-second fetches
-			en61107_uart_send_en61107_ident();
-		}
-	} else {
-		// Normal flow
-		en61107_uart_send_en61107_ident();
-	}
+	// Direct wired connection: Do not send the 60 null-byte (\0) wake-up stream.
+	// Sending null bytes over a wired serial line causes continuous framing errors/breaks 
+	// on the meter's UART RX pin, blocking communication for 15-20 seconds.
+	// Send the sign-on command (/?!\r\n) directly.
+	en61107_uart_send_en61107_ident();
 }
 
 // Helper to safely append strings without overflowing the destination buffer
