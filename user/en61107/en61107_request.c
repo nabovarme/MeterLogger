@@ -28,7 +28,7 @@
 #define EN61107_INST_VALUES_RESPONSE_TIMEOUT_MS 3200
 
 #define EN61107_UART_SETTINGS_DELAY_MS 400
-#define EN61107_STANDARD_DATA_UART_SETTINGS_DELAY_MS 220
+#define EN61107_STANDARD_DATA_UART_SETTINGS_DELAY_MS 300
 #define EN61107_INST_VALUES_UART_SETTINGS_DELAY_MS 300
 
 extern bool fast_boot;
@@ -579,6 +579,8 @@ void en61107_uart_send_en61107_ident() {
 		return;
 	}
 
+	en61107_fifo_flush();
+
 	en61107_eod = '\n';
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
 
@@ -618,6 +620,8 @@ void en61107_uart_send_en61107() {
 	if (is_in_error_recovery) {
 		return;
 	}
+
+	en61107_fifo_flush();
 
 	en61107_eod = 0x03;
 	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
@@ -659,6 +663,8 @@ void en61107_uart_send_standard_data_1() {
 		return;
 	}
 
+	en61107_fifo_flush();
+
 	en61107_eod = '\r';
 
 #ifndef DEBUG_NO_METER
@@ -697,6 +703,8 @@ void en61107_uart_send_standard_data_2() {
 	if (is_in_error_recovery) {
 		return;
 	}
+
+	en61107_fifo_flush();
 
 	en61107_eod = '\r';
 
@@ -737,6 +745,8 @@ void en61107_uart_send_inst_values() {
 	if (is_in_error_recovery) {
 		return;
 	}
+
+	en61107_fifo_flush();
 
 	en61107_eod = '\r';
 
@@ -829,6 +839,9 @@ void en61107_fifo_flush() {
 	fifo_head = 0;
 	fifo_tail = 0;
 	fifo_buffer_fill_count = 0;
+	// Clear ESP8266 hardware UART RX FIFO register
+	SET_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST);
+	CLEAR_PERI_REG_MASK(UART_CONF0(UART0), UART_RXFIFO_RST);
 	ETS_UART_INTR_ENABLE();
 }
 
