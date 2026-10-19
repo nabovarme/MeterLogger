@@ -35,7 +35,7 @@
 
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
-extern bool ota_in_progress = false;
+extern bool ota_in_progress;
 
 static os_timer_t mqtt_restart_ack_timer;
 
