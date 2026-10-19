@@ -4,6 +4,7 @@
 #include "ota.h"
 #include "rboot-api.h"
 #include "tinyprintf.h"
+#include "wifi.h"
 #include "utils.h"
 
 #include <lwip/ip.h>
