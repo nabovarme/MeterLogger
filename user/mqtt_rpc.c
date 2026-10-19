@@ -410,14 +410,7 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *ap_mesh_pwd) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 
-	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "ap_mesh_pwd=");
-	strncpy(mqtt_message, sys_cfg.ap_mesh_pwd, MQTT_MESSAGE_L - 1);
-	// escape & and =
-	if (query_string_escape(mqtt_message, MQTT_MESSAGE_L) < 0) {
-		// error
-		return;
-	}
-	strcat(cleartext, mqtt_message);
+	strncpy(cleartext, sys_cfg.ap_mesh_pwd, MQTT_MESSAGE_L - 1);
 
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
