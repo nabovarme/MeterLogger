@@ -24,6 +24,9 @@ SAVE_FLAG saveFlag;
 static os_timer_t config_save_timer;
 char config_save_timer_running;
 
+// Lock to prevent flash access collisions during OTA updates
+extern bool ota_in_progress;
+
 // Available to ALL builds so the Serial build can parse and save the key before OTA
 bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str) {
 	if (key_hex_str && os_strlen(key_hex_str) == 32) {
@@ -39,6 +42,14 @@ bool ICACHE_FLASH_ATTR cfg_save_key(const char *key_hex_str) {
 
 bool ICACHE_FLASH_ATTR
 cfg_save(uint16_t *calculated_crc, uint16_t *saved_crc) {
+	// Block saving to flash if an OTA firmware update is in progress
+	if (ota_in_progress) {
+#ifdef DEBUG
+		printf("cfg_save: blocked because OTA is in progress\n");
+#endif
+		return false;
+	}
+
 #if !defined(IMPULSE_DEV_BOARD) && (defined(IMPULSE) && !defined(DEBUG_NO_METER))	// use internal flash if built with DEBUG_NO_METER=1
 	uint32_t impulse_meter_count_temp;
 
@@ -164,6 +175,9 @@ cfg_load() {
 
 void ICACHE_FLASH_ATTR
 cfg_save_defered() {
+	if (ota_in_progress) {
+		return;
+	}
 	os_timer_disarm(&config_save_timer);
 	os_timer_setfn(&config_save_timer, (os_timer_func_t *)config_save_timer_func, NULL);
 	os_timer_arm(&config_save_timer, SAVE_DEFER_TIME, 0);
@@ -235,6 +249,12 @@ bool ICACHE_FLASH_ATTR cfg_save_ssid_pwd(char *ssid_pwd, uint16_t *calculated_cr
 
 ICACHE_FLASH_ATTR
 void config_save_timer_func(void *arg) {
+	if (ota_in_progress) {
+		os_timer_disarm(&config_save_timer);
+		config_save_timer_running = 0;
+		return;
+	}
+
 	if (config_save_timer_running) {
 		// reschedule
 		os_timer_disarm(&config_save_timer);

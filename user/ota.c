@@ -28,8 +28,8 @@
 #define OTA_NETWORK_TIMEOUT_MS 15000   // 15s inactivity timeout
 #define OTA_PROGRESS_INTERVAL_MS 10000  // Report progress every 10 seconds
 
-// Bring in the lock from mqtt_rpc.c so we can unlock on failure
-extern bool ota_in_progress;
+// Define global lock variable used by config.c
+bool ota_in_progress = false;
 
 typedef enum {
 	OTA_RETRY_FAILURE_OTHER,
@@ -1249,6 +1249,9 @@ static void ota_tcp_discon_cb(void *arg) {
 			mqtt_rpc_ota_status(ota_mqtt_client, status_msg);
 		}
 
+		// Unlock OTA status right before deferred reboot
+		ota_in_progress = false;
+
 		// Trigger deferred system restart immediately
 		system_restart_defered();
 
@@ -1435,6 +1438,7 @@ bool start_ota_update(
 
 	ota_cleanup_timers();
 
+	// Lock configuration flash writes during OTA
 	ota_in_progress = true;
 
 	os_timer_setfn(&ota_progress_timer,
