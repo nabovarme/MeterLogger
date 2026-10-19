@@ -344,7 +344,9 @@ void static kmp_get_serial_timer_func() {
 	// get serial
 	// prepare frame
 	frame_length = kmp_get_serial(frame);
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);	 // send kmp request
+#endif
 }
 
 ICACHE_FLASH_ATTR
@@ -362,7 +364,9 @@ void static kmp_get_register_timer_func() {
 	frame_length = kmp_get_register(frame, register_list, 8);
 	
 	// send frame
+#ifndef DEBUG_NO_METER
 	uart0_tx_buffer(frame, frame_length);	 // send kmp request
+#endif
 }
 
 ICACHE_FLASH_ATTR
