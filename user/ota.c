@@ -468,6 +468,9 @@ static void ota_fail_update(const char *status, bool abort_connection) {
 	is_valid_binary = false;
 	ota_in_progress = false;
 
+	// Resume background Wi-Fi scanner upon OTA failure
+	wifi_start_scan(WIFI_SCAN_INTERVAL);
+
 	if (ota_mqtt_client) {
 		mqtt_rpc_ota_status(ota_mqtt_client, (char *)status);
 	}
@@ -1404,6 +1407,9 @@ bool start_ota_update(
 	uint32_t parsed_port;
 	uint8_t current_rom;
 	err_t err;
+
+	// Stop any active or deferred Wi-Fi background scans before writing to SPI flash
+	wifi_stop_scan();
 
 	ota_mqtt_client = client;
 
