@@ -32,12 +32,18 @@
 #endif	// DEBUG_STACK_TRACE
 
 #define MQTT_RESTART_DELAY_MS 2000
+#define WIFI_DEFERRED_RECONNECT_MS 500
 
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
 extern bool ota_in_progress;
 
 static os_timer_t mqtt_restart_ack_timer;
+static os_timer_t delayed_wifi_default_timer;
+
+static void ICACHE_FLASH_ATTR delayed_wifi_default_cb(void *arg) {
+	wifi_default();
+}
 
 ICACHE_FLASH_ATTR void static mqtt_restart_ack_timer_func(void *arg) {
 	MQTT_Client *client = (MQTT_Client *)arg;
@@ -328,7 +334,10 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	if (!cfg_save_ssid_pwd(ssid_pwd, &calculated_crc, &saved_crc)) {
 		mqtt_flash_error(calculated_crc, saved_crc);
 	} else {
-		wifi_default();
+		// Defer wifi_default() by 500 ms so the MQTT QoS 2 PUBCOMP ACK can be cleanly transmitted
+		os_timer_disarm(&delayed_wifi_default_timer);
+		os_timer_setfn(&delayed_wifi_default_timer, (os_timer_func_t *)delayed_wifi_default_cb, NULL);
+		os_timer_arm(&delayed_wifi_default_timer, WIFI_DEFERRED_RECONNECT_MS, 0);
 	}
 	
 	// send mqtt reply
