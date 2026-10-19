@@ -998,10 +998,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found flash_size
 		mqtt_rpc_flash_size(&mqtt_client);
 	}
-	else if (strncmp(function_name, "crypto", FUNCTIONNAME_L) == 0) {
-		// found crypto
-		mqtt_rpc_crypto(&mqtt_client);
-	}
 	else if (strncmp(function_name, "reset_reason", FUNCTIONNAME_L) == 0) {
 		// found reset_reason
 		mqtt_rpc_reset_reason(&mqtt_client);

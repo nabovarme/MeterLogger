@@ -185,92 +185,92 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 
 **MQTT format for messages sent _to_ meter**  
 
-| Topic                                                    | Message                                                                                             |
-| :------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
-| /config/v2/9999999/[unix time]/ping                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/open                      | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/open_until                | [kWh when meter should close (only write to flash if changed and not negative value)]               |
-| /config/v2/9999999/[unix time]/open_until_delta          | [[kWh when meter should close as delta (only write to flash if changed and not negative value)]     |
-| /config/v2/9999999/[unix time]/close                     | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/status                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=open                                  |
-| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=close                                 |
-| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=set_ssid_pwd=ssid=the_ssid&pwd=secret |
-| /config/v2/9999999/[unix time]/set_cron                  | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=clear_cron                            |
-| /config/v2/9999999/[unix time]/cron                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/clear_cron                | [unix time]                                                                                         |
-| /config/v2/9999999/[unix time]/ping                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/version                   |                                                                                                     |
-| /config/v2/9999999/[unix time]/uptime                    |                                                                                                     |
-| /config/v2/9999999/[unix time]/stack_trace               | [enable stack trace dumps until restart i.e. once (only if built with DEBUG_STACK_TRACE=1)]         |
-| /config/v2/9999999/[unix time]/read_stack_trace          | [offset=0] Requests a chunk of the saved exception handler crash log.                               |
-| /config/v2/9999999/[unix time]/vdd                       |                                                                                                     |
-| /config/v2/9999999/[unix time]/rssi                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/ssid                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/scan                      |                                                                                                     |
-| /config/v2/9999999/[unix time]/set_ssid                  | [ssid]                                                                                              |
-| /config/v2/9999999/[unix time]/set_pwd                   | [pwd]                                                                                               |
-| /config/v2/9999999/[unix time]/set_ssid_pwd              | [ssid=name&pwd=secret]                                                                              |
-| /config/v2/9999999/[unix time]/test_ssid_pwd             | [ssid=name&pwd=secret&stay=seconds]                                                                 |
-| /config/v2/9999999/[unix time]/set_ap_mesh_pwd           | [pwd]                                                                                               |
-| /config/v2/9999999/[unix time]/wifi_status               |                                                                                                     |
-| /config/v2/9999999/[unix time]/start_ap                  | [start ap + save to flash if changed]                                                               |
-| /config/v2/9999999/[unix time]/stop_ap                   | [stop ap + save to flash if changed]                                                                |
-| /config/v2/9999999/[unix time]/start_fallback_ap         | [seconds] temporarily broadcasts the fallback rescue network (no flash write)                       |
-| /config/v2/9999999/[unix time]/fallback_status           |                                                                                                     |
-| /config/v2/9999999/[unix time]/ap_status                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/reconnect                 |                                                                                                     |
-| /config/v2/9999999/[unix time]/network_quality           |                                                                                                     |
-| /config/v2/9999999/[unix time]/save (only pulse meter)   |                                                                                                     |
-| /config/v2/9999999/[unix time]/mem                       |                                                                                                     |
-| /config/v2/9999999/[unix time]/chip_id                   | [chip ID of the device as 0xXXXXXX]                                                                 |
-| /config/v2/9999999/[unix time]/flash_id                  |                                                                                                     |
-| /config/v2/9999999/[unix time]/flash_size                |                                                                                                     |
-| /config/v2/9999999/[unix time]/reset_reason              |                                                                                                     |
-| /config/v2/9999999/[unix time]/restart                   |                                                                                                     |
-| /config/v2/9999999/[unix time]/ota_update                | [url=http://domain.com/api&version=20261013_001000&sha256_user1=<64-char_hex_hash>&sha256_user2=<64-char_hex_hash>] (all optional; meter selects correct hash based on target slot) OR [action=confirm] (permanently commits a successful temporary boot slot) |
-| /config/v2/9999999/[unix time]/set_key                   | [key=new_32_char_hex_key]                                                                           |
-| /config/v2/9999999/[unix time]/set_mqtt_host             | [MQTT hostname, e.g. nabovarme.meterlogger.net; saved to flash and device restarts after replying] |
+| Topic                                               | Message                                                                                                                                            |
+| :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| /config/v2/9999999/[unix time]/open_until           | [kWh when meter should close (only write to flash if changed and not negative value)]                                                              |
+| /config/v2/9999999/[unix time]/open_until_delta     | [[kWh when meter should close as delta (only write to flash if changed and not negative value)]                                                    |
+| /config/v2/9999999/[unix time]/set_cron             | minute=30&hour=*&day_of_month=*&month=*&day_of_week=*&command=[open\|close\|set_ssid_pwd...\|clear_cron]                                           |
+| /config/v2/9999999/[unix time]/read_stack_trace     | [offset=0] Requests a chunk of the saved exception handler crash log.                                                                              |
+| /config/v2/9999999/[unix time]/set_ssid             | [ssid]                                                                                                                                             |
+| /config/v2/9999999/[unix time]/set_pwd              | [pwd]                                                                                                                                              |
+| /config/v2/9999999/[unix time]/set_ssid_pwd         | [ssid=name&pwd=secret]                                                                                                                             |
+| /config/v2/9999999/[unix time]/test_ssid_pwd        | [ssid=name&pwd=secret&stay=seconds]                                                                                                                |
+| /config/v2/9999999/[unix time]/set_ap_mesh_pwd      | [pwd]                                                                                                                                              |
+| /config/v2/9999999/[unix time]/start_fallback_ap    | [seconds] temporarily broadcasts the fallback rescue network (no flash write)                                                                      |
+| /config/v2/9999999/[unix time]/ota_update           | [url=http://domain.com/api&version=20261013_001000&sha256_user1=<64-char_hex_hash>&sha256_user2=<64-char_hex_hash>] (all optional; meter selects correct hash based on target slot) OR [action=confirm] (permanently commits) |
+| /config/v2/9999999/[unix time]/set_key              | [key=new_32_char_hex_key]                                                                                                                          |
+| /config/v2/9999999/[unix time]/set_mqtt_host        | [MQTT hostname, e.g. nabovarme.meterlogger.net; saved to flash and device restarts after replying]                                                 |
+| &nbsp;                                              | &nbsp;                                                                                                                                             |
+| /config/v2/9999999/[unix time]/ping                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/open                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/close                |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/status               |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/cron                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/clear_cron           |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/version              |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/uptime               |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/stack_trace          |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/vdd                  |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/rssi                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/ssid                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/scan                 |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/wifi_status          |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/start_ap             |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/stop_ap              |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/fallback_status      |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/ap_status            |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/reconnect            |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/disconnect_count     |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/network_quality      |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/mem                  |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/chip_id              |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/flash_id             |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/flash_size           |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/crypto               |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/reset_reason         |                                                                                                                                                    |
+| /config/v2/9999999/[unix time]/restart              |                                                                                                                                                    |
 
 **MQTT format for messages sent _from_ meter**  
 
-| Topic                                            | Message                                                                                              |
-| :----------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
-| /sample/v2/9999999/[unix time]                   | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh& |
-| /cron/v2/9999999/[unix time]                     | 12                                                                                                   |
-| /ping/v2/9999999/[unix time]                     |                                                                                                      |
-| /version/v2/9999999/[unix time]                  | [sdk version]-[git version]                                                                          |
-| /status/v2/9999999/[unix time]                   | [open|close]                                                                                         |
-| /open_until/v2/9999999/[unix time]               | [kWh when meter should close]                                                                        |
-| /open_until_delta/v2/9999999/[unix time]         | [kWh when meter should close]                                                                        |
-| /uptime/v2/9999999/[unix time]                   | [uptime in seconds]                                                                                  |
-| /stack_trace/v2/9999999/[unix time]              |                                                                                                      |
-| /stack_trace_result/v2/9999999/[unix time]       | [offset=0&data=Stack%20dump%3A%0A...] URL-escaped block of the recorded stack trace. Returns empty data if end of log is reached. |
-| /vdd/v2/9999999/[unix time]                      | [power supply voltage level]                                                                         |
-| /rssi/v2/9999999/[unix time]                     | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                           |
-| /ssid/v2/9999999/[unix time]                     | [ssid of the wifi it is connected to]                                                                |
-| /set_ssid/v2/9999999/[unix time]                 | [ssid of the wifi it is set to connect to]                                                           |
-| /set_pwd/v2/9999999/[unix time]                  | [password for the wifi it is set to connect to]                                                      |
-| /set_ssid_pwd/v2/9999999/[unix time]             | [combined ssid and password for the wifi it is set to connect to]                                    |
-| /test_ssid_pwd/v2/9999999/[unix time]            | [ssid=name&pwd=secret&stay=seconds]                                                                  |
-| /test_ssid_pwd_result/v2/9999999/[unix time]     | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000) |
-| /set_ap_mesh_pwd/v2/9999999/[unix time]          | [password for the mesh-[serial] itself]                                                              |
-| /scan/v2/9999999/[unix time]                     | [empty reply to acknowledge scan command]                                                            |
-| /scan_result/v2/9999999/[unix time]              | [ssid=Loppen Public&rssi=-51&channel=11]                                                             |
-| /start_fallback_ap/v2/9999999/[unix time]        | [seconds] immediate parameter echo                                                                   |
-| /fallback_status/v2/9999999/[unix time]          | [active or inactive]                                                                                 |
-| /wifi_status/v2/9999999/[unix time]              | [connected or disconnected]                                                                          |
-| /ap_status/v2/9999999/[unix time]                | [started or stopped]                                                                                 |
-| /network_quality/v2/9999999/[unix time]          | [ping_response_time=2.000 mS&ping_error_count=0&disconnect_count=0]                                  |
-| /save/v2/9999999/[unix time] (only pulse meter)  | saved                                                                                                |
-| /mem/v2/9999999/[unix time]                      | heap=9672                                                                                            |
-| /flash_id/v2/9999999/[unix time]                 | 0x164020                                                                                             |
-| /flash_size/v2/9999999/[unix time]               | 4096 kB                                                                                              |
-| /reset_reason/v2/9999999/[unix time]             |                                                                                                      |
-| /restart/v2/9999999/[unix time]                  |                                                                                                      |
-| /ota_update/v2/9999999/[unix time]               | [status=started&target_rom=1|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error\_[no_url|busy|unconfirmed_temp_rom|http_not_200|header_overflow|invalid_magic|file_too_large|flash_write|tcp_drop|too_small|truncated|checksum_mismatch|disconnected|dns]) |
-| /set_key/v2/9999999/[unix time]                  | [status=ok (or status=error_invalid_key)]                                                            |
-| /set_mqtt_host/v2/9999999/[unix time]            | [status=ok (or status=error_invalid_host)] |
+| Topic | Message |
+| :--- | :--- |
+| /sample/v2/9999999/[unix time]                      | heap=20000&t1=25.00 C&t2=15.00 C&tdif=10.00 K&flow1=0 l/h&effect1=0.0 kW&hr=0 h&v1=0.00 m3&e1=0 kWh&                                               |
+| /cron/v2/9999999/[unix time]                        | [number of active cron jobs]                                                                                                                       |
+| /ping/v2/9999999/[unix time]                        |                                                                                                                                                    |
+| /version/v2/9999999/[unix time]                     | [sdk version]-[git version]-[lwip version]-[hardware model]                                                                                        |
+| /status/v2/9999999/[unix time]                      | [open\|close]                                                                                                                                      |
+| /open_until/v2/9999999/[unix time]                  | [kWh when meter should close]                                                                                                                      |
+| /open_until_delta/v2/9999999/[unix time]            | [kWh when meter should close]                                                                                                                      |
+| /uptime/v2/9999999/[unix time]                      | [uptime in seconds]                                                                                                                                |
+| /stack_trace/v2/9999999/[unix time]                 | enabled                                                                                                                                            |
+| /stack_trace_result/v2/9999999/[unix time]          | [offset=0&data=Stack%20dump%3A%0A...] URL-escaped block of the recorded stack trace. Returns empty data if end of log is reached.                  |
+| /vdd/v2/9999999/[unix time]                         | [power supply voltage level]                                                                                                                       |
+| /rssi/v2/9999999/[unix time]                        | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                                                                         |
+| /ssid/v2/9999999/[unix time]                        | [ssid of the wifi it is connected to]                                                                                                              |
+| /set_ssid/v2/9999999/[unix time]                    | [ssid of the wifi it is set to connect to]                                                                                                         |
+| /set_pwd/v2/9999999/[unix time]                     | [password for the wifi it is set to connect to]                                                                                                    |
+| /set_ssid_pwd/v2/9999999/[unix time]                | ssid=[name]&pwd=[secret]                                                                                                                           |
+| /test_ssid_pwd/v2/9999999/[unix time]               | ssid=[name]&pwd=[secret]&stay=[seconds]                                                                                                            |
+| /test_ssid_pwd_result/v2/9999999/[unix time]        | [status=ok&ssid=the_ssid&rssi=-62&reason=none&time_ms=3100] (or status=failed&ssid=the_ssid&rssi=0&reason=4way_handshake_timeout&time_ms=15000)    |
+| /set_ap_mesh_pwd/v2/9999999/[unix time]             | [password for the mesh-[serial] itself]                                                                                                            |
+| /scan/v2/9999999/[unix time]                        | [empty reply to acknowledge scan command]                                                                                                          |
+| /scan_result/v2/9999999/[unix time]                 | [ssid=Loppen Public&bssid=xx:xx:xx:xx:xx:xx&rssi=-51&channel=11&auth_mode=...&pairwise_cipher=...&group_cipher=...&phy_11b=...&phy_11g=...&phy_11n=...&wps=...] |
+| /start_fallback_ap/v2/9999999/[unix time]           | [seconds] immediate parameter echo                                                                                                                 |
+| /fallback_status/v2/9999999/[unix time]             | [active\|inactive]                                                                                                                                 |
+| /wifi_status/v2/9999999/[unix time]                 | [connected|<disconnect_reason_string>] (e.g., connected, no_ap_found, auth_expire)                                                                 |
+| /ap_status/v2/9999999/[unix time]                   | [started\|stopped]                                                                                                                                 |
+| /disconnect_count/v2/9999999/[unix time]            | [number of disconnects]                                                                                                                            |
+| /network_quality/v2/9999999/[unix time]             | ping_response_time=[2.000 mS\|unknown]&ping_average_packet_loss=[0.00%\|unknown]&disconnect_count=[0]                                              |
+| /cnx_csa_fn_called/v2/9999999/[unix time]           | count=[number of intercepted CSA calls]                                                                                                            |
+| /flash_error/v2/9999999/[unix time]                 | calculated_crc=[0x...]&saved_crc=[0x...]                                                                                                           |
+| /mem/v2/9999999/[unix time]                         | heap=9672                                                                                                                                          |
+| /flash_id/v2/9999999/[unix time]                    | 0x164020                                                                                                                                           |
+| /flash_size/v2/9999999/[unix time]                  | 4096 kB                                                                                                                                            |
+| /reset_reason/v2/9999999/[unix time]                | reason=[int]&exccause=[int]&epc1=[0x...]&epc2=[0x...]&epc3=[0x...]&excvaddr=[0x...]&depc=[0x...]                                                   |
+| /restart/v2/9999999/[unix time]                     |                                                                                                                                                    |
+| /ota_update/v2/9999999/[unix time]                  | [status=started&target_rom=1\|2] (Progress: status=flashing_10%..90%. Success: status=success&target_rom=1\|2, status=restarting_in_22s, status=self_test_passed_committed, status=already_committed. Errors: status=error\_...) |
+| /set_key/v2/9999999/[unix time]                     | [status=ok (or status=error_invalid_key)]                                                                                                          |
+| /set_mqtt_host/v2/9999999/[unix time]               | [status=ok (or status=error_invalid_host)]                                                                                                         |
 
 **Secure OTA Updates with Dual SHA-256 Validation:**  
 The OTA (Over-The-Air) firmware update process now features streaming cryptographic verification to prevent corrupted downloads from soft-bricking the device. Because the ESP8266 rBoot bootloader requires two separate memory slots, user1.bin and user2.bin are compiled with different memory layouts and consequently have completely different SHA-256 hashes.
