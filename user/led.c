@@ -2,6 +2,8 @@
 #include "debug.h"
 #include "led.h"
 
+#ifndef DISABLE_LED
+
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
 
@@ -132,7 +134,6 @@ ICACHE_FLASH_ATTR void led_on(void) {
 }
 
 ICACHE_FLASH_ATTR void led_off(void) {
-	
 	// Set GPIO2 to HIGH
 	gpio_output_set(BIT2, 0, BIT2, 0);
 }
@@ -217,3 +218,20 @@ ICACHE_FLASH_ATTR void led_destroy(void) {
 	led_disabled = true;
 	led_stop_pattern();
 }
+
+#else
+
+// Dummy stub functions preserved so existing call sites compile cleanly
+ICACHE_FLASH_ATTR void led_init(void) {}
+ICACHE_FLASH_ATTR void led_on(void) {}
+ICACHE_FLASH_ATTR void led_off(void) {}
+ICACHE_FLASH_ATTR void led_blink(void) {}
+ICACHE_FLASH_ATTR void led_blink_short(void) {}
+ICACHE_FLASH_ATTR void led_pattern_a(void) {}
+ICACHE_FLASH_ATTR void led_pattern_b(void) {}
+ICACHE_FLASH_ATTR void led_pattern_c(void) {}
+ICACHE_FLASH_ATTR void led_pattern_d(void) {}
+ICACHE_FLASH_ATTR void led_stop_pattern(void) {}
+ICACHE_FLASH_ATTR void led_destroy(void) {}
+
+#endif // DISABLE_LED

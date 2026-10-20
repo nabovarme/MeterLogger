@@ -88,6 +88,11 @@ CFLAGS			+= -Os -Wpointer-arith -Wundef -Wall -Wno-pointer-sign -Wno-comment -Wn
 
 CFLAGS += -DBOOT_RTC_ENABLED
 
+# Option to completely disable LED logic at compile time while preserving stubs
+ifeq ($(DISABLE_LED), 1)
+	CFLAGS += -DDISABLE_LED
+endif
+
 # linker flags used to generate the main object file
 LDFLAGS =	-nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static \
 			-Wl,-Map,app.map -Wl,--cref -Wl,--gc-sections \

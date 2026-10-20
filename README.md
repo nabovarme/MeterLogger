@@ -56,51 +56,55 @@ SERIAL=9999999 KEY=ef500c9268cf749016d26d6cbfaaf7bf make wifisetup
 ```
  
 **BUILD OPTIONS**  
+
 DEBUG=1  
 enable serial debugging  
- 
+
 DEBUG_NO_METER=1  
 don't wait for meter to answer serial. Build for nodemcu board  
- 
+
 IMPULSE_DEV_BOARD=1  
 build for nodemcu board  
- 
+
 DEBUG_SHORT_WEB_CONFIG_TIME=1  
 don't wait for web config  
- 
+
 IMPULSE=1  
 meter type is impulse-based (100 mS)  
- 
+
 EN61107=0  
 meter type is KMP (Multical 601)  
- 
+
 EN61107=1  
 meter type is EN61107, sub type Multical 66 C  
- 
+
 MC_66B=1  
 meter type is EN61107, sub type Multical 66 B  
- 
+
 FLOW_METER=1  
 meter is forced to run as a flow meter and close when volume is reached  
- 
+
 AUTO_CLOSE=1  
-automatically check if energy is larger than the value set by open_until MQTT command
- 
+automatically check if energy is larger than the value set by open_until MQTT command  
+
 DEBUG_STACK_TRACE=1  
 Enable exception stack trace dump to flash at address STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE (0x80000), STACK_TRACE_N bytes  
+
+DISABLE_LED=1  
+completely disable LED blinking routines and hardware setup while keeping API stub functions intact  
 
 NO_CRON=1  
 disable cron stuff and save 2688 bytes of RAM. Reconfiguration is needed after changing this  
 
 THERMO_NO=0  
 thermo actuator is normally closed  
- 
+
 THERMO_NO=1  
 thermo actuator is normally open  
 
 THERMO_ON_AC_2  
 thermo actuator connected on AC 2  
- 
+
 LED_ON_AC=1  
 use LED to indicate AC state  
 
@@ -108,10 +112,10 @@ AC_TEST=1
 run a test pattern on AC out and blink LED  
 
 SERIAL=9999999  
-serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1 
+serial number for meter used for device's SSID: IMPULSE meters EL_9999999 and other Kamstrup meters KAM_9999999. Used in make wifisetup target and if DEBUG_NO_METER=1  
 
-KEY=ef500c9268cf749016d26d6cbfaaf7bf
-master key for crypto, 16 bytes
+KEY=ef500c9268cf749016d26d6cbfaaf7bf  
+master key for crypto, 16 bytes  
 First 8 bytes hex encoded (ef500c9268cf7490) is Wi-Fi setup password. Master key is SHA256 hashed to 32 bytes and first 16 bytes is AES key and last 16 bytes is HMAC SHA256 key.
 
 ```
