@@ -123,7 +123,7 @@ ICACHE_FLASH_ATTR void start_watchdog() {
 	os_timer_setfn(&watchdog_timer, (os_timer_func_t *)watchdog_timer_func, NULL);
 	os_timer_arm(&watchdog_timer, 1000, 1);
 
-	// start extern watchdog timer	(MCP1316)
+	// start led status timer
 	os_timer_disarm(&status_led_timer);
 	os_timer_setfn(&status_led_timer, (os_timer_func_t *)status_led_timer_func, NULL);
 	os_timer_arm(&status_led_timer, 1000, 1);
@@ -137,7 +137,7 @@ ICACHE_FLASH_ATTR void stop_watchdog() {
 	printf("watchdog stopped\n");
 #endif
 	os_timer_disarm(&watchdog_timer);
-	os_timer_disarm(&status_led_timer_func);
+	os_timer_disarm(&status_led_timer);
 	os_timer_disarm(&wifi_reconnect_timer);
 }
 
