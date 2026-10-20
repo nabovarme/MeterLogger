@@ -48,21 +48,12 @@ should be placed above the URLs they protect.
 */
 HttpdBuiltInUrl builtInUrls[]={
 //Routines to make the /wifi URL and everything beneath it work.
-#ifdef IMPULSE
-	{"/generate_204", cgiRedirect, "/wifi/impulse_meter_wifi_setup.tpl"},		// iOS captive portal pop up web config
-	{"/hotspot-detect.html", cgiRedirect, "/wifi/impulse_meter_wifi_setup.tpl"},	// android captive portal pop up web config
-	{"/", cgiRedirect, "/wifi/impulse_meter_wifi_setup.tpl"},
-	{"/wifi", cgiRedirect, "/wifi/impulse_meter_wifi_setup.tpl"},
-	{"/wifi/", cgiRedirect, "/wifi/impulse_meter_wifi_setup.tpl"},
-	{"/wifi/impulse_meter_wifi_setup.tpl", cgiEspFsTemplate, tplSetup},
-#else
 	{"/generate_204", cgiRedirect, "/wifi/wifi_setup.tpl"},					// iOS captive portal pop up web config
 	{"/hotspot-detect.html", cgiRedirect, "/wifi/wifi_setup.tpl"},			// android captive portal pop up web config
 	{"/", cgiRedirect, "/wifi/wifi_setup.tpl"},
 	{"/wifi", cgiRedirect, "/wifi/wifi_setup.tpl"},
 	{"/wifi/", cgiRedirect, "/wifi/wifi_setup.tpl"},
 	{"/wifi/wifi_setup.tpl", cgiEspFsTemplate, tplSetup},
-#endif
 	{"/wifi/setup.cgi", cgiSetup, NULL},
 	{"/wifi/wifiscan.cgi", cgiWiFiScan, NULL},
 

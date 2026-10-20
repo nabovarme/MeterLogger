@@ -21,8 +21,6 @@
 
 #ifdef EN61107
 #include "en61107_request.h"
-#elif defined IMPULSE
-// nothing
 #else
 #include "kmp_request.h"
 #endif
@@ -49,13 +47,11 @@ ICACHE_FLASH_ATTR void static mqtt_restart_ack_timer_func(void *arg) {
 	MQTT_Client *client = (MQTT_Client *)arg;
 
 	MQTT_DeleteClient(client);
-#ifndef IMPULSE
 #ifdef EN61107
 	en61107_request_destroy();
 #else
 	kmp_request_destroy();
 #endif
-#endif	// IMPULSE
 	system_restart_defered();
 }
 
@@ -68,8 +64,6 @@ void mqtt_rpc_ping(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ping/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -89,8 +83,6 @@ void mqtt_rpc_version(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/version/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -113,8 +105,6 @@ void mqtt_rpc_uptime(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/uptime/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -136,8 +126,6 @@ void mqtt_rpc_vdd(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/vdd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -161,8 +149,6 @@ void mqtt_rpc_rssi(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/rssi/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -184,8 +170,6 @@ void mqtt_rpc_ssid(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ssid/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -220,8 +204,6 @@ void mqtt_rpc_scan(MQTT_Client *client) {
 	// --- Send immediate acknowledgement reply before scanning ---
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/scan/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -263,8 +245,6 @@ void mqtt_rpc_set_ssid(MQTT_Client *client, char *ssid) {
 	// send mqtt reply
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -301,8 +281,6 @@ void mqtt_rpc_set_pwd(MQTT_Client *client, char *password) {
 	// send mqtt reply
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -343,8 +321,6 @@ void mqtt_rpc_set_ssid_pwd(MQTT_Client *client, char *ssid_pwd) {
 	// send mqtt reply
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ssid_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -411,8 +387,6 @@ void mqtt_rpc_set_ap_mesh_pwd(MQTT_Client *client, char *ap_mesh_pwd) {
 	// send mqtt reply
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_ap_mesh_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -471,8 +445,6 @@ void mqtt_rpc_test_ssid_pwd(MQTT_Client *client, char *params) {
 	// --- Send immediate acknowledgement reply before testing ---
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/test_ssid_pwd/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -527,8 +499,6 @@ void mqtt_rpc_disconnect_count(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/disconnect_count/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -550,8 +520,6 @@ void mqtt_rpc_network_quality(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/network_quality/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -580,8 +548,6 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/wifi_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -609,8 +575,6 @@ void mqtt_rpc_ap_status(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ap_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -719,8 +683,6 @@ void mqtt_rpc_start_fallback_ap(MQTT_Client *client, char *params, char *mesh_ss
 	// Immediate acknowledgement reply
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/start_fallback_ap/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -781,8 +743,6 @@ void mqtt_rpc_fallback_status(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/fallback_status/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -811,8 +771,6 @@ void mqtt_rpc_mem(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/mem/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -838,8 +796,6 @@ void mqtt_rpc_chip_id(MQTT_Client *client) {
 	// Build MQTT topic with timestamp
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/chip_id/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/chip_id/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/chip_id/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -870,8 +826,6 @@ void mqtt_rpc_flash_id(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_id/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -896,8 +850,6 @@ void mqtt_rpc_flash_size(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/flash_size/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -927,8 +879,6 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -964,8 +914,6 @@ void mqtt_rpc_restart(MQTT_Client *client) {
 		
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/restart/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1021,8 +969,6 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 	if (strstr(params, "action=confirm") != NULL) {
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1066,8 +1012,6 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 #endif
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1087,8 +1031,6 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 #endif
 #ifdef EN61107
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 		tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1141,8 +1083,6 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 	// Retrieve serial number for request
 #ifdef EN61107
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", en61107_get_received_serial());
-#elif defined IMPULSE
-	tfp_snprintf(serial_str, sizeof(serial_str), "%s", sys_cfg.impulse_meter_serial);
 #else
 	tfp_snprintf(serial_str, sizeof(serial_str), "%07u", kmp_get_received_serial());
 #endif
@@ -1169,8 +1109,6 @@ void mqtt_rpc_ota_update(MQTT_Client *client, char *params) {
 	// 5. Send Encrypted MQTT Acknowledgment
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1202,8 +1140,6 @@ void mqtt_rpc_ota_status(MQTT_Client *client, const char *status) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/ota_update/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1240,8 +1176,6 @@ void mqtt_rpc_set_key(MQTT_Client *client, char *params) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_key/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1284,8 +1218,6 @@ void mqtt_rpc_set_mqtt_host(MQTT_Client *client, char *params) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_mqtt_host/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1322,8 +1254,6 @@ void mqtt_rpc_stack_trace(MQTT_Client *client) {
 	
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1390,8 +1320,6 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 	/* 3. Build MQTT Response Topic */
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/stack_trace_result/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1414,7 +1342,6 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 }
 #endif /* DEBUG_STACK_TRACE */
 
-#ifndef IMPULSE
 #ifndef NO_CRON
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
@@ -1431,8 +1358,6 @@ void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/set_cron/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1455,8 +1380,6 @@ void mqtt_rpc_clear_cron(MQTT_Client *client) {
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
-#elif defined IMPULSE
-	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%s/%llu", sys_cfg.impulse_meter_serial, get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/clear_cron/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
@@ -1679,4 +1602,3 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
-#endif

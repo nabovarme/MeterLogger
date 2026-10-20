@@ -188,12 +188,6 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	char essid[128];
 	char passwd[128];
 	char mqtthost[64];
-#ifdef IMPULSE
-	char impulse_meter_serial[32 + 1];
-	char impulse_meter_units_string[32 + 1];
-	float impulse_meter_units;
-	char impulses_per_unit[8 + 1];
-#endif
 	
 	if (connData->conn==NULL) {
 		//Connection aborted. Clean up.
@@ -203,33 +197,16 @@ int ICACHE_FLASH_ATTR cgiSetup(HttpdConnData *connData) {
 	httpdFindArg(connData->postBuff, "essid", essid, sizeof(essid));
 	httpdFindArg(connData->postBuff, "passwd", passwd, sizeof(passwd));
 	httpdFindArg(connData->postBuff, "mqtthost", mqtthost, sizeof(mqtthost));
-#ifdef IMPULSE
-	httpdFindArg(connData->postBuff, "impulse_meter_serial", impulse_meter_serial, sizeof(impulse_meter_serial));
-	httpdFindArg(connData->postBuff, "impulse_meter_units", impulse_meter_units_string, sizeof(impulse_meter_units_string));
-	httpdFindArg(connData->postBuff, "impulses_per_unit", impulses_per_unit, sizeof(impulses_per_unit));
-#endif
 
 	os_strncpy((char*)sys_cfg.sta_ssid, essid, 32);
 	os_strncpy((char*)sys_cfg.sta_pwd, passwd, 64);
 	os_strncpy((char*)sys_cfg.mqtt_host, mqtthost, 64);
-#ifdef IMPULSE
-	os_strncpy((char*)sys_cfg.impulse_meter_serial, impulse_meter_serial, 32 + 1);
-	tfp_vsscanf(impulse_meter_units_string, "%f", &impulse_meter_units);
-	tfp_snprintf(impulse_meter_units_string, 32 + 1, "%.3f", impulse_meter_units / 1000.0);
-	os_strncpy((char*)sys_cfg.impulse_meter_units, impulse_meter_units_string, 32 + 1);
-	os_strncpy((char*)sys_cfg.impulses_per_unit, impulses_per_unit, 8 + 1);
-	sys_cfg.impulse_meter_count = 0;
-#endif
 
 	cfg_save(NULL, NULL);
 
 	INFO("Try to connect to AP %s pw %s\n", essid, passwd);
 
-#ifdef IMPULSE
-	httpdRedirect(connData, "impulse_meter_setting_up.html");
-#else
 	httpdRedirect(connData, "setting_up.html");
-#endif
 	
 	// restart to go directly to sample mode after 5 seconds
 	os_timer_disarm(&resetTimer);
@@ -296,17 +273,6 @@ void ICACHE_FLASH_ATTR tplSetup(HttpdConnData *connData, char *token, void **arg
 	else if (os_strcmp(token, "MqttHost") == 0) {
 		os_strcpy(buff, (char*)sys_cfg.mqtt_host);
 	}
-#ifdef IMPULSE
-	else if (os_strcmp(token, "ImpulseMeterSerial") == 0) {
-		os_strcpy(buff, (char*)sys_cfg.impulse_meter_serial);
-	}
-	else if (os_strcmp(token, "ImpulseMeterUnits") == 0) {
-		tfp_snprintf(buff, 32 + 1, "%.3f", (atoi(sys_cfg.impulse_meter_units) + sys_cfg.impulse_meter_count * (1000.0 / atoi(sys_cfg.impulses_per_unit))) / 1000.0);	
-	}
-	else if (os_strcmp(token, "ImpulsesPerUnit") == 0) {
-		os_strcpy(buff, (char*)sys_cfg.impulses_per_unit);
-	}
-#endif
 
 	httpdSend(connData, buff, -1);
 }

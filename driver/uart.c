@@ -25,9 +25,7 @@
 extern UartDevice    UartDev;
 //extern os_event_t    at_recvTaskQueue[at_recvTaskQueueLen];
 
-#ifndef IMPULSE
 LOCAL void uart0_rx_intr_handler(void *para);
-#endif
 
 /******************************************************************************
  * FunctionName : uart_config
@@ -47,9 +45,7 @@ uart_config(uint8 uart_no)
   else
   {
     /* rcv_buff size if 0x100 */
-#ifndef IMPULSE
     ETS_UART_INTR_ATTACH(uart0_rx_intr_handler,  &(UartDev.rcv_buff));
-#endif
     PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_U0RTS);
@@ -201,7 +197,6 @@ uart0_sendStr(const char *str)
 *******************************************************************************/
 //extern void at_recvTask(void);
 
-#ifndef IMPULSE
 LOCAL void
 uart0_rx_intr_handler(void *para)
 {
@@ -264,7 +259,6 @@ uart0_rx_intr_handler(void *para)
 	}
 	//ETS_UART_INTR_ENABLE();
 }
-#endif
 
 /******************************************************************************
  * FunctionName : uart_init

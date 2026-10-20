@@ -12,9 +12,7 @@
 #include "debug.h"
 
 static os_timer_t watchdog_timer;
-#if !defined(DISABLE_LED) || defined(IMPULSE_DEV_BOARD)
-static os_timer_t ext_watchdog_timer;
-#endif
+static os_timer_t status_led_timer;
 static os_timer_t wifi_reconnect_timer;
 
 typedef struct{
@@ -27,8 +25,7 @@ typedef struct{
 watchdog_t watchdog_list[WATCHDOG_MAX];
 volatile uint8_t watchdog_list_len;
 
-#if !defined(DISABLE_LED) || defined(IMPULSE_DEV_BOARD)
-ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
+ICACHE_FLASH_ATTR void static status_led_timer_func(void *arg) {
 	if (gpio16_input_get()) {
 		gpio16_output_set(0);
 	}
@@ -36,7 +33,6 @@ ICACHE_FLASH_ATTR void static ext_watchdog_timer_func(void *arg) {
 		gpio16_output_set(1);
 	}
 }
-#endif
 
 ICACHE_FLASH_ATTR void static wifi_reconnect_timer_func(void *arg) {
 	if (wifi_scan_is_running()) {
@@ -102,15 +98,6 @@ ICACHE_FLASH_ATTR void static watchdog_timer_func(void *arg) {
 #endif
 					break;
 
-				case REBOOT_VIA_EXT_WD:
-#if !defined(DISABLE_LED) || defined(IMPULSE_DEV_BOARD)
-					os_timer_disarm(&ext_watchdog_timer); // external watchdog will cause reset
-#endif
-#ifdef DEBUG
-					printf("triggered reboot via external watchdog\n");
-#endif
-					break;
-
 				default:
 					// Unknown type, do nothing
 					break;
@@ -136,15 +123,13 @@ ICACHE_FLASH_ATTR void start_watchdog() {
 	os_timer_setfn(&watchdog_timer, (os_timer_func_t *)watchdog_timer_func, NULL);
 	os_timer_arm(&watchdog_timer, 1000, 1);
 
-#if !defined(DISABLE_LED) || defined(IMPULSE_DEV_BOARD)
 	// start extern watchdog timer	(MCP1316)
-	os_timer_disarm(&ext_watchdog_timer);
-	os_timer_setfn(&ext_watchdog_timer, (os_timer_func_t *)ext_watchdog_timer_func, NULL);
-	os_timer_arm(&ext_watchdog_timer, 1000, 1);
+	os_timer_disarm(&status_led_timer);
+	os_timer_setfn(&status_led_timer, (os_timer_func_t *)status_led_timer_func, NULL);
+	os_timer_arm(&status_led_timer, 1000, 1);
 	//Set GPIO16 to output mode
 	gpio16_output_conf();
 	gpio16_output_set(1);	
-#endif
 }
 
 ICACHE_FLASH_ATTR void stop_watchdog() {
@@ -152,9 +137,7 @@ ICACHE_FLASH_ATTR void stop_watchdog() {
 	printf("watchdog stopped\n");
 #endif
 	os_timer_disarm(&watchdog_timer);
-#if !defined(DISABLE_LED) || defined(IMPULSE_DEV_BOARD)
-	os_timer_disarm(&ext_watchdog_timer);
-#endif
+	os_timer_disarm(&status_led_timer_func);
 	os_timer_disarm(&wifi_reconnect_timer);
 }
 

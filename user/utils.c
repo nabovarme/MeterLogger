@@ -260,11 +260,9 @@ void system_restart_defered() {
 	set_my_auto_connect(false);
 	wifi_destroy();
 	led_destroy();	// stop led blinking timers if running
-#ifndef IMPULSE
 #ifndef NO_CRON
 	cron_destroy();
 #endif	// NO_CRON
-#endif	// IMPULSE
 
 	// Allow final TCP/MQTT packets to transmit before restarting.
 	os_timer_disarm(&system_restart_defered_timer);

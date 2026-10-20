@@ -33,11 +33,7 @@
 #include "user_config.h"
 #include "cron/cron.h"
 
-#ifdef IMPULSE
-#define METER_SERIAL_LEN			13
-#else
 #define METER_SERIAL_LEN			10
-#endif
 
 static const char key[] = KEY;
 
@@ -61,19 +57,11 @@ typedef struct{
 	uint8_t security;
 	uint8_t key[16];           // Master key (16 bytes raw binary)
 
-#ifndef IMPULSE
 	uint8_t ac_thermo_state;	// thermo actuator state
 	uint32_t offline_close_at;	// close thermo actuator at kwh set via mqtt open_at_delta function
 #ifndef NO_CRON
 	cron_jobs_t cron_jobs;
 #endif	// NO_CRON
-#else
-	char impulse_meter_serial[METER_SERIAL_LEN];
-	char impulse_meter_units[32 + 1];	// in Wh
-	char impulses_per_unit[32 + 1];
-	volatile uint32_t impulse_meter_count;
-	uint64_t operating_time;	// operating seconds counter
-#endif	// IMPULSE
 	uint16_t ccit_crc16;
 } syscfg_t;
 

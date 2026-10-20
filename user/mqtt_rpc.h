@@ -36,7 +36,6 @@ ICACHE_FLASH_ATTR void mqtt_rpc_set_mqtt_host(MQTT_Client *client, char *params)
 ICACHE_FLASH_ATTR void mqtt_rpc_stack_trace(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params);
 #endif	// DEBUG_STACK_TRACE
-#ifndef IMPULSE
 #ifndef NO_CRON
 ICACHE_FLASH_ATTR void mqtt_rpc_set_cron(MQTT_Client *client, char *query);
 ICACHE_FLASH_ATTR void mqtt_rpc_clear_cron(MQTT_Client *client);
@@ -47,6 +46,5 @@ ICACHE_FLASH_ATTR void mqtt_rpc_open_until(MQTT_Client *client, char *value);
 ICACHE_FLASH_ATTR void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value);
 ICACHE_FLASH_ATTR void mqtt_rpc_close(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_status(MQTT_Client *client);
-#endif
 
 #endif /* MQTT_RPC_H_ */

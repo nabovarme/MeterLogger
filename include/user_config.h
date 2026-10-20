@@ -10,16 +10,6 @@
 #define STACK_TRACE_N				0x4000
 #define STACK_TRACE_SEC				0xF8
 
-#ifdef IMPULSE
-#ifndef FLOW_METER	// electricity meter
-#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(80)	// mS
-#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(120)	// mS
-#else				// analog water meter
-#define IMPULSE_EDGE_TO_EDGE_TIME_MIN	(0)	// dont use time filter for analog meters
-#define IMPULSE_EDGE_TO_EDGE_TIME_MAX	(0)	// dont use time filter for analog meters
-#endif	// FLOW_METER
-#endif	// IMPULSE
-
 //#define MQTT_SSL_ENABLE
 //#define CLIENT_SSL_ENABLE
 
@@ -99,15 +89,7 @@
 #define STA_FALLBACK_SSID	"stofferFon"
 #define STA_FALLBACK_PASS	"w1reless"
 
-#ifdef IMPULSE
-#ifndef FLOW_METER
-#define AP_SSID				"EL_%s"
-#else
-#define AP_SSID				"WATER_%s"
-#endif	// FLOW_METER
-#else
 #define AP_SSID				"KAM_%07u"
-#endif
 #ifndef AP_PASSWORD
 #define AP_PASSWORD			"aabbccddeeff"
 #endif

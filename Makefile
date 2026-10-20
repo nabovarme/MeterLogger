@@ -153,18 +153,10 @@ ifeq ($(EN61107), 1)
     CFLAGS += -DEN61107
     MODULES += user/en61107 user/cron user/ac
     WIFI_SSID = "KAM_$(SERIAL)"
-else ifeq ($(IMPULSE), 1)
-    CFLAGS += -DIMPULSE
-    WIFI_SSID = "EL_$(SERIAL)"
 else
     CFLAGS += -DKMP
     MODULES += user/kamstrup user/cron user/ac
     WIFI_SSID = "KAM_$(SERIAL)"
-endif
-
-ifeq ($(IMPULSE_DEV_BOARD), 1)
-    IMPULSE_DEV_BOARD = 1
-	CFLAGS += -DIMPULSE_DEV_BOARD
 endif
 
 ifneq ($(AUTO_CLOSE), 0)
@@ -189,10 +181,6 @@ endif
 
 ifeq ($(AC_TEST), 1)
     CFLAGS += -DLED_ON_AC -DAC_TEST
-endif
-
-ifeq ($(EXT_SPI_RAM_IS_NAND), 1)
-    CFLAGS += -DEXT_SPI_RAM_IS_NAND
 endif
 
 # various paths from the SDK used in this project
