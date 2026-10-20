@@ -36,6 +36,8 @@
 // Link tracking variables from cnx_csa_fn_patch.c
 extern uint32_t cnx_csa_call_count;
 extern bool cnx_csa_new_call_flag;
+extern uint8_t cnx_csa_last_bssid[6];
+extern bool cnx_csa_bssid_captured;
 
 bool fast_boot;
 
@@ -453,12 +455,28 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	char cleartext[MQTT_MESSAGE_L];
 	int mqtt_message_l;
+	uint8_t reported_bssid[6];
+	bool has_bssid = false;
 
 	if (cnx_csa_new_call_flag) {
-		cnx_csa_new_call_flag = false; // Reset flag
+		// Safely lock interrupts while copying flag & BSSID updated by Wi-Fi ISR
+		ETS_INTR_LOCK();
+		cnx_csa_new_call_flag = false;
+		if (cnx_csa_bssid_captured) {
+			os_memcpy(reported_bssid, cnx_csa_last_bssid, 6);
+			has_bssid = true;
+		}
+		ETS_INTR_UNLOCK();
 
 #ifdef DEBUG
-		os_printf("CSA drop intercepted! Total cnx_csa_fn calls: %u\n", cnx_csa_call_count);
+		if (has_bssid) {
+			os_printf("CSA drop intercepted! Total calls: %u, BSSID: %02x:%02x:%02x:%02x:%02x:%02x\n",
+				cnx_csa_call_count,
+				reported_bssid[0], reported_bssid[1], reported_bssid[2],
+				reported_bssid[3], reported_bssid[4], reported_bssid[5]);
+		} else {
+			os_printf("CSA drop intercepted! Total calls: %u (BSSID unknown)\n", cnx_csa_call_count);
+		}
 #endif
 
 		if (mqtt_client.pCon != NULL) {
@@ -471,7 +489,14 @@ ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 			tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/cnx_csa_fn_called/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
 
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "count=%u", cnx_csa_call_count);
+			if (has_bssid) {
+				tfp_snprintf(cleartext, MQTT_MESSAGE_L, "count=%u&bssid=%02x:%02x:%02x:%02x:%02x:%02x",
+					cnx_csa_call_count,
+					reported_bssid[0], reported_bssid[1], reported_bssid[2],
+					reported_bssid[3], reported_bssid[4], reported_bssid[5]);
+			} else {
+				tfp_snprintf(cleartext, MQTT_MESSAGE_L, "count=%u", cnx_csa_call_count);
+			}
 
 			mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 			MQTT_Publish(&mqtt_client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);

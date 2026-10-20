@@ -99,6 +99,7 @@ LDFLAGS =	-nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static \
 			-Wl,--wrap=cnx_csa_fn \
 			-Wl,--wrap=system_get_sdk_version \
 			-Wl,--wrap=wifi_station_scan \
+			-Wl,--wrap=ieee80211_parse_beacon \
 			-Lld -L$(SDK_BASE)/ld
 
 ifeq ($(FLAVOR),debug)
