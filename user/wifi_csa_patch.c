@@ -71,12 +71,17 @@ static ICACHE_RAM_ATTR bool parse_csa_ie(const uint8_t *payload, uint16_t len, u
 
 // Linker wrapper intercepting ieee80211_parse_beacon
 void ICACHE_RAM_ATTR __wrap_ieee80211_parse_beacon(void *ni, const uint8_t *frame_buf, uint16_t len) {
-	if (frame_buf != NULL && len >= sizeof(ieee80211_mgmt_hdr_t)) {
-		const ieee80211_mgmt_hdr_t *hdr = (const ieee80211_mgmt_hdr_t *)frame_buf;
-		uint8_t target_channel = 0;
+	const ieee80211_mgmt_hdr_t *hdr;
+	uint8_t target_channel;
+	uint8_t type;
+	uint8_t subtype;
 
-		uint8_t type = (hdr->frame_control >> 2) & 0x03;
-		uint8_t subtype = (hdr->frame_control >> 4) & 0x0F;
+	if (frame_buf != NULL && len >= sizeof(ieee80211_mgmt_hdr_t)) {
+		hdr = (const ieee80211_mgmt_hdr_t *)frame_buf;
+		target_channel = 0;
+
+		type = (hdr->frame_control >> 2) & 0x03;
+		subtype = (hdr->frame_control >> 4) & 0x0F;
 
 		// Type 0 = Management, Subtype 8 = Beacon, Subtype 5 = Probe Response
 		if (type == 0 && (subtype == 8 || subtype == 5)) {
