@@ -430,8 +430,8 @@ ICACHE_FLASH_ATTR void meter_sent_data(void) {
 			}
 		}
 	}
-#endif	// EN61107
 #endif	// FLOW_METER
+#endif	// EN61107
 }
 
 ICACHE_FLASH_ATTR static void mqtt_fallback_retry_cb(void) {
@@ -535,6 +535,7 @@ ICACHE_FLASH_ATTR void mqtt_connected_cb(uint32_t *args) {
 #ifdef EN61107
 	if (en61107_get_received_serial() == 0) {
 		en61107_request_send();
+	}
 #else
 	if (kmp_get_received_serial() == 0) {
 		kmp_request_send();
