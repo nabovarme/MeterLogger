@@ -84,13 +84,6 @@ void ICACHE_RAM_ATTR __wrap_ieee80211_parse_beacon(void *ni, const uint8_t *fram
 				// Capture Source Address (Address 2) -> BSSID of the broadcasting AP
 				os_memcpy(cnx_csa_last_bssid, hdr->sa, 6);
 				cnx_csa_bssid_captured = true;
-
-				#ifdef DEBUG
-				os_printf("[CSA DETECTED] AP BSSID: %02x:%02x:%02x:%02x:%02x:%02x -> New Channel: %u\n",
-					cnx_csa_last_bssid[0], cnx_csa_last_bssid[1], cnx_csa_last_bssid[2],
-					cnx_csa_last_bssid[3], cnx_csa_last_bssid[4], cnx_csa_last_bssid[5],
-					target_channel);
-				#endif
 			}
 		}
 	}
@@ -135,19 +128,9 @@ void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
 	cnx_csa_call_count++;
 	cnx_csa_new_call_flag = true;
 
-	if (cnx_csa_bssid_captured) {
-		#ifdef DEBUG
-		os_printf("cnx_csa_fn triggered by AP BSSID: %02x:%02x:%02x:%02x:%02x:%02x\n",
-			cnx_csa_last_bssid[0], cnx_csa_last_bssid[1], cnx_csa_last_bssid[2],
-			cnx_csa_last_bssid[3], cnx_csa_last_bssid[4], cnx_csa_last_bssid[5]);
-		#endif
-	}
-
 	// If we are actively scanning, this CSA is almost certainly from a foreign AP on another channel.
 	if (is_scanning) {
-		#ifdef DEBUG
-		os_printf("cnx_csa_fn: Blocked rogue CSA switch during active scan\n");
-		#endif
+		// Block rogue CSA switch during active scan
 		return;
 	}
 
