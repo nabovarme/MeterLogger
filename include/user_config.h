@@ -45,14 +45,14 @@
 #define MQTT_RECONNECT_TIMEOUT	5	// second
 #define MQTT_CONNECT_TIMEOUT	5	// second
 #define MQTT_CONNECTED_FIRST_SAMPLE_DELAY_MS	1100 // Delay before triggering the single-shot initial meter poll after boot
-#define MQTT_CONNECTED_DEFER_DELAY_MS			5000 // Delay to retry MQTT setup while waiting for initial optical serial read
+#define MQTT_CONNECTED_DEFER_DELAY_MS			5000 // Delay to retry MQTT setup while waiting for initial serial read
 
 #define WIFI_START_FAST_BOOT_DELAY_MS           2000 // Delay before starting sample mode on fast boot
 
 #ifdef EN61107
 #define METER_POLL_COLD_BOOT_DELAY_MS           6000  // EN61107 includes its own wake-up stabilization timer
 #else
-#define METER_POLL_COLD_BOOT_DELAY_MS           10000 // KMP requires 10 seconds on cold boot for power and optical head stabilization
+#define METER_POLL_COLD_BOOT_DELAY_MS           10000 // KMP requires 10 seconds on cold boot stabilization
 #endif
 
 #define METER_POLL_FAST_BOOT_DELAY_MS           6000  // Delay before the very first meter read on deep sleep wake (fast boot)

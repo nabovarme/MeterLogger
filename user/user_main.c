@@ -48,7 +48,9 @@ static os_timer_t sample_timer;
 static os_timer_t config_mode_timer;
 static os_timer_t sample_mode_timer;
 static os_timer_t mqtt_connected_first_mqtt_rpc_timer;
+#ifndef EN61107
 static os_timer_t mqtt_connected_defer_timer;
+#endif
 static os_timer_t wifi_test_report_timer;
 static os_timer_t csa_report_timer;
 #ifdef EN61107
@@ -70,7 +72,7 @@ bool check_memleak_debug_enable(void) {
 #ifdef CONFIG_ENABLE_IRAM_MEMORY
 //ICACHE_FLASH_ATTR
 uint32 user_iram_memory_is_enabled(void) {
-	return  CONFIG_ENABLE_IRAM_MEMORY;
+	return CONFIG_ENABLE_IRAM_MEMORY;
 }
 #endif	// CONFIG_ENABLE_IRAM_MEMORY
 #endif
@@ -288,27 +290,16 @@ ICACHE_FLASH_ATTR void meter_is_ready(void) {
 #ifdef DEBUG
 		printf("normal boot\n");
 #endif
-#ifdef EN61107
 		// and start ap mode
 		os_timer_disarm(&config_mode_timer);
 		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
 		os_timer_arm(&config_mode_timer, 1000, 0);
-#else
-		// and start ap mode
-		os_timer_disarm(&config_mode_timer);
-		os_timer_setfn(&config_mode_timer, (os_timer_func_t *)config_mode_timer_func, NULL);
-		os_timer_arm(&config_mode_timer, 1000, 0);
-#endif
 
 		// wait for 120 seconds from boot and go to station mode
 		os_timer_disarm(&sample_mode_timer);
 		os_timer_setfn(&sample_mode_timer, (os_timer_func_t *)sample_mode_timer_func, NULL);
 #ifndef DEBUG_SHORT_WEB_CONFIG_TIME
-#ifdef EN61107
 		os_timer_arm(&sample_mode_timer, 120000 + 1000, 0);
-#else
-		os_timer_arm(&sample_mode_timer, 120000 + 1000, 0);
-#endif
 #else	// DEBUG_SHORT_WEB_CONFIG_TIME
 		os_timer_arm(&sample_mode_timer, 2000, 0);
 #endif
@@ -451,9 +442,11 @@ ICACHE_FLASH_ATTR void wifi_changed_cb(uint8_t status) {
 	}
 }
 
+#ifndef EN61107
 ICACHE_FLASH_ATTR void static mqtt_connected_defer_timer_func(void *arg) {
 	mqtt_connected_cb((uint32_t*)&mqtt_client);
 }
+#endif
 
 ICACHE_FLASH_ATTR void static csa_report_timer_func(void *arg) {
 	char mqtt_topic[MQTT_TOPIC_L];
