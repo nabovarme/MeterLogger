@@ -33,7 +33,6 @@
 #define EN61107_INST_VALUES_UART_SETTINGS_DELAY_MS 300
 
 extern bool fast_boot;
-extern void mqtt_rpc_debug(const char *error_reason);
 
 os_event_t en61107_received_task_queue[en61107_received_task_queue_length];
 
@@ -178,7 +177,6 @@ static void en61107_received_task(os_event_t *events) {
 	static char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 	uint32_t parsed_serial;
-	char error_reason[64];
 
 	// vars for aes encryption
 	static uint8_t cleartext[EN61107_FRAME_L];
@@ -198,8 +196,10 @@ static void en61107_received_task(os_event_t *events) {
 			message_l = i;
 
 			if (parse_en61107_frame(&response, message, message_l) == false) {
+#ifdef DEBUG_SERIAL
 				// send debug error via mqtt_rpc_debug if parsing failed
-				mqtt_rpc_debug("error parsing frame");
+				mqtt_rpc_debug(mqtt_client, "parse_en61107_frame returned false");
+#endif // DEBUG_SERIAL
 				break;
 			}
 
