@@ -9,23 +9,9 @@
 #define ICACHE_RAM_ATTR __attribute__((section(".iram1.text")))
 #endif
 
-// 802.11 Management MAC Header (24 bytes)
-typedef struct {
-	uint16_t frame_control;
-	uint16_t duration;
-	uint8_t  da[6];        // Address 1: Destination Address
-	uint8_t  sa[6];        // Address 2: Source Address / Transmitter BSSID
-	uint8_t  bssid[6];     // Address 3: BSSID
-	uint16_t seq_ctrl;
-} __attribute__((packed)) ieee80211_mgmt_hdr_t;
-
 // Global tracking variables exposed to user_main.c
 uint32_t cnx_csa_call_count = 0;
 bool cnx_csa_new_call_flag = false;
-
-// Global tracking variables for captured CSA sender BSSID
-uint8_t cnx_csa_last_bssid[6] = {0};
-bool cnx_csa_bssid_captured = false;
 
 // Internal scan state tracking
 static volatile bool is_scanning = false;
@@ -35,67 +21,6 @@ static scan_done_cb_t user_scan_cb = NULL;
 extern const char * __real_system_get_sdk_version(void);
 extern void __real_cnx_csa_fn(void *arg);
 extern bool __real_wifi_station_scan(struct scan_config *config, scan_done_cb_t cb);
-extern void __real_ieee80211_parse_beacon(void *ni, const uint8_t *frame_buf, uint16_t len);
-
-// Helper function to inspect Information Elements for Channel Switch Announcement (IE ID 37 / 0x25)
-// MUST be ICACHE_RAM_ATTR because it is called directly from the Wi-Fi receive ISR context!
-static ICACHE_RAM_ATTR bool parse_csa_ie(const uint8_t *payload, uint16_t len, uint8_t *out_new_channel) {
-	uint16_t offset;
-
-	if (payload == NULL || len < 36) {
-		return false; // Minimum 24B MAC Header + 12B Fixed Parameters (Timestamp, Interval, CapInfo)
-	}
-
-	offset = 36; // Start of Information Elements
-	while (offset + 2 <= len) {
-		uint8_t ie_id = payload[offset];
-		uint8_t ie_len = payload[offset + 1];
-
-		if (offset + 2 + ie_len > len) {
-			break; // Truncated IE stream
-		}
-
-		// Check for Channel Switch Announcement IE (ID 37 / 0x25)
-		if (ie_id == 37 && ie_len >= 3) {
-			if (out_new_channel != NULL) {
-				*out_new_channel = payload[offset + 3]; // New channel byte is at IE offset +3
-			}
-			return true;
-		}
-
-		offset += 2 + ie_len;
-	}
-
-	return false;
-}
-
-// Linker wrapper intercepting ieee80211_parse_beacon
-void ICACHE_RAM_ATTR __wrap_ieee80211_parse_beacon(void *ni, const uint8_t *frame_buf, uint16_t len) {
-	const ieee80211_mgmt_hdr_t *hdr;
-	uint8_t target_channel;
-	uint8_t type;
-	uint8_t subtype;
-
-	if (frame_buf != NULL && len >= sizeof(ieee80211_mgmt_hdr_t)) {
-		hdr = (const ieee80211_mgmt_hdr_t *)frame_buf;
-		target_channel = 0;
-
-		type = (hdr->frame_control >> 2) & 0x03;
-		subtype = (hdr->frame_control >> 4) & 0x0F;
-
-		// Type 0 = Management, Subtype 8 = Beacon, Subtype 5 = Probe Response
-		if (type == 0 && (subtype == 8 || subtype == 5)) {
-			if (parse_csa_ie(frame_buf, len, &target_channel)) {
-				// Capture Source Address (Address 2) -> BSSID of the broadcasting AP
-				os_memcpy(cnx_csa_last_bssid, hdr->sa, 6);
-				cnx_csa_bssid_captured = true;
-			}
-		}
-	}
-
-	// Always pass execution to the real SDK beacon parser
-	__real_ieee80211_parse_beacon(ni, frame_buf, len);
-}
 
 // Intercepted scan callback to clear the scanning flag
 static void ICACHE_FLASH_ATTR intercepted_scan_cb(void *arg, STATUS status) {
@@ -135,7 +60,9 @@ void ICACHE_RAM_ATTR __wrap_cnx_csa_fn(void *arg) {
 
 	// If we are actively scanning, this CSA is almost certainly from a foreign AP on another channel.
 	if (is_scanning) {
-		// Block rogue CSA switch during active scan
+#ifdef DEBUG
+		os_printf("cnx_csa_fn: Blocked rogue CSA switch during active scan\n");
+#endif
 		return;
 	}
 
