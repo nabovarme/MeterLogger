@@ -8,10 +8,11 @@
 #include "en61107.h"
 
 ICACHE_FLASH_ATTR
-bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+int parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
 	unsigned int i, j;
 	uint8_t bcc;
 	uint8_t calculated_bcc;
+	bool etx_found = false;
 
 #ifndef MC_66B
 	const char *separator = "\x0D\x0A";
@@ -37,7 +38,12 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 
 	// sanity check
 	if (!frame_length) {
-		return 0;
+		return EN61107_ERR_EMPTY_FRAME;
+	}
+
+	// verify STX exists anywhere in frame
+	if (strstr(frame, stx) == NULL) {
+		return EN61107_ERR_NO_STX;
 	}
 
 	bcc = frame[frame_length - 1];
@@ -53,6 +59,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 
 			if (frame[i] == 0x03) {
 				// etx
+				etx_found = true;
 				if (bcc == calculated_bcc) {
 					// crc ok
 					// parse meter_type
@@ -63,7 +70,7 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 						
 						// check bounds safely without underflow
 						if (length <= 3 || (length - 3) >= EN61107_METER_TYPE_L) {
-							return false;
+							return EN61107_ERR_METER_TYPE_BOUNDS;
 						}
 						memcpy(response->meter_type, frame + 1, length - 3);
 						response->meter_type[length - 3] = '\0'; // explicitly null-terminate
@@ -212,12 +219,20 @@ bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int
 					}
 #endif
 
-					return true;
+					return EN61107_OK;
+				}
+				else {
+					return EN61107_ERR_BCC_MISMATCH;
 				}
 			}
 		}
 	}
-	return false;
+
+	if (!etx_found) {
+		return EN61107_ERR_NO_ETX;
+	}
+
+	return EN61107_ERR_UNKNOWN;
 }
 
 ICACHE_FLASH_ATTR
@@ -396,4 +411,3 @@ void en61107_response_set_unit(en61107_response_t *response, char *rid, char *un
 		tfp_snprintf(response->hr.unit, sizeof(response->hr.unit), "%s", unit_copy);
 	}
 }
-

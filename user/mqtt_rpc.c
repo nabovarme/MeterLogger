@@ -1623,7 +1623,7 @@ void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason) {
 	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
 #endif
 
-	tfp_snprintf(cleartext, sizeof(cleartext), "error=%s&", error_reason);
+	tfp_snprintf(cleartext, sizeof(cleartext), "error=%s", error_reason);
 
 	memset(message, 0, sizeof(message));
 	message_l = encrypt_aes_hmac_combined((uint8_t *)message, (uint8_t *)topic, strlen(topic), (uint8_t *)cleartext, strlen(cleartext) + 1);
