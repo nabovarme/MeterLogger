@@ -1,7 +1,3 @@
-[submodule "MeterLoggerDoxygen"]
-	path = meterlogger_doxygen
-	url = https://github.com/nabovarme/MeterLoggerDoxygen.git
-	branch = mesh
 [submodule "MeterLoggerPCB"]
 	path = pcb+power
 	url = https://github.com/nabovarme/MeterLoggerPCB.git
