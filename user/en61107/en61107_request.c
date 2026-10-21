@@ -21,7 +21,7 @@
 
 #define EN61107_ERROR_RECOVERY_INITIAL_DELAY_MS 5000
 #define EN61107_ERROR_RECOVERY_DELAY_MS 60000
-#define EN61107_FAST_BOOT_WAKEUP_DELAY_MS 500
+#define EN61107_RETRY_DELAY_MS 500
 
 #define EN61107_IDENT_RESPONSE_TIMEOUT_MS 3000
 #define EN61107_DATA_RESPONSE_TIMEOUT_MS 8000
@@ -199,6 +199,7 @@ static void en61107_received_task(os_event_t *events) {
 			}
 			message_l = i;
 
+			// Parse raw frame as received
 			parse_res = parse_en61107_frame(&response, message, message_l);
 			if (parse_res <= 0) {
 #ifdef DEBUG_SERIAL
@@ -224,6 +225,11 @@ static void en61107_received_task(os_event_t *events) {
 				}
 				mqtt_rpc_debug(mqtt_client, err_msg);
 #endif // DEBUG_SERIAL
+
+				// Disarm the long 8s timeout timer and trigger an immediate fast retry
+				os_timer_disarm(&en61107_receive_timeout_timer);
+				os_timer_setfn(&en61107_receive_timeout_timer, (os_timer_func_t *)en61107_receive_timeout_timer_func, NULL);
+				os_timer_arm(&en61107_receive_timeout_timer, EN61107_RETRY_DELAY_MS, 0);
 				break;
 			}
 
