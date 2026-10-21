@@ -34,58 +34,67 @@ static unsigned int getaregval(int reg) {
 	return saved_regs.a[reg - 2];
 }
 
+// Write one complete buffer if it fits inside the reserved flash region.
 ICACHE_FLASH_ATTR
-static void stack_trace_append(char *c) {
-	unsigned int len;
-	
+static bool stack_trace_write_buffer(void) {
+	size_t max_buffers = STACK_TRACE_N / STACK_TRACE_BUFFER_N;
+	size_t offset;
+
+	if (stack_trace_context.flash_index >= max_buffers) return false;
+
+	offset = stack_trace_context.flash_index * STACK_TRACE_BUFFER_N;
+
+	// Ensure the complete write stays inside the reserved region.
+	if (offset + STACK_TRACE_BUFFER_N > STACK_TRACE_N) return false;
+
+	spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + offset,
+					(uint32_t *)stack_trace_context.buffer,
+					STACK_TRACE_BUFFER_N);
+
+	stack_trace_context.flash_index++;
+	return true;
+}
+
+ICACHE_FLASH_ATTR
+static void stack_trace_append(const char *c) {
+	size_t len;
+
+	if (!c || stack_trace_context.flash_index >= STACK_TRACE_N / STACK_TRACE_BUFFER_N) return;
+
 	len = strlen(c);
-	if (len == 0) return;
-	
-	// only save up to STACK_TRACE_N bytes
-	if ((stack_trace_context.flash_index * STACK_TRACE_BUFFER_N) > STACK_TRACE_N) return;
-	
-	if (len + stack_trace_context.buffer_index < STACK_TRACE_BUFFER_N) {
-		// fill into buffer
-		memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, len);
-		stack_trace_context.buffer_index += len;
-	}
-	else {
-		// data longer than buffer size, we need to split writes
-		// data enough left to fill buffer
-		memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
-		spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
-						(uint32_t *)stack_trace_context.buffer,
-						STACK_TRACE_BUFFER_N);
-		c += STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index;
-		len = strlen(c);
-		stack_trace_context.flash_index++;
-		stack_trace_context.buffer_index = 0;
-		
-		// while enough data fill whole buffer
-		while (len > STACK_TRACE_BUFFER_N) {
-			c += STACK_TRACE_BUFFER_N;
-			memcpy(stack_trace_context.buffer, c, STACK_TRACE_BUFFER_N);
-			spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
-							(uint32_t *)stack_trace_context.buffer,
-							STACK_TRACE_BUFFER_N);
-			len -= STACK_TRACE_BUFFER_N;
-			stack_trace_context.flash_index++;
-		}
-		
-		// last data
-		if (len) {
+
+	while (len > 0) {
+		size_t available = STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index;
+		size_t chunk = len < available ? len : available;
+
+		// Append only as much data as fits in the current buffer.
+		memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, chunk);
+		stack_trace_context.buffer_index += chunk;
+		c += chunk;
+		len -= chunk;
+
+		if (stack_trace_context.buffer_index == STACK_TRACE_BUFFER_N) {
+			if (!stack_trace_write_buffer()) return;
+
+			stack_trace_context.buffer_index = 0;
 			memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
-			memcpy(stack_trace_context.buffer, c, strlen(c));
-			stack_trace_context.buffer_index = len;
+
+			// The reserved flash region is full.
+			if (stack_trace_context.flash_index >= STACK_TRACE_N / STACK_TRACE_BUFFER_N) return;
 		}
 	}
 }
 
 ICACHE_FLASH_ATTR
-static void stack_trace_last() {
-	spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + (stack_trace_context.flash_index * STACK_TRACE_BUFFER_N),
-					(uint32_t *)stack_trace_context.buffer,
-					STACK_TRACE_BUFFER_N);
+static void stack_trace_last(void) {
+	if (stack_trace_context.buffer_index == 0) return;
+
+	// Pad the final partial buffer so the flash write remains buffer-sized.
+	memset(stack_trace_context.buffer + stack_trace_context.buffer_index,
+		   0,
+		   STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
+
+	stack_trace_write_buffer();
 }
 
 ICACHE_FLASH_ATTR
@@ -93,17 +102,35 @@ static void print_stack(uint32_t start, uint32_t end) {
 	uint32_t pos;
 	uint32_t *values;
 	bool looks_like_stack_frame;
+
 #ifdef DEBUG
 	printf("\nStack dump:\n");
 #endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
 	stack_trace_append(stack_trace_buffer);
 
-	for (pos = start; pos < end; pos += 0x10) {
-		values = (uint32_t*)(pos);
-		// rough indicator: stack frames usually have SP saved as the second word
+	// Avoid reading an invalid or reversed range.
+	if (start >= end) {
+#ifdef DEBUG
+		printf("Invalid stack range: %08lx - %08lx\n",
+			(long unsigned int)start,
+			(long unsigned int)end);
+#endif	// DEBUG
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+			"Invalid stack range: %08lx - %08lx\n",
+			(long unsigned int)start,
+			(long unsigned int)end);
+		stack_trace_append(stack_trace_buffer);
+		stack_trace_last();
+		return;
+	}
+
+	for (pos = start; pos < end && end - pos >= 0x10; pos += 0x10) {
+		values = (uint32_t *)(pos);
+
+		// Rough indicator: stack frames usually have SP saved as the second word.
 		looks_like_stack_frame = (values[2] == pos + 0x10);
-		
+
 #ifdef DEBUG
 		printf("%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int)pos,
@@ -113,7 +140,8 @@ static void print_stack(uint32_t start, uint32_t end) {
 			(long unsigned int)values[3],
 			looks_like_stack_frame ? '<' : ' ');
 #endif	// DEBUG
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "%08lx:  %08lx %08lx %08lx %08lx %c\n",
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+			"%08lx:  %08lx %08lx %08lx %08lx %c\n",
 			(long unsigned int)pos,
 			(long unsigned int)values[0],
 			(long unsigned int)values[1],
@@ -122,26 +150,29 @@ static void print_stack(uint32_t start, uint32_t end) {
 			looks_like_stack_frame ? '<' : ' ');
 		stack_trace_append(stack_trace_buffer);
 	}
+
 #ifdef DEBUG
 	printf("\n");
 #endif	// DEBUG
 	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
 	stack_trace_append(stack_trace_buffer);
-	
+
 	stack_trace_last();
 }
 
 // Print exception info to console
 ICACHE_FLASH_ATTR
-static void print_reason() {
+static void print_reason(void) {
 	unsigned int i;
 	unsigned int r;
 
 	struct XTensa_exception_frame_s *reg = &saved_regs;
+
 #ifdef DEBUG
-	printf("\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+	printf("\n\n***** Fatal exception %ld\n", (long int)reg->reason);
 #endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n\n***** Fatal exception %ld\n", (long int) reg->reason);
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+		"\n\n***** Fatal exception %ld\n", (long int)reg->reason);
 	stack_trace_append(stack_trace_buffer);
 
 #ifdef DEBUG
@@ -150,7 +181,8 @@ static void print_reason() {
 		(long unsigned int)reg->a1,
 		(long unsigned int)reg->excvaddr);
 #endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n",
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+		"pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n",
 		(long unsigned int)reg->pc,
 		(long unsigned int)reg->a1,
 		(long unsigned int)reg->excvaddr);
@@ -162,19 +194,23 @@ static void print_reason() {
 		(long unsigned int)reg->sar,
 		(long unsigned int)reg->vpri);
 #endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n",
+	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+		"ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n",
 		(long unsigned int)reg->ps,
 		(long unsigned int)reg->sar,
 		(long unsigned int)reg->vpri);
 	stack_trace_append(stack_trace_buffer);
-	
+
 	for (i = 0; i < 16; i++) {
 		r = getaregval(i);
+
 #ifdef DEBUG
 		printf("r%02u: 0x%08x=%10u ", i, r, r);
 #endif	// DEBUG
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "r%02d: 0x%08x=%10d ", i, r, r);
+		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
+			"r%02u: 0x%08x=%10d ", i, r, r);
 		stack_trace_append(stack_trace_buffer);
+
 		if (i % 3 == 2) {
 #ifdef DEBUG
 			printf("\n");
@@ -183,6 +219,7 @@ static void print_reason() {
 			stack_trace_append(stack_trace_buffer);
 		}
 	}
+
 #ifdef DEBUG
 	printf("\n");
 #endif	// DEBUG
@@ -194,62 +231,72 @@ ICACHE_FLASH_ATTR
 static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	uint8_t i;
 	uint16_t delay_count;
-	
-	// Save the extra registers the Xtensa HAL doesn't save
-	save_extra_sfrs_for_exception();
-	// Copy registers the Xtensa HAL did save to saved_regs
-	memcpy(&saved_regs, frame, 19*4);
 
-	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it
-	// has a fixed offset from the address of the passed frame, we can recover it.
+	// Save the extra registers the Xtensa HAL doesn't save.
+	save_extra_sfrs_for_exception();
+
+	// Copy registers the Xtensa HAL did save to saved_regs.
+	memcpy(&saved_regs, frame, 19 * 4);
+
+	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it has a fixed offset from the address of the passed frame, we can recover it.
 	// saved_regs.a1 = (uint32_t)frame + EXCEPTION_GDB_SP_OFFSET;
 	saved_regs.a1 = (uint32_t)frame;
 
-	system_phy_set_powerup_option(3);	// keep RF off after reset
-	
+	system_phy_set_powerup_option(3);	// Keep RF off after reset.
+
 	stop_watchdog();
 	system_soft_wdt_stop();
 	ets_wdt_disable();
-	
-	// Feed hardware WDT before erasing flash to avoid NMI WDT resets
+
+	// Feed hardware WDT before erasing flash to avoid NMI WDT resets.
 	WRITE_PERI_REG(0x60000914, 0x73);
 
 	for (i = 0; i * SPI_FLASH_SEC_SIZE < STACK_TRACE_N; i++) {
 		spi_flash_erase_sector(STACK_TRACE_SEC + i);
 		WRITE_PERI_REG(0x60000914, 0x73);
 	}
-	
+
 	print_reason();
 	WRITE_PERI_REG(0x60000914, 0x73);
 
-	//print_stack(reg->pc, sp, 0x3fffffb0);
+	// Dump the stack using the saved exception frame address.
 	print_stack(getaregval(1), 0x3fffffb0);
 	WRITE_PERI_REG(0x60000914, 0x73);
-	
-	// Wait ~3 seconds so logs flush out (without WDT)
+
+	// Wait ~3 seconds so logs flush out (without WDT).
 	for (delay_count = 0; delay_count < 300; delay_count++) {
 		WRITE_PERI_REG(0x60000914, 0x73);
-		os_delay_us(10000); // Wait 10ms at a time for a total of 3 seconds
+		os_delay_us(10000);	// Wait 10ms at a time for a total of 3 seconds.
 	}
-	
-	// Force reboot cleanly
+
+	// Force reboot cleanly.
 	system_restart();
 
-	// In case system_restart() does not execute immediately
+	// In case system_restart() does not execute immediately.
 	ets_wdt_enable();
-	while(1) {
-		// Wait for hardware watchdog to trigger reboot
+	while (1) {
+		// Wait for hardware watchdog to trigger reboot.
 	}
 }
 
 ICACHE_FLASH_ATTR
-void exception_handler_init() {
+void exception_handler_init(void) {
 	unsigned int i;
-	int exno[] = {EXCCAUSE_ILLEGAL, EXCCAUSE_INSTR_ERROR, EXCCAUSE_DIVIDE_BY_ZERO, EXCCAUSE_UNALIGNED, 
-				  EXCCAUSE_INSTR_DATA_ERROR, EXCCAUSE_LOAD_STORE_DATA_ERROR, EXCCAUSE_INSTR_ADDR_ERROR, 
-				  EXCCAUSE_LOAD_STORE_ADDR_ERROR, EXCCAUSE_INSTR_PROHIBITED, EXCCAUSE_LOAD_PROHIBITED, EXCCAUSE_STORE_PROHIBITED};
+	int exno[] = {
+		EXCCAUSE_ILLEGAL,
+		EXCCAUSE_INSTR_ERROR,
+		EXCCAUSE_DIVIDE_BY_ZERO,
+		EXCCAUSE_UNALIGNED,
+		EXCCAUSE_INSTR_DATA_ERROR,
+		EXCCAUSE_LOAD_STORE_DATA_ERROR,
+		EXCCAUSE_INSTR_ADDR_ERROR,
+		EXCCAUSE_LOAD_STORE_ADDR_ERROR,
+		EXCCAUSE_INSTR_PROHIBITED,
+		EXCCAUSE_LOAD_PROHIBITED,
+		EXCCAUSE_STORE_PROHIBITED
+	};
 
-	// initialize buffered save log to flash
+	// Initialize buffered save log to flash.
 	memset(stack_trace_buffer, 0, STACK_TRACE_BUFFER_N);
 	memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
 	stack_trace_context.flash_index = 0;
