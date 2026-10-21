@@ -449,16 +449,15 @@ void en61107_register_meter_sent_data_cb(meter_sent_data_cb cb) {
 	en61107_meter_sent_data_cb = cb;
 }
 
-//ICACHE_FLASH_ATTR
 inline bool en61107_is_eod_char(uint8_t c) {
 	if (en61107_eod == 0x03) {
 		// we need to get the next char as well for this protocol
-		if (c == en61107_eod) {
+		if (c == 0x03) {
 			en61107_etx_received = true;
 			return false;
 		}
 		else if (en61107_etx_received) {
-//			en61107_etx_received = false;	// DEBUG: should really be here
+			en61107_etx_received = false;
 			return true;
 		}
 	}
@@ -585,7 +584,7 @@ void en61107_uart_send_en61107_ident() {
 	en61107_fifo_flush();
 
 	en61107_eod = '\n';
-	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
+	en61107_etx_received = false;
 
 #ifndef DEBUG_NO_METER
 	// 300 bps
@@ -625,7 +624,7 @@ void en61107_uart_send_en61107() {
 	}
 
 	en61107_eod = 0x03;
-	en61107_etx_received = false;	// DEBUG: should be in en61107_is_eod_char() but does not work
+	en61107_etx_received = false;
 
 #ifndef DEBUG_NO_METER
 	// 300 bps
