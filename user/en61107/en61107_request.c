@@ -197,11 +197,9 @@ static void en61107_received_task(os_event_t *events) {
 			}
 			message_l = i;
 
-			if (parse_en61107_frame(&response, message, message_l, error_reason) == false) {
+			if (parse_en61107_frame(&response, message, message_l) == false) {
 				// send debug error via mqtt_rpc_debug if parsing failed
-				if (error_reason[0] != '\0') {
-					mqtt_rpc_debug(error_reason);
-				}
+				mqtt_rpc_debug("error parsing frame");
 				break;
 			}
 
