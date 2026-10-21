@@ -474,6 +474,11 @@ inline bool en61107_is_eod_char(uint8_t c) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
+	// Do not start a new read cycle while one is active or recovery is pending.
+	if (is_in_error_recovery || en61107_uart_state != UART_STATE_NONE) {
+		return;
+	}
+
 #ifndef DEBUG_NO_METER
 	char c;
 	unsigned int i;
