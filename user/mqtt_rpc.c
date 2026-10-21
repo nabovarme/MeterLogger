@@ -871,35 +871,45 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	char mqtt_topic[MQTT_TOPIC_L];
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
-		
+
 	uint32_t watchdog_rebooted;
+	uint8_t current_rom;
 	struct rst_info *rtc_info;
-	
+
 	rtc_info = system_get_rst_info();
+
+	// Get the ROM slot used for the last boot
+	current_rom = rboot_get_current_rom();
+#ifdef BOOT_RTC_ENABLED
+	rboot_get_last_boot_rom(&current_rom);
+#endif
 
 #ifdef EN61107
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
 #else
 	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/reset_reason/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
 #endif
+
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
+
 	if (rtc_info != NULL) {
 		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", 7, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x&slot=%d", 7, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc, (int)current_rom);
 		}
 		else {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc);
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x&slot=%d", rtc_info->reason, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc, (int)current_rom);
 		}
 	}
 	else {
 		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", 7);
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&slot=%d", 7, (int)current_rom);
 		}
 		else {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d", -1);
+			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&slot=%d", -1, (int)current_rom);
 		}
 	}
+
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
