@@ -32,6 +32,10 @@
 #define MQTT_RESTART_DELAY_MS 2000
 #define WIFI_DEFERRED_RECONNECT_MS 500
 
+// DEBUG FIX - should be ifdef
+// from user_main.c so mqtt_rpc_debug() can use it
+MQTT_Client mqtt_client;
+
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
 extern bool ota_in_progress;
@@ -1603,6 +1607,7 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
+// DEBUG FIX - should be ifdef
 ICACHE_FLASH_ATTR
 void mqtt_rpc_debug(const char *error_reason) {
 	char topic[MQTT_TOPIC_L];
@@ -1611,7 +1616,7 @@ void mqtt_rpc_debug(const char *error_reason) {
 	char cleartext[128];
 	int message_l;
 
-	if (!mqtt_client || !mqtt_client->pCon || !mqtt_client->mqtt_state.work_buffer) {
+	if (!mqtt_client.pCon || !mqtt_client.mqtt_state.work_buffer) {
 		return;
 	}
 
@@ -1628,7 +1633,6 @@ void mqtt_rpc_debug(const char *error_reason) {
 	message_l = encrypt_aes_hmac_combined((uint8_t *)message, (uint8_t *)topic, strlen(topic), (uint8_t *)cleartext, strlen(cleartext) + 1);
 
 	if (message_l > 1) {
-		MQTT_Publish(mqtt_client, topic, message, message_l, 0, 0); // Sent as QoS 0
+		MQTT_Publish(&mqtt_client, topic, message, message_l, 0, 0); // Sent as QoS 0
 	}
 }
-
