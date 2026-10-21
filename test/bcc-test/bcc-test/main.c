@@ -227,7 +227,7 @@ void en61107_response_set_unit(en61107_response_t *response, char *rid, char *un
     }
 }
 
-bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length) {
+bool mqtt_rpc_debug_serial(en61107_response_t *response, char *frame, unsigned int frame_length) {
     unsigned int i, j;
     uint8_t bcc;
     uint8_t calculated_bcc;
@@ -438,7 +438,7 @@ bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, 
 }
 
 int main(int argc, const char * argv[]) {
-    if (parse_en61107_frame(&en61107_response, data, data_length)) {
+    if (mqtt_rpc_debug_serial(&en61107_response, data, data_length)) {
         printf("bcc ok\n");
         
         printf("serial: %s\n", en61107_response.customer_no);

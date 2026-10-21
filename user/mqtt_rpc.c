@@ -1618,9 +1618,9 @@ void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason) {
 
 	tfp_snprintf(current_unix_time_string, 64, "%llu", get_unix_time());
 #ifdef EN61107
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug/v2/%07u/%s", en61107_get_received_serial(), current_unix_time_string);
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug_serial/v2/%07u/%s", en61107_get_received_serial(), current_unix_time_string);
 #else
-	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug_serial/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
 #endif
 
 	tfp_snprintf(cleartext, sizeof(cleartext), "error=%s", error_reason);
