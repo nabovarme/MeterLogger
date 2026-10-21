@@ -178,6 +178,9 @@ static void en61107_received_task(os_event_t *events) {
 	int message_l;
 	uint32_t parsed_serial;
 	int parse_res;
+#ifdef DEBUG_SERIAL
+	const char *err_msg;
+#endif // DEBUG_SERIAL
 
 	// vars for aes encryption
 	static uint8_t cleartext[EN61107_FRAME_L];
@@ -199,21 +202,25 @@ static void en61107_received_task(os_event_t *events) {
 			parse_res = parse_en61107_frame(&response, message, message_l);
 			if (parse_res <= 0) {
 #ifdef DEBUG_SERIAL
-				const char *err_msg;
 				switch (parse_res) {
 					case EN61107_ERR_EMPTY_FRAME:
-						err_msg = "empty_frame"; break;
+						err_msg = "empty_frame";
+						break;
 					case EN61107_ERR_NO_STX:
-						err_msg = "stx_missing"; break;
+						err_msg = "stx_missing";
+						break;
 					case EN61107_ERR_NO_ETX:
-						err_msg = "etx_missing"; break;
+						err_msg = "etx_missing";
+						break;
 					case EN61107_ERR_BCC_MISMATCH:
-						err_msg = "bcc_mismatch"; break;
+						err_msg = "bcc_mismatch";
+						break;
 					case EN61107_ERR_METER_TYPE_BOUNDS:
 						err_msg = "meter_type_bounds_error";
 						break;
 					default:
-						err_msg = "parse_frame_failed"; break;
+						err_msg = "parse_frame_failed";
+						break;
 				}
 				mqtt_rpc_debug(mqtt_client, err_msg);
 #endif // DEBUG_SERIAL
