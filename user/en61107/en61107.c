@@ -46,7 +46,9 @@ int parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int 
 		return EN61107_ERR_NO_STX;
 	}
 
-	bcc = frame[frame_length - 1];
+	// Mask off 8th bit (& 0x7f) on received BCC byte from Kamstrup meter
+	// to prevent parity bit errors from failing the checksum check
+	bcc = frame[frame_length - 1] & 0x7f;
 	calculated_bcc = 0;
 	for (i = 0; i < frame_length; i++) {
 		if (frame[i] == 0x02) {
