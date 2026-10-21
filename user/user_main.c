@@ -807,6 +807,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// found stack_trace
 		mqtt_rpc_read_stack_trace(&mqtt_client, cleartext);
 	}
+	else if (strncmp(function_name, "exc_test", FUNCTIONNAME_L) == 0) {
+		// Deliberately trigger an exception for stack trace testing.
+		mqtt_rpc_exc_test(&mqtt_client);
+	}
 #endif	// DEBUG_STACK_TRACE
 #ifndef NO_CRON
 	else if (strncmp(function_name, "set_cron", FUNCTIONNAME_L) == 0) {
