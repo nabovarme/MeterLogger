@@ -9,6 +9,15 @@
 #define EN61107_CUSTOMER_NO_L 13
 #define EN61107_METER_TYPE_L 8
 
+// Error return codes for parse_en61107_frame
+#define EN61107_OK                        1
+#define EN61107_ERR_UNKNOWN               0
+#define EN61107_ERR_EMPTY_FRAME          -1
+#define EN61107_ERR_NO_STX               -2
+#define EN61107_ERR_NO_ETX               -3
+#define EN61107_ERR_BCC_MISMATCH         -4
+#define EN61107_ERR_METER_TYPE_BOUNDS    -5
+
 typedef struct {
 	char value[EN61107_VALUE_L];
 	char unit[EN61107_UNIT_L];
@@ -53,16 +62,13 @@ typedef enum {
 } en61107_uart_state_t;
 
 ICACHE_FLASH_ATTR
-bool parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
+int parse_en61107_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_1_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 ICACHE_FLASH_ATTR
 bool parse_mc66cde_standard_data_2_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
-
-ICACHE_FLASH_ATTR
-bool parse_mc66cde_inst_values_frame(en61107_response_t *response, char *frame, unsigned int frame_length);
 
 #ifndef MC_66B
 ICACHE_FLASH_ATTR
@@ -76,4 +82,3 @@ ICACHE_FLASH_ATTR
 void en61107_response_set_unit(en61107_response_t *response, char *rid, char *unit, unsigned int unit_length);
 
 #endif
-

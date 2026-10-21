@@ -1602,3 +1602,35 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
+
+#ifdef DEBUG_SERIAL
+ICACHE_FLASH_ATTR
+void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason) {
+	char topic[MQTT_TOPIC_L];
+	char message[128];
+	char current_unix_time_string[64];
+	char cleartext[128];
+	int message_l;
+
+	if (!client || !client->pCon || !client->mqtt_state.work_buffer) {
+		return;
+	}
+
+	tfp_snprintf(current_unix_time_string, 64, "%llu", get_unix_time());
+#ifdef EN61107
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug_serial/v2/%07u/%s", en61107_get_received_serial(), current_unix_time_string);
+#else
+	tfp_snprintf(topic, MQTT_TOPIC_L, "/debug_serial/v2/%07u/%s", kmp_get_received_serial(), current_unix_time_string);
+#endif
+
+	tfp_snprintf(cleartext, sizeof(cleartext), "error=%s", error_reason);
+
+	memset(message, 0, sizeof(message));
+	message_l = encrypt_aes_hmac_combined((uint8_t *)message, (uint8_t *)topic, strlen(topic), (uint8_t *)cleartext, strlen(cleartext) + 1);
+
+	if (message_l > 1) {
+		MQTT_Publish(client, topic, message, message_l, 0, 0); // Sent as QoS 0
+	}
+}
+#endif // DEBUG_SERIAL
+
