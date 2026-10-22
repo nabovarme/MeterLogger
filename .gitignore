@@ -20,9 +20,5 @@ release/
 webpages.espfs
 app.map
 
-# Executables & Tools
-tools/*
-mkespfsimage/mkespfsimage
-
 # Debug & Flash Dumps
 firmware/stack_trace.dump

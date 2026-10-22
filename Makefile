@@ -102,8 +102,8 @@ ifeq ($(FLAVOR),debug)
 endif
 
 ifeq ($(FLAVOR),release)
-    CFLAGS += -O2
-    LDFLAGS += -O2
+    CFLAGS += -O2 -g
+    LDFLAGS += -O2 -g
 endif
 
 ifeq ($(DEBUG), 1)

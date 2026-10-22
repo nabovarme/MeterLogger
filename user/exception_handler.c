@@ -1,3 +1,58 @@
+// ============================================================================
+// ESP8266 Call0 Crash Log Binary Format
+// ============================================================================
+// The crash log is stored as a raw binary payload. All data is written in 
+// Little-Endian byte order (standard for the Xtensa architecture) and aligned 
+// to 32-bit (4-byte) boundaries.
+//
+// The payload consists of a fixed 116-byte header followed immediately by a 
+// variable-length raw RAM stack dump.
+//
+// 1. High-Level Memory Layout
+// ----------------------------------------------------------------------------
+// [ 0x00 - 0x73 ] (116 bytes) : crash_log_header_t (Magic, build info, CPU regs)
+// [ 0x74 - END  ] (Variable)  : Raw DRAM stack payload (Length: stack_dump_len)
+//
+// 2. Header Structure (crash_log_header_t)
+// ----------------------------------------------------------------------------
+// Offset  | Size     | Type        | Field Name     | Description
+// 0x00    | 4 bytes  | uint32_t    | magic          | Always 0xDEADBEEF
+// 0x04    | 4 bytes  | uint32_t    | build_timestamp| Epoch timestamp/build ID
+// 0x08    | 100 bytes| struct      | regs           | Xtensa Exception Frame (below)
+// 0x6C    | 4 bytes  | uint32_t    | interrupted_sp | True SP (A1) of the task
+// 0x70    | 4 bytes  | uint32_t    | stack_dump_len | Length of the stack dump
+//
+// 3. Xtensa Exception Frame Breakdown (regs)
+// ----------------------------------------------------------------------------
+// Offset  | Size     | Type        | Field Name     | Description
+// 0x08    | 4 bytes  | uint32_t    | pc             | Crash instruction address
+// 0x0C    | 4 bytes  | uint32_t    | ps             | Processor Status register
+// 0x10    | 4 bytes  | uint32_t    | sar            | Shift Amount Register
+// 0x14    | 4 bytes  | uint32_t    | vpri           | Virtual Priority register
+// 0x18    | 4 bytes  | uint32_t    | a0             | Register A0 (Return Address)
+// 0x1C    | 56 bytes | uint32_t[14]| a[2..15]       | General purpose A2-A15
+// 0x54    | 4 bytes  | uint32_t    | litbase        | Literal Base Register
+// 0x58    | 4 bytes  | uint32_t    | sr176          | Special Function Register 176
+// 0x5C    | 4 bytes  | uint32_t    | sr208          | Special Function Register 208
+// 0x60    | 4 bytes  | uint32_t    | a1             | Reg A1 (Same as interrupted_sp)
+// 0x64    | 4 bytes  | uint32_t    | reason         | Exception Cause (e.g. 28)
+// 0x68    | 4 bytes  | uint32_t    | excvaddr       | Exception Virtual Address
+//
+// 4. Stack Memory Payload
+// ----------------------------------------------------------------------------
+// Starts immediately after the header at byte offset 116 (0x74).
+// A raw binary copy of the RAM stack (0x3FFF.... memory range). The first 
+// 4 bytes correspond to the memory located at `interrupted_sp`.
+// 
+// Important Parsing Notes for Unwinders:
+// - Word Alignment: All stack reads/writes on the ESP8266 are 32-bit aligned.
+//   `stack_dump_len` will always be a multiple of 4 bytes.
+// - Missing A0 offset in Leaf Functions: Under the Xtensa Call0 ABI, if the 
+//   crashing function is a leaf function (does not call other functions), it 
+//   will not save A0 into this stack memory payload. An unwinder must check 
+//   the `a0` register field (offset 24) to step out of the first frame.
+// ============================================================================
+
 #include <esp8266.h>
 #include "tinyprintf.h"
 #include "exception_handler.h"
@@ -6,276 +61,111 @@
 #include "watchdog.h"
 #include "user_config.h"
 
-#define STACK_TRACE_BUFFER_N		128
-
-// The asm stub saves the Xtensa registers here when a debugging exception happens.
+// Saved register frame
 struct XTensa_exception_frame_s saved_regs;
 
-// struct for buffered save log to flash
-struct stack_trace_context_t {
-	size_t flash_index;
-	char buffer[STACK_TRACE_BUFFER_N];
-	size_t buffer_index;
-} stack_trace_context;
-
-char stack_trace_buffer[STACK_TRACE_BUFFER_N];
-
 extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
-extern void ets_wdt_disable();
-extern void ets_wdt_enable();
+extern void save_extra_sfrs_for_exception(void);
+extern void ets_wdt_disable(void);
+extern void ets_wdt_enable(void);
 
-extern void save_extra_sfrs_for_exception();
-
-// Get the value of one of the A registers
-ICACHE_FLASH_ATTR
-static unsigned int getaregval(int reg) {
-	if (reg == 0) return saved_regs.a0;
-	if (reg == 1) return saved_regs.a1;
-	return saved_regs.a[reg - 2];
+// Feed hardware WDT directly via register write to prevent NMI resets during flash operations
+static inline void feed_hardware_wdt(void) {
+	WRITE_PERI_REG(0x60000914, 0x73);
 }
 
-// Write one complete buffer if it fits inside the reserved flash region.
-ICACHE_FLASH_ATTR
-static bool stack_trace_write_buffer(void) {
-	size_t max_buffers = STACK_TRACE_N / STACK_TRACE_BUFFER_N;
-	size_t offset;
-
-	if (stack_trace_context.flash_index >= max_buffers) return false;
-
-	offset = stack_trace_context.flash_index * STACK_TRACE_BUFFER_N;
-
-	// Ensure the complete write stays inside the reserved region.
-	if (offset + STACK_TRACE_BUFFER_N > STACK_TRACE_N) return false;
-
-	spi_flash_write((STACK_TRACE_SEC * SPI_FLASH_SEC_SIZE) + offset,
-					(uint32_t *)stack_trace_context.buffer,
-					STACK_TRACE_BUFFER_N);
-
-	stack_trace_context.flash_index++;
-	return true;
-}
-
-ICACHE_FLASH_ATTR
-static void stack_trace_append(const char *c) {
-	size_t len;
-
-	if (!c || stack_trace_context.flash_index >= STACK_TRACE_N / STACK_TRACE_BUFFER_N) return;
-
-	len = strlen(c);
-
-	while (len > 0) {
-		size_t available = STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index;
-		size_t chunk = len < available ? len : available;
-
-		// Append only as much data as fits in the current buffer.
-		memcpy(stack_trace_context.buffer + stack_trace_context.buffer_index, c, chunk);
-		stack_trace_context.buffer_index += chunk;
-		c += chunk;
-		len -= chunk;
-
-		if (stack_trace_context.buffer_index == STACK_TRACE_BUFFER_N) {
-			if (!stack_trace_write_buffer()) return;
-
-			stack_trace_context.buffer_index = 0;
-			memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
-
-			// The reserved flash region is full.
-			if (stack_trace_context.flash_index >= STACK_TRACE_N / STACK_TRACE_BUFFER_N) return;
-		}
-	}
-}
-
-ICACHE_FLASH_ATTR
-static void stack_trace_last(void) {
-	if (stack_trace_context.buffer_index == 0) return;
-
-	// Pad the final partial buffer so the flash write remains buffer-sized.
-	memset(stack_trace_context.buffer + stack_trace_context.buffer_index,
-		   0,
-		   STACK_TRACE_BUFFER_N - stack_trace_context.buffer_index);
-
-	stack_trace_write_buffer();
-}
-
-ICACHE_FLASH_ATTR
-static void print_stack(uint32_t start, uint32_t end) {
-	uint32_t pos;
-	uint32_t *values;
-	bool looks_like_stack_frame;
-
-#ifdef DEBUG
-	printf("\nStack dump:\n");
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\nStack dump:\n");
-	stack_trace_append(stack_trace_buffer);
-
-	// Avoid reading an invalid or reversed range.
-	if (start >= end) {
-#ifdef DEBUG
-		printf("Invalid stack range: %08lx - %08lx\n",
-			(long unsigned int)start,
-			(long unsigned int)end);
-#endif	// DEBUG
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-			"Invalid stack range: %08lx - %08lx\n",
-			(long unsigned int)start,
-			(long unsigned int)end);
-		stack_trace_append(stack_trace_buffer);
-		stack_trace_last();
-		return;
-	}
-
-	for (pos = start; pos < end && end - pos >= 0x10; pos += 0x10) {
-		values = (uint32_t *)(pos);
-
-		// Rough indicator: stack frames usually have SP saved as the second word.
-		looks_like_stack_frame = (values[2] == pos + 0x10);
-
-#ifdef DEBUG
-		printf("%08lx:  %08lx %08lx %08lx %08lx %c\n",
-			(long unsigned int)pos,
-			(long unsigned int)values[0],
-			(long unsigned int)values[1],
-			(long unsigned int)values[2],
-			(long unsigned int)values[3],
-			looks_like_stack_frame ? '<' : ' ');
-#endif	// DEBUG
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-			"%08lx:  %08lx %08lx %08lx %08lx %c\n",
-			(long unsigned int)pos,
-			(long unsigned int)values[0],
-			(long unsigned int)values[1],
-			(long unsigned int)values[2],
-			(long unsigned int)values[3],
-			looks_like_stack_frame ? '<' : ' ');
-		stack_trace_append(stack_trace_buffer);
-	}
-
-#ifdef DEBUG
-	printf("\n");
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
-	stack_trace_append(stack_trace_buffer);
-
-	stack_trace_last();
-}
-
-// Print exception info to console
-ICACHE_FLASH_ATTR
-static void print_reason(void) {
-	unsigned int i;
-	unsigned int r;
-
-	struct XTensa_exception_frame_s *reg = &saved_regs;
-
-#ifdef DEBUG
-	printf("\n\n***** Fatal exception %ld\n", (long int)reg->reason);
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-		"\n\n***** Fatal exception %ld\n", (long int)reg->reason);
-	stack_trace_append(stack_trace_buffer);
-
-#ifdef DEBUG
-	printf("pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n",
-		(long unsigned int)reg->pc,
-		(long unsigned int)reg->a1,
-		(long unsigned int)reg->excvaddr);
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-		"pc=0x%08lx sp=0x%08lx excvaddr=0x%08lx\n",
-		(long unsigned int)reg->pc,
-		(long unsigned int)reg->a1,
-		(long unsigned int)reg->excvaddr);
-	stack_trace_append(stack_trace_buffer);
-
-#ifdef DEBUG
-	printf("ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n",
-		(long unsigned int)reg->ps,
-		(long unsigned int)reg->sar,
-		(long unsigned int)reg->vpri);
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-		"ps=0x%08lx sar=0x%08lx vpri=0x%08lx\n",
-		(long unsigned int)reg->ps,
-		(long unsigned int)reg->sar,
-		(long unsigned int)reg->vpri);
-	stack_trace_append(stack_trace_buffer);
-
-	for (i = 0; i < 16; i++) {
-		r = getaregval(i);
-
-#ifdef DEBUG
-		printf("r%02u: 0x%08x=%10u ", i, r, r);
-#endif	// DEBUG
-		tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N,
-			"r%02u: 0x%08x=%10d ", i, r, r);
-		stack_trace_append(stack_trace_buffer);
-
-		if (i % 3 == 2) {
-#ifdef DEBUG
-			printf("\n");
-#endif	// DEBUG
-			tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
-			stack_trace_append(stack_trace_buffer);
-		}
-	}
-
-#ifdef DEBUG
-	printf("\n");
-#endif	// DEBUG
-	tfp_snprintf(stack_trace_buffer, STACK_TRACE_BUFFER_N, "\n");
-	stack_trace_append(stack_trace_buffer);
-}
-
-ICACHE_FLASH_ATTR
+// NOTE: The exception handler MUST NOT be marked with ICACHE_FLASH_ATTR because
+// reading from Flash Cache during flash sector erase/write operations causes fatal collisions.
 static void exception_handler(struct XTensa_exception_frame_s *frame) {
-	uint8_t i;
-	uint16_t delay_count;
+	uint32_t interrupted_sp;
+	uint32_t stack_top_boundary;
+	uint32_t stack_dump_len;
+	uint32_t flash_addr;
+	uint32_t sector_count;
+	uint32_t i;
+	crash_log_header_t header;
 
-	// Save the extra registers the Xtensa HAL doesn't save.
+	// 1. Save extra Special Function Registers (SFRs) using the assembly stub
 	save_extra_sfrs_for_exception();
 
-	// Copy registers the Xtensa HAL did save to saved_regs.
-	memcpy(&saved_regs, frame, 19 * 4);
+	// 2. Copy the CPU register frame (the first 19 words captured by the HAL)
+	memcpy(&saved_regs, frame, 19 * sizeof(uint32_t));
 
-	// Credits go to Cesanta for this trick. A1 seems to be destroyed, but because it has a fixed offset from the address of the passed frame, we can recover it.
-	// saved_regs.a1 = (uint32_t)frame + EXCEPTION_GDB_SP_OFFSET;
-	saved_regs.a1 = (uint32_t)frame;
+	// 3. Compute the true interrupted stack pointer (A1)
+	// The exception frame sits on top of the target stack upon entry (100 bytes / 0x64).
+	interrupted_sp = (uint32_t)frame + sizeof(struct XTensa_exception_frame_s);
+	saved_regs.a1 = interrupted_sp;
 
-	system_phy_set_powerup_option(3);	// Keep RF off after reset.
-
+	// 4. Disable watchdog timers
 	stop_watchdog();
 	system_soft_wdt_stop();
 	ets_wdt_disable();
+	feed_hardware_wdt();
 
-	// Feed hardware WDT before erasing flash to avoid NMI WDT resets.
-	WRITE_PERI_REG(0x60000914, 0x73);
-
-	for (i = 0; i * SPI_FLASH_SEC_SIZE < STACK_TRACE_N; i++) {
-		spi_flash_erase_sector(STACK_TRACE_SEC + i);
-		WRITE_PERI_REG(0x60000914, 0x73);
+	// 5. Safely calculate the stack dump length from DRAM
+	stack_top_boundary = 0x3FFFFFB0; // Upper boundary of RAM stack
+	if (interrupted_sp >= 0x3FFE8000 && interrupted_sp < stack_top_boundary) {
+		stack_dump_len = stack_top_boundary - interrupted_sp;
+		if (stack_dump_len > CRASH_RAM_STACK_READ_MAX) {
+			stack_dump_len = CRASH_RAM_STACK_READ_MAX;
+		}
+	} else {
+		// Corrupted or out-of-bounds Stack Pointer
+		stack_dump_len = 0;
 	}
 
-	print_reason();
-	WRITE_PERI_REG(0x60000914, 0x73);
+	// Align length to 32-bit (4-byte) word boundary for SPI Flash write requirements
+	stack_dump_len &= ~3;
 
-	// Dump the stack using the saved exception frame address.
-	print_stack(getaregval(1), 0x3fffffb0);
-	WRITE_PERI_REG(0x60000914, 0x73);
+	// 6. Populate the crash log binary header
+	header.magic = CRASH_LOG_MAGIC;
+	header.build_timestamp = 0x20261022; // Can be linked to the build system timestamp
+	memcpy(&header.regs, &saved_regs, sizeof(struct XTensa_exception_frame_s));
+	header.interrupted_sp = interrupted_sp;
+	header.stack_dump_len = stack_dump_len;
 
-	// Wait ~3 seconds so logs flush out (without WDT).
-	for (delay_count = 0; delay_count < 300; delay_count++) {
-		WRITE_PERI_REG(0x60000914, 0x73);
-		os_delay_us(10000);	// Wait 10ms at a time for a total of 3 seconds.
+	// 7. Erase the crash log flash partition (0xF8000 - 0xFBFFF) safely
+	flash_addr = CRASH_FLASH_START_SEC * SPI_FLASH_SEC_SIZE;
+	sector_count = (CRASH_FLASH_TOTAL_BYTES + SPI_FLASH_SEC_SIZE - 1) / SPI_FLASH_SEC_SIZE;
+
+	for (i = 0; i < sector_count; i++) {
+		feed_hardware_wdt();
+		spi_flash_erase_sector(CRASH_FLASH_START_SEC + i);
 	}
 
-	// Force reboot cleanly.
+	// 8. Write the binary crash header to flash
+	feed_hardware_wdt();
+	spi_flash_write(flash_addr, (uint32_t *)&header, sizeof(crash_log_header_t));
+	flash_addr += sizeof(crash_log_header_t);
+
+	// 9. Write the raw binary stack memory dump directly following the header
+	if (stack_dump_len > 0) {
+		feed_hardware_wdt();
+		spi_flash_write(flash_addr, (uint32_t *)interrupted_sp, stack_dump_len);
+	}
+
+	feed_hardware_wdt();
+
+#ifdef DEBUG
+	printf("\n*** FATAL EXCEPTION Cause=%lu PC=0x%08lx Interrupted SP=0x%08lx EXCVADDR=0x%08lx ***\n",
+		   (unsigned long)saved_regs.reason,
+		   (unsigned long)saved_regs.pc,
+		   (unsigned long)interrupted_sp,
+		   (unsigned long)saved_regs.excvaddr);
+#endif
+
+	// 10. Flush UART output and reboot
+	for (i = 0; i < 100; i++) {
+		feed_hardware_wdt();
+		os_delay_us(10000); // 1-second total delay
+	}
+
 	system_restart();
 
-	// In case system_restart() does not execute immediately.
+	// Fallback loop for hardware WDT reset if system_restart() fails
 	ets_wdt_enable();
 	while (1) {
-		// Wait for hardware watchdog to trigger reboot.
+		// Wait for hardware watchdog reset
 	}
 }
 
@@ -295,12 +185,6 @@ void exception_handler_init(void) {
 		EXCCAUSE_LOAD_PROHIBITED,
 		EXCCAUSE_STORE_PROHIBITED
 	};
-
-	// Initialize buffered save log to flash.
-	memset(stack_trace_buffer, 0, STACK_TRACE_BUFFER_N);
-	memset(stack_trace_context.buffer, 0, STACK_TRACE_BUFFER_N);
-	stack_trace_context.flash_index = 0;
-	stack_trace_context.buffer_index = 0;
 
 	for (i = 0; i < (sizeof(exno) / sizeof(exno[0])); i++) {
 		_xtos_set_exception_handler(exno[i], exception_handler);
