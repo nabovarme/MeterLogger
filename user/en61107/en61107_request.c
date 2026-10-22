@@ -34,6 +34,8 @@
 
 extern bool fast_boot;
 
+extern bool ota_in_progress;
+
 os_event_t en61107_received_task_queue[en61107_received_task_queue_length];
 
 uint32_t en61107_serial = 0;
@@ -521,33 +523,13 @@ inline bool en61107_is_eod_char(uint8_t c) {
 
 ICACHE_FLASH_ATTR
 void en61107_request_send() {
-	// Do not start a new read cycle while one is active or recovery is pending.
-	if (is_in_error_recovery || en61107_uart_state != UART_STATE_NONE) {
-		return;
-	}
-
 #ifndef DEBUG_NO_METER
 	char c;
 	unsigned int i;
-
-	// Ignore requests from main loop while we are in backoff penalty
-	if (is_in_error_recovery) {
-		return;
-	}
-
-	// Clear FIFO message buffer
-	i = 0;
-	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
-		i++;
-	}
-
-	en61107_request_num++;
-
-	en61107_uart_send_en61107_ident();
 #else
-	char cleartext[MQTT_MESSAGE_L];
+	static char cleartext[MQTT_MESSAGE_L];
 	char topic[MQTT_TOPIC_L];
-	char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
+	static char message[EN61107_FRAME_L + AES_HMAC_OVERHEAD];
 	int message_l;
 
 	uint8_t sine_wave[256] = {
@@ -584,7 +566,33 @@ void en61107_request_send() {
 		0x4F, 0x52, 0x55, 0x58, 0x5B, 0x5E, 0x61, 0x64,
 		0x67, 0x6A, 0x6D, 0x70, 0x74, 0x77, 0x7A, 0x7D
 	};
+#endif
 
+	if (ota_in_progress) {
+		return;
+	}
+
+	// Do not start a new read cycle while one is active or recovery is pending.
+	if (is_in_error_recovery || en61107_uart_state != UART_STATE_NONE) {
+		return;
+	}
+
+#ifndef DEBUG_NO_METER
+	// Ignore requests from main loop while we are in backoff penalty
+	if (is_in_error_recovery) {
+		return;
+	}
+
+	// Clear FIFO message buffer
+	i = 0;
+	while (en61107_fifo_get(&c) && (i <= EN61107_FRAME_L)) {
+		i++;
+	}
+
+	en61107_request_num++;
+
+	en61107_uart_send_en61107_ident();
+#else
 	// clear data
 	memset(message, 0, sizeof(message));
 	memset(topic, 0, sizeof(topic));

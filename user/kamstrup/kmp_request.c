@@ -17,6 +17,8 @@
 
 #define QUEUE_SIZE 256
 
+extern bool ota_in_progress;
+
 uint32_t kmp_serial = 0;
 meter_is_ready_cb kmp_meter_is_ready_cb = NULL;
 bool meter_is_ready_cb_called = false;
@@ -420,6 +422,11 @@ void kmp_request_send() {
 		0x67, 0x6A, 0x6D, 0x70, 0x74, 0x77, 0x7A, 0x7D
 	};
 #endif
+
+	if (ota_in_progress) {
+		return;
+	}
+
 	os_timer_disarm(&kmp_get_serial_timer);
 	os_timer_setfn(&kmp_get_serial_timer, (os_timer_func_t *)kmp_get_serial_timer_func, NULL);
 	os_timer_arm(&kmp_get_serial_timer, 0, 0);		// now
