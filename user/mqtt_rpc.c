@@ -1352,25 +1352,6 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 }
 #endif /* DEBUG_STACK_TRACE */
 
-
-#ifdef DEBUG_STACK_TRACE
-ICACHE_FLASH_ATTR
-void mqtt_rpc_exc_test(MQTT_Client *client) {
-	volatile uint8_t value;
-
-	(void)client;
-
-	// Ensure the exception handler is registered before triggering the fault.
-	exception_handler_init();
-
-	// Deliberately trigger LoadProhibited at address 0x33.
-	value = *(volatile uint8_t *)0x33;
-
-	// Keep the volatile read observable to the compiler.
-	(void)value;
-}
-#endif	// DEBUG_STACK_TRACE
-
 #ifndef NO_CRON
 ICACHE_FLASH_ATTR
 void mqtt_rpc_set_cron(MQTT_Client *client, char *query) {
