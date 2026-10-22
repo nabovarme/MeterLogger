@@ -61,6 +61,8 @@
 #include "watchdog.h"
 #include "user_config.h"
 
+extern bool ota_in_progress;
+
 // Saved register frame
 struct XTensa_exception_frame_s saved_regs;
 
@@ -124,24 +126,27 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	header.interrupted_sp = interrupted_sp;
 	header.stack_dump_len = stack_dump_len;
 
-	// 7. Erase the crash log flash partition (0xF8000 - 0xFBFFF) safely
-	flash_addr = CRASH_FLASH_START_SEC * SPI_FLASH_SEC_SIZE;
-	sector_count = (CRASH_FLASH_TOTAL_BYTES + SPI_FLASH_SEC_SIZE - 1) / SPI_FLASH_SEC_SIZE;
+	// Skip flash writes if an OTA update is currently locking the SPI bus
+	if (!ota_in_progress) {
+		// 7. Erase the crash log flash partition (0xF8000 - 0xFBFFF) safely
+		flash_addr = CRASH_FLASH_START_SEC * SPI_FLASH_SEC_SIZE;
+		sector_count = (CRASH_FLASH_TOTAL_BYTES + SPI_FLASH_SEC_SIZE - 1) / SPI_FLASH_SEC_SIZE;
 
-	for (i = 0; i < sector_count; i++) {
+		for (i = 0; i < sector_count; i++) {
+			feed_hardware_wdt();
+			spi_flash_erase_sector(CRASH_FLASH_START_SEC + i);
+		}
+
+		// 8. Write the binary crash header to flash
 		feed_hardware_wdt();
-		spi_flash_erase_sector(CRASH_FLASH_START_SEC + i);
-	}
+		spi_flash_write(flash_addr, (uint32_t *)&header, sizeof(crash_log_header_t));
+		flash_addr += sizeof(crash_log_header_t);
 
-	// 8. Write the binary crash header to flash
-	feed_hardware_wdt();
-	spi_flash_write(flash_addr, (uint32_t *)&header, sizeof(crash_log_header_t));
-	flash_addr += sizeof(crash_log_header_t);
-
-	// 9. Write the raw binary stack memory dump directly following the header
-	if (stack_dump_len > 0) {
-		feed_hardware_wdt();
-		spi_flash_write(flash_addr, (uint32_t *)interrupted_sp, stack_dump_len);
+		// 9. Write the raw binary stack memory dump directly following the header
+		if (stack_dump_len > 0) {
+			feed_hardware_wdt();
+			spi_flash_write(flash_addr, (uint32_t *)interrupted_sp, stack_dump_len);
+		}
 	}
 
 	feed_hardware_wdt();
