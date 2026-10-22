@@ -61,15 +61,52 @@ my @a_regs         = @fields[7..20];
 my $litbase        = $fields[21];
 my $sr176          = $fields[22];
 my $sr208          = $fields[23];
-my $interrupted_sp = $fields[24];
+my $regs_a1        = $fields[24];
+my $interrupted_sp = unpack("V", substr($raw_data, 108, 4));
 my $exccause       = $fields[25];
 my $excvaddr       = $fields[26];
 my $stack_dump_len = unpack("V", substr($raw_data, 112, 4));
+
+if ($regs_a1 != $interrupted_sp) {
+	warn sprintf(
+		"Warning: regs.a1 (0x%08X) differs from header interrupted_sp (0x%08X); using header field at offset 108.\n",
+		$regs_a1, $interrupted_sp
+	);
+}
 
 if ($magic != 0xDEADBEEF) {
 	die sprintf(
 		"Error: Invalid Crash Log Magic 0x%08X (Expected 0xDEADBEEF)\n",
 		$magic
+	);
+}
+
+# Validate the declared stack length against the available payload.
+my $payload_len = length($raw_data) - 116;
+my $available_stack_dump_len = int($payload_len / 4) * 4;
+
+if ($stack_dump_len > 2048) {
+	die "Error: stack_dump_len $stack_dump_len exceeds the expected maximum of 2048 bytes.\n";
+}
+
+if ($stack_dump_len % 4) {
+	die "Error: stack_dump_len $stack_dump_len is not a multiple of four.\n";
+}
+
+if ($payload_len % 4) {
+	warn "Warning: stack payload contains trailing bytes that do not form a complete 32-bit word.\n";
+}
+
+if ($stack_dump_len > $available_stack_dump_len) {
+	warn sprintf(
+		"Warning: header declares %u stack bytes, but only %u complete payload bytes are present; using the available bytes.\n",
+		$stack_dump_len, $available_stack_dump_len
+	);
+	$stack_dump_len = $available_stack_dump_len;
+} elsif ($stack_dump_len < $payload_len) {
+	warn sprintf(
+		"Warning: payload contains %u bytes beyond the declared stack dump; ignoring the extra bytes.\n",
+		$payload_len - $stack_dump_len
 	);
 }
 
@@ -107,7 +144,7 @@ print "-" x 75 . "\n";
 # 2. POPULATE RAM LOOKUP MAP FOR STACK DUMP
 # ============================================================================
 
-my $stack_payload = substr($raw_data, 116);
+my $stack_payload = substr($raw_data, 116, $stack_dump_len);
 my %ram;
 my $words = int(length($stack_payload) / 4);
 
@@ -223,7 +260,7 @@ sub analyze_prologue {
 	my $symbol_addr = get_symbol_start_addr($elf, $target_pc);
 
 	my $start_addr = $symbol_addr ? $symbol_addr : ($target_pc - 128);
-	my $stop_addr  = $symbol_addr ? ($symbol_addr + 0x40) : $target_pc;
+	my $stop_addr  = $target_pc;
 
 	my $cmd = sprintf(
 		"xtensa-lx106-elf-objdump -d --start-address=0x%08X --stop-address=0x%08X %s 2>&1",
