@@ -33,6 +33,8 @@
 #include "kmp_request.h"
 #endif
 
+extern bool ota_in_progress;
+
 // Link tracking variables from cnx_csa_fn_patch.c
 extern uint32_t cnx_csa_call_count;
 extern bool cnx_csa_new_call_flag;
@@ -620,6 +622,11 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 	uint64_t received_unix_time = 0;
 	
 	uint8_t i;
+
+	// Ignore incoming application RPC commands while OTA update is writing to flash
+	if (ota_in_progress) {
+		return;
+	}
 
 #ifdef DEBUG
 	os_printf("topic_len: %d, data_len: %d\n", topic_len, data_len);

@@ -11,6 +11,8 @@
 #include "wifi.h"
 #include "user_main.h"
 
+extern bool ota_in_progress;
+
 static os_timer_t minute_timer;
 char sec_drift;
 
@@ -27,6 +29,10 @@ void static minute_timer_func(void *arg) {
 
 	uint16_t calculated_crc;
 	uint16_t saved_crc;
+
+	if (ota_in_progress) {
+		return;
+	}
 
 	if (get_unix_time() == 0) {
 #ifdef DEBUG

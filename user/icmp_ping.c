@@ -16,6 +16,8 @@
 
 #define MOVING_AVERAGE_BUFFER_SIZE 60
 
+extern bool ota_in_progress;
+
 uint32_t ping_count = 0;
 
 float ping_average_response_time_ms = 0.0;
@@ -133,6 +135,10 @@ void icmp_ping_mqtt_host(void) {
 	err_t dns_err;
 	ip_addr_t ip;
 	
+	if (ota_in_progress) {
+		return;
+	}
+
 	dns_err = dns_gethostbyname(MQTT_HOST, &ip, dns_found, NULL);
 	if (dns_err == ERR_OK) {
 #ifdef DEBUG
