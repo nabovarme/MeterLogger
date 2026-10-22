@@ -55,34 +55,34 @@ typedef struct {
 
 extern wifi_test_ctx_t wifi_test_ctx;
 
-bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p);
-void ICACHE_FLASH_ATTR wifi_init_napt(void);
+ICACHE_FLASH_ATTR bool acl_check_packet(struct pbuf *p);
+ICACHE_FLASH_ATTR void wifi_init_napt(void);
 
-void wifi_handle_event_cb(System_Event_t *evt);
-void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status);
-void ICACHE_FLASH_ATTR wifi_default();
-void ICACHE_FLASH_ATTR wifi_fallback();
-void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb);
-void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode);
-void ICACHE_FLASH_ATTR wifi_softap_ip_config(void);
-sint8_t ICACHE_FLASH_ATTR wifi_get_rssi();
-uint32_t ICACHE_FLASH_ATTR wifi_get_status();
-void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval);
-void ICACHE_FLASH_ATTR wifi_stop_scan();
-bool ICACHE_FLASH_ATTR wifi_scan_is_running();
-bool ICACHE_FLASH_ATTR wifi_fallback_is_present();
-void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state();
-void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled);
-void ICACHE_FLASH_ATTR wifi_destroy();
-bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms);
+ICACHE_FLASH_ATTR void wifi_handle_event_cb(System_Event_t *evt);
+ICACHE_FLASH_ATTR void wifi_scan_done_cb(void *arg, STATUS status);
+ICACHE_FLASH_ATTR void wifi_default();
+ICACHE_FLASH_ATTR void wifi_fallback();
+ICACHE_FLASH_ATTR void wifi_connect(WifiCallback cb);
+ICACHE_FLASH_ATTR void wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode);
+ICACHE_FLASH_ATTR void wifi_softap_ip_config(void);
+ICACHE_FLASH_ATTR sint8_t wifi_get_rssi();
+ICACHE_FLASH_ATTR uint32_t wifi_get_status();
+ICACHE_FLASH_ATTR void wifi_start_scan(uint32_t interval);
+ICACHE_FLASH_ATTR void wifi_stop_scan();
+ICACHE_FLASH_ATTR bool wifi_scan_is_running();
+ICACHE_FLASH_ATTR bool wifi_fallback_is_present();
+ICACHE_FLASH_ATTR void wifi_fallback_force_reset_state();
+ICACHE_FLASH_ATTR void set_my_auto_connect(bool enabled);
+ICACHE_FLASH_ATTR void wifi_destroy();
+ICACHE_FLASH_ATTR bool wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms);
 
-void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
-void wifi_scan_result_cb_unregister();
-void ICACHE_FLASH_ATTR wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb);
-const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason);
+ICACHE_FLASH_ATTR void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb);
+ICACHE_FLASH_ATTR void wifi_scan_result_cb_unregister();
+ICACHE_FLASH_ATTR void wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb);
+ICACHE_FLASH_ATTR const char* wifi_get_reason_desc(uint8_t reason);
 #ifdef DEBUG
-void ICACHE_FLASH_ATTR debug_print_wifi_ip();
-void ICACHE_FLASH_ATTR debug_print_wifi_config();
+ICACHE_FLASH_ATTR void debug_print_wifi_ip();
+ICACHE_FLASH_ATTR void debug_print_wifi_config();
 #endif
 
 #endif /* USER_WIFI_H_ */

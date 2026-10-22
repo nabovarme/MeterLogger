@@ -63,7 +63,8 @@ static ip_addr_t sta_network_mask;
 static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
 
-ICACHE_FLASH_ATTR err_t my_input_ap(struct pbuf *p, struct netif *inp) {
+ICACHE_FLASH_ATTR
+err_t my_input_ap(struct pbuf *p, struct netif *inp) {
 	err_t err;
 
 	if (acl_check_packet(p)) {
@@ -76,14 +77,16 @@ ICACHE_FLASH_ATTR err_t my_input_ap(struct pbuf *p, struct netif *inp) {
 	return err;
 }
 
-ICACHE_FLASH_ATTR err_t my_output_ap(struct netif *outp, struct pbuf *p) {
+ICACHE_FLASH_ATTR
+err_t my_output_ap(struct netif *outp, struct pbuf *p) {
 	err_t err;
 	err = orig_output_ap(outp, p);
 	return err;
 }
 
 
-ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutput_fn ofn, bool nat) {
+ICACHE_FLASH_ATTR
+static void patch_netif_ap(netif_input_fn ifn, netif_linkoutput_fn ofn, bool nat) {
 	struct netif *nif;
 	ip_addr_t ap_ip;
 
@@ -111,7 +114,8 @@ ICACHE_FLASH_ATTR static void patch_netif_ap(netif_input_fn ifn, netif_linkoutpu
 #endif
 }
 
-bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
+ICACHE_FLASH_ATTR
+bool acl_check_packet(struct pbuf *p) {
 	struct eth_hdr *mac_h;
 	struct ip_hdr *ip_h;
 	uint8_t proto;
@@ -199,18 +203,30 @@ bool ICACHE_FLASH_ATTR acl_check_packet(struct pbuf *p) {
 	return true;
 }
 
-void ICACHE_FLASH_ATTR wifi_init_napt(void) {
+ICACHE_FLASH_ATTR
+void wifi_init_napt(void) {
 	// Allocate global NAPT and portmap tables in memory
 	ip_napt_init(IP_NAPT_MAX, IP_PORTMAP_MAX);
 }
 
 // static functions
-static bool ICACHE_FLASH_ATTR wifi_is_connected_to_fallback(void);
-static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg);
-static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg);
-static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg);
+ICACHE_FLASH_ATTR
+static bool wifi_is_connected_to_fallback(void);
 
-static void ICACHE_FLASH_ATTR wifi_test_restore_saved_station(void) {
+ICACHE_FLASH_ATTR
+static
+void wifi_get_rssi_timer_func(void *arg);
+
+ICACHE_FLASH_ATTR
+static
+void wifi_scan_timer_func(void *arg);
+
+ICACHE_FLASH_ATTR
+static
+void wifi_scan_timeout_timer_func(void *arg);
+
+ICACHE_FLASH_ATTR
+static void wifi_test_restore_saved_station(void) {
 	struct station_config stationConf;
 
 	memset(&stationConf, 0, sizeof(struct station_config));
@@ -237,7 +253,8 @@ static void ICACHE_FLASH_ATTR wifi_test_restore_saved_station(void) {
 	wifi_station_connect();
 }
 
-static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
+ICACHE_FLASH_ATTR static
+void wifi_test_timeout_timer_func(void *arg) {
 	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
 
 	// If is_testing is still true, it means we either timed out or failed immediately
@@ -283,7 +300,8 @@ static void ICACHE_FLASH_ATTR wifi_test_timeout_timer_func(void *arg) {
 	}
 }
 
-static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static void wifi_test_start_timer_func(void *arg) {
 	struct station_config test_conf;
 
 	memset(&test_conf, 0, sizeof(struct station_config));
@@ -304,7 +322,8 @@ static void ICACHE_FLASH_ATTR wifi_test_start_timer_func(void *arg) {
 	wifi_station_connect();
 }
 
-static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
+ICACHE_FLASH_ATTR static
+void delayed_reconnect_timer_func(void *arg) {
 	if (my_auto_connect) {
 		// Do not assassinate an active scan! Wait 1 second instead.
 		if (wifi_scan_is_running()) {
@@ -321,6 +340,7 @@ static void ICACHE_FLASH_ATTR delayed_reconnect_timer_func(void *arg) {
 	}
 }
 
+ICACHE_FLASH_ATTR 
 void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t wifi_status;
 //	static uint8_t wifi_event;
@@ -538,7 +558,9 @@ static bool ICACHE_FLASH_ATTR wifi_is_connected_to_fallback(void) {
 		(wifi_station_get_connect_status() == STATION_GOT_IP);
 }
 
-static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static
+void wifi_get_rssi_timer_func(void *arg) {
 	get_rssi_running = true;
 	if (wifi_default_ok) {	// only get rssi if connected to configured ssid
 		rssi = wifi_station_get_rssi();
@@ -546,7 +568,8 @@ static void ICACHE_FLASH_ATTR wifi_get_rssi_timer_func(void *arg) {
 	get_rssi_running = false;
 }
 
-static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static void wifi_scan_timer_func(void *arg) {
 //	struct scan_config config;
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
@@ -594,7 +617,8 @@ static void ICACHE_FLASH_ATTR wifi_scan_timer_func(void *arg) {
 	}
 }
 
-static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static void wifi_scan_timeout_timer_func(void *arg) {
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
 	printf("scan timeout called\n");
@@ -608,7 +632,8 @@ static void ICACHE_FLASH_ATTR wifi_scan_timeout_timer_func(void *arg) {
 	wifi_start_scan(WIFI_SCAN_INTERVAL);
 }
 
-void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
+ICACHE_FLASH_ATTR
+void wifi_scan_done_cb(void *arg, STATUS status) {
 	struct bss_info *info;
 	bool switched_network = false;
 	static uint8_t fallback_miss_count = 0;
@@ -746,7 +771,8 @@ void ICACHE_FLASH_ATTR wifi_scan_done_cb(void *arg, STATUS status) {
 	}
 }
 
-void ICACHE_FLASH_ATTR wifi_default() {
+ICACHE_FLASH_ATTR
+void wifi_default() {
 	struct station_config stationConf;
 
 	wifi_fallback_active = false;
@@ -782,7 +808,8 @@ void ICACHE_FLASH_ATTR wifi_default() {
 	os_timer_arm(&wifi_get_rssi_timer, RSSI_CHECK_INTERVAL, 1);
 }
 
-void ICACHE_FLASH_ATTR wifi_fallback() {
+ICACHE_FLASH_ATTR
+void wifi_fallback() {
 	struct station_config stationConf;
 
 	wifi_fallback_active = true;
@@ -813,7 +840,8 @@ void ICACHE_FLASH_ATTR wifi_fallback() {
 	wifi_station_connect();	// reconnect
 }
 
-void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
+ICACHE_FLASH_ATTR
+void wifi_connect(WifiCallback cb) {
 	struct station_config stationConf;
 
 	INFO("WIFI_INIT\r\n");
@@ -866,7 +894,8 @@ void ICACHE_FLASH_ATTR wifi_connect(WifiCallback cb) {
 //	led_stop_pattern();
 }
 
-void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {
+ICACHE_FLASH_ATTR
+void wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t authmode) {
 	struct softap_config ap_conf;
 
 	wifi_softap_get_config(&ap_conf);
@@ -885,7 +914,8 @@ void ICACHE_FLASH_ATTR wifi_softap_config(uint8_t* ssid, uint8_t* pass, uint8_t 
 	wifi_softap_set_config(&ap_conf);
 }
 
-void ICACHE_FLASH_ATTR wifi_softap_ip_config(void) {
+ICACHE_FLASH_ATTR
+void wifi_softap_ip_config(void) {
 	struct ip_info info;
 	struct dhcps_lease dhcp_lease;
 	struct netif *nif;
@@ -952,7 +982,8 @@ uint32_t ICACHE_FLASH_ATTR wifi_get_status() {
 	return wifi_default_status;
 }
 
-void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
+ICACHE_FLASH_ATTR
+void wifi_start_scan(uint32_t interval) {
 	uint64_t uptime;
 #ifdef DEBUG
 	printf ("\t-> %s(%s)\n\r", __FUNCTION__, (interval == WIFI_SCAN_INTERVAL) ? "WIFI_SCAN_INTERVAL" : "WIFI_SCAN_INTERVAL_LONG");
@@ -971,7 +1002,8 @@ void ICACHE_FLASH_ATTR wifi_start_scan(uint32_t interval) {
 	os_timer_arm(&wifi_scan_timer, interval, 0);
 }
 
-void ICACHE_FLASH_ATTR wifi_stop_scan() {
+ICACHE_FLASH_ATTR
+void wifi_stop_scan() {
 #ifdef DEBUG
 	printf ("\t-> %s()\n\r", __FUNCTION__);
 #endif
@@ -989,7 +1021,8 @@ bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
 	return wifi_fallback_present;
 }
 
-void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {
+ICACHE_FLASH_ATTR
+void wifi_fallback_force_reset_state() {
 	// helper function to let watchdog reset the state of the wifi_fallback_*
 	wifi_fallback_present = false;
 	wifi_fallback_last_present = false;
@@ -997,26 +1030,31 @@ void ICACHE_FLASH_ATTR wifi_fallback_force_reset_state() {
 	wifi_fallback_mqtt_connected = false;
 }
 
-void ICACHE_FLASH_ATTR set_my_auto_connect(bool enabled) {
+ICACHE_FLASH_ATTR
+void set_my_auto_connect(bool enabled) {
 	my_auto_connect = enabled;
 }
 
-void ICACHE_FLASH_ATTR wifi_destroy() {
+ICACHE_FLASH_ATTR
+void wifi_destroy() {
 	// only call this before restarting system_restart() to stop all timers
 	os_timer_disarm(&wifi_scan_timer);
 	os_timer_disarm(&wifi_scan_timeout_timer);
 	os_timer_disarm(&wifi_get_rssi_timer);
 }
 
+ICACHE_FLASH_ATTR 
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 	wifi_scan_result_cb = cb;
 }
 
+ICACHE_FLASH_ATTR
 void wifi_scan_result_cb_unregister() {
 	wifi_scan_result_cb = NULL;
 }
 
-void ICACHE_FLASH_ATTR wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb) {
+ICACHE_FLASH_ATTR
+void wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb) {
 	wifi_fallback_retry_cb = cb;
 }
 
@@ -1113,7 +1151,8 @@ const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason) {
 }
 
 #ifdef DEBUG
-void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
+ICACHE_FLASH_ATTR
+void debug_print_wifi_ip() {
 	struct netif *nif;
 
 	for (nif = netif_list; nif != NULL; nif = nif->next) {
@@ -1134,7 +1173,8 @@ void ICACHE_FLASH_ATTR debug_print_wifi_ip() {
 	}
 }
 
-void ICACHE_FLASH_ATTR debug_print_wifi_config() {
+ICACHE_FLASH_ATTR
+void debug_print_wifi_config() {
 	printf("ssid: %s, pass: %s\n\r", sys_cfg.sta_ssid, sys_cfg.sta_pwd);
 }
 #endif	// DEBUG
