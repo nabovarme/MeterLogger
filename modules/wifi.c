@@ -1017,7 +1017,7 @@ void wifi_stop_scan() {
 }
 
 ICACHE_FLASH_ATTR
-boolwifi_scan_is_running() {
+bool wifi_scan_is_running() {
 	return wifi_scan_runnning;
 }
 
