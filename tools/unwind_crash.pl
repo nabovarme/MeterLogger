@@ -45,7 +45,7 @@ if (length($raw_data) < 116) {
 }
 
 # ============================================================================
-# 1. PARSE BINARY CRASH HEADER
+# 1. PARSE BINARY CRASH HEADER (crash_log_header_t)
 # ============================================================================
 
 my @fields = unpack("V28", substr($raw_data, 0, 112));
@@ -104,7 +104,7 @@ printf "  A12: 0x%08X  A13: 0x%08X  A14: 0x%08X  A15 : 0x%08X\n",
 print "-" x 75 . "\n";
 
 # ============================================================================
-# 2. POPULATE RAM LOOKUP MAP
+# 2. POPULATE RAM LOOKUP MAP FOR STACK DUMP
 # ============================================================================
 
 my $stack_payload = substr($raw_data, 116);
@@ -119,7 +119,7 @@ for (my $i = 0; $i < $words; $i++) {
 }
 
 # ============================================================================
-# 3. UNWINDING LOOP
+# 3. DETERMINISTIC CALL0 PROLOGUE UNWINDING LOOP
 # ============================================================================
 
 print "\nRECONSTRUCTED CALL STACK:\n";
@@ -146,16 +146,21 @@ while ($frame_num < 30) {
 	my ($frame_size, $a0_offset) = analyze_prologue($elf_file, $curr_pc);
 	my $next_a0 = undef;
 
-	# Explicitly saved A0 is the most reliable
+	# 1. Did the prologue explicitly save A0 to the stack?
 	if (defined $a0_offset) {
 		my $saved_a0_addr = $curr_sp + $a0_offset;
 
 		if (exists $ram{$saved_a0_addr}) {
-			$next_a0 = $ram{$saved_a0_addr};
+			my $val = $ram{$saved_a0_addr};
+
+			# Ignore zeroed out memory (compiler optimization bug)
+			if ($val != 0 && $val != 0xFFFFFFFF) {
+				$next_a0 = $val;
+			}
 		}
 	}
 
-	# Fallback 1: Use register A0 if it points outside the current block
+	# 2. Try Register A0
 	if (
 		!defined $next_a0
 		&& defined $curr_a0
@@ -167,11 +172,10 @@ while ($frame_num < 30) {
 		}
 	}
 
-	# Fallback 2: Scan memory
+	# 3. DEEP MEMORY SCAN FALLBACK: If A0 wasn't saved, scan deep into the stack
 	if (!defined $next_a0) {
-		my $scan_limit = ($frame_size > 0) ? $frame_size : 64;
-
-		for (my $off = 0; $off < $scan_limit; $off += 4) {
+		# Scan up to 512 bytes up the stack
+		for (my $off = 0; $off < 512; $off += 4) {
 			my $check_addr = $curr_sp + $off;
 
 			if (exists $ram{$check_addr}) {
@@ -182,19 +186,21 @@ while ($frame_num < 30) {
 					||
 					($val >= 0x40200000 && $val <= 0x40300000)
 				) {
-					if (abs($val - 3 - $curr_pc) < 1024) {
-						next;
-					}
+					# Ignore pointers pointing slightly back into the same function
+					if (abs($val - 3 - $curr_pc) > 64) {
+						$next_a0 = $val;
 
-					$next_a0 = $val;
-					last;
+						# Adjust frame size to jump over this corrupted block
+						$frame_size = $off + 4;
+						last;
+					}
 				}
 			}
 		}
 	}
 
 	if (!defined $next_a0 || $next_a0 == 0 || $next_a0 == 0xFFFFFFFF) {
-		print "    [Unwinder reached top of stack]\n";
+		print "    [Unwinder reached top of stack or ran out of RAM payload]\n";
 		last;
 	}
 
@@ -216,7 +222,6 @@ sub analyze_prologue {
 
 	my $symbol_addr = get_symbol_start_addr($elf, $target_pc);
 
-	# FALLBACK: If symbols are missing, disassemble the 128 bytes BEFORE the PC
 	my $start_addr = $symbol_addr ? $symbol_addr : ($target_pc - 128);
 	my $stop_addr  = $symbol_addr ? ($symbol_addr + 0x40) : $target_pc;
 
@@ -237,7 +242,7 @@ sub analyze_prologue {
 
 			if ($sign eq '-') {
 				$frame_size = $val;
-				$a0_offset  = undef; # Reset offset for new frame discovered
+				$a0_offset  = undef;
 			} elsif ($val > 0x7FFFFFFF) {
 				$frame_size = 4294967296 - $val;
 				$a0_offset  = undef;
