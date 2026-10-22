@@ -253,8 +253,8 @@ static void wifi_test_restore_saved_station(void) {
 	wifi_station_connect();
 }
 
-ICACHE_FLASH_ATTR static
-void wifi_test_timeout_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static void wifi_test_timeout_timer_func(void *arg) {
 	INFO("Wi-Fi Test: Done/Timeout. Reverting...\n");
 
 	// If is_testing is still true, it means we either timed out or failed immediately
@@ -322,8 +322,8 @@ static void wifi_test_start_timer_func(void *arg) {
 	wifi_station_connect();
 }
 
-ICACHE_FLASH_ATTR static
-void delayed_reconnect_timer_func(void *arg) {
+ICACHE_FLASH_ATTR
+static void delayed_reconnect_timer_func(void *arg) {
 	if (my_auto_connect) {
 		// Do not assassinate an active scan! Wait 1 second instead.
 		if (wifi_scan_is_running()) {
@@ -340,7 +340,7 @@ void delayed_reconnect_timer_func(void *arg) {
 	}
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 void wifi_handle_event_cb(System_Event_t *evt) {
 	uint8_t wifi_status;
 //	static uint8_t wifi_event;
@@ -548,7 +548,8 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 	}
 }
 
-static bool ICACHE_FLASH_ATTR wifi_is_connected_to_fallback(void) {
+ICACHE_FLASH_ATTR
+static bool wifi_is_connected_to_fallback(void) {
 	struct station_config stationConf;
 
 	memset(&stationConf, 0, sizeof(struct station_config));
@@ -971,14 +972,16 @@ void wifi_softap_ip_config(void) {
 	wifi_softap_dhcps_start();
 }
 
-sint8_t ICACHE_FLASH_ATTR wifi_get_rssi() {
+ICACHE_FLASH_ATTR
+sint8_t wifi_get_rssi() {
 	while (get_rssi_running == true) {
 		// wait for lock
 	}
 	return rssi;
 }
 
-uint32_t ICACHE_FLASH_ATTR wifi_get_status() {
+ICACHE_FLASH_ATTR
+uint32_t wifi_get_status() {
 	return wifi_default_status;
 }
 
@@ -1013,11 +1016,13 @@ void wifi_stop_scan() {
 	wifi_scan_runnning = false;
 }
 
-bool ICACHE_FLASH_ATTR wifi_scan_is_running() {
+ICACHE_FLASH_ATTR
+boolwifi_scan_is_running() {
 	return wifi_scan_runnning;
 }
 
-bool ICACHE_FLASH_ATTR wifi_fallback_is_present() {
+ICACHE_FLASH_ATTR
+bool wifi_fallback_is_present() {
 	return wifi_fallback_present;
 }
 
@@ -1043,7 +1048,7 @@ void wifi_destroy() {
 	os_timer_disarm(&wifi_get_rssi_timer);
 }
 
-ICACHE_FLASH_ATTR 
+ICACHE_FLASH_ATTR
 void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t cb) {
 	wifi_scan_result_cb = cb;
 }
@@ -1058,7 +1063,8 @@ void wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb) {
 	wifi_fallback_retry_cb = cb;
 }
 
-bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms) {
+ICACHE_FLASH_ATTR
+bool wifi_test_ssid_pwd(const char *ssid, const char *pwd, uint32_t stay_time_ms) {
 	struct station_config current_conf;
 	memset(&current_conf, 0, sizeof(struct station_config));
 	wifi_station_get_config(&current_conf);
@@ -1114,7 +1120,8 @@ bool ICACHE_FLASH_ATTR wifi_test_ssid_pwd(const char *ssid, const char *pwd, uin
 	return true;
 }
 
-const char* ICACHE_FLASH_ATTR wifi_get_reason_desc(uint8_t reason) {
+ICACHE_FLASH_ATTR
+const char* wifi_get_reason_desc(uint8_t reason) {
 	switch (reason) {
 		case 0: return "none"; // Used when test is successful
 		case REASON_UNSPECIFIED: return "unspecified";
