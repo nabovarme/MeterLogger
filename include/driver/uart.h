@@ -32,11 +32,10 @@
 
 #define UART_LINE_INV_MASK      (0x3f<<19)
 
-
-
 #define UART0   0
 #define UART1   1
 
+#define UART_TX_TIMEOUT_US 40000
 
 typedef enum {
     FIVE_BITS = 0x0,

@@ -103,14 +103,24 @@ uart_config(uint8 uart_no)
 STATUS
 uart_tx_one_char(uint8 uart, uint8 TxChar)
 {
+    uint32 start_time;
+    uint32 fifo_cnt;
+
+    start_time = system_get_time();
+
     while (true)
     {
-      uint32 fifo_cnt = READ_PERI_REG(UART_STATUS(uart)) & (UART_TXFIFO_CNT<<UART_TXFIFO_CNT_S);
-      if ((fifo_cnt >> UART_TXFIFO_CNT_S & UART_TXFIFO_CNT) < 126) {
-        break;
-      }
-      //system_soft_wdt_feed();
-	  WRITE_PERI_REG(0X60000914, 0X73);
+        fifo_cnt = READ_PERI_REG(UART_STATUS(uart)) & (UART_TXFIFO_CNT << UART_TXFIFO_CNT_S);
+        if ((fifo_cnt >> UART_TXFIFO_CNT_S & UART_TXFIFO_CNT) < 126) {
+            break;
+        }
+        
+        // At 300 baud, 1 char takes ~33.3ms. Abort if blocked for >40ms.
+        if ((system_get_time() - start_time) > UART_TX_TIMEOUT_US) {
+            return FAIL;
+        }
+        
+        WRITE_PERI_REG(0X60000914, 0X73);
     }
 
     WRITE_PERI_REG(UART_FIFO(uart) , TxChar);
