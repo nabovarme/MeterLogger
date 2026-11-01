@@ -70,7 +70,7 @@ I16 PROTO_ParseRb(RINGBUF* rb, U8 *bufOut, U16* len, U16 maxBufLen)
 I16 PROTO_Add(U8 *buf, const U8 *packet, I16 bufSize)
 {
     U16 i = 2;
-    U16 len = *(U16*) packet;
+    U16 len = (U16)packet[0] | ((U16)packet[1] << 8);
 
     if (bufSize < 1) return -1;
 

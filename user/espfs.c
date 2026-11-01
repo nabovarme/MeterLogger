@@ -110,8 +110,8 @@ EspFsFile ICACHE_FLASH_ATTR *espFsOpen(char *fileName) {
 	//Go find that file!
 	while(1) {
 		hpos=p;
-		//Grab the next file header.
-		os_memcpy(&h, p, sizeof(EspFsHeader));
+		//Grab the next file header using aligned reads
+		memcpyAligned((char *)&h, p, sizeof(EspFsHeader));
 		if (h.magic!=0x73665345) {
 			INFO("Magic mismatch. EspFS image broken.\n");
 			return NULL;
@@ -120,9 +120,9 @@ EspFsFile ICACHE_FLASH_ATTR *espFsOpen(char *fileName) {
 			INFO("End of image.\n");
 			return NULL;
 		}
-		//Grab the name of the file.
+		//Grab the name of the file using aligned reads
 		p+=sizeof(EspFsHeader); 
-		os_memcpy(namebuf, p, sizeof(namebuf));
+		memcpyAligned(namebuf, p, sizeof(namebuf));
 //		INFO("Found file '%s'. Namelen=%x fileLenComp=%x, compr=%d flags=%d\n", 
 //				namebuf, (unsigned int)h.nameLen, (unsigned int)h.fileLenComp, h.compression, h.flags);
 		if (os_strcmp(namebuf, fileName)==0) {

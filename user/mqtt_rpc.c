@@ -1311,8 +1311,9 @@ void mqtt_rpc_read_stack_trace(MQTT_Client *client, char *params) {
 		}
 	}
 
-	/* Boundary wrap: modulo STACK_TRACE_N */
+	// Boundary wrap: modulo STACK_TRACE_N and clear the lowest 2 bits
 	offset %= STACK_TRACE_N;
+	offset &= ~3;
 
 	/* 2. Read exactly 128 bytes from SPI flash (Buffer must be 32-bit aligned) */
 	read_len = 128;
