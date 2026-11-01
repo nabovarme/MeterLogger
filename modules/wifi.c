@@ -127,6 +127,10 @@ bool acl_check_packet(struct pbuf *p) {
 	uint16_t dest_port = 0;
 	uint8_t *packet;
 	uint8_t ip_hlen;
+	ip_addr_t dest_ip;
+#ifdef DEBUG
+	ip_addr_t src_ip;
+#endif
 
 	if (p->len < sizeof(struct eth_hdr)) {
 		return false;
@@ -161,8 +165,10 @@ bool acl_check_packet(struct pbuf *p) {
 				return false;
 			}
 			udp_h = (struct udp_hdr *)&packet[sizeof(struct eth_hdr) + ip_hlen];
-			src_port = ntohs(udp_h->src);
-			dest_port = ntohs(udp_h->dest);
+			os_memcpy(&src_port, &udp_h->src, sizeof(src_port));
+			os_memcpy(&dest_port, &udp_h->dest, sizeof(dest_port));
+			src_port = ntohs(src_port);
+			dest_port = ntohs(dest_port);
 			break;
 
 		case IP_PROTO_TCP:
@@ -170,8 +176,10 @@ bool acl_check_packet(struct pbuf *p) {
 				return false;
 			}
 			tcp_h = (struct tcp_hdr *)&packet[sizeof(struct eth_hdr) + ip_hlen];
-			src_port = ntohs(tcp_h->src);
-			dest_port = ntohs(tcp_h->dest);
+			os_memcpy(&src_port, &tcp_h->src, sizeof(src_port));
+			os_memcpy(&dest_port, &tcp_h->dest, sizeof(dest_port));
+			src_port = ntohs(src_port);
+			dest_port = ntohs(dest_port);
 			break;
 
 		case IP_PROTO_ICMP:
@@ -179,21 +187,27 @@ bool acl_check_packet(struct pbuf *p) {
 			break;
 	}
 
+	// Safely copy unaligned 32-bit IPs into aligned stack variables
+	os_memcpy(&dest_ip.addr, &ip_h->dest.addr, sizeof(dest_ip.addr));
+#ifdef DEBUG
+	os_memcpy(&src_ip.addr, &ip_h->src.addr, sizeof(src_ip.addr));
+#endif
+
 	// allow dhcp requests to broadcast network
-	if ((ip_h->dest.addr == IPADDR_BROADCAST) && (dest_port == 67)) {
+	if ((dest_ip.addr == IPADDR_BROADCAST) && (dest_port == 67)) {
 		return true;
 	}
 
 	// allow dns requests to nameserver on uplink network
-	if ((ip_h->dest.addr == dns_ip.addr) && (dest_port == 53)) {
+	if ((dest_ip.addr == dns_ip.addr) && (dest_port == 53)) {
 		return true;
 	}
 
 	// deny connections to hosts on uplink network
-	if ((ip_h->dest.addr & sta_network_mask.addr) == sta_network_addr.addr) {
+	if ((dest_ip.addr & sta_network_mask.addr) == sta_network_addr.addr) {
 #ifdef DEBUG
 		printf("dropping packet to uplink network: src: %d.%d.%d.%d dst: %d.%d.%d.%d proto: %s sport:%d dport:%d\n",
-			IP2STR(&ip_h->src), IP2STR(&ip_h->dest),
+			IP2STR(&src_ip), IP2STR(&dest_ip),
 			proto == IP_PROTO_TCP ? "TCP" : proto == IP_PROTO_UDP ? "UDP" : "IP4", src_port, dest_port);
 #endif
 		return false;
