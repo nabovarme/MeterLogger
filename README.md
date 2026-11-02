@@ -213,7 +213,6 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /config/v2/9999999/[unix time]/clear_cron           |                                                                                                                                                    |
 | /config/v2/9999999/[unix time]/version              |                                                                                                                                                    |
 | /config/v2/9999999/[unix time]/uptime               |                                                                                                                                                    |
-| /config/v2/9999999/[unix time]/stack_trace          |                                                                                                                                                    |
 | /config/v2/9999999/[unix time]/vdd                  |                                                                                                                                                    |
 | /config/v2/9999999/[unix time]/rssi                 |                                                                                                                                                    |
 | /config/v2/9999999/[unix time]/ssid                 |                                                                                                                                                    |
@@ -246,7 +245,6 @@ The firmware relies on a strict dual-ROM partition layout to support rBoot Over-
 | /open_until/v2/9999999/[unix time]                  | [kWh when meter should close]                                                                                                                      |
 | /open_until_delta/v2/9999999/[unix time]            | [kWh when meter should close]                                                                                                                      |
 | /uptime/v2/9999999/[unix time]                      | [uptime in seconds]                                                                                                                                |
-| /stack_trace/v2/9999999/[unix time]                 | enabled                                                                                                                                            |
 | /stack_trace_result/v2/9999999/[unix time]          | [offset=0&data=Stack%20dump%3A%0A...] URL-escaped block of the recorded stack trace. Returns empty data if end of log is reached.                  |
 | /vdd/v2/9999999/[unix time]                         | [power supply voltage level]                                                                                                                       |
 | /rssi/v2/9999999/[unix time]                        | [rssi of the wifi it is connected to (in dBm, 31 if fail)]                                                                                         |

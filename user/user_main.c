@@ -806,10 +806,6 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		mqtt_rpc_set_mqtt_host(&mqtt_client, cleartext);
 	}
 #ifdef DEBUG_STACK_TRACE
-	else if (strncmp(function_name, "stack_trace", FUNCTIONNAME_L) == 0) {
-		// found stack_trace
-		mqtt_rpc_stack_trace(&mqtt_client);
-	}
 	else if (strncmp(function_name, "read_stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace
 		mqtt_rpc_read_stack_trace(&mqtt_client, cleartext);
@@ -1101,6 +1097,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	// start watchdog
 	init_watchdog();
 	start_watchdog();
+
+#ifdef DEBUG_STACK_TRACE
+	exception_handler_init();
+#endif
 
 	cfg_load();
 
