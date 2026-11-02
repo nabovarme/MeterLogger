@@ -27,6 +27,10 @@
 #include "ota.h"
 #include "rboot-api.h"
 
+#ifdef DEBUG_STACK_TRACE
+#include "exception_handler.h"
+#endif	// DEBUG_STACK_TRACE
+
 #ifdef EN61107
 #include "en61107_request.h"
 #else

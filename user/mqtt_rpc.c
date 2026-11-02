@@ -25,10 +25,6 @@
 #include "kmp_request.h"
 #endif
 
-#ifdef DEBUG_STACK_TRACE
-#include "exception_handler.h"
-#endif	// DEBUG_STACK_TRACE
-
 #define MQTT_RESTART_DELAY_MS 2000
 #define WIFI_DEFERRED_RECONNECT_MS 500
 
