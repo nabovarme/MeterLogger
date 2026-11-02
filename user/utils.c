@@ -263,6 +263,7 @@ void system_restart_defered() {
 #ifndef NO_CRON
 	cron_destroy();
 #endif	// NO_CRON
+	stop_watchdog();
 
 	// Allow final TCP/MQTT packets to transmit before restarting.
 	os_timer_disarm(&system_restart_defered_timer);
