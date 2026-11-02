@@ -1,11 +1,11 @@
 // ============================================================================
 // ESP8266 Call0 Crash Log Binary Format
 // ============================================================================
-// The crash log is stored as a raw binary payload. All data is written in 
-// Little-Endian byte order (standard for the Xtensa architecture) and aligned 
+// The crash log is stored as a raw binary payload. All data is written in
+// Little-Endian byte order (standard for the Xtensa architecture) and aligned
 // to 32-bit (4-byte) boundaries.
 //
-// The payload consists of a fixed 116-byte header followed immediately by a 
+// The payload consists of a fixed 116-byte header followed immediately by a
 // variable-length raw RAM stack dump.
 //
 // 1. High-Level Memory Layout
@@ -41,15 +41,15 @@
 // 4. Stack Memory Payload
 // ----------------------------------------------------------------------------
 // Starts immediately after the header at byte offset 116 (0x74).
-// A raw binary copy of the RAM stack (0x3FFF.... memory range). The first 
+// A raw binary copy of the RAM stack (0x3FFF.... memory range). The first
 // 4 bytes correspond to the memory located at `interrupted_sp`.
-// 
+//
 // Important Parsing Notes for Unwinders:
 // - Word Alignment: All stack reads/writes on the ESP8266 are 32-bit aligned.
 //   `stack_dump_len` will always be a multiple of 4 bytes.
-// - Missing A0 offset in Leaf Functions: Under the Xtensa Call0 ABI, if the 
-//   crashing function is a leaf function (does not call other functions), it 
-//   will not save A0 into this stack memory payload. An unwinder must check 
+// - Missing A0 offset in Leaf Functions: Under the Xtensa Call0 ABI, if the
+//   crashing function is a leaf function (does not call other functions), it
+//   will not save A0 into this stack memory payload. An unwinder must check
 //   the `a0` register field (offset 24) to step out of the first frame.
 // ============================================================================
 
@@ -68,12 +68,20 @@ struct XTensa_exception_frame_s saved_regs;
 
 extern void _xtos_set_exception_handler(int cause, void (exhandler)(struct XTensa_exception_frame_s *frame));
 extern void save_extra_sfrs_for_exception(void);
-extern void ets_wdt_disable(void);
-extern void ets_wdt_enable(void);
+extern void ets_wdt_enable(uint32_t mode, uint32_t arg1, uint32_t arg2);
 
-// Feed hardware WDT directly via register write to prevent NMI resets during flash operations
+static volatile bool in_exception = false;
+
+// Feed hardware WDT directly via register write
 static inline void feed_hardware_wdt(void) {
 	WRITE_PERI_REG(0x60000914, 0x73);
+}
+
+// Configure hardware WDT for single-stage reset without automatic feeding.
+// Mode 3: Single-stage mode, no automatic feeding.
+// Arg2 = 6: Approximately 3.35 seconds until hardware reset.
+static inline void enable_crash_watchdog(void) {
+	ets_wdt_enable(3, 0, 6);
 }
 
 // NOTE: The exception handler MUST NOT be marked with ICACHE_FLASH_ATTR because
@@ -87,32 +95,55 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 	uint32_t i;
 	crash_log_header_t header;
 
-	// 1. Save extra Special Function Registers (SFRs) using the assembly stub
+	if (in_exception) {
+		// A secondary exception occurred while handling the original crash.
+		// Do not attempt further processing. Let the hardware WDT reset the chip.
+		enable_crash_watchdog();
+
+		while (1) {
+		}
+	}
+
+	in_exception = true;
+
+	// 1. Stop application and software watchdogs.
+	// Reconfigure the hardware watchdog afterwards to ensure it remains enabled.
+	stop_watchdog();
+	system_soft_wdt_stop();
+	enable_crash_watchdog();
+	feed_hardware_wdt();
+
+	// 2. Save extra Special Function Registers (SFRs) using the assembly stub
 	save_extra_sfrs_for_exception();
 
-	// 2. Copy the CPU register frame (the first 19 words captured by the HAL)
+	// 3. Copy the CPU register frame (the first 19 words captured by the HAL)
 	memcpy(&saved_regs, frame, 19 * sizeof(uint32_t));
 
-	// 3. Compute the true interrupted stack pointer (A1)
+	// 4. Compute the true interrupted stack pointer (A1)
 	// The exception frame sits on top of the target stack upon entry (100 bytes / 0x64).
 	interrupted_sp = (uint32_t)frame + sizeof(struct XTensa_exception_frame_s);
 	saved_regs.a1 = interrupted_sp;
 
-	// 4. Disable watchdog timers
-	stop_watchdog();
-	system_soft_wdt_stop();
-	ets_wdt_disable();
-	feed_hardware_wdt();
-
 	// 5. Safely calculate the stack dump length from DRAM
 	stack_top_boundary = 0x3FFFFFB0; // Upper boundary of RAM stack
+
 	if (interrupted_sp >= 0x3FFE8000 && interrupted_sp < stack_top_boundary) {
 		stack_dump_len = stack_top_boundary - interrupted_sp;
+
 		if (stack_dump_len > CRASH_RAM_STACK_READ_MAX) {
 			stack_dump_len = CRASH_RAM_STACK_READ_MAX;
 		}
 	} else {
 		// Corrupted or out-of-bounds Stack Pointer
+		stack_dump_len = 0;
+	}
+
+	// Ensure the stack dump fits inside the crash log flash partition.
+	if (CRASH_FLASH_TOTAL_BYTES > sizeof(crash_log_header_t)) {
+		if (stack_dump_len > CRASH_FLASH_TOTAL_BYTES - sizeof(crash_log_header_t)) {
+			stack_dump_len = CRASH_FLASH_TOTAL_BYTES - sizeof(crash_log_header_t);
+		}
+	} else {
 		stack_dump_len = 0;
 	}
 
@@ -149,8 +180,7 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 		}
 	}
 
-	feed_hardware_wdt();
-
+	// 10. Flush UART output before allowing the hardware watchdog to reset.
 #ifdef DEBUG
 	printf("\n*** FATAL EXCEPTION Cause=%lu PC=0x%08lx Interrupted SP=0x%08lx EXCVADDR=0x%08lx ***\n",
 		   (unsigned long)saved_regs.reason,
@@ -159,18 +189,14 @@ static void exception_handler(struct XTensa_exception_frame_s *frame) {
 		   (unsigned long)saved_regs.excvaddr);
 #endif
 
-	// 10. Flush UART output and reboot
 	for (i = 0; i < 100; i++) {
 		feed_hardware_wdt();
 		os_delay_us(10000); // 1-second total delay
 	}
 
-	system_restart();
-
-	// Fallback loop for hardware WDT reset if system_restart() fails
-	ets_wdt_enable();
+	// 11. Stop feeding the hardware watchdog.
+	// The hardware watchdog will reset the ESP8266 after approximately 3.35 seconds.
 	while (1) {
-		// Wait for hardware watchdog reset
 	}
 }
 
