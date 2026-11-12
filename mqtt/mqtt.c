@@ -1690,7 +1690,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 #ifdef DEBUG
 			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
 #endif	// DEBUG
-			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		} else {
 			INFO("TCP: DNS lookup failed immediately (%d)\r\n", dns_err);
 			mqtt_tcpclient_delete(mqttClient);
