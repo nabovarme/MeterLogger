@@ -65,6 +65,8 @@ esp_tcp mqtt_esp_tcp;
 LOCAL uint8_t zero_len_id[2] = { 0, 0 };
 #endif
 
+void ICACHE_FLASH_ATTR mqtt_tcpclient_delete(MQTT_Client *mqttClient);
+
 // Send a control packet immediately. Any failure is treated as a connection
 // failure because silently dropping PUBACK/PUBREC/PUBREL/PUBCOMP/PINGRESP can
 // leave the MQTT session permanently out of sync.
