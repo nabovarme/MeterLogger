@@ -121,6 +121,7 @@ typedef struct  {
 	/* One-shot marker for the sent callback of a queued PUBLISH packet. */
 	uint8_t publish_send_callback_pending;
 	uint8_t reconnect_pending;
+	uint8_t mqtt_disconnect_sent;
 	tConnState connState;
 	QUEUE msgQueue;
 	void* user_data;

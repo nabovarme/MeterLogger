@@ -307,6 +307,7 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 	mqttClient->is_waiting_for_pingresp = 0;
 	mqttClient->pingrespTimeout = 0;
 	mqttClient->publish_send_callback_pending = 0;
+	mqttClient->mqtt_disconnect_sent = 0;
 	mqttClient->disconnectTick = 0;
 
 	if (mqttClient->pCon != NULL) {
@@ -347,6 +348,7 @@ mqtt_client_delete(MQTT_Client *mqttClient)
 	mqttClient->is_waiting_for_pingresp = 0;
 	mqttClient->pingrespTimeout = 0;
 	mqttClient->publish_send_callback_pending = 0;
+	mqttClient->mqtt_disconnect_sent = 0;
 
 	if (mqttClient->host != NULL) {
 		os_free(mqttClient->host);
@@ -839,6 +841,7 @@ mqtt_tcpclient_discon_cb(void *arg)
 	client->is_waiting_for_pingresp = 0;
 	client->pingrespTimeout = 0;
 	client->publish_send_callback_pending = 0;
+	client->mqtt_disconnect_sent = 0;
 	client->disconnectTick = 0;
 
 	// SDK has completed teardown of this espconn instance
@@ -957,6 +960,7 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 	INFO("TCP: Reconnect to %s:%d\r\n", client->host, client->port);
 
 	client->disconnectTick = 0;
+	client->mqtt_disconnect_sent = 0;
 
 	// SDK has torn down the failed connection; release static espconn ownership
 	pCon->reverse = NULL;
@@ -1195,6 +1199,13 @@ MQTT_Task(os_event_t *e)
 					client->connState = TCP_DISCONNECTED;
 				}
 				system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+			}
+			else if (client->connState == TCP_DISCONNECTING &&
+				 !client->mqtt_disconnect_sent &&
+				 client->pCon->state == ESPCONN_CONNECT) {
+				client->mqtt_disconnect_sent = 1;
+				client->mqtt_state.outbound_message = mqtt_msg_disconnect(&client->mqtt_state.mqtt_connection);
+				mqtt_send_direct(client);
 			}
 			else if (client->security) {
 #ifdef MQTT_SSL_ENABLE
@@ -1480,6 +1491,7 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 	mqttClient->is_waiting_for_pingresp = 0;
 	mqttClient->pingrespTimeout = 0;
 	mqttClient->publish_send_callback_pending = 0;
+	mqttClient->mqtt_disconnect_sent = 0;
 
 	mqtt_msg_init(&mqttClient->mqtt_state.mqtt_connection, mqttClient->mqtt_state.out_buffer, mqttClient->mqtt_state.out_buffer_length);
 
@@ -1586,6 +1598,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 
 	mqttClient->reconnect_pending = 0;
 	mqttClient->disconnectTick = 0;
+	mqttClient->mqtt_disconnect_sent = 0;
 	mqttClient->mqtt_state.in_buffer_used = 0;
 
 	memset(&mqtt_espconn, 0, sizeof(mqtt_espconn));
@@ -1685,6 +1698,7 @@ MQTT_Disconnect(MQTT_Client *mqttClient)
 		return;
 	mqttClient->reconnect_pending = 0;
 	mqttClient->disconnectTick = 0;
+	mqttClient->mqtt_disconnect_sent = 0;
 	if (mqttClient->pCon != NULL) {
 		mqttClient->connState = TCP_DISCONNECTING;
 		os_timer_disarm(&mqttClient->mqttTimer);
