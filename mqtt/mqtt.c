@@ -274,8 +274,12 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 
 	if (mqttClient->pCon != NULL) {
 		INFO("TCP: Free memory\r\n");
-		// Force abort connections
-		espconn_abort(mqttClient->pCon);
+		// Detach reverse pointer first so late SDK callbacks cannot touch mqttClient
+		mqttClient->pCon->reverse = NULL;
+		if (mqttClient->pCon->state != ESPCONN_NONE && mqttClient->pCon->state != ESPCONN_CLOSE) {
+			// Force abort connections
+			espconn_abort(mqttClient->pCon);
+		}
 		// Delete connections
 		espconn_delete(mqttClient->pCon);
 
@@ -776,7 +780,18 @@ mqtt_tcpclient_discon_cb(void *arg)
 	client->pingrespTimeout = 0;
 	client->publish_send_callback_pending = 0;
 
-	if (TCP_DISCONNECTING == client->connState) {
+	// SDK has completed teardown of this espconn instance
+	pespconn->reverse = NULL;
+	espconn_delete(pespconn);
+	if (client->pCon == pespconn) {
+		client->pCon = NULL;
+	}
+
+	if (client->reconnect_pending) {
+		client->reconnect_pending = 0;
+		client->connState = TCP_RECONNECT;
+	}
+	else if (TCP_DISCONNECTING == client->connState) {
 		client->connState = TCP_DISCONNECTED;
 	}
 	else if (MQTT_DELETING == client->connState) {
@@ -877,7 +892,20 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 
 	INFO("TCP: Reconnect to %s:%d\r\n", client->host, client->port);
 
-	client->connState = TCP_RECONNECT_REQ;
+	// SDK has torn down the failed connection; release static espconn ownership
+	pCon->reverse = NULL;
+	espconn_delete(pCon);
+	if (client->pCon == pCon) {
+		client->pCon = NULL;
+	}
+
+	if (client->reconnect_pending) {
+		client->reconnect_pending = 0;
+		client->connState = TCP_RECONNECT;
+	}
+	else {
+		client->connState = TCP_RECONNECT_REQ;
+	}
 
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 
@@ -1072,16 +1100,36 @@ MQTT_Task(os_event_t *e)
 	case TCP_RECONNECT_REQ:
 		break;
 	case TCP_RECONNECT:
-		mqtt_tcpclient_delete(client);
+		if (client->pCon != NULL) {
+			// Wait for asynchronous teardown before reusing static mqtt_espconn
+			client->reconnect_pending = 1;
+			client->connState = TCP_RECONNECT_DISCONNECTING;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+			break;
+		}
 		MQTT_Connect(client);
 		INFO("TCP: Reconnect to: %s:%d\r\n", client->host, client->port);
-		client->connState = TCP_CONNECTING;
 		break;
 	case MQTT_DELETING:
 	case TCP_DISCONNECTING:
 	case TCP_RECONNECT_DISCONNECTING:
 		if (client->pCon != NULL) {
-			if (client->security) {
+			if (client->pCon->state == ESPCONN_NONE || client->pCon->state == ESPCONN_CLOSE) {
+				// Already closed/never connected (e.g. DNS in-flight); delete directly
+				mqtt_tcpclient_delete(client);
+				if (client->reconnect_pending) {
+					client->reconnect_pending = 0;
+					client->connState = TCP_RECONNECT;
+				}
+				else if (client->connState == MQTT_DELETING) {
+					client->connState = MQTT_DELETED;
+				}
+				else {
+					client->connState = TCP_DISCONNECTED;
+				}
+				system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+			}
+			else if (client->security) {
 #ifdef MQTT_SSL_ENABLE
 				espconn_secure_disconnect(client->pCon);
 #else
@@ -1091,6 +1139,11 @@ MQTT_Task(os_event_t *e)
 			else {
 				espconn_disconnect(client->pCon);
 			}
+		}
+		else if (client->reconnect_pending) {
+			client->reconnect_pending = 0;
+			client->connState = TCP_RECONNECT;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
 		break;
 	case TCP_DISCONNECTED:
@@ -1437,13 +1490,19 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		return;
 	}
 
-	if (mqttClient->pCon) {
-		// Clean up the old connection forcefully - using MQTT_Disconnect
-		// does not actually release the old connection until the
-		// disconnection callback is invoked.
-		mqtt_tcpclient_delete(mqttClient);
+	if (mqttClient->pCon != NULL) {
+		// Defer connect until the active espconn finishes closing so we never
+		// memset() mqtt_espconn while lwIP/espconn still references it.
+		mqttClient->reconnect_pending = 1;
+		if (mqttClient->connState != TCP_DISCONNECTING &&
+		    mqttClient->connState != TCP_RECONNECT_DISCONNECTING) {
+			mqttClient->connState = TCP_RECONNECT_DISCONNECTING;
+		}
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
+		return;
 	}
 
+	mqttClient->reconnect_pending = 0;
 	mqttClient->mqtt_state.in_buffer_used = 0;
 
 	memset(&mqtt_espconn, 0, sizeof(mqtt_espconn));
@@ -1520,6 +1579,8 @@ MQTT_Connect(MQTT_Client *mqttClient)
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		} else {
 			INFO("TCP: DNS lookup failed immediately (%d)\r\n", dns_err);
+			mqttClient->pCon->reverse = NULL;
+			mqttClient->pCon = NULL;
 			mqttClient->connState = TCP_RECONNECT_REQ;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		}
@@ -1531,6 +1592,7 @@ MQTT_Disconnect(MQTT_Client *mqttClient)
 {
 	if (mqttClient == NULL)
 		return;
+	mqttClient->reconnect_pending = 0;
 	mqttClient->connState = TCP_DISCONNECTING;
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 	os_timer_disarm(&mqttClient->mqttTimer);

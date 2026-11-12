@@ -119,6 +119,7 @@ typedef struct  {
 	uint8_t is_waiting_for_pingresp;
 	/* One-shot marker for the sent callback of a queued PUBLISH packet. */
 	uint8_t publish_send_callback_pending;
+	uint8_t reconnect_pending;
 	tConnState connState;
 	QUEUE msgQueue;
 	void* user_data;
