@@ -50,6 +50,7 @@
 
 #define MQTT_TASK_PRIO				USER_TASK_PRIO_1
 #define MQTT_TASK_QUEUE_SIZE		100
+#define MQTT_DISCONNECT_TIMEOUT		3
 
 #ifndef QUEUE_BUFFER_SIZE
 #define QUEUE_BUFFER_SIZE			2048
@@ -85,6 +86,7 @@ static void ICACHE_FLASH_ATTR mqtt_send_direct(MQTT_Client *client)
 	}
 	if (message == NULL || message->data == NULL || message->length == 0) {
 		INFO("MQTT: Failed to build direct control packet\r\n");
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
@@ -103,6 +105,7 @@ static void ICACHE_FLASH_ATTR mqtt_send_direct(MQTT_Client *client)
 
 	if (result != ESPCONN_OK) {
 		INFO("MQTT: Direct control packet send failed (%d); reconnecting\r\n", result);
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 	}
@@ -113,6 +116,7 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 {
 	struct espconn *pConn = (struct espconn *)arg;
 	MQTT_Client* client;
+	sint8 conn_res;
 
 #ifdef DEBUG
 	printf("\t-> %s()\n\r", __FUNCTION__);
@@ -122,10 +126,18 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 	client = (MQTT_Client *)pConn->reverse;
 	if (client == NULL) return;
 
-	if (ipaddr == NULL)
+	// Ignore stale DNS responses from an earlier connection attempt
+	if (client->pCon != pConn || client->connState != TCP_CONNECTING || pConn->state != ESPCONN_NONE) {
+		INFO("DNS: Ignoring stale callback\r\n");
+		return;
+	}
+
+	if (ipaddr == NULL || ipaddr->addr == IPADDR_ANY)
 	{
 		INFO("DNS: Found, but got no ip, try to reconnect\r\n");
+		mqtt_tcpclient_delete(client);
 		client->connState = TCP_RECONNECT_REQ;
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
 	}
 
@@ -135,27 +147,36 @@ mqtt_dns_found(const char *name, ip_addr_t *ipaddr, void *arg)
 		*((uint8 *) &ipaddr->addr + 2),
 		*((uint8 *) &ipaddr->addr + 3));
 
-	if (ipaddr->addr != IPADDR_ANY) {
-		if (client->pCon == NULL || client->pCon->proto.tcp == NULL) {
-			INFO("Error: proto.tcp is NULL in mqtt_dns_found\n");
-			return;
-		}
+	if (client->pCon->proto.tcp == NULL) {
+		INFO("Error: proto.tcp is NULL in mqtt_dns_found\n");
+		mqtt_tcpclient_delete(client);
+		client->connState = TCP_RECONNECT_REQ;
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		return;
+	}
 
-		client->pCon->proto.tcp->remote_ip[0] = (ipaddr->addr) & 0xff;
-		client->pCon->proto.tcp->remote_ip[1] = (ipaddr->addr >> 8) & 0xff;
-		client->pCon->proto.tcp->remote_ip[2] = (ipaddr->addr >> 16) & 0xff;
-		client->pCon->proto.tcp->remote_ip[3] = (ipaddr->addr >> 24) & 0xff;
-		if (client->security) {
+	client->pCon->proto.tcp->remote_ip[0] = (ipaddr->addr) & 0xff;
+	client->pCon->proto.tcp->remote_ip[1] = (ipaddr->addr >> 8) & 0xff;
+	client->pCon->proto.tcp->remote_ip[2] = (ipaddr->addr >> 16) & 0xff;
+	client->pCon->proto.tcp->remote_ip[3] = (ipaddr->addr >> 24) & 0xff;
+	if (client->security) {
 #ifdef MQTT_SSL_ENABLE
-			espconn_secure_connect(client->pCon);
+		conn_res = espconn_secure_connect(client->pCon);
 #else
-			INFO("TCP: Do not support SSL\r\n");
+		INFO("TCP: Do not support SSL\r\n");
+		conn_res = -1;
 #endif
-		}
-		else {
-			espconn_connect(client->pCon);
-		}
+	}
+	else {
+		conn_res = espconn_connect(client->pCon);
+	}
 
+	if (conn_res != ESPCONN_OK) {
+		INFO("TCP: connect failed immediately (%d); scheduling reconnect\r\n", conn_res);
+		mqtt_tcpclient_delete(client);
+		client->connState = TCP_RECONNECT_REQ;
+	}
+	else {
 		client->connState = TCP_CONNECTING;
 		INFO("TCP: connecting...\r\n");
 	}
@@ -193,7 +214,18 @@ deliver_pingresp(MQTT_Client* client, uint8_t* message, int length)
 void ICACHE_FLASH_ATTR
 mqtt_send_keepalive(MQTT_Client *client) {
 	err_t result = ESPCONN_OK;
-	if (client == NULL || client->pCon == NULL || client->mqtt_state.connect_info == NULL) {
+	if (client == NULL || client->mqtt_state.connect_info == NULL) {
+		return;
+	}
+	if (client->pCon == NULL) {
+		if (client->reconnect_pending) {
+			client->reconnect_pending = 0;
+			client->connState = TCP_RECONNECT;
+		}
+		else {
+			client->connState = TCP_RECONNECT_REQ;
+		}
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
 	}
 
@@ -216,6 +248,7 @@ mqtt_send_keepalive(MQTT_Client *client) {
 	    client->mqtt_state.outbound_message->length == 0) {
 		INFO("MQTT: Failed to build keepalive PINGREQ\r\n");
 		client->mqtt_state.outbound_message = NULL;
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
@@ -249,6 +282,7 @@ mqtt_send_keepalive(MQTT_Client *client) {
 	else {
 		client->is_waiting_for_pingresp = 0;
 		client->pingrespTimeout = 0;
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 	}
@@ -271,6 +305,7 @@ mqtt_tcpclient_delete(MQTT_Client *mqttClient)
 	mqttClient->is_waiting_for_pingresp = 0;
 	mqttClient->pingrespTimeout = 0;
 	mqttClient->publish_send_callback_pending = 0;
+	mqttClient->disconnectTick = 0;
 
 	if (mqttClient->pCon != NULL) {
 		INFO("TCP: Free memory\r\n");
@@ -738,6 +773,26 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 			if (client->timeoutCb)
 				client->timeoutCb((uint32_t*) client);
 		}
+	} else if (client->connState == TCP_DISCONNECTING ||
+		   client->connState == TCP_RECONNECT_DISCONNECTING ||
+		   client->connState == MQTT_DELETING) {
+		client->disconnectTick++;
+		if (client->disconnectTick > MQTT_DISCONNECT_TIMEOUT) {
+			INFO("MQTT: Disconnect timeout! Forcing TCP cleanup.\r\n");
+			client->disconnectTick = 0;
+			mqtt_tcpclient_delete(client);
+			if (client->reconnect_pending) {
+				client->reconnect_pending = 0;
+				client->connState = TCP_RECONNECT;
+			}
+			else if (client->connState == MQTT_DELETING) {
+				client->connState = MQTT_DELETED;
+			}
+			else {
+				client->connState = TCP_DISCONNECTED;
+			}
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		}
 	}
 
 	/* Keepalive timeout is independent of queued-message ACK timeout. */
@@ -746,6 +801,7 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 		if (client->pingrespTimeout == 0) {
 			INFO("MQTT: Keepalive PINGRESP timeout! Forcing reconnect.\r\n");
 			client->is_waiting_for_pingresp = 0;
+			client->disconnectTick = 0;
 			client->connState = TCP_RECONNECT_DISCONNECTING;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
@@ -755,6 +811,7 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 		client->sendTimeout--;
 		if (client->sendTimeout == 0) {
 			INFO("MQTT: Send timeout! Forcing reconnect.\r\n");
+			client->disconnectTick = 0;
 			client->connState = TCP_RECONNECT_DISCONNECTING;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
@@ -779,6 +836,7 @@ mqtt_tcpclient_discon_cb(void *arg)
 	client->is_waiting_for_pingresp = 0;
 	client->pingrespTimeout = 0;
 	client->publish_send_callback_pending = 0;
+	client->disconnectTick = 0;
 
 	// SDK has completed teardown of this espconn instance
 	pespconn->reverse = NULL;
@@ -830,6 +888,7 @@ mqtt_tcpclient_connect_cb(void *arg)
 
 	if (client->mqtt_state.out_buffer == NULL || client->mqtt_state.connect_info == NULL) {
 		INFO("MQTT: CONNECT buffers are not initialized\r\n");
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
@@ -842,6 +901,7 @@ mqtt_tcpclient_connect_cb(void *arg)
 	    client->mqtt_state.outbound_message->length == 0) {
 		INFO("MQTT: Failed to build CONNECT packet\r\n");
 		client->mqtt_state.outbound_message = NULL;
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
@@ -865,6 +925,7 @@ mqtt_tcpclient_connect_cb(void *arg)
 	if (result != ESPCONN_OK) {
 		INFO("MQTT: CONNECT send failed (%d); reconnecting\r\n", result);
 		client->sendTimeout = 0;
+		client->disconnectTick = 0;
 		client->connState = TCP_RECONNECT_DISCONNECTING;
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		return;
@@ -891,6 +952,8 @@ mqtt_tcpclient_recon_cb(void *arg, sint8 errType)
 	if (client == NULL) return; // aborted connection
 
 	INFO("TCP: Reconnect to %s:%d\r\n", client->host, client->port);
+
+	client->disconnectTick = 0;
 
 	// SDK has torn down the failed connection; release static espconn ownership
 	pCon->reverse = NULL;
@@ -1103,6 +1166,7 @@ MQTT_Task(os_event_t *e)
 		if (client->pCon != NULL) {
 			// Wait for asynchronous teardown before reusing static mqtt_espconn
 			client->reconnect_pending = 1;
+			client->disconnectTick = 0;
 			client->connState = TCP_RECONNECT_DISCONNECTING;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 			break;
@@ -1145,10 +1209,19 @@ MQTT_Task(os_event_t *e)
 			client->connState = TCP_RECONNECT;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
+		else if (client->connState == MQTT_DELETING) {
+			client->connState = MQTT_DELETED;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		}
+		else {
+			client->connState = TCP_DISCONNECTED;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+		}
 		break;
 	case TCP_DISCONNECTED:
 		INFO("MQTT: Disconnected\r\n");
 		mqtt_tcpclient_delete(client);
+		os_timer_disarm(&client->mqttTimer);
 		break;
 	case MQTT_DELETED:
 		INFO("MQTT: Deleted client\r\n");
@@ -1225,6 +1298,7 @@ MQTT_Task(os_event_t *e)
 				client->mqtt_state.pending_msg_type = 0;
 				client->sendTimeout = 0;
 				client->publish_send_callback_pending = 0;
+				client->disconnectTick = 0;
 				client->connState = TCP_RECONNECT_DISCONNECTING;
 				system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 			}
@@ -1482,6 +1556,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 {
 	uint32_t keeplive;
 	err_t dns_err;
+	sint8 conn_res;
 	if (mqttClient == NULL || mqttClient->host == NULL ||
 	    mqttClient->mqtt_state.in_buffer == NULL ||
 	    mqttClient->mqtt_state.out_buffer == NULL ||
@@ -1494,15 +1569,20 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		// Defer connect until the active espconn finishes closing so we never
 		// memset() mqtt_espconn while lwIP/espconn still references it.
 		mqttClient->reconnect_pending = 1;
+		mqttClient->disconnectTick = 0;
 		if (mqttClient->connState != TCP_DISCONNECTING &&
 		    mqttClient->connState != TCP_RECONNECT_DISCONNECTING) {
 			mqttClient->connState = TCP_RECONNECT_DISCONNECTING;
 		}
+		os_timer_disarm(&mqttClient->mqttTimer);
+		os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
+		os_timer_arm(&mqttClient->mqttTimer, 1000, 1);
 		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		return;
 	}
 
 	mqttClient->reconnect_pending = 0;
+	mqttClient->disconnectTick = 0;
 	mqttClient->mqtt_state.in_buffer_used = 0;
 
 	memset(&mqtt_espconn, 0, sizeof(mqtt_espconn));
@@ -1551,19 +1631,29 @@ MQTT_Connect(MQTT_Client *mqttClient)
 		if (mqttClient->security)
 		{
 #ifdef MQTT_SSL_ENABLE
-			espconn_secure_connect(mqttClient->pCon);
+			conn_res = espconn_secure_connect(mqttClient->pCon);
 #else
 			INFO("TCP: Do not support SSL\r\n");
+			conn_res = -1;
 #endif
 		}
 		else
 		{
-			espconn_connect(mqttClient->pCon);
+			conn_res = espconn_connect(mqttClient->pCon);
 		}
-		mqttClient->connState = TCP_CONNECTING;
+		if (conn_res != ESPCONN_OK) {
+			INFO("TCP: connect failed immediately (%d); scheduling reconnect\r\n", conn_res);
+			mqtt_tcpclient_delete(mqttClient);
+			mqttClient->connState = TCP_RECONNECT_REQ;
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
+		}
+		else {
+			mqttClient->connState = TCP_CONNECTING;
+		}
 	}
 	else {
 		INFO("TCP: Connect to domain %s:%d\r\n", mqttClient->host, mqttClient->port);
+		mqttClient->connState = TCP_CONNECTING;
 		dns_err = dns_gethostbyname((const char *)mqttClient->host, &mqttClient->ip, mqtt_dns_found, mqttClient->pCon);
 		if (dns_err == ERR_OK) {
 #ifdef DEBUG
@@ -1575,12 +1665,10 @@ MQTT_Connect(MQTT_Client *mqttClient)
 #ifdef DEBUG
 			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
 #endif	// DEBUG
-			mqttClient->connState = TCP_CONNECTING;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		} else {
 			INFO("TCP: DNS lookup failed immediately (%d)\r\n", dns_err);
-			mqttClient->pCon->reverse = NULL;
-			mqttClient->pCon = NULL;
+			mqtt_tcpclient_delete(mqttClient);
 			mqttClient->connState = TCP_RECONNECT_REQ;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
 		}
@@ -1593,9 +1681,18 @@ MQTT_Disconnect(MQTT_Client *mqttClient)
 	if (mqttClient == NULL)
 		return;
 	mqttClient->reconnect_pending = 0;
-	mqttClient->connState = TCP_DISCONNECTING;
+	mqttClient->disconnectTick = 0;
+	if (mqttClient->pCon != NULL) {
+		mqttClient->connState = TCP_DISCONNECTING;
+		os_timer_disarm(&mqttClient->mqttTimer);
+		os_timer_setfn(&mqttClient->mqttTimer, (os_timer_func_t *)mqtt_timer, mqttClient);
+		os_timer_arm(&mqttClient->mqttTimer, 1000, 1);
+	}
+	else {
+		mqttClient->connState = TCP_DISCONNECTED;
+		os_timer_disarm(&mqttClient->mqttTimer);
+	}
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
-	os_timer_disarm(&mqttClient->mqttTimer);
 }
 
 void ICACHE_FLASH_ATTR

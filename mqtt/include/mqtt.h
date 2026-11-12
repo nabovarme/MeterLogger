@@ -113,6 +113,7 @@ typedef struct  {
 	uint32_t keepAliveTick;
 	uint32_t reconnectTick;
 	uint32_t connectTick;
+	uint32_t disconnectTick;
 	uint32_t sendTimeout;
 	/* Separate timeout/state for automatic keepalive PINGREQ/PINGRESP. */
 	uint32_t pingrespTimeout;
