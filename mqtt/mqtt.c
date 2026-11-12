@@ -631,6 +631,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 				case MQTT_MSG_TYPE_PUBREC:
 					INFO("MQTT: received MQTT_MSG_TYPE_PUBREC for id: %d\r\n", msg_id);
 					if (client->mqtt_state.is_waiting_for_ack &&
+					    client->mqtt_state.pending_publish_qos == 2 &&
 					    client->mqtt_state.pending_msg_id == msg_id &&
 					    (client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBLISH ||
 					     client->mqtt_state.pending_msg_type == MQTT_MSG_TYPE_PUBREL)) {
