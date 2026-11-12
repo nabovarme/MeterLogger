@@ -466,44 +466,20 @@ mqtt_get_packet_length(uint8_t *buffer, uint16_t length)
 	return -1; // malformed Remaining Length (more than four bytes)
 }
 
-void ICACHE_FLASH_ATTR
-mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
+LOCAL void ICACHE_FLASH_ATTR
+mqtt_process_next_packet(MQTT_Client *client)
 {
 	uint8_t msg_type;
 	uint8_t msg_qos;
 	uint16_t msg_id;
 	uint8_t msg_conn_ret;
 	int packet_length;
+	uint16_t len;
 	uint16_t used_before_processing;
 	uint16_t dummyDataLen;
 
-	struct espconn *pCon = (struct espconn*)arg;
-	MQTT_Client *client;
-	if (pCon == NULL) return;
-	client = (MQTT_Client *)pCon->reverse;
-	if (client == NULL) return; // aborted connection
-
-	// Copy incoming TCP chunks to the buffer (only applies when called from espconn interrupt)
-	if (pdata != NULL && len > 0) {
-		INFO("TCP: data received %d bytes\r\n", len);
-
-		if ((uint32_t)client->mqtt_state.in_buffer_used + len > MQTT_BUF_SIZE) {
-			INFO("MQTT: Receive buffer full\r\n");
-			client->mqtt_state.in_buffer_used = 0;
-			if (client->pCon)
-				espconn_disconnect(client->pCon);
-			return;
-		}
-
-		if (client->mqtt_state.in_buffer == NULL || client->mqtt_state.work_buffer == NULL) {
-			INFO("MQTT: Receive/work buffer is not initialized\r\n");
-			if (client->pCon)
-				espconn_disconnect(client->pCon);
-			return;
-		}
-
-		memcpy(client->mqtt_state.in_buffer + client->mqtt_state.in_buffer_used, pdata, len);
-		client->mqtt_state.in_buffer_used += len;
+	if (client == NULL || client->pCon == NULL || client->mqtt_state.in_buffer == NULL) {
+		return;
 	}
 
 	// Process EXACTLY ONE packet per execution block.
@@ -710,6 +686,41 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 
 	// Queue execution of the background task.
 	// If there are remaining packets in the buffer, the task will pull them one by one.
+	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
+}
+
+void ICACHE_FLASH_ATTR
+mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
+{
+	struct espconn *pCon = (struct espconn*)arg;
+	MQTT_Client *client;
+	if (pCon == NULL) return;
+	client = (MQTT_Client *)pCon->reverse;
+	if (client == NULL) return; // aborted connection
+
+	// Copy incoming TCP chunks to the buffer and defer all packet processing to MQTT_Task
+	if (pdata != NULL && len > 0) {
+		INFO("TCP: data received %d bytes\r\n", len);
+
+		if ((uint32_t)client->mqtt_state.in_buffer_used + len > MQTT_BUF_SIZE) {
+			INFO("MQTT: Receive buffer full\r\n");
+			client->mqtt_state.in_buffer_used = 0;
+			if (client->pCon)
+				espconn_disconnect(client->pCon);
+			return;
+		}
+
+		if (client->mqtt_state.in_buffer == NULL || client->mqtt_state.work_buffer == NULL) {
+			INFO("MQTT: Receive/work buffer is not initialized\r\n");
+			if (client->pCon)
+				espconn_disconnect(client->pCon);
+			return;
+		}
+
+		memcpy(client->mqtt_state.in_buffer + client->mqtt_state.in_buffer_used, pdata, len);
+		client->mqtt_state.in_buffer_used += len;
+	}
+
 	system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 }
 
@@ -1154,13 +1165,11 @@ MQTT_Task(os_event_t *e)
 
 	// NEW CHUNKING LOGIC:
 	// Process exactly ONE pending packet from the receive buffer.
-	// We call mqtt_tcpclient_recv with NULL pdata, which unpacks a single packet,
-	// removes it from the buffer, posts a new MQTT_Task, and returns.
 	// This forces a cooperative yield to the ESP SDK / Wi-Fi driver!
 	if (client->mqtt_state.in_buffer_used > 0 && client->connState != TCP_RECONNECT_DISCONNECTING && client->pCon != NULL) {
 		pkt_len = mqtt_get_packet_length(client->mqtt_state.in_buffer, client->mqtt_state.in_buffer_used);
 		if (pkt_len > 0 && pkt_len <= client->mqtt_state.in_buffer_used && pkt_len <= MQTT_BUF_SIZE) {
-			mqtt_tcpclient_recv(client->pCon, NULL, 0);
+			mqtt_process_next_packet(client);
 			return; // Yield CPU to Wi-Fi driver!
 		}
 	}
@@ -1681,7 +1690,7 @@ MQTT_Connect(MQTT_Client *mqttClient)
 #ifdef DEBUG
 			printf("dns_gethostbyname() returned ERR_INPROGRESS\n\r");
 #endif	// DEBUG
-			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)mqttClient);
+			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		} else {
 			INFO("TCP: DNS lookup failed immediately (%d)\r\n", dns_err);
 			mqtt_tcpclient_delete(mqttClient);
