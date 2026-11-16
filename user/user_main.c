@@ -44,6 +44,7 @@ extern uint32_t cnx_csa_call_count;
 extern bool cnx_csa_new_call_flag;
 
 bool fast_boot;
+bool booted_by_watchdog = false;
 
 static bool first_mqtt_connect_after_boot = true;
 
@@ -1024,6 +1025,14 @@ ICACHE_FLASH_ATTR void user_gpio_init() {
 
 ICACHE_FLASH_ATTR void user_init(void) {
 	size_t flash_size;
+	uint32_t watchdog_rebooted = 0;
+
+	// Latch the RTC watchdog reboot flag in RAM for this boot and immediately
+	// clear RTC memory so subsequent clean restarts do not inherit reason=7.
+	if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
+		booted_by_watchdog = true;
+	}
+	save_rtc_data(0);
 	
 	system_update_cpu_freq(160);
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
@@ -1151,9 +1160,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 }
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
-#ifdef DEBUG
-	uint32_t watchdog_rebooted;
-#endif
 	struct rst_info *rtc_info;
 	rtc_info = system_get_rst_info();
 
@@ -1165,7 +1171,7 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	}
 
 #ifdef DEBUG
-	if (load_rtc_data(&watchdog_rebooted)) {
+	if (booted_by_watchdog) {
 		printf("rst: %d\n", 7);
 	}
 	else {

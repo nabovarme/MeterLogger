@@ -31,6 +31,7 @@
 static os_timer_t fallback_ap_timer;
 bool fallback_ap_is_running = false;
 extern bool ota_in_progress;
+extern bool booted_by_watchdog;
 
 static os_timer_t mqtt_restart_ack_timer;
 static os_timer_t delayed_wifi_default_timer;
@@ -550,12 +551,12 @@ void mqtt_rpc_wifi_status(MQTT_Client *client) {
 	memset(mqtt_message, 0, sizeof(mqtt_message));
 	memset(cleartext, 0, sizeof(cleartext));
 	wifi_status = wifi_get_status();
-		reason_str = wifi_get_reason_desc(wifi_status);
-		if (strcmp(reason_str, "unknown") == 0 || strcmp(reason_str, "none") == 0) {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connected");
-		} else {
-			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", reason_str);
-		}
+	reason_str = wifi_get_reason_desc(wifi_status);
+	if (strcmp(reason_str, "unknown") == 0 || strcmp(reason_str, "none") == 0) {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", "connected");
+	} else {
+		tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", reason_str);
+	}
 	
 	// encrypt and send
 	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
@@ -868,7 +869,6 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
 	int mqtt_message_l;
 
-	uint32_t watchdog_rebooted;
 	uint8_t current_rom;
 	struct rst_info *rtc_info;
 
@@ -890,7 +890,7 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 	memset(cleartext, 0, sizeof(cleartext));
 
 	if (rtc_info != NULL) {
-		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
+		if (booted_by_watchdog) {
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&exccause=%d&epc1=0x%08x&epc2=0x%08x&epc3=0x%08x&excvaddr=0x%08x&depc=0x%08x&slot=%d", 7, rtc_info->exccause, rtc_info->epc1, rtc_info->epc2, rtc_info->epc3, rtc_info->excvaddr, rtc_info->depc, (int)current_rom);
 		}
 		else {
@@ -898,7 +898,7 @@ void mqtt_rpc_reset_reason(MQTT_Client *client) {
 		}
 	}
 	else {
-		if (load_rtc_data(&watchdog_rebooted) && watchdog_rebooted) {
+		if (booted_by_watchdog) {
 			tfp_snprintf(cleartext, MQTT_MESSAGE_L, "reason=%d&slot=%d", 7, (int)current_rom);
 		}
 		else {
@@ -1615,4 +1615,3 @@ void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason) {
 	}
 }
 #endif // DEBUG_SERIAL
-
