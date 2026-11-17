@@ -150,11 +150,10 @@ bool led_optical_send(const uint8_t *data, uint8_t len) {
 	// Arm FRC1 hardware timer for exact 15.000 ms periodic interrupts
 	optical_hw_timer_stop();
 	ETS_FRC_TIMER1_INTR_ATTACH(optical_hw_timer_isr, NULL);
-	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, FRC1_AUTO_LOAD | FRC1_DIV_256 | FRC1_EDGE_INT);
 	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, OPTICAL_FRC1_TICKS);
 	TM1_EDGE_INT_ENABLE();
 	ETS_FRC1_INTR_ENABLE();
-	RTC_REG_SET_MASK(FRC1_CTRL_ADDRESS, FRC1_ENABLE_TIMER);
+	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, FRC1_ENABLE_TIMER | FRC1_AUTO_LOAD | FRC1_DIV_256 | FRC1_EDGE_INT);
 
 	return true;
 }
