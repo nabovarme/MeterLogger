@@ -47,7 +47,6 @@ volatile bool wifi_default_ok = false;
 volatile uint32_t wifi_default_status = REASON_UNSPECIFIED;
 volatile bool my_auto_connect = true;
 volatile bool radio_busy_connecting = false;
-static volatile bool optical_report_pending = false;
 
 uint32_t disconnect_count = 0;
 uint64_t last_uptime = 0;
@@ -63,14 +62,6 @@ static ip_addr_t sta_network_addr;
 static ip_addr_t sta_network_mask;
 static ip_addr_t ap_network_addr;
 static ip_addr_t dns_ip;
-
-ICACHE_FLASH_ATTR
-static void wifi_report_optical_status(const char *status_str) {
-	if (optical_report_pending) {
-		optical_report_pending = false;
-		led_optical_printf("UP:%llu,WIFI:%s", get_uptime(), status_str);
-	}
-}
 
 ICACHE_FLASH_ATTR
 err_t my_input_ap(struct pbuf *p, struct netif *inp) {
@@ -359,7 +350,6 @@ static void delayed_reconnect_timer_func(void *arg) {
 			return;
 		}
 		radio_busy_connecting = true;
-		optical_report_pending = true;
 		wifi_station_connect();
 	}
 }
@@ -465,9 +455,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				printf("disconnect_count: %u\n", disconnect_count);
 #endif
 			}
-			if (evt->event_info.disconnected.reason != REASON_ASSOC_LEAVE) {
-				wifi_report_optical_status(wifi_get_reason_desc(evt->event_info.disconnected.reason));
-			}
 			if (my_auto_connect) {
 #ifdef DEBUG
 				printf("reconnecting on disconnect (delayed)\n");
@@ -515,8 +502,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			else if (memcmp(stationConf.ssid, STA_FALLBACK_SSID, strlen(STA_FALLBACK_SSID) + 1) == 0) {
 				wifi_fallback_active = true;
 			}
-			wifi_report_optical_status("connected");
-
 			// set ap_network_addr from uplink
 			sta_network_addr = evt->event_info.got_ip.ip;
 			sta_network_mask = evt->event_info.got_ip.mask;
@@ -544,7 +529,6 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 				printf("disconnect_count: %u\n", disconnect_count);
 #endif
 			}
-			wifi_report_optical_status(wifi_get_reason_desc(wifi_default_status));
 			if (my_auto_connect) {
 #ifdef DEBUG
 				printf("reconnecting on dhcp timeout (delayed)\n");
@@ -830,7 +814,6 @@ void wifi_default() {
 	wifi_station_set_config_current(&stationConf);
 	my_auto_connect = true;		// handle_event_cb() based auto connect
 	radio_busy_connecting = true;
-	optical_report_pending = true;
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();	// reconnect
 
@@ -869,7 +852,6 @@ void wifi_fallback() {
 
 	my_auto_connect = true;		// handle_event_cb() based auto connect
 	radio_busy_connecting = true;
-	optical_report_pending = true;
 	wifi_station_connect();	// reconnect
 }
 
@@ -907,7 +889,6 @@ void wifi_connect(WifiCallback cb) {
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
 	my_auto_connect = true;	// handle_event_cb() based auto connect
 	radio_busy_connecting = true;
-	optical_report_pending = true;
 
 //	wifi_set_channel(channel);	// restore channel number
 	wifi_station_connect();

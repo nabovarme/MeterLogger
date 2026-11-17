@@ -19,5 +19,6 @@ ICACHE_FLASH_ATTR void led_destroy(void);
 ICACHE_FLASH_ATTR bool led_optical_send(const uint8_t *data, uint8_t len);
 ICACHE_FLASH_ATTR bool led_optical_printf(const char *fmt, ...);
 ICACHE_FLASH_ATTR bool led_optical_is_busy(void);
+ICACHE_FLASH_ATTR bool led_optical_log_wifi(void);
 
 #endif /* LED_H_ */
