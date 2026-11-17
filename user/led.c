@@ -8,10 +8,18 @@
 
 // Optical transmitter settings on GPIO2 (BIT2, active-low):
 // 15 ms per half-bit = 30 ms per Manchester bit (~33.3 bps, ideal for 240 fps Slow-Mo).
-// Use 35-40 ms if recording at 60 fps standard video.
+// Use 40 ms if recording at 30/60 fps standard video.
 #define OPTICAL_HALF_BIT_MS     15
 #define OPTICAL_MAX_PAYLOAD     64
-#define OPTICAL_FRAME_MAX_BYTES (1 + 1 + 1 + OPTICAL_MAX_PAYLOAD + 1) // Preamble + SOF + LEN + DATA + CRC8
+// 2x Preamble (0xAA, 0xAA) + SOF (0x7E) + LEN + DATA + CRC8
+#define OPTICAL_FRAME_MAX_BYTES (2 + 1 + 1 + OPTICAL_MAX_PAYLOAD + 1)
+
+// FRC1 hardware timer (80 MHz APB / 256 prescaler = 312.5 kHz -> 3.2 us per tick)
+#define FRC1_ENABLE_TIMER       BIT7
+#define FRC1_AUTO_LOAD          BIT6
+#define FRC1_DIV_256            0x08
+#define FRC1_EDGE_INT           0x00
+#define OPTICAL_FRC1_TICKS      ((OPTICAL_HALF_BIT_MS * 10000) / 32)
 
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
@@ -27,49 +35,37 @@ static volatile bool led_triple_blinker_timer_running = false;
 
 static uint8_t led_sub_pattern_state = 0;
 
-static os_timer_t optical_led_timer;
 static uint8_t optical_tx_buf[OPTICAL_FRAME_MAX_BYTES];
-static uint16_t optical_tx_total_bits = 0;
-static uint16_t optical_tx_bit_idx = 0;
-static uint8_t optical_tx_phase = 0; // 0 = first half-bit, 1 = second half-bit
+static volatile uint16_t optical_tx_total_bits = 0;
+static volatile uint16_t optical_tx_bit_idx = 0;
+static volatile uint8_t optical_tx_phase = 0; // 0 = first half-bit, 1 = second half-bit
 static volatile bool optical_tx_busy = false;
 
-ICACHE_FLASH_ATTR
-static uint8_t optical_crc8(const uint8_t *data, size_t len) {
-	uint8_t crc = 0x00;
-	size_t i;
-	uint8_t j;
-
-	for (i = 0; i < len; i++) {
-		crc ^= data[i];
-		for (j = 0; j < 8; j++) {
-			if (crc & 0x80) {
-				crc = (crc << 1) ^ 0x07;
-			} else {
-				crc <<= 1;
-			}
-		}
-	}
-	return crc;
+static void optical_hw_timer_stop(void) {
+	RTC_CLR_REG_MASK(FRC1_CTRL_ADDRESS, FRC1_ENABLE_TIMER);
+	TM1_EDGE_INT_DISABLE();
+	ETS_FRC1_INTR_DISABLE();
 }
 
-ICACHE_FLASH_ATTR
-static void optical_led_timer_func(void *arg) {
+// Keep ISR in IRAM (no ICACHE_FLASH_ATTR) for rock-solid 15.000 ms hardware timing
+static void optical_hw_timer_isr(void *arg) {
 	uint16_t byte_idx;
 	uint8_t bit_mask;
 	uint8_t bit_val;
 	bool led_on_state;
 
+	RTC_REG_WRITE(FRC1_INT_ADDRESS, FRC1_INT_CLR_MASK);
+
 	if (!optical_tx_busy || led_disabled) {
-		gpio_output_set(BIT2, 0, BIT2, 0); // LED off (HIGH)
-		os_timer_disarm(&optical_led_timer);
+		GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, BIT2); // LED off (HIGH)
+		optical_hw_timer_stop();
 		optical_tx_busy = false;
 		return;
 	}
 
 	if (optical_tx_bit_idx >= optical_tx_total_bits) {
-		gpio_output_set(BIT2, 0, BIT2, 0); // LED off (HIGH)
-		os_timer_disarm(&optical_led_timer);
+		GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, BIT2); // LED off (HIGH)
+		optical_hw_timer_stop();
 		optical_tx_busy = false;
 		return;
 	}
@@ -92,10 +88,29 @@ static void optical_led_timer_func(void *arg) {
 	}
 
 	if (led_on_state) {
-		gpio_output_set(0, BIT2, BIT2, 0); // GPIO2 LOW -> blue LED ON
+		GPIO_REG_WRITE(GPIO_OUT_W1TC_ADDRESS, BIT2); // GPIO2 LOW -> blue LED ON
 	} else {
-		gpio_output_set(BIT2, 0, BIT2, 0); // GPIO2 HIGH -> blue LED OFF
+		GPIO_REG_WRITE(GPIO_OUT_W1TS_ADDRESS, BIT2); // GPIO2 HIGH -> blue LED OFF
 	}
+}
+
+ICACHE_FLASH_ATTR
+static uint8_t optical_crc8(const uint8_t *data, size_t len) {
+	uint8_t crc = 0x00;
+	size_t i;
+	uint8_t j;
+
+	for (i = 0; i < len; i++) {
+		crc ^= data[i];
+		for (j = 0; j < 8; j++) {
+			if (crc & 0x80) {
+				crc = (crc << 1) ^ 0x07;
+			} else {
+				crc <<= 1;
+			}
+		}
+	}
+	return crc;
 }
 
 ICACHE_FLASH_ATTR
@@ -118,22 +133,28 @@ bool led_optical_send(const uint8_t *data, uint8_t len) {
 	optical_tx_busy = true;
 	gpio_output_set(BIT2, 0, BIT2, 0); // Ensure blue LED starts OFF (HIGH)
 
-	// Build frame: [0xAA preamble] [0x7E SOF] [LEN] [PAYLOAD...] [CRC8]
+	// Build frame: [0xAA, 0xAA preamble] [0x7E SOF] [LEN] [PAYLOAD...] [CRC8]
+	optical_tx_buf[idx++] = 0xAA;
 	optical_tx_buf[idx++] = 0xAA;
 	optical_tx_buf[idx++] = 0x7E;
 	optical_tx_buf[idx++] = len;
 	memcpy(&optical_tx_buf[idx], data, len);
 	idx += len;
-	optical_tx_buf[idx] = optical_crc8(&optical_tx_buf[2], len + 1); // CRC over LEN + PAYLOAD
+	optical_tx_buf[idx] = optical_crc8(&optical_tx_buf[3], len + 1); // CRC over LEN + PAYLOAD
 	idx++;
 
 	optical_tx_total_bits = idx * 8;
 	optical_tx_bit_idx = 0;
 	optical_tx_phase = 0;
 
-	os_timer_disarm(&optical_led_timer);
-	os_timer_setfn(&optical_led_timer, (os_timer_func_t *)optical_led_timer_func, NULL);
-	os_timer_arm(&optical_led_timer, OPTICAL_HALF_BIT_MS, 1);
+	// Arm FRC1 hardware timer for exact 15.000 ms periodic interrupts
+	optical_hw_timer_stop();
+	ETS_FRC_TIMER1_INTR_ATTACH(optical_hw_timer_isr, NULL);
+	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, FRC1_AUTO_LOAD | FRC1_DIV_256 | FRC1_EDGE_INT);
+	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, OPTICAL_FRC1_TICKS);
+	TM1_EDGE_INT_ENABLE();
+	ETS_FRC1_INTR_ENABLE();
+	RTC_REG_SET_MASK(FRC1_CTRL_ADDRESS, FRC1_ENABLE_TIMER);
 
 	return true;
 }
@@ -366,7 +387,7 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 
 ICACHE_FLASH_ATTR void led_destroy(void) {
 	led_disabled = true;
-	os_timer_disarm(&optical_led_timer);
+	optical_hw_timer_stop();
 	optical_tx_busy = false;
 	led_stop_pattern();
 }

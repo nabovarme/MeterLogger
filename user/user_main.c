@@ -810,6 +810,10 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// handle MQTT host change
 		mqtt_rpc_set_mqtt_host(&mqtt_client, cleartext);
 	}
+	else if (strncmp(function_name, "optical_log", FUNCTIONNAME_L) == 0) {
+		// transmit text string optically via blue LED on GPIO2
+		mqtt_rpc_optical_log(&mqtt_client, (const char *)cleartext);
+	}
 #ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "read_stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace
@@ -1161,7 +1165,6 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
 	struct rst_info *rtc_info;
-	const char *status_str;
 	rtc_info = system_get_rst_info();
 
 	// Evaluate boot type immediately so timers can use it
@@ -1189,14 +1192,6 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	init_unix_time();
 	
 	init_icmp_ping();
-
-	// Report uptime and initial Wi-Fi status optically on GPIO2 at boot
-	if (wifi_station_get_connect_status() == STATION_GOT_IP) {
-		status_str = "connected";
-	} else {
-		status_str = wifi_get_reason_desc(wifi_get_status());
-	}
-	led_optical_printf("UP:%llu,WIFI:%s", get_uptime(), status_str);
 
 #ifdef AC_TEST
 	ac_test();

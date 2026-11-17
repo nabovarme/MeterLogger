@@ -1585,6 +1585,35 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
+ICACHE_FLASH_ATTR
+void mqtt_rpc_optical_log(MQTT_Client *client, const char *text) {
+	char mqtt_topic[MQTT_TOPIC_L];
+	char mqtt_message[MQTT_MESSAGE_L + AES_HMAC_OVERHEAD];
+	char cleartext[MQTT_MESSAGE_L];
+	int mqtt_message_l;
+	bool ok = false;
+
+	if (text != NULL && text[0] != '\0') {
+		ok = led_optical_printf("%s", text);
+	}
+
+	memset(mqtt_topic, 0, sizeof(mqtt_topic));
+	memset(mqtt_message, 0, sizeof(mqtt_message));
+	memset(cleartext, 0, sizeof(cleartext));
+
+#ifdef EN61107
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/optical_log/v2/%07u/%llu", en61107_get_received_serial(), get_unix_time());
+#else
+	tfp_snprintf(mqtt_topic, MQTT_TOPIC_L, "/optical_log/v2/%07u/%llu", kmp_get_received_serial(), get_unix_time());
+#endif
+	tfp_snprintf(cleartext, MQTT_MESSAGE_L, "%s", ok ? "ok" : "busy_or_invalid");
+
+	mqtt_message_l = encrypt_aes_hmac_combined(mqtt_message, mqtt_topic, strlen(mqtt_topic), cleartext, strlen(cleartext) + 1);
+	if (client != NULL && client->pCon != NULL) {
+		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
+	}
+}
+
 #ifdef DEBUG_SERIAL
 ICACHE_FLASH_ATTR
 void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason) {
