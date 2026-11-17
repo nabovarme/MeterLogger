@@ -41,14 +41,13 @@ static volatile uint16_t optical_tx_bit_idx = 0;
 static volatile uint8_t optical_tx_phase = 0; // 0 = first half-bit, 1 = second half-bit
 static volatile bool optical_tx_busy = false;
 
-static void optical_hw_timer_stop(void) {
+ICACHE_RAM_ATTR static void optical_hw_timer_stop(void) {
 	RTC_CLR_REG_MASK(FRC1_CTRL_ADDRESS, FRC1_ENABLE_TIMER);
 	TM1_EDGE_INT_DISABLE();
 	ETS_FRC1_INTR_DISABLE();
 }
 
-// Keep ISR in IRAM (no ICACHE_FLASH_ATTR) for rock-solid 15.000 ms hardware timing
-static void optical_hw_timer_isr(void *arg) {
+ICACHE_RAM_ATTR static void optical_hw_timer_isr(void *arg) {
 	uint16_t byte_idx;
 	uint8_t bit_mask;
 	uint8_t bit_val;

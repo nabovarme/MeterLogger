@@ -1,13 +1,5 @@
-#include "ets_sys.h"
-#include "osapi.h"
-#include "c_types.h"
-#include "user_interface.h"
+#include <esp8266.h>
 #include <stdbool.h>
-
-// Fallback macro definition if ICACHE_RAM_ATTR is not defined in SDK headers
-#ifndef ICACHE_RAM_ATTR
-#define ICACHE_RAM_ATTR __attribute__((section(".iram1.text")))
-#endif
 
 // Global tracking variables exposed to user_main.c
 uint32_t cnx_csa_call_count = 0;
