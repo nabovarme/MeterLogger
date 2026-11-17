@@ -14,12 +14,13 @@
 // 2x Preamble (0xAA, 0xAA) + SOF (0x7E) + LEN + DATA + CRC8
 #define OPTICAL_FRAME_MAX_BYTES (2 + 1 + 1 + OPTICAL_MAX_PAYLOAD + 1)
 
-// FRC1 hardware timer (80 MHz APB / 256 prescaler = 312.5 kHz -> 3.2 us per tick)
+// FRC1 hardware timer (256 prescaler; calibrated for system_update_cpu_freq(160)
+// so OPTICAL_HALF_BIT_MS yields true wall-clock half-bit timing)
 #define FRC1_ENABLE_TIMER       BIT7
 #define FRC1_AUTO_LOAD          BIT6
 #define FRC1_DIV_256            0x08
 #define FRC1_EDGE_INT           0x00
-#define OPTICAL_FRC1_TICKS      ((OPTICAL_HALF_BIT_MS * 10000) / 32)
+#define OPTICAL_FRC1_TICKS      ((OPTICAL_HALF_BIT_MS * 14286) / 32)
 
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
