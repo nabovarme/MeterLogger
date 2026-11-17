@@ -1161,6 +1161,7 @@ ICACHE_FLASH_ATTR void user_init(void) {
 
 ICACHE_FLASH_ATTR void system_init_done(void) {
 	struct rst_info *rtc_info;
+	const char *status_str;
 	rtc_info = system_get_rst_info();
 
 	// Evaluate boot type immediately so timers can use it
@@ -1188,6 +1189,14 @@ ICACHE_FLASH_ATTR void system_init_done(void) {
 	init_unix_time();
 	
 	init_icmp_ping();
+
+	// Report uptime and initial Wi-Fi status optically on GPIO2 at boot
+	if (wifi_station_get_connect_status() == STATION_GOT_IP) {
+		status_str = "connected";
+	} else {
+		status_str = wifi_get_reason_desc(wifi_get_status());
+	}
+	led_optical_printf("UP:%llu,WIFI:%s", get_uptime(), status_str);
 
 #ifdef AC_TEST
 	ac_test();
