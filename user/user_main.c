@@ -810,10 +810,12 @@ ICACHE_FLASH_ATTR void mqtt_data_cb(uint32_t *args, const char* topic, uint32_t 
 		// handle MQTT host change
 		mqtt_rpc_set_mqtt_host(&mqtt_client, cleartext);
 	}
+#ifdef ENABLE_LED_OPTICAL
 	else if (strncmp(function_name, "optical_log", FUNCTIONNAME_L) == 0) {
 		// transmit text string optically via blue LED on GPIO2
 		mqtt_rpc_optical_log(&mqtt_client, (const char *)cleartext);
 	}
+#endif // ENABLE_LED_OPTICAL
 #ifdef DEBUG_STACK_TRACE
 	else if (strncmp(function_name, "read_stack_trace", FUNCTIONNAME_L) == 0) {
 		// found stack_trace

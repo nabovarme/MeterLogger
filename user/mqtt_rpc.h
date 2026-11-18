@@ -45,7 +45,9 @@ ICACHE_FLASH_ATTR void mqtt_rpc_open_until(MQTT_Client *client, char *value);
 ICACHE_FLASH_ATTR void mqtt_rpc_open_until_delta(MQTT_Client *client, char *value);
 ICACHE_FLASH_ATTR void mqtt_rpc_close(MQTT_Client *client);
 ICACHE_FLASH_ATTR void mqtt_rpc_status(MQTT_Client *client);
+#ifdef ENABLE_LED_OPTICAL
 ICACHE_FLASH_ATTR void mqtt_rpc_optical_log(MQTT_Client *client, const char *text);
+#endif
 #ifdef DEBUG_SERIAL
 ICACHE_FLASH_ATTR void mqtt_rpc_debug(MQTT_Client *client, const char *error_reason);
 #endif // DEBUG_SERIAL

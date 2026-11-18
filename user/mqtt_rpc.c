@@ -1585,6 +1585,7 @@ void mqtt_rpc_status(MQTT_Client *client) {
 	MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);	// QoS level 2
 }
 
+#ifdef ENABLE_LED_OPTICAL
 ICACHE_FLASH_ATTR
 void mqtt_rpc_optical_log(MQTT_Client *client, const char *text) {
 	char mqtt_topic[MQTT_TOPIC_L];
@@ -1613,6 +1614,7 @@ void mqtt_rpc_optical_log(MQTT_Client *client, const char *text) {
 		MQTT_Publish(client, mqtt_topic, mqtt_message, mqtt_message_l, 2, 0);
 	}
 }
+#endif // ENABLE_LED_OPTICAL
 
 #ifdef DEBUG_SERIAL
 ICACHE_FLASH_ATTR
