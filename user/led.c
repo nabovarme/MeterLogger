@@ -3,8 +3,6 @@
 #include "tinyprintf.h"
 #include "debug.h"
 #include "led.h"
-#include "wifi.h"
-#include "unix_time.h"
 
 #ifndef DISABLE_LED
 
@@ -182,42 +180,6 @@ bool led_optical_printf(const char *fmt, ...) {
 	}
 
 	return led_optical_send((const uint8_t *)buf, (uint8_t)n);
-}
-
-ICACHE_FLASH_ATTR
-bool led_optical_log_wifi(void) {
-	struct station_config sta_cfg;
-	char ssid[33];
-	sint8 rssi;
-	uint8 ch;
-	uint32 heap;
-	uint32 status;
-	uint64 up;
-
-	if (led_disabled || optical_tx_busy) {
-		return false;
-	}
-
-	memset(&sta_cfg, 0, sizeof(sta_cfg));
-	if (!wifi_station_get_config(&sta_cfg)) {
-		return false;
-	}
-
-	memcpy(ssid, sta_cfg.ssid, 32);
-	ssid[32] = '\0';
-
-	rssi   = wifi_station_get_rssi();
-	ch     = wifi_get_channel();
-	heap   = system_get_free_heap_size();
-	status = wifi_get_status();
-	up     = get_uptime();
-
-	if (rssi == 31) {
-		return led_optical_printf("%s n/a ch%u st%u(%s) up%llus heap%u",
-			ssid[0] ? ssid : "<none>", ch, status, wifi_get_reason_desc((uint8_t)status), up, heap);
-	}
-	return led_optical_printf("%s %ddBm ch%u st%u(%s) up%llus heap%u",
-		ssid[0] ? ssid : "<none>", (int)rssi, ch, status, wifi_get_reason_desc((uint8_t)status), up, heap);
 }
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
@@ -446,6 +408,5 @@ ICACHE_FLASH_ATTR void led_destroy(void) {}
 ICACHE_FLASH_ATTR bool led_optical_send(const uint8_t *data, uint8_t len) { return false; }
 ICACHE_FLASH_ATTR bool led_optical_printf(const char *fmt, ...) { return false; }
 ICACHE_FLASH_ATTR bool led_optical_is_busy(void) { return false; }
-ICACHE_FLASH_ATTR bool led_optical_log_wifi(void) { return false; }
 
 #endif // DISABLE_LED

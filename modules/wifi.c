@@ -1173,6 +1173,38 @@ const char* wifi_get_reason_desc(uint8_t reason) {
 	}
 }
 
+ICACHE_FLASH_ATTR
+bool led_optical_log_wifi(void) {
+	struct station_config sta_cfg;
+	char ssid[33];
+	sint8 rssi_now;
+	uint8 ch;
+	uint32 heap;
+	uint32 status;
+	uint64 up;
+
+	memset(&sta_cfg, 0, sizeof(sta_cfg));
+	if (!wifi_station_get_config(&sta_cfg)) {
+		return false;
+	}
+
+	memcpy(ssid, sta_cfg.ssid, 32);
+	ssid[32] = '\0';
+
+	rssi_now = wifi_station_get_rssi();
+	ch       = wifi_get_channel();
+	heap     = system_get_free_heap_size();
+	status   = wifi_get_status();
+	up       = get_uptime();
+
+	if (rssi_now == 31) {
+		return led_optical_printf("%s n/a ch%u st%u(%s) up%llus heap%u",
+			ssid[0] ? ssid : "<none>", ch, status, wifi_get_reason_desc((uint8_t)status), up, heap);
+	}
+	return led_optical_printf("%s %ddBm ch%u st%u(%s) up%llus heap%u",
+		ssid[0] ? ssid : "<none>", (int)rssi_now, ch, status, wifi_get_reason_desc((uint8_t)status), up, heap);
+}
+
 #ifdef DEBUG
 ICACHE_FLASH_ATTR
 void debug_print_wifi_ip() {
