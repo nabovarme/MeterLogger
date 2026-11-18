@@ -80,7 +80,11 @@ ICACHE_FLASH_ATTR void wifi_scan_result_cb_register(wifi_scan_result_event_cb_t 
 ICACHE_FLASH_ATTR void wifi_scan_result_cb_unregister();
 ICACHE_FLASH_ATTR void wifi_set_fallback_retry_cb(WifiFallbackRetryCallback cb);
 ICACHE_FLASH_ATTR const char* wifi_get_reason_desc(uint8_t reason);
+
+#ifdef ENABLE_LED_OPTICAL
 ICACHE_FLASH_ATTR bool led_optical_log_wifi(void);
+#endif
+
 #ifdef DEBUG
 ICACHE_FLASH_ATTR void debug_print_wifi_ip();
 ICACHE_FLASH_ATTR void debug_print_wifi_config();

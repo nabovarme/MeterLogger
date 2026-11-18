@@ -6,6 +6,7 @@
 
 #ifndef DISABLE_LED
 
+#ifdef ENABLE_LED_OPTICAL
 // Optical transmitter settings on GPIO2 (BIT2, active-low):
 // 15 ms per half-bit = 30 ms per Manchester bit (~33.3 bps, ideal for 240 fps Slow-Mo).
 // Use 40 ms if recording at 30/60 fps standard video.
@@ -21,6 +22,7 @@
 #define FRC1_DIV_256            0x08
 #define FRC1_EDGE_INT           0x00
 #define OPTICAL_FRC1_TICKS      ((OPTICAL_HALF_BIT_MS * 14286) / 32)
+#endif
 
 static os_timer_t led_blinker_timer;
 static os_timer_t led_single_blink_off_timer;
@@ -36,6 +38,7 @@ static volatile bool led_triple_blinker_timer_running = false;
 
 static uint8_t led_sub_pattern_state = 0;
 
+#ifdef ENABLE_LED_OPTICAL
 static uint8_t optical_tx_buf[OPTICAL_FRAME_MAX_BYTES];
 static volatile uint16_t optical_tx_total_bits = 0;
 static volatile uint16_t optical_tx_bit_idx = 0;
@@ -181,9 +184,14 @@ bool led_optical_printf(const char *fmt, ...) {
 
 	return led_optical_send((const uint8_t *)buf, (uint8_t)n);
 }
+#endif // ENABLE_LED_OPTICAL
 
 ICACHE_FLASH_ATTR void static led_blinker_timer_func(void *arg) {
-	if (led_blinker_timer_running == false || led_disabled || optical_tx_busy) {
+	if (led_blinker_timer_running == false || led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		// stop blinking if asked to stop via state variable led_blinker_timer_running
 		os_timer_disarm(&led_blinker_timer);
 		return;
@@ -204,7 +212,11 @@ ICACHE_FLASH_ATTR void static led_single_blink_off_timer_func(void *arg) {
 	
 ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 	// blink fast two times
-	if (led_double_blinker_timer_running == false || led_disabled || optical_tx_busy) {
+	if (led_double_blinker_timer_running == false || led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		// stop blinking if asked to stop via state variable led_double_blinker_timer_running
 		os_timer_disarm(&led_double_blink_timer);
 		return;
@@ -248,7 +260,11 @@ ICACHE_FLASH_ATTR void static led_double_blink_timer_func(void *arg) {
 
 ICACHE_FLASH_ATTR void static led_triple_blink_timer_func(void *arg) {
 	// blink fast three times
-	if (led_triple_blinker_timer_running == false || led_disabled || optical_tx_busy) {
+	if (led_triple_blinker_timer_running == false || led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		// stop blinking if asked to stop via state variable led_triple_blinker_timer_running
 		os_timer_disarm(&led_triple_blink_timer);
 		return;
@@ -293,23 +309,31 @@ ICACHE_FLASH_ATTR void led_init(void) {
 }
 
 ICACHE_FLASH_ATTR void led_on(void) {
+#ifdef ENABLE_LED_OPTICAL
 	if (optical_tx_busy) {
 		return;
 	}
+#endif
 	//Set GPIO2 to LOW
 	gpio_output_set(0, BIT2, BIT2, 0);
 }
 
 ICACHE_FLASH_ATTR void led_off(void) {
+#ifdef ENABLE_LED_OPTICAL
 	if (optical_tx_busy) {
 		return;
 	}
+#endif
 	// Set GPIO2 to HIGH
 	gpio_output_set(BIT2, 0, BIT2, 0);
 }
 
 ICACHE_FLASH_ATTR void led_blink(void) {
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -320,7 +344,11 @@ ICACHE_FLASH_ATTR void led_blink(void) {
 }
 
 ICACHE_FLASH_ATTR void led_blink_short(void) {
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -331,7 +359,11 @@ ICACHE_FLASH_ATTR void led_blink_short(void) {
 }
 
 ICACHE_FLASH_ATTR void led_pattern_a(void) {
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -342,7 +374,11 @@ ICACHE_FLASH_ATTR void led_pattern_a(void) {
 }
 
 ICACHE_FLASH_ATTR void led_pattern_b(void) {
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -354,7 +390,11 @@ ICACHE_FLASH_ATTR void led_pattern_b(void) {
 
 ICACHE_FLASH_ATTR void led_pattern_c(void) {
 	// blink fast two times every 5th second
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -366,7 +406,11 @@ ICACHE_FLASH_ATTR void led_pattern_c(void) {
 
 ICACHE_FLASH_ATTR void led_pattern_d(void) {
 	// blink fast three times every 2 seconds
-	if (led_disabled || optical_tx_busy) {
+	if (led_disabled
+#ifdef ENABLE_LED_OPTICAL
+		|| optical_tx_busy
+#endif
+	) {
 		return;
 	}
 	
@@ -386,8 +430,10 @@ ICACHE_FLASH_ATTR void led_stop_pattern(void) {
 
 ICACHE_FLASH_ATTR void led_destroy(void) {
 	led_disabled = true;
+#ifdef ENABLE_LED_OPTICAL
 	optical_hw_timer_stop();
 	optical_tx_busy = false;
+#endif
 	led_stop_pattern();
 }
 
@@ -405,8 +451,10 @@ ICACHE_FLASH_ATTR void led_pattern_c(void) {}
 ICACHE_FLASH_ATTR void led_pattern_d(void) {}
 ICACHE_FLASH_ATTR void led_stop_pattern(void) {}
 ICACHE_FLASH_ATTR void led_destroy(void) {}
+#ifdef ENABLE_LED_OPTICAL
 ICACHE_FLASH_ATTR bool led_optical_send(const uint8_t *data, uint8_t len) { return false; }
 ICACHE_FLASH_ATTR bool led_optical_printf(const char *fmt, ...) { return false; }
 ICACHE_FLASH_ATTR bool led_optical_is_busy(void) { return false; }
+#endif
 
 #endif // DISABLE_LED

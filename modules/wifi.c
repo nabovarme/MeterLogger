@@ -1173,10 +1173,12 @@ const char* wifi_get_reason_desc(uint8_t reason) {
 	}
 }
 
+#ifdef ENABLE_LED_OPTICAL
 ICACHE_FLASH_ATTR
 bool led_optical_log_wifi(void) {
 	return led_optical_printf("%s %uB", wifi_get_reason_desc(wifi_get_status()), system_get_free_heap_size());
 }
+#endif
 
 #ifdef DEBUG
 ICACHE_FLASH_ATTR

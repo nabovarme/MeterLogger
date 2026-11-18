@@ -187,6 +187,10 @@ ifeq ($(DEBUG_SERIAL), 1)
 	CFLAGS += -DDEBUG_SERIAL
 endif
 
+# Option to enable optical LED telemetry on GPIO2
+ifeq ($(ENABLE_LED_OPTICAL), 1)
+	CFLAGS += -DENABLE_LED_OPTICAL
+endif
 
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib

@@ -230,9 +230,13 @@ ICACHE_FLASH_ATTR void reset_watchdog(uint32_t id) {
 // DEBUG: hack to get it to reconnect on weak wifi
 // force reconnect to wireless
 ICACHE_FLASH_ATTR void force_reset_wifi() {
+#ifdef ENABLE_LED_OPTICAL
 	if (!led_optical_log_wifi()) {
-		led_pattern_b();	// Fallback blink if optical TX is disabled or already busy
+		led_pattern_b();
 	}
+#else
+	led_pattern_b();
+#endif
 	wifi_stop_scan();
 	set_my_auto_connect(false);
 	wifi_station_disconnect();
