@@ -1175,7 +1175,7 @@ const char* wifi_get_reason_desc(uint8_t reason) {
 
 ICACHE_FLASH_ATTR
 bool led_optical_log_wifi(void) {
-	return led_optical_printf("st%u heap%u", wifi_get_status(), system_get_free_heap_size());
+	return led_optical_printf("%s %uB", wifi_get_reason_desc(wifi_get_status()), system_get_free_heap_size());
 }
 
 #ifdef DEBUG
