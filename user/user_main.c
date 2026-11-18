@@ -1064,6 +1064,10 @@ ICACHE_FLASH_ATTR void user_init(void) {
 	printf("\t(DEBUG_SHORT_WEB_CONFIG_TIME)\n\r");
 #endif
 
+#ifdef ENABLE_LED_OPTICAL
+	printf("\t(ENABLE_LED_OPTICAL)\n\r");
+#endif
+
 #ifdef NO_CRON
 	printf("\t(NO_CRON)\n\r");
 #endif
