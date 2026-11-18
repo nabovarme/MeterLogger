@@ -431,7 +431,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set default network status
 			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = true;
-				wifi_default_status = evt->event_info.disconnected.reason;
+				wifi_default_status = 0;
 			}
 			break;
 
@@ -495,7 +495,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 #endif
 			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = true;
-				wifi_default_status = evt->event_info.disconnected.reason;
+				wifi_default_status = 0;
 				wifi_fallback_active = false;
 				wifi_fallback_mqtt_connected = false;
 			}
@@ -522,7 +522,7 @@ void wifi_handle_event_cb(System_Event_t *evt) {
 			// set default network status
 			if (memcmp(stationConf.ssid, sys_cfg.sta_ssid, strlen(sys_cfg.sta_ssid) + 1) == 0) {
 				wifi_default_ok = false;
-				wifi_default_status = evt->event_info.disconnected.reason;
+				wifi_default_status = REASON_HANDSHAKE_TIMEOUT;
 
 				disconnect_count++;
 #ifdef DEBUG
